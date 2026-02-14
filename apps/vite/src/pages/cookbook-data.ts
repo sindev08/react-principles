@@ -1,5 +1,6 @@
 export interface Recipe {
   id: number;
+  slug: string;
   title: string;
   description: string;
   icon: string;
@@ -24,6 +25,7 @@ export const CARDS_PER_PAGE = 6;
 export const RECIPES: Recipe[] = [
   {
     id: 1,
+    slug: "e-commerce-dashboard",
     title: "E-commerce Dashboard",
     description:
       "A full-featured admin panel with interactive charts, inventory management tables, and real-time order tracking.",
@@ -34,6 +36,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 2,
+    slug: "saas-landing-page",
     title: "SaaS Landing Page",
     description:
       "Optimized conversion funnels featuring responsive pricing tables, feature grids, and accessible form layouts.",
@@ -44,6 +47,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 3,
+    slug: "authentication-flow",
     title: "Authentication Flow",
     description:
       "Secure login, signup, and password recovery patterns using JWT and multi-factor authentication examples.",
@@ -54,6 +58,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 4,
+    slug: "data-visualization",
     title: "Data Visualization",
     description:
       "Complex data sets represented through interactive charts, heatmaps, and geographic data visualizations.",
@@ -64,6 +69,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 5,
+    slug: "api-integration",
     title: "API Integration",
     description:
       "Clean boilerplate for connecting frontend components to REST or GraphQL endpoints with robust error handling.",
@@ -74,6 +80,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 6,
+    slug: "component-library",
     title: "Component Library",
     description:
       "A curated set of highly reusable UI components including modals, dropdowns, and complex form elements.",
@@ -84,6 +91,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 7,
+    slug: "analytics-dashboard",
     title: "Analytics Dashboard",
     description:
       "Real-time analytics with customizable widgets, KPI cards, and drill-down reports for business intelligence.",
@@ -94,6 +102,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 8,
+    slug: "product-landing-page",
     title: "Product Landing Page",
     description:
       "Mobile-first product showcase with hero animations, testimonials, and CTA sections optimized for conversion.",
@@ -104,6 +113,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 9,
+    slug: "oauth-flow",
     title: "OAuth Flow",
     description:
       "Social login with Google, GitHub, and Apple. Complete OAuth 2.0 flow with refresh token handling.",
@@ -114,6 +124,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 10,
+    slug: "chart-dashboard",
     title: "Chart Dashboard",
     description:
       "Interactive dashboards with line charts, bar graphs, pie charts, and responsive grid layouts.",
@@ -124,6 +135,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 11,
+    slug: "rest-api-client",
     title: "REST API Client",
     description:
       "A structured API client with interceptors, retry logic, caching, and type-safe endpoint definitions.",
@@ -134,6 +146,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 12,
+    slug: "design-system",
     title: "Design System",
     description:
       "Token-based design system with theming support, accessibility-first components, and Storybook integration.",

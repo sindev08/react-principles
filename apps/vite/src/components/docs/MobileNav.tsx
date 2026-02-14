@@ -63,6 +63,20 @@ export function MobileNav() {
               <ul className="flex flex-col gap-1.5">
                 {group.items.map((item) => {
                   const isActive = pathname === item.href;
+
+                  if (item.soon) {
+                    return (
+                      <li key={item.label}>
+                        <span className="flex cursor-not-allowed items-center justify-between px-3 py-2 text-sm font-medium rounded-lg text-slate-300 dark:text-slate-600">
+                          {item.label}
+                          <span className="text-[9px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-[#1f2937] text-slate-400 dark:text-slate-500 px-1.5 py-0.5 rounded">
+                            Soon
+                          </span>
+                        </span>
+                      </li>
+                    );
+                  }
+
                   return (
                     <li key={item.label}>
                       <Link

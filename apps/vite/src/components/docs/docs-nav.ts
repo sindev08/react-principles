@@ -1,6 +1,7 @@
 export interface NavItem {
   label: string;
   href: string;
+  soon?: true;
 }
 
 export interface NavGroup {
@@ -13,34 +14,25 @@ export const DOCS_NAV: NavGroup[] = [
     title: "Getting Started",
     items: [
       { label: "Introduction", href: "/docs/introduction" },
-      { label: "Installation", href: "#" },
-      { label: "Theming", href: "#" },
-      { label: "Dark Mode", href: "#" },
+      { label: "Installation", href: "#", soon: true },
+      { label: "Theming", href: "#", soon: true },
+      { label: "Dark Mode", href: "#", soon: true },
     ],
   },
   {
     title: "Components",
     items: [
-      { label: "Accordion", href: "#" },
-      { label: "Alert Dialog", href: "#" },
-      { label: "Badge", href: "#" },
-      { label: "Button", href: "#" },
-      { label: "Card", href: "#" },
-      { label: "Checkbox", href: "#" },
-      { label: "Dialog", href: "#" },
+      { label: "Accordion", href: "#", soon: true },
+      { label: "Alert Dialog", href: "#", soon: true },
+      { label: "Badge", href: "#", soon: true },
+      { label: "Button", href: "#", soon: true },
+      { label: "Card", href: "#", soon: true },
+      { label: "Checkbox", href: "#", soon: true },
+      { label: "Dialog", href: "#", soon: true },
       { label: "Form", href: "/docs/forms" },
-      { label: "Input", href: "#" },
-      { label: "Modal", href: "#" },
-      { label: "Tabs", href: "#" },
-    ],
-  },
-  {
-    title: "Patterns",
-    items: [
-      { label: "React Query", href: "/react-query" },
-      { label: "Zustand", href: "/state" },
-      { label: "Forms", href: "/forms" },
-      { label: "Tables", href: "/table" },
+      { label: "Input", href: "#", soon: true },
+      { label: "Modal", href: "#", soon: true },
+      { label: "Tabs", href: "#", soon: true },
     ],
   },
 ];

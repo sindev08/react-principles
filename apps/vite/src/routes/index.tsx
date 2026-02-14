@@ -7,6 +7,7 @@ import { StatePage } from "@/pages/StatePage";
 import { IntroductionPage } from "@/pages/docs/IntroductionPage";
 import { FormsDocPage } from "@/pages/docs/FormsDocPage";
 import { CookbookPage } from "@/pages/CookbookPage";
+import { CookbookDetailPage } from "@/pages/CookbookDetailPage";
 
 export function AppRoutes() {
   return (
@@ -19,6 +20,7 @@ export function AppRoutes() {
       <Route path="/docs/introduction" element={<IntroductionPage />} />
       <Route path="/docs/forms" element={<FormsDocPage />} />
       <Route path="/cookbook" element={<CookbookPage />} />
+      <Route path="/cookbook/:slug" element={<CookbookDetailPage />} />
     </Routes>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { DocsHeader, DocsSidebar, MobileNav } from "@/components/docs";
 import {
   RECIPES,
@@ -168,12 +169,15 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
         <p className="mb-6 flex-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
           {recipe.description}
         </p>
-        <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary/5 dark:bg-primary/10 py-2.5 font-semibold text-primary transition-all group-hover:bg-primary group-hover:text-white">
+        <Link
+          href={`/cookbook/${recipe.slug}`}
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary/5 dark:bg-primary/10 py-2.5 font-semibold text-primary transition-all group-hover:bg-primary group-hover:text-white"
+        >
           View Recipe
           <span className="material-symbols-outlined text-[18px]">
             arrow_forward
           </span>
-        </button>
+        </Link>
       </div>
     </div>
   );
