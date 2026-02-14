@@ -1,0 +1,609 @@
+<!doctype html>
+
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>TanStack Query Pattern | React Patterns Cookbook</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1349ec",
+              "background-light": "#f6f6f8",
+              "background-dark": "#0B0B0C",
+              "surface-dark": "#161618",
+              "border-dark": "#27272A",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #27272a;
+        border-radius: 10px;
+      }
+      .code-syntax-keyword {
+        color: #c678dd;
+      }
+      .code-syntax-function {
+        color: #61afef;
+      }
+      .code-syntax-string {
+        color: #98c379;
+      }
+      .code-syntax-comment {
+        color: #5c6370;
+        font-style: italic;
+      }
+      .code-syntax-variable {
+        color: #e06c75;
+      }
+    </style>
+  </head>
+  <body class="bg-background-dark selection:bg-primary/30 text-slate-200">
+    <!-- Top Navigation Bar -->
+    <header
+      class="sticky top-0 z-50 w-full border-b border-border-dark bg-background-dark/80 backdrop-blur-md"
+    >
+      <div
+        class="flex items-center justify-between h-16 px-6 mx-auto max-w-7xl lg:px-12"
+      >
+        <div class="flex items-center gap-2">
+          <div
+            class="flex items-center justify-center w-6 h-6 text-white rounded bg-primary"
+          >
+            <span class="text-base material-symbols-outlined">menu_book</span>
+          </div>
+          <span class="text-base font-bold tracking-tight text-white"
+            >react-principles</span
+          >
+        </div>
+        <nav class="items-center hidden gap-8 md:flex">
+          <a
+            class="text-xs font-bold transition-colors text-slate-400 hover:text-white"
+            href="#"
+            >Home</a
+          >
+          <a
+            class="text-xs font-bold transition-colors text-slate-400 hover:text-white"
+            href="#"
+            >Docs</a
+          >
+          <a class="text-xs font-bold text-white transition-colors" href="#"
+            >Cookbook</a
+          >
+        </nav>
+        <div class="flex items-center gap-4">
+          <button
+            class="bg-primary hover:bg-primary/90 flex h-8 items-center gap-2 rounded-lg px-4 text-[10px] font-bold text-white transition-all"
+          >
+            <span class="text-sm material-symbols-outlined">code</span>
+            GitHub
+          </button>
+        </div>
+      </div>
+    </header>
+    <div class="flex min-h-[calc(100vh-64px)]">
+      <!-- Sidebar Navigation -->
+      <aside
+        class="border-border-dark bg-background-dark custom-scrollbar sticky top-16 hidden h-[calc(100vh-64px)] w-64 overflow-y-auto border-r p-6 lg:block"
+      >
+        <div class="mb-8">
+          <h4
+            class="mb-4 text-xs font-semibold tracking-widest uppercase text-slate-500"
+          >
+            Getting Started
+          </h4>
+          <ul class="space-y-2">
+            <li>
+              <a
+                class="flex items-center gap-3 px-3 py-2 text-sm font-medium transition-all rounded-lg hover:bg-surface-dark text-slate-400 hover:text-white"
+                href="#"
+                ><span class="text-lg material-symbols-outlined">info</span
+                >Introduction</a
+              >
+            </li>
+            <li>
+              <a
+                class="flex items-center gap-3 px-3 py-2 text-sm font-medium transition-all rounded-lg hover:bg-surface-dark text-slate-400 hover:text-white"
+                href="#"
+                ><span class="text-lg material-symbols-outlined"
+                  >rocket_launch</span
+                >Quick Start</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="mb-8">
+          <h4
+            class="mb-4 text-xs font-semibold tracking-widest uppercase text-slate-500"
+          >
+            Data Patterns
+          </h4>
+          <ul class="space-y-2">
+            <li>
+              <a
+                class="flex items-center gap-3 px-3 py-2 text-sm font-medium transition-all border rounded-lg bg-primary/10 text-primary border-primary/20"
+                href="#"
+                ><span class="text-lg material-symbols-outlined"
+                  >cloud_sync</span
+                >TanStack Query</a
+              >
+            </li>
+            <li>
+              <a
+                class="flex items-center gap-3 px-3 py-2 text-sm font-medium transition-all rounded-lg hover:bg-surface-dark text-slate-400 hover:text-white"
+                href="#"
+                ><span class="text-lg material-symbols-outlined">hub</span
+                >Zustand State</a
+              >
+            </li>
+            <li>
+              <a
+                class="flex items-center gap-3 px-3 py-2 text-sm font-medium transition-all rounded-lg hover:bg-surface-dark text-slate-400 hover:text-white"
+                href="#"
+                ><span class="text-lg material-symbols-outlined">api</span>SWR
+                Pattern</a
+              >
+            </li>
+          </ul>
+        </div>
+        <div class="mb-8">
+          <h4
+            class="mb-4 text-xs font-semibold tracking-widest uppercase text-slate-500"
+          >
+            Architecture
+          </h4>
+          <ul class="space-y-2">
+            <li>
+              <a
+                class="flex items-center gap-3 px-3 py-2 text-sm font-medium transition-all rounded-lg hover:bg-surface-dark text-slate-400 hover:text-white"
+                href="#"
+                ><span class="text-lg material-symbols-outlined">layers</span
+                >Atomic Design</a
+              >
+            </li>
+            <li>
+              <a
+                class="flex items-center gap-3 px-3 py-2 text-sm font-medium transition-all rounded-lg hover:bg-surface-dark text-slate-400 hover:text-white"
+                href="#"
+                ><span class="text-lg material-symbols-outlined"
+                  >view_module</span
+                >Compound Components</a
+              >
+            </li>
+            <li>
+              <a
+                class="flex items-center gap-3 px-3 py-2 text-sm font-medium transition-all rounded-lg hover:bg-surface-dark text-slate-400 hover:text-white"
+                href="#"
+                ><span class="text-lg material-symbols-outlined">extension</span
+                >Render Props</a
+              >
+            </li>
+          </ul>
+        </div>
+      </aside>
+      <!-- Main Content Area -->
+      <main class="flex-1 px-6 py-12 lg:px-20">
+        <div class="mx-auto max-w-[840px]">
+          <!-- Breadcrumbs -->
+          <nav class="flex items-center gap-2 mb-6 text-sm text-slate-500">
+            <a class="transition-colors hover:text-primary" href="#"
+              >Cookbook</a
+            >
+            <span class="text-xs material-symbols-outlined">chevron_right</span>
+            <a class="transition-colors hover:text-primary" href="#"
+              >Data Fetching</a
+            >
+            <span class="text-xs material-symbols-outlined">chevron_right</span>
+            <span class="text-slate-300">TanStack Query Pattern</span>
+          </nav>
+          <!-- Header -->
+          <div class="mb-12">
+            <h1 class="mb-4 text-5xl font-extrabold tracking-tight text-white">
+              TanStack Query: Standardized Data Fetching
+            </h1>
+            <div class="flex items-center gap-4">
+              <span
+                class="inline-flex items-center px-3 py-1 text-xs font-bold rounded-full bg-primary/20 text-primary ring-primary/30 ring-1 ring-inset"
+                >v5.0.0</span
+              >
+              <p class="text-sm text-slate-500">
+                Last updated: Oct 24, 2023 • 8 min read
+              </p>
+            </div>
+          </div>
+          <!-- 1. Principle -->
+          <section class="mb-16">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-1 h-8 rounded-full bg-primary"></div>
+              <h2 class="text-2xl font-bold text-white">1. Principle</h2>
+            </div>
+            <div
+              class="p-8 leading-relaxed border bg-surface-dark border-border-dark rounded-xl"
+            >
+              <p class="mb-4">
+                The core principle of the
+                <strong class="text-white">TanStack Query Pattern</strong> is
+                the strict separation of
+                <span class="italic text-primary">Server State</span> from
+                <span class="italic text-primary">Client State</span>. Unlike
+                traditional state managers (Redux, Context), TanStack Query
+                treats fetched data as a cache that requires synchronization,
+                rather than a static global variable.
+              </p>
+              <ul class="grid grid-cols-1 gap-4 mt-6 md:grid-cols-2">
+                <li class="flex items-start gap-3">
+                  <span class="material-symbols-outlined text-primary mt-0.5"
+                    >check_circle</span
+                  >
+                  <span class="text-sm"
+                    >Declarative data fetching over imperative effects.</span
+                  >
+                </li>
+                <li class="flex items-start gap-3">
+                  <span class="material-symbols-outlined text-primary mt-0.5"
+                    >check_circle</span
+                  >
+                  <span class="text-sm"
+                    >Zero-config caching and background revalidation.</span
+                  >
+                </li>
+                <li class="flex items-start gap-3">
+                  <span class="material-symbols-outlined text-primary mt-0.5"
+                    >check_circle</span
+                  >
+                  <span class="text-sm"
+                    >Shared async state without global providers.</span
+                  >
+                </li>
+                <li class="flex items-start gap-3">
+                  <span class="material-symbols-outlined text-primary mt-0.5"
+                    >check_circle</span
+                  >
+                  <span class="text-sm"
+                    >Standardized loading and error boundaries.</span
+                  >
+                </li>
+              </ul>
+            </div>
+          </section>
+          <!-- 2. Rules -->
+          <section class="mb-16">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-1 h-8 rounded-full bg-primary"></div>
+              <h2 class="text-2xl font-bold text-white">2. Rules</h2>
+            </div>
+            <div class="space-y-4">
+              <div
+                class="flex gap-4 p-4 border rounded-lg border-red-500/20 bg-red-500/5"
+              >
+                <span class="text-red-400 material-symbols-outlined"
+                  >cancel</span
+                >
+                <div>
+                  <h4 class="mb-1 font-bold text-red-200">
+                    Don't use useEffect for fetching
+                  </h4>
+                  <p class="text-sm text-red-200/70">
+                    Avoid managing loading/error states manually with useState
+                    inside a useEffect hook. It leads to race conditions and
+                    "zombie children" states.
+                  </p>
+                </div>
+              </div>
+              <div
+                class="flex gap-4 p-4 border rounded-lg border-green-500/20 bg-green-500/5"
+              >
+                <span class="text-green-400 material-symbols-outlined"
+                  >check_circle</span
+                >
+                <div>
+                  <h4 class="mb-1 font-bold text-green-200">
+                    Do wrap fetches in Custom Hooks
+                  </h4>
+                  <p class="text-sm text-green-200/70">
+                    Always export query logic as reusable custom hooks (e.g.,
+                    `useUserData`). This encapsulates the query key and fetch
+                    function.
+                  </p>
+                </div>
+              </div>
+              <div
+                class="flex gap-4 p-4 border rounded-lg bg-primary/5 border-primary/20"
+              >
+                <span class="material-symbols-outlined text-primary">info</span>
+                <div>
+                  <h4 class="mb-1 font-bold text-slate-200">
+                    Use Stable Query Keys
+                  </h4>
+                  <p class="text-sm text-slate-400">
+                    Query keys should be serializable and follow a consistent
+                    structure: `['scope', id, { filter }]`.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!-- 3. Pattern -->
+          <section class="mb-16">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-1 h-8 rounded-full bg-primary"></div>
+              <h2 class="text-2xl font-bold text-white">
+                3. Pattern Breakdown
+              </h2>
+            </div>
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+              <div
+                class="flex flex-col items-center p-6 text-center border bg-surface-dark border-border-dark rounded-xl"
+              >
+                <div
+                  class="flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-primary/20 text-primary"
+                >
+                  <span class="text-2xl material-symbols-outlined"
+                    >database</span
+                  >
+                </div>
+                <h3 class="mb-2 font-bold text-white">Query Key</h3>
+                <p class="text-xs text-slate-400">
+                  The unique identifier that maps to your data in the cache.
+                </p>
+              </div>
+              <div
+                class="flex flex-col items-center p-6 text-center border bg-surface-dark border-border-dark rounded-xl"
+              >
+                <div
+                  class="flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-primary/20 text-primary"
+                >
+                  <span class="text-2xl material-symbols-outlined">bolt</span>
+                </div>
+                <h3 class="mb-2 font-bold text-white">Fetch Function</h3>
+                <p class="text-xs text-slate-400">
+                  A promise-returning function that retrieves your data.
+                </p>
+              </div>
+              <div
+                class="flex flex-col items-center p-6 text-center border bg-surface-dark border-border-dark rounded-xl"
+              >
+                <div
+                  class="flex items-center justify-center w-12 h-12 mb-4 rounded-full bg-primary/20 text-primary"
+                >
+                  <span class="text-2xl material-symbols-outlined">cached</span>
+                </div>
+                <h3 class="mb-2 font-bold text-white">Stale Time</h3>
+                <p class="text-xs text-slate-400">
+                  Defines how long the data is considered fresh before
+                  re-fetching.
+                </p>
+              </div>
+            </div>
+            <div
+              class="relative w-full mt-8 overflow-hidden border border-border-dark aspect-video rounded-xl"
+            >
+              <img
+                alt="Technical data flow diagram abstract"
+                class="object-cover w-full h-full opacity-40 grayscale"
+                data-alt="Abstract visualization of data flowing between nodes"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8hoLJ0SfQQtmWE6UNgwKtIOtxjjLS0eraHfNZ4VVpAZuRWl2yq6EYeBwa0vTYIjk_6GXEanGyfnEHuVgIAmlishAUWE8C02MfpuucpCwsNngwmHgZD2G1X7wJlbCqeWwgynCvddQAIbLTnWJwQbd9FEAEJayD-vAAJ7Acxi7XXFXGZAwK1rQJtySQdJgDynveNUQMcgPIvte6JQQrI0Ff8aRiauvBxjiLA8f_Yef_vlm_H9YrG_1gg64PPsQECjuFj_GeIFLI5xRH"
+              />
+              <div
+                class="absolute inset-0 from-background-dark via-background-dark/20 bg-gradient-to-t to-transparent"
+              ></div>
+              <div
+                class="absolute inset-0 flex flex-col items-center justify-center p-12 text-center"
+              >
+                <span
+                  class="mb-4 text-5xl material-symbols-outlined text-primary"
+                  >account_tree</span
+                >
+                <h4 class="mb-2 text-xl font-bold text-white">
+                  Hydration Architecture
+                </h4>
+                <p class="max-w-md text-sm text-slate-300">
+                  TanStack Query facilitates a seamless handoff between Server
+                  Components and Client components using the
+                  &lt;HydrationBoundary /&gt; pattern.
+                </p>
+              </div>
+            </div>
+          </section>
+          <!-- 4. Implementation -->
+          <section class="mb-16">
+            <div class="flex items-center gap-3 mb-6">
+              <div class="w-1 h-8 rounded-full bg-primary"></div>
+              <h2 class="text-2xl font-bold text-white">4. Implementation</h2>
+            </div>
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex gap-2">
+                <button
+                  class="bg-primary ring-primary/50 rounded-md px-3 py-1.5 text-xs font-bold text-white ring-1"
+                >
+                  React v18+
+                </button>
+                <button
+                  class="bg-surface-dark border-border-dark rounded-md border px-3 py-1.5 text-xs font-bold text-slate-400 transition-all hover:text-white"
+                >
+                  Next.js
+                </button>
+              </div>
+              <button
+                class="flex items-center gap-2 text-xs transition-colors text-slate-500 hover:text-white"
+              >
+                <span class="text-sm material-symbols-outlined"
+                  >content_copy</span
+                >
+                Copy Code
+              </button>
+            </div>
+            <!-- Code Block -->
+            <div
+              class="border-border-dark overflow-hidden rounded-xl border bg-[#0d1117]"
+            >
+              <div
+                class="flex items-center justify-between px-4 py-2 border-b bg-surface-dark border-border-dark"
+              >
+                <span class="font-mono text-xs text-slate-400"
+                  >hooks/useProfile.ts</span
+                >
+                <div class="flex gap-1.5">
+                  <div class="h-2.5 w-2.5 rounded-full bg-red-500/50"></div>
+                  <div class="h-2.5 w-2.5 rounded-full bg-yellow-500/50"></div>
+                  <div class="h-2.5 w-2.5 rounded-full bg-green-500/50"></div>
+                </div>
+              </div>
+              <pre
+                class="p-6 overflow-x-auto font-mono text-sm leading-relaxed"
+              ><span class="code-syntax-keyword">import</span> { useQuery } <span class="code-syntax-keyword">from</span> <span class="code-syntax-string">'@tanstack/react-query'</span>;
+
+<span class="code-syntax-comment">// The Fetch Function</span>
+<span class="code-syntax-keyword">const</span> <span class="code-syntax-function">fetchUser</span> = <span class="code-syntax-keyword">async</span> (userId: <span class="code-syntax-variable">string</span>) =&gt; {
+  <span class="code-syntax-keyword">const</span> response = <span class="code-syntax-keyword">await</span> fetch(<span class="code-syntax-string">`/api/users/${userId}`</span>);
+  <span class="code-syntax-keyword">if</span> (!response.ok) <span class="code-syntax-keyword">throw new</span> <span class="code-syntax-function">Error</span>(<span class="code-syntax-string">'Failed to fetch user'</span>);
+  <span class="code-syntax-keyword">return</span> response.<span class="code-syntax-function">json</span>();
+};
+
+<span class="code-syntax-comment">// Custom Pattern Hook</span>
+<span class="code-syntax-keyword">export const</span> <span class="code-syntax-function">useUserProfile</span> = (userId: <span class="code-syntax-variable">string</span>) =&gt; {
+  <span class="code-syntax-keyword">return</span> <span class="code-syntax-function">useQuery</span>({
+    queryKey: [<span class="code-syntax-string">'user'</span>, userId],
+    queryFn: () =&gt; <span class="code-syntax-function">fetchUser</span>(userId),
+    staleTime: <span class="code-syntax-variable">1000</span> * <span class="code-syntax-variable">60</span> * <span class="code-syntax-variable">5</span>, <span class="code-syntax-comment">// 5 minutes</span>
+    retry: <span class="code-syntax-variable">2</span>,
+  });
+};</pre>
+            </div>
+            <div
+              class="p-6 mt-10 border-l-4 rounded-lg border-primary bg-primary/5"
+            >
+              <h4 class="flex items-center gap-2 mb-2 font-bold text-white">
+                <span class="material-symbols-outlined text-primary"
+                  >tips_and_updates</span
+                >
+                Expert Tip
+              </h4>
+              <p class="text-sm text-slate-400">
+                Combine TanStack Query with
+                <strong class="text-white">Zod</strong> for runtime type
+                validation. Wrapping your fetch function response in a schema
+                parse ensures your client state is always valid and strictly
+                typed.
+              </p>
+            </div>
+          </section>
+          <!-- Footer -->
+          <footer
+            class="flex items-center justify-between pt-8 mt-24 border-t border-border-dark"
+          >
+            <div class="flex items-center gap-4 text-sm text-slate-500">
+              <a class="transition-colors hover:text-white" href="#"
+                >← Previous: Basics</a
+              >
+              <span class="text-border-dark">|</span>
+              <a class="transition-colors hover:text-white" href="#"
+                >Next: Mutations →</a
+              >
+            </div>
+            <div class="flex gap-4">
+              <button
+                class="flex items-center justify-center w-10 h-10 transition-all border rounded-lg bg-surface-dark border-border-dark text-slate-400 hover:border-slate-500 hover:text-white"
+              >
+                <span class="material-symbols-outlined">thumb_up</span>
+              </button>
+              <button
+                class="flex items-center justify-center w-10 h-10 transition-all border rounded-lg bg-surface-dark border-border-dark text-slate-400 hover:border-slate-500 hover:text-white"
+              >
+                <span class="material-symbols-outlined">share</span>
+              </button>
+            </div>
+          </footer>
+        </div>
+      </main>
+      <!-- Table of Contents Sidebar -->
+      <aside
+        class="sticky top-16 hidden h-[calc(100vh-64px)] w-64 p-8 xl:block"
+      >
+        <h4
+          class="mb-4 text-xs font-semibold tracking-widest uppercase text-slate-500"
+        >
+          On This Page
+        </h4>
+        <nav class="space-y-4">
+          <a
+            class="block pl-4 text-sm font-medium border-l-2 text-primary border-primary"
+            href="#principle"
+            >1. Principle</a
+          >
+          <a
+            class="block pl-4 text-sm font-medium transition-colors border-l-2 border-transparent text-slate-500 hover:text-slate-300"
+            href="#rules"
+            >2. Rules</a
+          >
+          <a
+            class="block pl-4 text-sm font-medium transition-colors border-l-2 border-transparent text-slate-500 hover:text-slate-300"
+            href="#pattern"
+            >3. Pattern Breakdown</a
+          >
+          <a
+            class="block pl-4 text-sm font-medium transition-colors border-l-2 border-transparent text-slate-500 hover:text-slate-300"
+            href="#implementation"
+            >4. Implementation</a
+          >
+          <div class="pt-8">
+            <div
+              class="p-6 border from-primary/20 border-primary/20 rounded-xl bg-gradient-to-br to-transparent"
+            >
+              <h5 class="mb-2 text-xs font-bold text-white uppercase">
+                Need help?
+              </h5>
+              <p class="mb-4 text-xs leading-relaxed text-slate-400">
+                Join our Discord community to discuss React patterns with 20k+
+                devs.
+              </p>
+              <button
+                class="w-full py-2 text-xs font-bold text-white transition-all rounded-lg bg-primary hover:bg-primary/80"
+              >
+                Join Discord
+              </button>
+            </div>
+          </div>
+        </nav>
+      </aside>
+    </div>
+  </body>
+</html>
