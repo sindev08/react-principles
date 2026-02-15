@@ -9,6 +9,8 @@ export interface ImplTab {
   code: string;
 }
 
+export type DemoKey = "react-query" | "zustand" | "forms" | "table";
+
 export interface RecipeDetail {
   slug: string;
   title: string;
@@ -19,7 +21,7 @@ export interface RecipeDetail {
   pattern: { filename: string; code: string };
   implementation: { nextjs: ImplTab; vite: ImplTab };
   contributor: { name: string; role: string };
-  demoHref?: string;
+  demoKey?: DemoKey;
 }
 
 export const RECIPE_DETAILS: Record<string, RecipeDetail> = {
@@ -91,7 +93,6 @@ export function DashboardPage() {
       },
     },
     contributor: { name: "Alex Rivera", role: "React Specialist" },
-    demoHref: "/react-query",
   },
 
   "saas-landing-page": {
@@ -162,7 +163,6 @@ export function LandingPage() {
       },
     },
     contributor: { name: "Maria Chen", role: "Frontend Architect" },
-    demoHref: "/forms",
   },
 
   "authentication-flow": {
@@ -232,7 +232,6 @@ export function PrivateRoute() {
       },
     },
     contributor: { name: "Jordan Kim", role: "Security Engineer" },
-    demoHref: "/state",
   },
 
   "api-integration": {
@@ -298,7 +297,348 @@ export const usePosts = () =>
       },
     },
     contributor: { name: "Sam Osei", role: "API Architect" },
-    demoHref: "/react-query",
+  },
+
+  "server-state": {
+    slug: "server-state",
+    title: "Server State with React Query",
+    breadcrumbCategory: "Patterns",
+    description:
+      "Fetch, cache, and synchronize server data using TanStack Query v5. Covers pagination, search, background refetching, and loading states.",
+    principle: {
+      text: "Server state is async, shared, and can become stale. TanStack Query owns the entire lifecycle — fetching, caching, deduplication, and background revalidation. Components declare what data they need via custom hooks and stay completely free of fetch logic.",
+      tip: "Never mirror server data into useState. If it came from an API, it belongs in React Query's cache. Local state is only for UI — modals, toggles, input values.",
+    },
+    rules: [
+      { title: "Hooks own the fetching", description: "Query hooks go in hooks/queries/. Components only call the hook and render the result." },
+      { title: "Hierarchical query keys", description: "Structure keys as arrays: [\"users\", \"list\", { search, page }] for granular cache invalidation." },
+      { title: "Always set staleTime", description: "Default staleTime is 0 — every render refetches. Be explicit: 5 min for lists, 10 min for details." },
+      { title: "Handle all states", description: "Always render isLoading, isError, and empty states. Never assume data exists on first render." },
+    ],
+    pattern: {
+      filename: "hooks/queries/useUsers.ts",
+      code: `import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/query-keys';
+import { getUsers, type GetUsersParams } from '@/services/users';
+
+export function useUsers(params: GetUsersParams = {}) {
+  return useQuery({
+    queryKey: queryKeys.users.list(params),
+    queryFn: () => getUsers(params),
+    staleTime: 1000 * 60 * 5,       // 5 minutes
+    placeholderData: (prev) => prev, // no layout shift on page change
+  });
+}`,
+    },
+    implementation: {
+      nextjs: {
+        description:
+          "In Next.js App Router, prefetch data in a Server Component and hydrate the client cache via HydrationBoundary. The user sees real data on first paint — no loading spinner.",
+        filename: "app/users/page.tsx",
+        code: `import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
+import { getQueryClient } from '@/lib/get-query-client';
+import { queryKeys } from '@/lib/query-keys';
+import { getUsers } from '@/services/users';
+
+export default async function UsersPage() {
+  const qc = getQueryClient();
+  await qc.prefetchQuery({
+    queryKey: queryKeys.users.list({}),
+    queryFn: () => getUsers({}),
+  });
+  return (
+    <HydrationBoundary state={dehydrate(qc)}>
+      <UserList />
+    </HydrationBoundary>
+  );
+}`,
+      },
+      vite: {
+        description:
+          "In Vite, QueryClientProvider wraps the app. Call the hook directly inside your component — React Query handles loading and error states automatically.",
+        filename: "pages/UsersPage.tsx",
+        code: `import { useUsers } from '@/hooks/queries/useUsers';
+import { LoadingState } from '@/components/common/LoadingState';
+
+export function UsersPage() {
+  const { data, isLoading, isError } = useUsers({ page: 1, limit: 10 });
+
+  if (isLoading) return <LoadingState rows={5} />;
+  if (isError) return <p>Failed to load users.</p>;
+
+  return <UserList users={data.data} meta={data.meta} />;
+}`,
+      },
+    },
+    contributor: { name: "Alex Rivera", role: "React Specialist" },
+    demoKey: "react-query",
+  },
+
+  "client-state": {
+    slug: "client-state",
+    title: "Client State with Zustand",
+    breadcrumbCategory: "Patterns",
+    description:
+      "Manage global UI state across multiple Zustand stores. Covers store slices, selectors, actions, and a computed filter store with reset.",
+    principle: {
+      text: "Client state — UI toggles, filter state, user preferences — belongs in Zustand, not React Query. Each store owns one domain. Components read a slice of state via selectors and call actions. No prop drilling, no context boilerplate.",
+      tip: "One store per feature domain. Never put server state (API data) in Zustand — if it comes from an endpoint, it belongs in React Query.",
+    },
+    rules: [
+      { title: "One store per domain", description: "useAppStore for app-wide settings, useFilterStore for filters. Never mix concerns in a single store." },
+      { title: "Actions inside the store", description: "Mutations happen in store actions, not in component event handlers. Keeps logic close to state." },
+      { title: "Selectors over full-state", description: "Pass selector functions: useAppStore(s => s.theme) not useAppStore(). Prevents unnecessary re-renders." },
+      { title: "Reset is first-class", description: "Always define a reset() action for stores that can be cleared. Useful for logout, navigation, and testing." },
+    ],
+    pattern: {
+      filename: "stores/useFilterStore.ts",
+      code: `import { create } from 'zustand';
+import type { UserRole, UserStatus } from '@/types';
+
+interface FilterState {
+  search: string;
+  role: UserRole | null;
+  status: UserStatus | null;
+  setSearch: (search: string) => void;
+  setRole: (role: UserRole | null) => void;
+  setStatus: (status: UserStatus | null) => void;
+  reset: () => void;
+}
+
+const initialState = { search: '', role: null, status: null };
+
+export const useFilterStore = create<FilterState>((set) => ({
+  ...initialState,
+  setSearch: (search) => set({ search }),
+  setRole: (role) => set({ role }),
+  setStatus: (status) => set({ status }),
+  reset: () => set(initialState),
+}));
+
+// Computed selector — avoids inline logic in components
+export const useHasActiveFilters = () =>
+  useFilterStore((s) => s.search !== '' || s.role !== null || s.status !== null);`,
+    },
+    implementation: {
+      nextjs: {
+        description:
+          "Zustand stores are client-side only. In Next.js, use them inside Client Components marked with 'use client'. No HydrationBoundary needed — client state is not serialized.",
+        filename: "components/UserFilters.tsx",
+        code: `'use client';
+
+import { useFilterStore, useHasActiveFilters } from '@/stores/useFilterStore';
+
+export function UserFilters() {
+  const { search, role, setSearch, setRole, reset } = useFilterStore();
+  const hasFilters = useHasActiveFilters();
+
+  return (
+    <div className="flex gap-3">
+      <input value={search} onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search..." />
+      <select value={role ?? ''} onChange={(e) => setRole(e.target.value || null)}>
+        <option value="">All roles</option>
+        <option value="admin">Admin</option>
+      </select>
+      {hasFilters && <button onClick={reset}>Reset</button>}
+    </div>
+  );
+}`,
+      },
+      vite: {
+        description:
+          "In Vite, Zustand works identically — no special setup required. Import the store hook directly in any component.",
+        filename: "components/UserFilters.tsx",
+        code: `import { useFilterStore, useHasActiveFilters } from '@/stores/useFilterStore';
+
+export function UserFilters() {
+  const { search, role, setSearch, setRole, reset } = useFilterStore();
+  const hasFilters = useHasActiveFilters();
+
+  return (
+    <div className="flex gap-3">
+      <input value={search} onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search..." />
+      <select value={role ?? ''} onChange={(e) => setRole(e.target.value || null)}>
+        <option value="">All roles</option>
+        <option value="admin">Admin</option>
+      </select>
+      {hasFilters && <button onClick={reset}>Reset</button>}
+    </div>
+  );
+}`,
+      },
+    },
+    contributor: { name: "Jordan Kim", role: "Security Engineer" },
+    demoKey: "zustand",
+  },
+
+  "form-validation": {
+    slug: "form-validation",
+    title: "Form Validation with Zod",
+    breadcrumbCategory: "Patterns",
+    description:
+      "Schema-first form validation with React Hook Form and Zod. Type-safe, declarative error messages, and zero boilerplate for create and edit flows.",
+    principle: {
+      text: "The Zod schema is the single source of truth — it defines the shape, types, and error messages. React Hook Form handles registration, submission, and field state. Components never write validation logic; they display what the schema declares.",
+      tip: "Write the schema before a single input. Share schemas across forms with .pick(), .extend(), or .omit(). Keep all error messages inside the schema, not in JSX.",
+    },
+    rules: [
+      { title: "Schema before form", description: "Define the Zod schema first. Never add validation inline with register options or manual if-statements." },
+      { title: "Omit server-generated fields", description: "Use .omit({ id: true, createdAt: true }) for create forms. The schema reflects what the user provides." },
+      { title: "handleSubmit owns errors", description: "Wrap mutation calls in handleSubmit. Validation errors surface automatically without try/catch in the component." },
+      { title: "Reset after success", description: "Call reset() after a successful mutation to clear all field values and dirty state." },
+    ],
+    pattern: {
+      filename: "components/UserForm.tsx",
+      code: `import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+const createUserSchema = z.object({
+  name:   z.string().min(1, 'Name is required'),
+  email:  z.string().email('Enter a valid email address'),
+  role:   z.enum(['viewer', 'editor', 'admin']),
+  status: z.enum(['active', 'inactive']),
+});
+
+type CreateUserValues = z.infer<typeof createUserSchema>;
+
+export function UserForm() {
+  const { register, handleSubmit, reset,
+    formState: { errors, isSubmitting } } = useForm<CreateUserValues>({
+    resolver: zodResolver(createUserSchema),
+    defaultValues: { name: '', email: '', role: 'viewer', status: 'active' },
+  });
+
+  const onSubmit = async (data: CreateUserValues) => {
+    await createUser(data);
+    reset();
+  };
+
+  return <form onSubmit={handleSubmit(onSubmit)}>{/* fields */}</form>;
+}`,
+    },
+    implementation: {
+      nextjs: {
+        description:
+          "In Next.js App Router, pair the form with a Server Action for zero-client-bundle mutations. Validate with the same Zod schema on the server to prevent bypassing client validation.",
+        filename: "app/users/actions.ts",
+        code: `'use server';
+
+import { createUserSchema } from '@/lib/schemas';
+import { db } from '@/lib/db';
+
+export async function createUserAction(values: unknown) {
+  const data = createUserSchema.parse(values); // validates server-side too
+  await db.user.create({ data });
+}`,
+      },
+      vite: {
+        description:
+          "In Vite, pair the form with a React Query mutation. On success, invalidate the users list so the table refreshes automatically.",
+        filename: "hooks/mutations/useCreateUser.ts",
+        code: `import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { createUser } from '@/services/users';
+import { queryKeys } from '@/lib/query-keys';
+
+export function useCreateUser() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: createUser,
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.users.lists() });
+    },
+  });
+}`,
+      },
+    },
+    contributor: { name: "Maria Chen", role: "Frontend Architect" },
+    demoKey: "forms",
+  },
+
+  "data-tables": {
+    slug: "data-tables",
+    title: "Data Tables with TanStack Table",
+    breadcrumbCategory: "Patterns",
+    description:
+      "Headless, sortable, filterable, and paginated tables using TanStack Table v8. Full styling control with no component library lock-in.",
+    principle: {
+      text: "TanStack Table is a headless engine — it computes row models, manages sorting, filtering, and pagination state, but renders nothing. You own the markup. This separation means complete styling control without fighting a component library.",
+      tip: "Wrap column definitions in useMemo with an empty dependency array. Column definitions are stable references — recreating them on every render causes unnecessary row model recalculations.",
+    },
+    rules: [
+      { title: "Columns are stable", description: "Wrap column definitions in useMemo(() => [...], []). Redefining them each render triggers unnecessary re-sorts and re-filters." },
+      { title: "Own the render loop", description: "Use flexRender() for both headers and cells. Never manually extract cell values — let the column definition handle rendering." },
+      { title: "Server-side for large data", description: "Client-side filtering and sorting works up to ~1,000 rows. Beyond that, move pagination and filtering to the server." },
+      { title: "Global vs column filters", description: "Use globalFilter for quick full-text search. Use column-level filters for advanced filtering UI with per-field controls." },
+    ],
+    pattern: {
+      filename: "components/UserTable.tsx",
+      code: `import { useMemo, useState } from 'react';
+import {
+  useReactTable, getCoreRowModel, getSortedRowModel,
+  getFilteredRowModel, getPaginationRowModel,
+  flexRender, type ColumnDef, type SortingState,
+} from '@tanstack/react-table';
+import type { User } from '@/types';
+
+const columns: ColumnDef<User>[] = [
+  { accessorKey: 'name',   header: 'Name' },
+  { accessorKey: 'email',  header: 'Email' },
+  { accessorKey: 'role',   header: 'Role' },
+  { accessorKey: 'status', header: 'Status' },
+];
+
+export function UserTable({ data }: { data: User[] }) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = useState('');
+  const cols = useMemo(() => columns, []);
+
+  const table = useReactTable({
+    data, columns: cols,
+    state: { sorting, globalFilter },
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
+  // render table.getHeaderGroups() and table.getRowModel().rows
+}`,
+    },
+    implementation: {
+      nextjs: {
+        description:
+          "In Next.js, prefetch the initial page of data in a Server Component and pass it as initialData. The table renders immediately without a loading state.",
+        filename: "app/users/page.tsx",
+        code: `import { UserTable } from '@/components/UserTable';
+import { getUsers } from '@/services/users';
+
+export default async function UsersPage() {
+  const initialData = await getUsers({ page: 1, limit: 20 });
+  return <UserTable initialData={initialData} />;
+}`,
+      },
+      vite: {
+        description:
+          "In Vite, fetch data via a React Query hook and pass it to the table. For datasets under 1,000 rows, all filtering and sorting can stay client-side.",
+        filename: "pages/UsersPage.tsx",
+        code: `import { useUsers } from '@/hooks/queries/useUsers';
+import { UserTable } from '@/components/UserTable';
+
+export function UsersPage() {
+  const { data, isLoading } = useUsers({ limit: 100 });
+
+  if (isLoading) return <TableSkeleton />;
+
+  return <UserTable data={data?.data ?? []} />;
+}`,
+      },
+    },
+    contributor: { name: "Sam Osei", role: "API Architect" },
+    demoKey: "table",
   },
 };
 
