@@ -11,6 +11,7 @@ export interface Recipe {
 
 export const CATEGORIES = [
   "All Patterns",
+  "Patterns",
   "Dashboards",
   "Auth Flows",
   "Landing Pages",
@@ -154,5 +155,49 @@ export const RECIPES: Recipe[] = [
     gradient: "linear-gradient(135deg, #64748b 0%, #334155 100%)",
     tags: ["Pro", "TypeScript"],
     category: null,
+  },
+  {
+    id: 13,
+    slug: "server-state",
+    title: "Server State with React Query",
+    description:
+      "Fetch, cache, and synchronize server data with TanStack Query v5. Covers pagination, search, and background refetching.",
+    icon: "cloud_sync",
+    gradient: "linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%)",
+    tags: ["Standard", "React Query"],
+    category: "Patterns",
+  },
+  {
+    id: 14,
+    slug: "client-state",
+    title: "Client State with Zustand",
+    description:
+      "Global UI state with multiple Zustand stores — app store, filter store, selectors, and computed state.",
+    icon: "storage",
+    gradient: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
+    tags: ["Standard", "Zustand"],
+    category: "Patterns",
+  },
+  {
+    id: 15,
+    slug: "form-validation",
+    title: "Form Validation with Zod",
+    description:
+      "Schema-first validation with React Hook Form and Zod. Type-safe, declarative error messages, zero boilerplate.",
+    icon: "fact_check",
+    gradient: "linear-gradient(135deg, #f97316 0%, #c2410c 100%)",
+    tags: ["Standard", "Zod"],
+    category: "Patterns",
+  },
+  {
+    id: 16,
+    slug: "data-tables",
+    title: "Data Tables with TanStack",
+    description:
+      "Headless, sortable, filterable, and paginated tables using TanStack Table v8 with full styling control.",
+    icon: "table_chart",
+    gradient: "linear-gradient(135deg, #14b8a6 0%, #0f766e 100%)",
+    tags: ["Advanced", "TanStack"],
+    category: "Patterns",
   },
 ];

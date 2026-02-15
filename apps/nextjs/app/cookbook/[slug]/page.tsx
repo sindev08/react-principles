@@ -1,17 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { DocsPageLayout } from "@/components/docs";
 import { CodeBlock } from "@react-principles/shared/components";
+import { UserList } from "@/components/examples/UserList";
+import { UserForm } from "@/components/examples/UserForm";
+import { UserTable } from "@/components/examples/UserTable";
+import { useAppStore } from "@/stores/useAppStore";
+import { useFilterStore } from "@/stores/useFilterStore";
 import { getRecipeDetail } from "./detail-data";
-import type { RecipeDetail } from "./detail-data";
+import type { RecipeDetail, DemoKey } from "./detail-data";
 
-const TOC_ITEMS = [
+const BASE_TOC = [
   { label: "1. Principle", href: "#principle" },
   { label: "2. Rules", href: "#rules" },
   { label: "3. Pattern", href: "#pattern" },
   { label: "4. Implementation", href: "#implementation" },
 ];
+
+const DEMO_TOC_ITEM = { label: "5. Live Demo", href: "#demo" };
 
 export default function CookbookDetailPage({
   params,
@@ -33,24 +41,108 @@ export default function CookbookDetailPage({
           <p className="text-slate-500">
             This recipe does not exist or is not yet available.
           </p>
-          <a
+          <Link
             href="/cookbook"
             className="mt-6 text-sm font-medium text-primary hover:underline"
           >
             ← Back to Cookbook
-          </a>
+          </Link>
         </div>
       </DocsPageLayout>
     );
   }
 
+  const tocItems = detail.demoKey
+    ? [...BASE_TOC, DEMO_TOC_ITEM]
+    : BASE_TOC;
+
   return (
-    <DocsPageLayout tocItems={TOC_ITEMS}>
+    <DocsPageLayout tocItems={tocItems}>
       <DetailContent detail={detail} />
-      {detail.demoHref && <LiveDemoBanner href={detail.demoHref} />}
       <CookbookFooter />
     </DocsPageLayout>
   );
+}
+
+function ZustandDemo() {
+  const { theme, toggleTheme } = useAppStore();
+  const { search, role, status, setSearch, setRole, setStatus, reset } =
+    useFilterStore();
+
+  return (
+    <div className="grid gap-6 sm:grid-cols-2">
+      <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] p-5">
+        <h3 className="mb-4 text-sm font-bold text-slate-900 dark:text-white">
+          App Store
+        </h3>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-slate-500">Theme</span>
+            <span className="rounded bg-slate-100 dark:bg-[#1f2937] px-2 py-0.5 text-xs font-mono text-slate-700 dark:text-slate-300">
+              {theme}
+            </span>
+          </div>
+          <button
+            onClick={toggleTheme}
+            className="w-full rounded-lg bg-primary/10 px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary/20"
+          >
+            Toggle Theme
+          </button>
+        </div>
+      </div>
+      <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] p-5">
+        <h3 className="mb-4 text-sm font-bold text-slate-900 dark:text-white">
+          Filter Store
+        </h3>
+        <div className="space-y-3">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search users..."
+            className="w-full rounded-lg border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#0d1117] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+          />
+          <select
+            value={role ?? ""}
+            onChange={(e) =>
+              setRole((e.target.value || null) as "admin" | "editor" | "viewer" | null)
+            }
+            className="w-full rounded-lg border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#0d1117] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+          >
+            <option value="">All roles</option>
+            <option value="admin">Admin</option>
+            <option value="editor">Editor</option>
+            <option value="viewer">Viewer</option>
+          </select>
+          <select
+            value={status ?? ""}
+            onChange={(e) =>
+              setStatus((e.target.value || null) as "active" | "inactive" | null)
+            }
+            className="w-full rounded-lg border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#0d1117] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+          >
+            <option value="">All statuses</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+          <button
+            onClick={reset}
+            className="w-full rounded-lg border border-slate-200 dark:border-[#1f2937] px-4 py-2 text-sm font-medium text-slate-500 transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]"
+          >
+            Reset Filters
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LiveDemo({ demoKey }: { demoKey: DemoKey }) {
+  if (demoKey === "react-query") return <UserList />;
+  if (demoKey === "zustand") return <ZustandDemo />;
+  if (demoKey === "forms") return <UserForm />;
+  if (demoKey === "table") return <UserTable />;
+  return null;
 }
 
 function DetailContent({ detail }: { detail: RecipeDetail }) {
@@ -73,9 +165,9 @@ function DetailContent({ detail }: { detail: RecipeDetail }) {
     <div className="max-w-3xl">
       {/* Breadcrumb */}
       <nav className="mb-6 flex items-center gap-2 text-sm font-medium text-slate-500">
-        <a href="/cookbook" className="hover:text-primary transition-colors">
+        <Link href="/cookbook" className="hover:text-primary transition-colors">
           Cookbook
-        </a>
+        </Link>
         <span className="material-symbols-outlined text-[14px]">chevron_right</span>
         <span className="hover:text-primary transition-colors cursor-pointer">
           {detail.breadcrumbCategory}
@@ -190,8 +282,6 @@ function DetailContent({ detail }: { detail: RecipeDetail }) {
             Implementation
           </h2>
         </div>
-
-        {/* Version note */}
         <div className="flex gap-4 p-4 mb-8 border border-amber-200 dark:border-amber-900/50 rounded-lg bg-amber-50 dark:bg-amber-900/20">
           <span className="material-symbols-outlined text-amber-600">info</span>
           <div>
@@ -203,8 +293,6 @@ function DetailContent({ detail }: { detail: RecipeDetail }) {
             </p>
           </div>
         </div>
-
-        {/* Tabs */}
         <div className="mb-6 border-b border-slate-200 dark:border-[#1f2937]">
           <div className="flex gap-8">
             {(["nextjs", "vite"] as const).map((tab) => (
@@ -222,8 +310,6 @@ function DetailContent({ detail }: { detail: RecipeDetail }) {
             ))}
           </div>
         </div>
-
-        {/* Tab content */}
         <div className="space-y-6">
           <p className="leading-relaxed text-slate-600 dark:text-slate-400">
             {activeImpl.description}
@@ -233,33 +319,23 @@ function DetailContent({ detail }: { detail: RecipeDetail }) {
           </CodeBlock>
         </div>
       </section>
-    </div>
-  );
-}
 
-function LiveDemoBanner({ href }: { href: string }) {
-  return (
-    <div className="my-12 flex flex-col items-start justify-between gap-6 rounded-xl border border-primary/20 bg-primary/5 dark:bg-primary/10 p-8 sm:flex-row sm:items-center">
-      <div className="flex items-start gap-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-          <span className="material-symbols-outlined">play_circle</span>
-        </div>
-        <div>
-          <p className="font-bold text-slate-900 dark:text-white">
-            See it in action
-          </p>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Explore the interactive demo to see this pattern running live with real data.
-          </p>
-        </div>
-      </div>
-      <a
-        href={href}
-        className="flex shrink-0 items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-white shadow-sm shadow-primary/20 transition-all hover:bg-primary/90"
-      >
-        <span className="material-symbols-outlined text-[18px]">open_in_new</span>
-        View Live Demo
-      </a>
+      {/* 05 Live Demo */}
+      {detail.demoKey && (
+        <section className="mb-16" id="demo">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+              <span className="text-sm font-bold">05</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+              Live Demo
+            </h2>
+          </div>
+          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-sm">
+            <LiveDemo demoKey={detail.demoKey} />
+          </div>
+        </section>
+      )}
     </div>
   );
 }
