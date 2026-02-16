@@ -15,13 +15,11 @@ export function ThemeToggle() {
     localStorage.setItem("theme", theme);
   }, [theme]);
 
-  // Initialize from localStorage / system preference on first mount
+  // Restore saved preference on first mount. No stored value → default "dark".
   useEffect(() => {
     const stored = localStorage.getItem("theme");
     if (stored === "dark" || stored === "light") {
       useAppStore.getState().setTheme(stored);
-    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      useAppStore.getState().setTheme("dark");
     }
   }, []);
 
