@@ -21,3 +21,6 @@ export type { AccordionProps, AccordionItemProps, AccordionTriggerProps, Accordi
 
 export { AlertDialog } from "./AlertDialog";
 export type { AlertDialogProps, AlertDialogVariant, AlertDialogTriggerProps } from "./AlertDialog";
+
+export { ProgressBar } from "./ProgressBar";
+export type { ProgressBarProps } from "./ProgressBar";
