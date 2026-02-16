@@ -36,4 +36,20 @@ export const DOCS_NAV: NavGroup[] = [
       { label: "Tabs", href: "/docs/tabs" },
     ],
   },
+  {
+    title: "Cookbook",
+    items: [
+      { label: "All Recipes", href: "/cookbook" },
+      { label: "Server State", href: "/cookbook/server-state" },
+      { label: "Client State", href: "/cookbook/client-state" },
+      { label: "Form Validation", href: "/cookbook/form-validation" },
+      { label: "Data Tables", href: "/cookbook/data-tables" },
+      { label: "E-commerce Dashboard", href: "/cookbook/e-commerce-dashboard" },
+      { label: "SaaS Landing Page", href: "/cookbook/saas-landing-page" },
+      { label: "Authentication Flow", href: "/cookbook/authentication-flow" },
+      { label: "OAuth Flow", href: "/cookbook/oauth-flow" },
+      { label: "Data Visualization", href: "/cookbook/data-visualization" },
+      { label: "API Integration", href: "/cookbook/api-integration" },
+    ],
+  },
 ];
