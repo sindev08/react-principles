@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { DocsHeader, DocsSidebar, MobileNav } from "@/components/docs";
 import {
   RECIPES,
   CATEGORIES,
@@ -30,11 +29,7 @@ export function CookbookPage() {
   };
 
   return (
-    <div className="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased min-h-screen">
-      <DocsHeader />
-      <div className="mx-auto flex max-w-[1440px] px-6 lg:px-10">
-        <DocsSidebar />
-        <main className="flex-1 min-w-0 px-0 py-8 lg:px-12 lg:py-10">
+    <main className="flex-1 min-w-0 px-0 py-8 lg:px-12 lg:py-10">
           {/* Breadcrumb */}
           <nav className="mb-6 flex items-center gap-2 text-sm text-slate-500">
             <span className="hover:text-primary cursor-pointer transition-colors">
@@ -132,10 +127,7 @@ export function CookbookPage() {
               </div>
             </div>
           )}
-        </main>
-      </div>
-      <MobileNav />
-    </div>
+    </main>
   );
 }
 

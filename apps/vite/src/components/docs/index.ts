@@ -3,4 +3,5 @@ export { DocsSidebar } from "./DocsSidebar";
 export { DocsToc } from "./DocsToc";
 export { MobileNav } from "./MobileNav";
 export { DocsPageLayout } from "./DocsPageLayout";
+export { DocsShellLayout } from "./DocsShellLayout";
 export type { TocItem } from "./DocsPageLayout";

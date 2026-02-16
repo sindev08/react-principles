@@ -1,4 +1,5 @@
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import { DocsShellLayout } from "@/components/docs";
 import { HomePage } from "@/pages/HomePage";
 import { ReactQueryPage } from "@/pages/ReactQueryPage";
 import { TablePage } from "@/pages/TablePage";
@@ -23,15 +24,17 @@ import { CookbookPage } from "@/pages/CookbookPage";
 import { CookbookDetailPage } from "@/pages/CookbookDetailPage";
 
 export function AppRoutes() {
-  const location = useLocation();
   return (
-    <div key={location.pathname} className="animate-fade-in">
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/react-query" element={<ReactQueryPage />} />
-        <Route path="/table" element={<TablePage />} />
-        <Route path="/forms" element={<FormsPage />} />
-        <Route path="/state" element={<StatePage />} />
+    <Routes>
+      {/* Standalone pages (no docs shell) */}
+      <Route path="/" element={<HomePage />} />
+      <Route path="/react-query" element={<ReactQueryPage />} />
+      <Route path="/table" element={<TablePage />} />
+      <Route path="/forms" element={<FormsPage />} />
+      <Route path="/state" element={<StatePage />} />
+
+      {/* Docs shell — header + sidebar stay mounted, only content animates */}
+      <Route element={<DocsShellLayout />}>
         <Route path="/docs/introduction" element={<IntroductionPage />} />
         <Route path="/docs/forms" element={<FormsDocPage />} />
         <Route path="/docs/table" element={<TableDocPage />} />
@@ -49,7 +52,7 @@ export function AppRoutes() {
         <Route path="/docs/dark-mode" element={<DarkModePage />} />
         <Route path="/cookbook" element={<CookbookPage />} />
         <Route path="/cookbook/:slug" element={<CookbookDetailPage />} />
-      </Routes>
-    </div>
+      </Route>
+    </Routes>
   );
 }
