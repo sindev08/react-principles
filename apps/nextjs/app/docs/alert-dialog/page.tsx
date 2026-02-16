@@ -3,9 +3,8 @@
 import { useState } from "react";
 import { DocsPageLayout } from "@/components/docs";
 import { CodeBlock } from "@react-principles/shared/components";
-import { AlertDialog } from "@/components/ui/AlertDialog";
-import { Button } from "@/components/ui/Button";
-import type { AlertDialogVariant } from "@/components/ui/AlertDialog";
+import { AlertDialog, Button } from "@react-principles/shared/ui";
+import type { AlertDialogVariant } from "@react-principles/shared/ui";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

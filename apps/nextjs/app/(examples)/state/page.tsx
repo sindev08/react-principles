@@ -1,7 +1,6 @@
 "use client";
 
-import { useAppStore } from "@/stores/useAppStore";
-import { useFilterStore } from "@/stores/useFilterStore";
+import { useAppStore, useFilterStore } from "@react-principles/shared/stores";
 
 export default function StatePage() {
   const { theme, sidebarOpen, toggleTheme, toggleSidebar } = useAppStore();

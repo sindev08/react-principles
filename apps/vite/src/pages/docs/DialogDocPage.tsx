@@ -9,7 +9,7 @@ import {
   DialogContent,
   DialogFooter,
 } from "@/components/ui/Dialog";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@react-principles/shared/ui";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

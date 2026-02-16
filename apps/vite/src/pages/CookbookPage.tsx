@@ -7,7 +7,7 @@ import {
   CARDS_PER_PAGE,
   type CategoryType,
   type Recipe,
-} from "./cookbook-data";
+} from "@react-principles/shared/cookbook";
 
 export function CookbookPage() {
   const [activeCategory, setActiveCategory] = useState<CategoryType>("All Patterns");

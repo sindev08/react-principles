@@ -10,7 +10,7 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import type { User } from "@react-principles/shared/types";
-import { mockUsers } from "@/lib/mock-data";
+import { mockUsers } from "@react-principles/shared/lib";
 
 export function UserTable() {
   const [sorting, setSorting] = useState<SortingState>([]);

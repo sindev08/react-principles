@@ -8,7 +8,14 @@
     "./utils": "./src/utils/index.ts",
     "./types": "./src/types/index.ts",
     "./services": "./src/services/index.ts",
-    "./components": "./src/components/index.ts"
+    "./components": "./src/components/index.ts",
+    "./lib": "./src/lib/index.ts",
+    "./stores": "./src/stores/index.ts",
+    "./queries": "./src/queries/index.ts",
+    "./mutations": "./src/mutations/index.ts",
+    "./common": "./src/common/index.ts",
+    "./cookbook": "./src/cookbook/index.ts",
+    "./ui": "./src/ui/index.ts"
   },
   "scripts": {
     "test": "vitest run",
@@ -27,10 +34,17 @@
     "react": "^18.3.0",
     "jsdom": "^25.0.0",
     "react-dom": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"
   },
   "peerDependencies": {
-    "react": "^18.0.0"
+    "react": "^18.0.0",
+    "@tanstack/react-query": "^5.0.0",
+    "zustand": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@tanstack/react-query": { "optional": true },
+    "zustand": { "optional": true }
   }
 }

@@ -1,8 +1,6 @@
-export type {
-  User,
-  UserRole,
-  UserStatus,
-} from "@react-principles/shared/types";
+import type { UserRole, UserStatus } from "./common";
+
+export type { UserRole, UserStatus };
 
 /** Input for creating a new user (no id or createdAt). */
 export interface CreateUserInput {

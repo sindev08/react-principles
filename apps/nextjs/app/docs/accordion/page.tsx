@@ -8,8 +8,8 @@ import {
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from "@/components/ui/Accordion";
-import type { AccordionType } from "@/components/ui/Accordion";
+} from "@react-principles/shared/ui";
+import type { AccordionType } from "@react-principles/shared/ui";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

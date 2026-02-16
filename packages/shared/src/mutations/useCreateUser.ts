@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/query-keys";
-import { createUser } from "@/lib/mock-data";
-import type { CreateUserInput } from "@/types/user";
+import { queryKeys } from "../lib/query-keys";
+import { createUser } from "../lib/mock-data";
+import type { CreateUserInput } from "../types/user";
 
 export function useCreateUser() {
   const queryClient = useQueryClient();

@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { userSchema } from "@react-principles/shared/utils";
-import { useCreateUser } from "@/hooks/mutations/useCreateUser";
+import { useCreateUser } from "@react-principles/shared/mutations";
 
 /**
  * Schema for the create-user form.

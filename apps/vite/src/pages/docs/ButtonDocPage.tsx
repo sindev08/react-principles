@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { DocsPageLayout } from "@/components/docs";
 import { CodeBlock } from "@react-principles/shared/components";
-import { Button } from "@/components/ui/Button";
-import type { ButtonVariant, ButtonSize } from "@/components/ui/Button";
+import { Button } from "@react-principles/shared/ui";
+import type { ButtonVariant, ButtonSize } from "@react-principles/shared/ui";
 
 const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },

@@ -23,7 +23,7 @@ export function HeroSection() {
 
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
-            href="/react-query"
+            href="/cookbook"
             className="w-full px-8 py-4 text-lg font-bold text-white text-center transition-all rounded-lg bg-primary hover:shadow-primary/20 hover:shadow-xl sm:w-auto"
           >
             Explore Patterns

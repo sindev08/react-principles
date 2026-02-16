@@ -160,6 +160,9 @@ importers:
 
   packages/shared:
     dependencies:
+      '@tanstack/react-query':
+        specifier: ^5.0.0
+        version: 5.90.21(react@18.3.1)
       clsx:
         specifier: ^2.1.0
         version: 2.1.1
@@ -169,6 +172,9 @@ importers:
       zod:
         specifier: ^3.23.0
         version: 3.25.76
+      zustand:
+        specifier: ^5.0.0
+        version: 5.0.11(@types/react@18.3.28)(react@18.3.1)
     devDependencies:
       '@testing-library/react':
         specifier: ^16.0.0
@@ -176,6 +182,9 @@ importers:
       '@types/react':
         specifier: ^18.3.0
         version: 18.3.28
+      '@types/react-dom':
+        specifier: ^18.3.0
+        version: 18.3.7(@types/react@18.3.28)
       jsdom:
         specifier: ^25.0.0
         version: 25.0.1

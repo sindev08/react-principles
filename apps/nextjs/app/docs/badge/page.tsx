@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { DocsPageLayout } from "@/components/docs";
 import { CodeBlock } from "@react-principles/shared/components";
-import { Badge } from "@/components/ui/Badge";
-import type { BadgeVariant, BadgeSize } from "@/components/ui/Badge";
+import { Badge } from "@react-principles/shared/ui";
+import type { BadgeVariant, BadgeSize } from "@react-principles/shared/ui";
 
 const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },

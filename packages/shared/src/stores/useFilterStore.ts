@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { UserRole, UserStatus } from "@react-principles/shared/types";
+import type { UserRole, UserStatus } from "../types";
 
 interface FilterState {
   search: string;

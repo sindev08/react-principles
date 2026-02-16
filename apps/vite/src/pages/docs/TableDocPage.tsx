@@ -1,7 +1,7 @@
 import { DocsPageLayout } from "@/components/docs";
 import { UserTable } from "@/components/examples/UserTable";
 import { CodeBlock } from "@react-principles/shared/components";
-import { mockUsers } from "@/lib/mock-data";
+import { mockUsers } from "@react-principles/shared/lib";
 import type { User } from "@react-principles/shared/types";
 
 const TOC_ITEMS = [

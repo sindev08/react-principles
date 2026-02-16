@@ -1,17 +1,13 @@
 import { Link } from "react-router-dom";
 
 const RESOURCES = [
-  { label: "Documentation", href: "#" },
-  { label: "GitHub Repository", href: "#" },
-  { label: "Cookbook PDF", href: "#" },
-  { label: "Changelog", href: "#" },
+  { label: "Documentation", href: "/docs/introduction" },
+  { label: "Cookbook", href: "/cookbook" },
 ];
 
 const FRAMEWORKS = [
-  { label: "Next.js 15", href: "#" },
-  { label: "Vite", href: "#" },
-  { label: "React Native", href: "#" },
-  { label: "Remix", href: "#" },
+  { label: "Next.js 15", href: "/cookbook/server-state" },
+  { label: "Vite", href: "/cookbook/client-state" },
 ];
 
 export function Footer() {
@@ -33,20 +29,6 @@ export function Footer() {
               An open-source initiative to document and share best practices for
               modern React development.
             </p>
-            <div className="flex gap-4">
-              <a
-                href="#"
-                className="flex items-center justify-center w-10 h-10 transition-all rounded-full hover:bg-primary/10 hover:text-primary bg-slate-50 dark:bg-slate-900 dark:text-slate-400"
-              >
-                <span className="text-xl material-symbols-outlined">share</span>
-              </a>
-              <a
-                href="#"
-                className="flex items-center justify-center w-10 h-10 transition-all rounded-full hover:bg-primary/10 hover:text-primary bg-slate-50 dark:bg-slate-900 dark:text-slate-400"
-              >
-                <span className="text-xl material-symbols-outlined">rss_feed</span>
-              </a>
-            </div>
           </div>
 
           {/* Resources */}
@@ -93,17 +75,6 @@ export function Footer() {
           <p className="text-xs text-slate-400">
             © 2024 react-principles. Built for the React community.
           </p>
-          <div className="flex gap-8 text-xs font-medium text-slate-400">
-            <a href="#" className="transition-colors hover:text-slate-900 dark:hover:text-white">
-              Privacy
-            </a>
-            <a href="#" className="transition-colors hover:text-slate-900 dark:hover:text-white">
-              Terms
-            </a>
-            <a href="#" className="transition-colors hover:text-slate-900 dark:hover:text-white">
-              Code of Conduct
-            </a>
-          </div>
         </div>
       </div>
     </footer>

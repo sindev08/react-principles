@@ -1,7 +1,6 @@
-import type { User, UserRole, UserStatus } from "@react-principles/shared/types";
+import type { User, UserRole, UserStatus } from "../types";
 
-const roles: UserRole[] = ["admin", "editor", "viewer"];
-const statuses: UserStatus[] = ["active", "inactive"];
+export type { UserRole, UserStatus };
 
 export const mockUsers: User[] = [
   { id: "1", name: "Alice Johnson", email: "alice@example.com", role: "admin", status: "active", createdAt: "2024-01-15T08:30:00.000Z" },

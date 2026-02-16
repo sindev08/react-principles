@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { DocsPageLayout } from "@/components/docs";
 import { CodeBlock } from "@react-principles/shared/components";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/Tabs";
-import { Badge } from "@/components/ui/Badge";
-import type { TabsVariant } from "@/components/ui/Tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent, Badge } from "@react-principles/shared/ui";
+import type { TabsVariant } from "@react-principles/shared/ui";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
