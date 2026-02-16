@@ -32,7 +32,7 @@ export default function CookbookPage() {
   };
 
   return (
-    <div className="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased min-h-screen">
+    <div className="font-display bg-white dark:bg-[#0b0e14] text-slate-900 dark:text-[#e2e8f0] antialiased min-h-screen">
       <DocsHeader />
       <div className="mx-auto flex max-w-[1440px] px-6 lg:px-10">
         <DocsSidebar />
