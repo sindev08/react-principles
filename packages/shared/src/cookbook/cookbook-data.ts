@@ -65,7 +65,7 @@ export const RECIPES: Recipe[] = [
       "Complex data sets represented through interactive charts, heatmaps, and geographic data visualizations.",
     icon: "bar_chart",
     gradient: "linear-gradient(135deg, #fbbf24 0%, #f97316 100%)",
-    tags: ["Advanced", "D3.js"],
+    tags: ["Advanced", "Recharts"],
     category: "Data Viz",
   },
   {
@@ -81,39 +81,6 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 6,
-    slug: "component-library",
-    title: "Component Library",
-    description:
-      "A curated set of highly reusable UI components including modals, dropdowns, and complex form elements.",
-    icon: "view_quilt",
-    gradient: "linear-gradient(135deg, #94a3b8 0%, #475569 100%)",
-    tags: ["UI Kit", "Figma"],
-    category: null,
-  },
-  {
-    id: 7,
-    slug: "analytics-dashboard",
-    title: "Analytics Dashboard",
-    description:
-      "Real-time analytics with customizable widgets, KPI cards, and drill-down reports for business intelligence.",
-    icon: "analytics",
-    gradient: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)",
-    tags: ["Advanced", "React Query"],
-    category: "Dashboards",
-  },
-  {
-    id: 8,
-    slug: "product-landing-page",
-    title: "Product Landing Page",
-    description:
-      "Mobile-first product showcase with hero animations, testimonials, and CTA sections optimized for conversion.",
-    icon: "web",
-    gradient: "linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)",
-    tags: ["Standard", "Tailwind"],
-    category: "Landing Pages",
-  },
-  {
-    id: 9,
     slug: "oauth-flow",
     title: "OAuth Flow",
     description:
@@ -124,40 +91,7 @@ export const RECIPES: Recipe[] = [
     category: "Auth Flows",
   },
   {
-    id: 10,
-    slug: "chart-dashboard",
-    title: "Chart Dashboard",
-    description:
-      "Interactive dashboards with line charts, bar graphs, pie charts, and responsive grid layouts.",
-    icon: "pie_chart",
-    gradient: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
-    tags: ["Pro", "Recharts"],
-    category: "Data Viz",
-  },
-  {
-    id: 11,
-    slug: "rest-api-client",
-    title: "REST API Client",
-    description:
-      "A structured API client with interceptors, retry logic, caching, and type-safe endpoint definitions.",
-    icon: "http",
-    gradient: "linear-gradient(135deg, #ef4444 0%, #991b1b 100%)",
-    tags: ["Advanced", "Axios"],
-    category: "API Integration",
-  },
-  {
-    id: 12,
-    slug: "design-system",
-    title: "Design System",
-    description:
-      "Token-based design system with theming support, accessibility-first components, and Storybook integration.",
-    icon: "palette",
-    gradient: "linear-gradient(135deg, #64748b 0%, #334155 100%)",
-    tags: ["Pro", "TypeScript"],
-    category: null,
-  },
-  {
-    id: 13,
+    id: 7,
     slug: "server-state",
     title: "Server State with React Query",
     description:
@@ -168,7 +102,7 @@ export const RECIPES: Recipe[] = [
     category: "Patterns",
   },
   {
-    id: 14,
+    id: 8,
     slug: "client-state",
     title: "Client State with Zustand",
     description:
@@ -179,7 +113,7 @@ export const RECIPES: Recipe[] = [
     category: "Patterns",
   },
   {
-    id: 15,
+    id: 9,
     slug: "form-validation",
     title: "Form Validation with Zod",
     description:
@@ -190,7 +124,7 @@ export const RECIPES: Recipe[] = [
     category: "Patterns",
   },
   {
-    id: 16,
+    id: 10,
     slug: "data-tables",
     title: "Data Tables with TanStack",
     description:
