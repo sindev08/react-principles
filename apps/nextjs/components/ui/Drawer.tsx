@@ -1,6 +1,9 @@
+"use client";
+
 import { useEffect, useRef, HTMLAttributes, ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@react-principles/shared/utils";
+import { useAnimatedMount } from "@react-principles/shared/hooks";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -45,9 +48,9 @@ const SIZE_CLASSES: Record<DrawerSize, string> = {
   full: "w-full",
 };
 
-const SIDE_CLASSES: Record<DrawerSide, { panel: string; enter: string }> = {
-  right: { panel: "right-0 inset-y-0", enter: "translate-x-full" },
-  left: { panel: "left-0 inset-y-0", enter: "-translate-x-full" },
+const SIDE_CLASSES: Record<DrawerSide, { panel: string; hidden: string }> = {
+  right: { panel: "right-0 inset-y-0", hidden: "translate-x-full" },
+  left: { panel: "left-0 inset-y-0", hidden: "-translate-x-full" },
 };
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -96,6 +99,7 @@ export function DrawerFooter({ children, className, ...props }: DrawerFooterProp
 
 export function Drawer({ open, onClose, side = "right", size = "md", children, className }: DrawerProps) {
   const backdropRef = useRef<HTMLDivElement>(null);
+  const { mounted, visible } = useAnimatedMount(open, 300);
 
   useEffect(() => {
     if (!open) return;
@@ -113,9 +117,9 @@ export function Drawer({ open, onClose, side = "right", size = "md", children, c
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!mounted) return null;
 
-  const { panel } = SIDE_CLASSES[side];
+  const { panel, hidden } = SIDE_CLASSES[side];
 
   const drawer = (
     <div
@@ -126,7 +130,12 @@ export function Drawer({ open, onClose, side = "right", size = "md", children, c
       }}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <div
+        className={cn(
+          "absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300",
+          visible ? "opacity-100" : "opacity-0"
+        )}
+      />
 
       {/* Panel */}
       <div
@@ -137,7 +146,8 @@ export function Drawer({ open, onClose, side = "right", size = "md", children, c
           "border-slate-200 dark:border-[#1f2937]",
           side === "right" ? "border-l" : "border-r",
           "shadow-2xl shadow-black/20",
-          "translate-x-0",
+          "transition-transform duration-300 ease-in-out",
+          visible ? "translate-x-0" : hidden,
           SIZE_CLASSES[size],
           panel,
           className

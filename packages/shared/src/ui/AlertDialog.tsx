@@ -1,6 +1,7 @@
 import { useEffect, ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@react-principles/shared/utils";
+import { useAnimatedMount } from "../hooks/useAnimatedMount";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -81,6 +82,8 @@ export function AlertDialog({
   variant = "default",
   isLoading = false,
 }: AlertDialogProps) {
+  const { mounted, visible } = useAnimatedMount(open, 200);
+
   // Scroll lock only — no Escape dismiss (by design)
   useEffect(() => {
     if (!open) return;
@@ -88,19 +91,28 @@ export function AlertDialog({
     return () => { document.body.style.overflow = ""; };
   }, [open]);
 
-  if (!open) return null;
+  if (!mounted) return null;
 
   const panel = (
     // Backdrop — clicking does NOT close (intentional)
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <div
+        className={cn(
+          "absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-200",
+          visible ? "opacity-100" : "opacity-0"
+        )}
+      />
 
       <div
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="alert-title"
         aria-describedby="alert-desc"
-        className="relative w-full max-w-md rounded-2xl bg-white dark:bg-[#161b22] border border-slate-200 dark:border-[#1f2937] shadow-2xl shadow-black/20"
+        className={cn(
+          "relative w-full max-w-md rounded-2xl bg-white dark:bg-[#161b22] border border-slate-200 dark:border-[#1f2937] shadow-2xl shadow-black/20",
+          "transition-all duration-200",
+          visible ? "opacity-100 scale-100" : "opacity-0 scale-95"
+        )}
       >
         <div className="p-6">
           {/* Icon + Title */}
