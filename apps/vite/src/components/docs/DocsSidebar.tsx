@@ -25,6 +25,7 @@ export function DocsSidebar() {
     const navRect = nav.getBoundingClientRect();
     const elRect = el.getBoundingClientRect();
     setPos({ top: elRect.top - navRect.top, height: elRect.height, visible: true });
+    el.scrollIntoView({ block: "center", behavior: "smooth" });
   }, [pathname]);
 
   return (
