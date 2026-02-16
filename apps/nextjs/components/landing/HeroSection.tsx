@@ -1,9 +1,22 @@
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Badge } from "@react-principles/shared/components";
+
+const FloatingLines = dynamic(
+  () => import("@react-principles/shared/ui").then((m) => ({ default: m.FloatingLines })),
+  { ssr: false },
+);
 
 export function HeroSection() {
   return (
     <section className="relative px-6 pt-40 pb-20 overflow-hidden mesh-gradient">
+      <FloatingLines
+        linesGradient={["#4628F1", "#7c3aed", "#06b6d4"]}
+        enabledWaves={["middle", "bottom"]}
+        lineCount={[5, 10]}
+        lineDistance={[5, 3]}
+        animationSpeed={0.4}
+      />
       <div className="relative z-10 max-w-4xl mx-auto text-center">
         <Badge className="mb-6">
           <span className="text-sm material-symbols-outlined">auto_awesome</span>
