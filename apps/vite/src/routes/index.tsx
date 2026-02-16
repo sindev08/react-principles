@@ -13,7 +13,7 @@ import { CardDocPage } from "@/pages/docs/CardDocPage";
 import { CheckboxDocPage } from "@/pages/docs/CheckboxDocPage";
 import { DialogDocPage } from "@/pages/docs/DialogDocPage";
 import { InputDocPage } from "@/pages/docs/InputDocPage";
-import { ModalDocPage } from "@/pages/docs/ModalDocPage";
+import { DrawerDocPage } from "@/pages/docs/DrawerDocPage";
 import { TabsDocPage } from "@/pages/docs/TabsDocPage";
 import { AccordionDocPage } from "@/pages/docs/AccordionDocPage";
 import { AlertDialogDocPage } from "@/pages/docs/AlertDialogDocPage";
@@ -39,7 +39,7 @@ export function AppRoutes() {
       <Route path="/docs/checkbox" element={<CheckboxDocPage />} />
       <Route path="/docs/dialog" element={<DialogDocPage />} />
       <Route path="/docs/input" element={<InputDocPage />} />
-      <Route path="/docs/modal" element={<ModalDocPage />} />
+      <Route path="/docs/drawer" element={<DrawerDocPage />} />
       <Route path="/docs/tabs" element={<TabsDocPage />} />
       <Route path="/docs/accordion" element={<AccordionDocPage />} />
       <Route path="/docs/alert-dialog" element={<AlertDialogDocPage />} />
