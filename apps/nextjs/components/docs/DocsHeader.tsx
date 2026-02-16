@@ -1,8 +1,13 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ThemeToggle } from "@/components/landing/ThemeToggle";
+import { SearchDialog, type SearchItem } from "@react-principles/shared/ui";
+import { useSearchStore, useSavedStore } from "@react-principles/shared/stores";
+import { RECIPES } from "@react-principles/shared/cookbook";
+import { DOCS_NAV } from "./docs-nav";
 
 function GithubIcon() {
   return (
@@ -18,46 +23,109 @@ function navLinkClass(isActive: boolean) {
     : "text-xs font-medium text-slate-500 dark:text-slate-400 transition-colors hover:text-slate-900 dark:hover:text-white";
 }
 
+const SEARCH_INDEX: SearchItem[] = [
+  ...DOCS_NAV.flatMap((group) =>
+    group.items
+      .filter((item) => !item.soon)
+      .map((item) => ({
+        title: item.label,
+        href: item.href,
+        group: "Docs" as const,
+        section: group.title,
+      })),
+  ),
+  ...RECIPES.map((recipe) => ({
+    title: recipe.title,
+    href: `/cookbook/${recipe.slug}`,
+    description: recipe.description,
+    group: "Cookbook" as const,
+    icon: recipe.icon,
+  })),
+];
+
 export function DocsHeader() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { open, setOpen, toggle } = useSearchStore();
+  const { savedSlugs } = useSavedStore();
   const isDocsActive = pathname.startsWith("/docs");
-  const isCookbookActive = pathname === "/cookbook";
+  const isCookbookActive = pathname.startsWith("/cookbook");
+
+  // ⌘K / Ctrl+K shortcut
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        toggle();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [toggle]);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-[#1f2937] bg-white/80 dark:bg-[#0b0e14]/80 backdrop-blur-md">
-      <div className="relative mx-auto flex h-14 max-w-[1440px] items-center justify-between px-6 lg:px-10">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
-              <span className="material-symbols-outlined text-[20px]">layers</span>
-            </div>
-            <h2 className="text-base font-bold leading-tight tracking-tight text-slate-900 dark:text-white">
-              react-principles
-            </h2>
-          </Link>
-          <nav className="hidden items-center gap-6 md:flex">
-            <Link href="/" className={navLinkClass(!isDocsActive && !isCookbookActive)}>
-              Home
+    <>
+      <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-[#1f2937] bg-white/80 dark:bg-[#0b0e14]/80 backdrop-blur-md">
+        <div className="relative mx-auto flex h-14 max-w-[1440px] items-center justify-between px-6 lg:px-10">
+          <div className="flex items-center gap-8">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
+                <span className="material-symbols-outlined text-[20px]">layers</span>
+              </div>
+              <h2 className="text-base font-bold leading-tight tracking-tight text-slate-900 dark:text-white">
+                react-principles
+              </h2>
             </Link>
-            <Link href="/docs/introduction" className={navLinkClass(isDocsActive)}>
-              Docs
-            </Link>
-            <Link href="/cookbook" className={navLinkClass(isCookbookActive)}>
-              Cookbook
-            </Link>
-          </nav>
+            <nav className="hidden items-center gap-6 md:flex">
+              <Link href="/" className={navLinkClass(!isDocsActive && !isCookbookActive)}>
+                Home
+              </Link>
+              <Link href="/docs/introduction" className={navLinkClass(isDocsActive)}>
+                Docs
+              </Link>
+              <Link href="/cookbook" className={navLinkClass(isCookbookActive)}>
+                Cookbook
+              </Link>
+            </nav>
+          </div>
+          <div className="flex items-center gap-3">
+            {/* Search trigger */}
+            <button
+              onClick={toggle}
+              className="hidden items-center gap-2 rounded-lg border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] px-3 py-1.5 text-sm text-slate-400 transition-colors hover:border-primary/50 hover:text-slate-600 dark:hover:text-slate-300 sm:flex"
+            >
+              <span className="material-symbols-outlined text-[16px]">search</span>
+              <span className="text-xs">Search...</span>
+              <kbd className="ml-2 rounded border border-slate-200 dark:border-[#1f2937] px-1.5 py-0.5 text-[10px] font-medium">
+                ⌘K
+              </kbd>
+            </button>
+            <button
+              onClick={toggle}
+              className="flex items-center justify-center rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 sm:hidden"
+              aria-label="Search"
+            >
+              <span className="material-symbols-outlined text-[20px]">search</span>
+            </button>
+            <ThemeToggle />
+            <a
+              href="#"
+              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-1.5 text-[11px] font-bold text-white transition-colors hover:bg-primary/90"
+            >
+              <GithubIcon />
+              GitHub
+            </a>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-          <a
-            href="#"
-            className="flex items-center gap-2 rounded-lg bg-primary px-4 py-1.5 text-[11px] font-bold text-white transition-colors hover:bg-primary/90"
-          >
-            <GithubIcon />
-            GitHub
-          </a>
-        </div>
-      </div>
-    </header>
+      </header>
+
+      <SearchDialog
+        open={open}
+        items={SEARCH_INDEX}
+        onClose={() => setOpen(false)}
+        onNavigate={(href) => router.push(href)}
+        savedSlugs={savedSlugs}
+      />
+    </>
   );
 }

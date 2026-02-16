@@ -24,3 +24,6 @@ export type { AlertDialogProps, AlertDialogVariant, AlertDialogTriggerProps } fr
 
 export { ProgressBar } from "./ProgressBar";
 export type { ProgressBarProps } from "./ProgressBar";
+
+export { SearchDialog } from "./SearchDialog";
+export type { SearchItem } from "./SearchDialog";
