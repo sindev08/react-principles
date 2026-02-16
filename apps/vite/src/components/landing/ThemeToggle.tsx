@@ -1,27 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAppStore } from "@react-principles/shared/stores";
 
 export function ThemeToggle() {
   const { theme, toggleTheme } = useAppStore();
+  const initializedRef = useRef(false);
 
-  // Sync Zustand state → <html> class + localStorage
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
+    if (!initializedRef.current) {
+      initializedRef.current = true;
+      const stored = localStorage.getItem("theme") as "dark" | "light" | null;
+      if (stored && stored !== theme) {
+        root.classList.toggle("dark", stored === "dark");
+        useAppStore.getState().setTheme(stored);
+        return;
+      }
     }
+    root.classList.toggle("dark", theme === "dark");
     localStorage.setItem("theme", theme);
   }, [theme]);
-
-  // Restore saved preference on first mount. No stored value → default "dark".
-  useEffect(() => {
-    const stored = localStorage.getItem("theme");
-    if (stored === "dark" || stored === "light") {
-      useAppStore.getState().setTheme(stored);
-    }
-  }, []);
 
   return (
     <button
