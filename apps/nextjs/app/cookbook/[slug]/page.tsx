@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState } from "react";
 import Link from "next/link";
 import { DocsPageLayout } from "@/components/docs";
 import { CodeBlock } from "@react-principles/shared/components";
@@ -24,9 +24,10 @@ const DEMO_TOC_ITEM = { label: "5. Live Demo", href: "#demo" };
 export default function CookbookDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const detail = getRecipeDetail(params.slug);
+  const { slug } = use(params);
+  const detail = getRecipeDetail(slug);
 
   if (!detail) {
     return (
