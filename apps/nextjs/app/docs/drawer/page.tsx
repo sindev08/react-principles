@@ -4,15 +4,15 @@ import { useState } from "react";
 import { DocsPageLayout } from "@/components/docs";
 import { CodeBlock } from "@react-principles/shared/components";
 import {
-  Modal,
-  ModalHeader,
-  ModalTitle,
-  ModalDescription,
-  ModalContent,
-  ModalFooter,
-} from "@/components/ui/Modal";
+  Drawer,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerContent,
+  DrawerFooter,
+} from "@/components/ui/Drawer";
 import { Button, Badge } from "@react-principles/shared/ui";
-import type { ModalSize, ModalSide } from "@/components/ui/Modal";
+import type { DrawerSize, DrawerSide } from "@/components/ui/Drawer";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -23,34 +23,34 @@ const TOC_ITEMS = [
   { label: "Props", href: "#props" },
 ];
 
-const SIZES: ModalSize[] = ["sm", "md", "lg", "full"];
-const SIDES: ModalSide[] = ["right", "left"];
+const SIZES: DrawerSize[] = ["sm", "md", "lg", "full"];
+const SIDES: DrawerSide[] = ["right", "left"];
 
 const CODE_SNIPPET = `import {
-  Modal, ModalHeader, ModalTitle,
-  ModalDescription, ModalContent, ModalFooter,
-} from "@/components/ui/Modal";
+  Drawer, DrawerHeader, DrawerTitle,
+  DrawerDescription, DrawerContent, DrawerFooter,
+} from "@/components/ui/Drawer";
 import { Button } from "@/components/ui/Button";
 
 const [open, setOpen] = useState(false);
 
 <Button onClick={() => setOpen(true)}>Open drawer</Button>
 
-<Modal open={open} onClose={() => setOpen(false)} size="md" side="right">
-  <ModalHeader>
-    <ModalTitle>Notification settings</ModalTitle>
-    <ModalDescription>
+<Drawer open={open} onClose={() => setOpen(false)} size="md" side="right">
+  <DrawerHeader>
+    <DrawerTitle>Notification settings</DrawerTitle>
+    <DrawerDescription>
       Manage how you receive updates.
-    </ModalDescription>
-  </ModalHeader>
-  <ModalContent>
+    </DrawerDescription>
+  </DrawerHeader>
+  <DrawerContent>
     {/* scrollable body */}
-  </ModalContent>
-  <ModalFooter>
+  </DrawerContent>
+  <DrawerFooter>
     <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
     <Button variant="primary" onClick={() => setOpen(false)}>Save</Button>
-  </ModalFooter>
-</Modal>
+  </DrawerFooter>
+</Drawer>
 
 // Sizes: "sm" | "md" | "lg" | "full"
 // Sides: "right" | "left"`;
@@ -118,7 +118,7 @@ const PREVIEW_ITEMS = [
   { label: "Weekly digest", meta: "Every Monday 9am", badge: "Off" },
 ];
 
-function ThemedModalPreview({ theme }: { theme: "light" | "dark" }) {
+function ThemedDrawerPreview({ theme }: { theme: "light" | "dark" }) {
   const c = FORCED[theme];
   const dot =
     theme === "dark"
@@ -134,7 +134,6 @@ function ThemedModalPreview({ theme }: { theme: "light" | "dark" }) {
         </span>
       </div>
       <div className={`${c.wrapBg} rounded-xl overflow-hidden`}>
-        {/* Drawer panel mockup */}
         <div className={`${c.panelBg} ${c.panelBorder} w-full flex flex-col`}>
           {/* Header */}
           <div className={`px-5 pt-5 pb-4 border-b ${c.divider} relative`}>
@@ -193,12 +192,12 @@ const FILTER_ITEMS = [
   { id: "design", label: "Design", count: 7 },
 ];
 
-type ModalId = "notifications" | "filters" | "user";
+type DrawerId = "notifications" | "filters" | "user";
 
-export default function ModalDocPage() {
-  const [openModal, setOpenModal] = useState<ModalId | null>(null);
-  const [activeSize, setActiveSize] = useState<ModalSize>("md");
-  const [activeSide, setActiveSide] = useState<ModalSide>("right");
+export default function DrawerDocPage() {
+  const [openDrawer, setOpenDrawer] = useState<DrawerId | null>(null);
+  const [activeSize, setActiveSize] = useState<DrawerSize>("md");
+  const [activeSide, setActiveSide] = useState<DrawerSide>("right");
   const [activeItems, setActiveItems] = useState<Record<string, boolean>>(
     Object.fromEntries(NOTIFICATION_ITEMS.map((i) => [i.id, i.active]))
   );
@@ -223,16 +222,16 @@ export default function ModalDocPage() {
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
           <span className="hover:text-primary cursor-pointer transition-colors">Overlay</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <span className="text-slate-900 dark:text-white">Modal</span>
+          <span className="text-slate-900 dark:text-white">Drawer</span>
         </nav>
 
         {/* Header */}
         <div className="mb-12">
           <h1 className="mb-4 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">
-            Modal
+            Drawer
           </h1>
           <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-400">
-            A side drawer rendered via portal. Slides in from the left or right edge.
+            A side panel rendered via portal. Slides in from the left or right edge.
             Supports scrollable content, Escape to close, and four width sizes.
           </p>
           <div className="flex flex-wrap gap-2 mt-6">
@@ -256,8 +255,8 @@ export default function ModalDocPage() {
             Drawer panel rendered inline — forced light and dark styling for direct comparison.
           </p>
           <div className="grid gap-6 lg:grid-cols-2">
-            <ThemedModalPreview theme="light" />
-            <ThemedModalPreview theme="dark" />
+            <ThemedDrawerPreview theme="light" />
+            <ThemedDrawerPreview theme="dark" />
           </div>
         </section>
 
@@ -313,25 +312,25 @@ export default function ModalDocPage() {
 
             <p className="text-sm text-slate-500 dark:text-slate-400">Click a button to open a drawer.</p>
             <div className="flex flex-wrap gap-3">
-              <Button variant="primary" onClick={() => setOpenModal("notifications")}>
+              <Button variant="primary" onClick={() => setOpenDrawer("notifications")}>
                 Notifications
               </Button>
-              <Button variant="secondary" onClick={() => setOpenModal("filters")}>
+              <Button variant="secondary" onClick={() => setOpenDrawer("filters")}>
                 Filters
               </Button>
-              <Button variant="outline" onClick={() => setOpenModal("user")}>
+              <Button variant="outline" onClick={() => setOpenDrawer("user")}>
                 User profile
               </Button>
             </div>
           </div>
 
           {/* Notifications drawer */}
-          <Modal open={openModal === "notifications"} onClose={() => setOpenModal(null)} size={activeSize} side={activeSide}>
-            <ModalHeader>
-              <ModalTitle>Notification settings</ModalTitle>
-              <ModalDescription>Choose how and when you receive updates.</ModalDescription>
-            </ModalHeader>
-            <ModalContent>
+          <Drawer open={openDrawer === "notifications"} onClose={() => setOpenDrawer(null)} size={activeSize} side={activeSide}>
+            <DrawerHeader>
+              <DrawerTitle>Notification settings</DrawerTitle>
+              <DrawerDescription>Choose how and when you receive updates.</DrawerDescription>
+            </DrawerHeader>
+            <DrawerContent>
               <div className="space-y-3">
                 {NOTIFICATION_ITEMS.map((item) => (
                   <label key={item.id} className="flex items-center justify-between p-3 rounded-lg border border-slate-100 dark:border-[#1f2937] hover:bg-slate-50 dark:hover:bg-[#1f2937] cursor-pointer transition-colors">
@@ -350,20 +349,20 @@ export default function ModalDocPage() {
                   </label>
                 ))}
               </div>
-            </ModalContent>
-            <ModalFooter>
-              <Button variant="ghost" onClick={() => setOpenModal(null)}>Cancel</Button>
-              <Button variant="primary" onClick={() => setOpenModal(null)}>Save changes</Button>
-            </ModalFooter>
-          </Modal>
+            </DrawerContent>
+            <DrawerFooter>
+              <Button variant="ghost" onClick={() => setOpenDrawer(null)}>Cancel</Button>
+              <Button variant="primary" onClick={() => setOpenDrawer(null)}>Save changes</Button>
+            </DrawerFooter>
+          </Drawer>
 
           {/* Filters drawer */}
-          <Modal open={openModal === "filters"} onClose={() => setOpenModal(null)} size={activeSize} side={activeSide}>
-            <ModalHeader>
-              <ModalTitle>Filter issues</ModalTitle>
-              <ModalDescription>Select categories to include in your view.</ModalDescription>
-            </ModalHeader>
-            <ModalContent>
+          <Drawer open={openDrawer === "filters"} onClose={() => setOpenDrawer(null)} size={activeSize} side={activeSide}>
+            <DrawerHeader>
+              <DrawerTitle>Filter issues</DrawerTitle>
+              <DrawerDescription>Select categories to include in your view.</DrawerDescription>
+            </DrawerHeader>
+            <DrawerContent>
               <div className="space-y-2">
                 {FILTER_ITEMS.map((item) => {
                   const active = selectedFilters.has(item.id);
@@ -385,22 +384,22 @@ export default function ModalDocPage() {
                   );
                 })}
               </div>
-            </ModalContent>
-            <ModalFooter>
+            </DrawerContent>
+            <DrawerFooter>
               <Button variant="ghost" onClick={() => setSelectedFilters(new Set())}>Clear all</Button>
-              <Button variant="primary" onClick={() => setOpenModal(null)}>
+              <Button variant="primary" onClick={() => setOpenDrawer(null)}>
                 Apply ({selectedFilters.size})
               </Button>
-            </ModalFooter>
-          </Modal>
+            </DrawerFooter>
+          </Drawer>
 
           {/* User profile drawer */}
-          <Modal open={openModal === "user"} onClose={() => setOpenModal(null)} size={activeSize} side={activeSide}>
-            <ModalHeader>
-              <ModalTitle>User profile</ModalTitle>
-              <ModalDescription>View and manage account details.</ModalDescription>
-            </ModalHeader>
-            <ModalContent>
+          <Drawer open={openDrawer === "user"} onClose={() => setOpenDrawer(null)} size={activeSize} side={activeSide}>
+            <DrawerHeader>
+              <DrawerTitle>User profile</DrawerTitle>
+              <DrawerDescription>View and manage account details.</DrawerDescription>
+            </DrawerHeader>
+            <DrawerContent>
               <div className="space-y-6">
                 {/* Avatar */}
                 <div className="flex items-center gap-4">
@@ -428,12 +427,12 @@ export default function ModalDocPage() {
                   ))}
                 </div>
               </div>
-            </ModalContent>
-            <ModalFooter>
-              <Button variant="ghost" onClick={() => setOpenModal(null)}>Close</Button>
-              <Button variant="primary" onClick={() => setOpenModal(null)}>Edit profile</Button>
-            </ModalFooter>
-          </Modal>
+            </DrawerContent>
+            <DrawerFooter>
+              <Button variant="ghost" onClick={() => setOpenDrawer(null)}>Close</Button>
+              <Button variant="primary" onClick={() => setOpenDrawer(null)}>Edit profile</Button>
+            </DrawerFooter>
+          </Drawer>
         </section>
 
         {/* 03 Code Snippet */}
@@ -444,7 +443,7 @@ export default function ModalDocPage() {
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
           </div>
-          <CodeBlock filename="components/ui/Modal.tsx" copyText={CODE_SNIPPET}>
+          <CodeBlock filename="components/ui/Drawer.tsx" copyText={CODE_SNIPPET}>
             {CODE_SNIPPET}
           </CodeBlock>
         </section>
