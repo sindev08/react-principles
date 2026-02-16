@@ -27,3 +27,6 @@ export type { ProgressBarProps } from "./ProgressBar";
 
 export { SearchDialog } from "./SearchDialog";
 export type { SearchItem } from "./SearchDialog";
+
+export { FloatingLines } from "./FloatingLines";
+export type { FloatingLinesProps, WavePosition } from "./FloatingLines";
