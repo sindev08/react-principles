@@ -7,8 +7,7 @@ import { CodeBlock } from "@react-principles/shared/components";
 import { UserList } from "@/components/examples/UserList";
 import { UserForm } from "@/components/examples/UserForm";
 import { UserTable } from "@/components/examples/UserTable";
-import { useAppStore } from "@react-principles/shared/stores";
-import { useFilterStore } from "@react-principles/shared/stores";
+import { useAppStore, useFilterStore, useSavedStore } from "@react-principles/shared/stores";
 import { getRecipeDetail } from "@react-principles/shared/cookbook";
 import type { RecipeDetail, DemoKey } from "@react-principles/shared/cookbook";
 
@@ -149,7 +148,8 @@ function LiveDemo({ demoKey }: { demoKey: DemoKey }) {
 function DetailContent({ detail }: { detail: RecipeDetail }) {
   const [implTab, setImplTab] = useState<"nextjs" | "vite">("nextjs");
   const [copied, setCopied] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const { isSaved, toggleSaved } = useSavedStore();
+  const saved = isSaved(detail.slug);
 
   const handleCopyLink = () => {
     if (typeof window !== "undefined") {
@@ -196,7 +196,7 @@ function DetailContent({ detail }: { detail: RecipeDetail }) {
             {copied ? "Copied!" : "Copy Link"}
           </button>
           <button
-            onClick={() => setSaved((s) => !s)}
+            onClick={() => toggleSaved(detail.slug)}
             className={`flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-lg transition-all ${
               saved
                 ? "bg-primary text-white"
