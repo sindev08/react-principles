@@ -54,6 +54,13 @@ export function DocsToc({ items }: DocsTocProps) {
             <li key={item.href}>
               <a
                 href={item.href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const target = document.getElementById(id);
+                  if (!target) return;
+                  const top = target.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+                  window.scrollTo({ top, behavior: "smooth" });
+                }}
                 className={
                   isActive
                     ? "text-primary text-sm font-medium"
