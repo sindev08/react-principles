@@ -4,55 +4,55 @@ import { cn } from "@react-principles/shared/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export type ModalSide = "right" | "left";
-export type ModalSize = "sm" | "md" | "lg" | "full";
+export type DrawerSide = "right" | "left";
+export type DrawerSize = "sm" | "md" | "lg" | "full";
 
-export interface ModalProps {
+export interface DrawerProps {
   open: boolean;
   onClose: () => void;
-  side?: ModalSide;
-  size?: ModalSize;
+  side?: DrawerSide;
+  size?: DrawerSize;
   children: ReactNode;
   className?: string;
 }
 
-export interface ModalHeaderProps extends HTMLAttributes<HTMLDivElement> {
+export interface DrawerHeaderProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
 }
 
-export interface ModalTitleProps extends HTMLAttributes<HTMLHeadingElement> {
+export interface DrawerTitleProps extends HTMLAttributes<HTMLHeadingElement> {
   children: ReactNode;
 }
 
-export interface ModalDescriptionProps extends HTMLAttributes<HTMLParagraphElement> {
+export interface DrawerDescriptionProps extends HTMLAttributes<HTMLParagraphElement> {
   children: ReactNode;
 }
 
-export interface ModalContentProps extends HTMLAttributes<HTMLDivElement> {
+export interface DrawerContentProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
 }
 
-export interface ModalFooterProps extends HTMLAttributes<HTMLDivElement> {
+export interface DrawerFooterProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const SIZE_CLASSES: Record<ModalSize, string> = {
+const SIZE_CLASSES: Record<DrawerSize, string> = {
   sm: "w-80",
   md: "w-96",
   lg: "w-[32rem]",
   full: "w-full",
 };
 
-const SIDE_CLASSES: Record<ModalSide, { panel: string; enter: string }> = {
+const SIDE_CLASSES: Record<DrawerSide, { panel: string; enter: string }> = {
   right: { panel: "right-0 inset-y-0", enter: "translate-x-full" },
   left: { panel: "left-0 inset-y-0", enter: "-translate-x-full" },
 };
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-export function ModalHeader({ children, className, ...props }: ModalHeaderProps) {
+export function DrawerHeader({ children, className, ...props }: DrawerHeaderProps) {
   return (
     <div className={cn("px-6 pt-6 pb-4 border-b border-slate-100 dark:border-[#1f2937]", className)} {...props}>
       {children}
@@ -60,7 +60,7 @@ export function ModalHeader({ children, className, ...props }: ModalHeaderProps)
   );
 }
 
-export function ModalTitle({ children, className, ...props }: ModalTitleProps) {
+export function DrawerTitle({ children, className, ...props }: DrawerTitleProps) {
   return (
     <h2 className={cn("text-lg font-semibold text-slate-900 dark:text-white pr-8", className)} {...props}>
       {children}
@@ -68,7 +68,7 @@ export function ModalTitle({ children, className, ...props }: ModalTitleProps) {
   );
 }
 
-export function ModalDescription({ children, className, ...props }: ModalDescriptionProps) {
+export function DrawerDescription({ children, className, ...props }: DrawerDescriptionProps) {
   return (
     <p className={cn("mt-1 text-sm text-slate-500 dark:text-slate-400 leading-relaxed", className)} {...props}>
       {children}
@@ -76,7 +76,7 @@ export function ModalDescription({ children, className, ...props }: ModalDescrip
   );
 }
 
-export function ModalContent({ children, className, ...props }: ModalContentProps) {
+export function DrawerContent({ children, className, ...props }: DrawerContentProps) {
   return (
     <div className={cn("flex-1 overflow-y-auto px-6 py-4", className)} {...props}>
       {children}
@@ -84,7 +84,7 @@ export function ModalContent({ children, className, ...props }: ModalContentProp
   );
 }
 
-export function ModalFooter({ children, className, ...props }: ModalFooterProps) {
+export function DrawerFooter({ children, className, ...props }: DrawerFooterProps) {
   return (
     <div className={cn("px-6 py-4 border-t border-slate-100 dark:border-[#1f2937] flex items-center justify-end gap-3 shrink-0", className)} {...props}>
       {children}
@@ -92,9 +92,9 @@ export function ModalFooter({ children, className, ...props }: ModalFooterProps)
   );
 }
 
-// ─── Modal ────────────────────────────────────────────────────────────────────
+// ─── Drawer ───────────────────────────────────────────────────────────────────
 
-export function Modal({ open, onClose, side = "right", size = "md", children, className }: ModalProps) {
+export function Drawer({ open, onClose, side = "right", size = "md", children, className }: DrawerProps) {
   const backdropRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -115,7 +115,7 @@ export function Modal({ open, onClose, side = "right", size = "md", children, cl
 
   if (!open) return null;
 
-  const { panel, enter } = SIDE_CLASSES[side];
+  const { panel } = SIDE_CLASSES[side];
 
   const drawer = (
     <div
@@ -137,7 +137,7 @@ export function Modal({ open, onClose, side = "right", size = "md", children, cl
           "border-slate-200 dark:border-[#1f2937]",
           side === "right" ? "border-l" : "border-r",
           "shadow-2xl shadow-black/20",
-          enter,
+          "translate-x-0",
           SIZE_CLASSES[size],
           panel,
           className
@@ -147,7 +147,7 @@ export function Modal({ open, onClose, side = "right", size = "md", children, cl
         <button
           onClick={onClose}
           className="absolute right-4 top-4 z-10 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1f2937] hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-          aria-label="Close modal"
+          aria-label="Close drawer"
         >
           <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none">
             <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />

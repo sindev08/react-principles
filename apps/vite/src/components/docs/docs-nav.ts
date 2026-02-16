@@ -31,7 +31,7 @@ export const DOCS_NAV: NavGroup[] = [
       { label: "Dialog", href: "/docs/dialog" },
       { label: "Form", href: "/docs/forms" },
       { label: "Input", href: "/docs/input" },
-      { label: "Modal", href: "/docs/modal" },
+      { label: "Drawer", href: "/docs/drawer" },
       { label: "Table", href: "/docs/table" },
       { label: "Tabs", href: "/docs/tabs" },
     ],
