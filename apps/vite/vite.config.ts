@@ -14,6 +14,13 @@ export default defineConfig({
       "@react-principles/shared/types": path.resolve(sharedRoot, "types/index.ts"),
       "@react-principles/shared/services": path.resolve(sharedRoot, "services/index.ts"),
       "@react-principles/shared/components": path.resolve(sharedRoot, "components/index.ts"),
+      "@react-principles/shared/lib": path.resolve(sharedRoot, "lib/index.ts"),
+      "@react-principles/shared/stores": path.resolve(sharedRoot, "stores/index.ts"),
+      "@react-principles/shared/queries": path.resolve(sharedRoot, "queries/index.ts"),
+      "@react-principles/shared/mutations": path.resolve(sharedRoot, "mutations/index.ts"),
+      "@react-principles/shared/common": path.resolve(sharedRoot, "common/index.ts"),
+      "@react-principles/shared/cookbook": path.resolve(sharedRoot, "cookbook/index.ts"),
+      "@react-principles/shared/ui": path.resolve(sharedRoot, "ui/index.ts"),
     },
   },
 });

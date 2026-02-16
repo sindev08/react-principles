@@ -1,5 +1,4 @@
-import { useAppStore } from "@/stores/useAppStore";
-import { useFilterStore } from "@/stores/useFilterStore";
+import { useAppStore, useFilterStore } from "@react-principles/shared/stores";
 
 export function StatePage() {
   const { theme, sidebarOpen, toggleTheme, toggleSidebar } = useAppStore();

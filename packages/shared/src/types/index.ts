@@ -15,3 +15,5 @@ export type {
   WithRequired,
   Nullable,
 } from "./common";
+
+export type { CreateUserInput, UpdateUserInput } from "./user";

@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { DocsPageLayout } from "@/components/docs";
 import { CodeBlock } from "@react-principles/shared/components";
-import { Input } from "@/components/ui/Input";
-import type { InputSize, InputVariant } from "@/components/ui/Input";
+import { Input } from "@react-principles/shared/ui";
+import type { InputSize, InputVariant } from "@react-principles/shared/ui";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

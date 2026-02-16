@@ -11,8 +11,7 @@ import {
   ModalContent,
   ModalFooter,
 } from "@/components/ui/Modal";
-import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
+import { Button, Badge } from "@react-principles/shared/ui";
 import type { ModalSize, ModalSide } from "@/components/ui/Modal";
 
 // ─── Constants ────────────────────────────────────────────────────────────────

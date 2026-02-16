@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { useUsers } from "@/hooks/queries/useUsers";
-import { LoadingState } from "@/components/common/LoadingState";
-import { EmptyState } from "@/components/common/EmptyState";
-import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import { useUsers } from "@react-principles/shared/queries";
+import { LoadingState, EmptyState, ErrorBoundary } from "@react-principles/shared/common";
 
 function UserListInner() {
   const [search, setSearch] = useState("");

@@ -7,10 +7,10 @@ import { CodeBlock } from "@react-principles/shared/components";
 import { UserList } from "@/components/examples/UserList";
 import { UserForm } from "@/components/examples/UserForm";
 import { UserTable } from "@/components/examples/UserTable";
-import { useAppStore } from "@/stores/useAppStore";
-import { useFilterStore } from "@/stores/useFilterStore";
-import { getRecipeDetail } from "./detail-data";
-import type { RecipeDetail, DemoKey } from "./detail-data";
+import { useAppStore } from "@react-principles/shared/stores";
+import { useFilterStore } from "@react-principles/shared/stores";
+import { getRecipeDetail } from "@react-principles/shared/cookbook";
+import type { RecipeDetail, DemoKey } from "@react-principles/shared/cookbook";
 
 const BASE_TOC = [
   { label: "1. Principle", href: "#principle" },

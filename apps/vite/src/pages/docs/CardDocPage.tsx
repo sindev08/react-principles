@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { DocsPageLayout } from "@/components/docs";
 import { CodeBlock } from "@react-principles/shared/components";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
-import type { CardVariant } from "@/components/ui/Card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter, Button, Badge } from "@react-principles/shared/ui";
+import type { CardVariant } from "@react-principles/shared/ui";
 
 const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },

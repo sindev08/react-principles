@@ -40,6 +40,12 @@ export function Navbar() {
             Structure
           </a>
           <Link
+            to="/cookbook"
+            className="text-sm font-medium transition-colors hover:text-primary text-slate-600 dark:text-slate-400"
+          >
+            Cookbook
+          </Link>
+          <Link
             to="/docs/introduction"
             className="text-sm font-medium transition-colors hover:text-primary text-slate-600 dark:text-slate-400"
           >
@@ -49,10 +55,13 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <button className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white transition-all rounded-lg bg-primary hover:bg-primary/90">
-            <span className="text-sm material-symbols-outlined">code</span>
-            <span>GitHub</span>
-          </button>
+          <Link
+            to="/cookbook"
+            className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white transition-all rounded-lg bg-primary hover:bg-primary/90"
+          >
+            <span className="text-sm material-symbols-outlined">menu_book</span>
+            <span>Cookbook</span>
+          </Link>
         </div>
       </div>
     </header>

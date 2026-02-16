@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { DocsPageLayout } from "@/components/docs";
 import { CodeBlock } from "@react-principles/shared/components";
-import { Checkbox } from "@/components/ui/Checkbox";
-import type { CheckboxSize } from "@/components/ui/Checkbox";
+import { Checkbox } from "@react-principles/shared/ui";
+import type { CheckboxSize } from "@react-principles/shared/ui";
 
 const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },

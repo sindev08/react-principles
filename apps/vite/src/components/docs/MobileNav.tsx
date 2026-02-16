@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { useAppStore } from "@/stores/useAppStore";
+import { useAppStore } from "@react-principles/shared/stores";
 import { cn } from "@react-principles/shared/utils";
 import { DOCS_NAV } from "./docs-nav";
 
