@@ -1,6 +1,9 @@
+"use client";
+
 import { useEffect, useRef, HTMLAttributes, ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@react-principles/shared/utils";
+import { useAnimatedMount } from "@react-principles/shared/hooks";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -89,6 +92,7 @@ export function DialogFooter({ children, className, ...props }: DialogFooterProp
 
 export function Dialog({ open, onClose, size = "md", children, className }: DialogProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
+  const { mounted, visible } = useAnimatedMount(open, 200);
 
   useEffect(() => {
     if (!open) return;
@@ -106,7 +110,7 @@ export function Dialog({ open, onClose, size = "md", children, className }: Dial
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!mounted) return null;
 
   const panel = (
     <div
@@ -117,7 +121,12 @@ export function Dialog({ open, onClose, size = "md", children, className }: Dial
       }}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <div
+        className={cn(
+          "absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-200",
+          visible ? "opacity-100" : "opacity-0"
+        )}
+      />
 
       {/* Panel */}
       <div
@@ -126,7 +135,8 @@ export function Dialog({ open, onClose, size = "md", children, className }: Dial
         className={cn(
           "relative w-full rounded-2xl bg-white dark:bg-[#161b22] shadow-2xl shadow-black/20",
           "border border-slate-200 dark:border-[#1f2937]",
-          "animate-in fade-in zoom-in-95 duration-200",
+          "transition-all duration-200",
+          visible ? "opacity-100 scale-100" : "opacity-0 scale-95",
           SIZE_CLASSES[size],
           className
         )}
