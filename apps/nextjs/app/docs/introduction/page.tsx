@@ -6,9 +6,6 @@ import { CodeBlock } from "@react-principles/shared/components";
 const TOC_ITEMS = [
   { label: "Featured Component", href: "#featured" },
   { label: "Usage", href: "#usage" },
-  { label: "Installation", href: "#installation" },
-  { label: "Customization", href: "#customization" },
-  { label: "Accessibility", href: "#accessibility" },
 ];
 
 const CODE_EXAMPLE = `import { Button } from "@/components/ui/button"
@@ -103,18 +100,6 @@ export default function IntroductionPage() {
           </CodeBlock>
         </section>
 
-        {/* Installation */}
-        <section className="mb-12 border-t border-slate-200 dark:border-[#1f2937] pt-12" id="installation">
-          <h2 className="mb-4 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Installation
-          </h2>
-          <p className="mb-6 text-base text-slate-500 dark:text-[#94a3b8]">
-            The easiest way to get started is by using our CLI tool which
-            handles all the configuration for you.
-          </p>
-          <CliBlock command="npx ui-docs-cli@latest init" />
-        </section>
-
         {/* Page nav */}
         <div className="flex items-center justify-between border-t border-slate-200 dark:border-[#1f2937] pt-8">
           <a href="#" className="flex flex-col gap-1 transition-colors group">
@@ -166,25 +151,6 @@ function PaymentCard() {
           Add Payment Method
         </button>
       </div>
-    </div>
-  );
-}
-
-function CliBlock({ command }: { command: string }) {
-  return (
-    <div className="group flex items-center justify-between rounded-lg border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] p-4">
-      <code className="font-mono text-sm text-slate-900 dark:text-white">
-        {command}
-      </code>
-      <button
-        onClick={() => navigator.clipboard.writeText(command)}
-        className="transition-opacity opacity-0 text-primary group-hover:opacity-100"
-        aria-label="Copy command"
-      >
-        <span className="material-symbols-outlined text-[20px]">
-          content_copy
-        </span>
-      </button>
     </div>
   );
 }
