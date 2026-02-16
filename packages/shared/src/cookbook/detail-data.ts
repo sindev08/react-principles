@@ -640,6 +640,242 @@ export function UsersPage() {
     contributor: { name: "Sam Osei", role: "API Architect" },
     demoKey: "table",
   },
+
+  "data-visualization": {
+    slug: "data-visualization",
+    title: "Data Visualization",
+    breadcrumbCategory: "Data Viz",
+    description:
+      "Composable chart components using Recharts with responsive containers, custom tooltips, and clean data transformation patterns.",
+    principle: {
+      text: "Charts are pure functions of data. Keep transformation logic outside components — map raw API responses to the exact shape your chart library expects before they reach the JSX. This keeps components declarative and makes the data pipeline independently testable.",
+      tip: "Always wrap charts in a ResponsiveContainer from Recharts. Hard-coded pixel widths break on resize and cause layout shifts on mobile.",
+    },
+    rules: [
+      { title: "Transform Before Render", description: "Derive chart-ready data with useMemo. Never transform inside JSX or inside the chart component itself." },
+      { title: "ResponsiveContainer Always", description: "Every chart must be wrapped in <ResponsiveContainer width='100%' height={300}>. Never pass fixed pixel widths." },
+      { title: "Custom Tooltip Component", description: "Build a typed CustomTooltip component instead of using Recharts' default. Gives full styling control and type safety." },
+      { title: "Skeleton on Loading", description: "Show a pulse skeleton at the same dimensions as the chart. Avoid layout shift when data loads." },
+    ],
+    pattern: {
+      filename: "hooks/useChartData.ts",
+      code: `import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+
+type ChartPoint = { month: string; revenue: number; orders: number };
+
+export function useRevenueChart(range: string) {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['metrics', 'revenue', range],
+    queryFn: () => fetchRevenue(range),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const chartData = useMemo<ChartPoint[]>(() => {
+    if (!data) return [];
+    return data.map((d) => ({
+      month: formatMonth(d.date),
+      revenue: d.total_revenue,
+      orders: d.order_count,
+    }));
+  }, [data]);
+
+  return { chartData, isLoading, isError };
+}`,
+    },
+    implementation: {
+      nextjs: {
+        description:
+          "In Next.js App Router, import Recharts components only inside Client Components. Use dynamic import with ssr: false to prevent hydration mismatches from window-dependent chart code.",
+        filename: "components/charts/RevenueChart.tsx",
+        code: `'use client';
+
+import {
+  ResponsiveContainer, LineChart, Line,
+  XAxis, YAxis, CartesianGrid, Tooltip,
+} from 'recharts';
+import { useRevenueChart } from '@/hooks/useChartData';
+
+function CustomTooltip({ active, payload, label }: TooltipProps<number, string>) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="rounded-lg border bg-white p-3 shadow-lg text-sm">
+      <p className="font-semibold text-slate-900">{label}</p>
+      <p className="text-primary">\${payload[0]?.value?.toLocaleString()}</p>
+    </div>
+  );
+}
+
+export function RevenueChart({ range }: { range: string }) {
+  const { chartData, isLoading } = useRevenueChart(range);
+
+  if (isLoading) return <div className="h-[300px] animate-pulse rounded-xl bg-slate-100" />;
+
+  return (
+    <ResponsiveContainer width="100%" height={300}>
+      <LineChart data={chartData}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+        <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+        <YAxis tick={{ fontSize: 12 }} />
+        <Tooltip content={<CustomTooltip />} />
+        <Line type="monotone" dataKey="revenue" stroke="#4628F1" strokeWidth={2} dot={false} />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+}`,
+      },
+      vite: {
+        description:
+          "In Vite, Recharts works out of the box with no SSR concerns. The same pattern applies — transform data with useMemo, wrap in ResponsiveContainer.",
+        filename: "components/charts/RevenueChart.tsx",
+        code: `import {
+  ResponsiveContainer, LineChart, Line,
+  XAxis, YAxis, CartesianGrid, Tooltip,
+} from 'recharts';
+import { useRevenueChart } from '@/hooks/useChartData';
+
+export function RevenueChart({ range }: { range: string }) {
+  const { chartData, isLoading } = useRevenueChart(range);
+
+  if (isLoading) return <div className="h-[300px] animate-pulse rounded-xl bg-slate-100" />;
+
+  return (
+    <ResponsiveContainer width="100%" height={300}>
+      <LineChart data={chartData}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+        <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+        <YAxis tick={{ fontSize: 12 }} />
+        <Tooltip />
+        <Line type="monotone" dataKey="revenue" stroke="#4628F1" strokeWidth={2} dot={false} />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+}`,
+      },
+    },
+    contributor: { name: "Mia Chen", role: "Data Visualization Engineer" },
+  },
+
+  "oauth-flow": {
+    slug: "oauth-flow",
+    title: "OAuth Flow",
+    breadcrumbCategory: "Auth Flows",
+    description:
+      "Social login with Next-Auth v5 covering the full OAuth 2.0 cycle: provider setup, callback handling, session management, and protected routes.",
+    principle: {
+      text: "OAuth delegates authentication to a trusted provider — you never handle passwords. The key is understanding the two-step flow: (1) redirect user to provider, (2) exchange the authorization code for tokens on your server. Never exchange codes on the client.",
+      tip: "Store the minimal session payload on the JWT — just userId and role. Fetch full user data from your DB on demand. Bloated JWTs slow down every request.",
+    },
+    rules: [
+      { title: "Server-Side Code Exchange", description: "The OAuth code-for-token exchange must happen on the server. Never expose your client_secret to the browser." },
+      { title: "Minimal JWT Payload", description: "Only store userId and role in the JWT. Everything else (name, avatar, permissions) should be fetched from your DB when needed." },
+      { title: "Protect Routes at Middleware Level", description: "Use Next.js middleware to check session before the page renders. Avoids flash of unauthenticated content." },
+      { title: "Handle Token Refresh", description: "Implement silent refresh: detect expiry in the JWT callback and call the provider's token endpoint to get a new access token." },
+    ],
+    pattern: {
+      filename: "auth.ts",
+      code: `import NextAuth from 'next-auth';
+import GitHub from 'next-auth/providers/github';
+import Google from 'next-auth/providers/google';
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  providers: [
+    GitHub({
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+    }),
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+  ],
+  callbacks: {
+    jwt({ token, account, profile }) {
+      // Persist minimal data to JWT on first sign-in
+      if (account) {
+        token.userId = profile?.sub;
+        token.provider = account.provider;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      session.user.id = token.userId as string;
+      return session;
+    },
+  },
+});`,
+    },
+    implementation: {
+      nextjs: {
+        description:
+          "Next-Auth v5 integrates natively with App Router. Expose the handlers at a catch-all route, use the auth() helper in Server Components, and protect pages via middleware.",
+        filename: "middleware.ts",
+        code: `import { auth } from '@/auth';
+import { NextResponse } from 'next/server';
+
+export default auth((req) => {
+  const isAuthenticated = !!req.auth;
+  const isProtected = req.nextUrl.pathname.startsWith('/dashboard');
+
+  if (isProtected && !isAuthenticated) {
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
+});
+
+export const config = {
+  matcher: ['/dashboard/:path*', '/settings/:path*'],
+};
+
+// app/api/auth/[...nextauth]/route.ts
+import { handlers } from '@/auth';
+export const { GET, POST } = handlers;
+
+// app/dashboard/page.tsx (Server Component)
+import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
+
+export default async function DashboardPage() {
+  const session = await auth();
+  if (!session) redirect('/login');
+  return <Dashboard user={session.user} />;
+}`,
+      },
+      vite: {
+        description:
+          "In a Vite SPA, OAuth requires a backend callback endpoint. Use a lightweight Express/Hono server to handle the code exchange, then redirect back to the frontend with a session cookie.",
+        filename: "server/auth.ts",
+        code: `// Hono backend — handles OAuth callback
+import { Hono } from 'hono';
+import { setCookie } from 'hono/cookie';
+
+const app = new Hono();
+
+app.get('/auth/callback/github', async (c) => {
+  const code = c.req.query('code');
+  if (!code) return c.redirect('/login?error=missing_code');
+
+  // Exchange code for access token (server-side only)
+  const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({
+      client_id: process.env.GITHUB_CLIENT_ID,
+      client_secret: process.env.GITHUB_CLIENT_SECRET,
+      code,
+    }),
+  });
+  const { access_token } = await tokenRes.json();
+
+  // Create session and set cookie
+  const sessionToken = await createSession(access_token);
+  setCookie(c, 'session', sessionToken, { httpOnly: true, sameSite: 'Lax' });
+
+  return c.redirect('/dashboard');
+});`,
+      },
+    },
+    contributor: { name: "Jordan Kim", role: "Auth & Security Lead" },
+  },
 };
 
 export function getRecipeDetail(slug: string): RecipeDetail | null {
