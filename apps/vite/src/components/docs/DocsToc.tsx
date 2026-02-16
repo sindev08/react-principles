@@ -41,7 +41,7 @@ export function DocsToc({ items }: DocsTocProps) {
 
   return (
     <aside className="sticky top-14 hidden h-[calc(100vh-3.5rem)] w-60 shrink-0 py-12 pl-6 xl:block">
-      <h4 className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-900 dark:text-slate-300">
+      <h4 className="mb-4 text-xs font-bold tracking-widest uppercase text-slate-900 dark:text-slate-300">
         On This Page
       </h4>
       <ul className="flex flex-col gap-3">
@@ -54,8 +54,8 @@ export function DocsToc({ items }: DocsTocProps) {
                 href={item.href}
                 className={
                   isActive
-                    ? "text-sm font-medium text-primary"
-                    : "text-sm font-medium text-slate-500 dark:text-slate-400 transition-colors hover:text-slate-900 dark:hover:text-white"
+                    ? "text-primary text-sm font-medium"
+                    : "text-sm font-medium text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                 }
               >
                 {item.label}
@@ -64,7 +64,7 @@ export function DocsToc({ items }: DocsTocProps) {
           );
         })}
       </ul>
-      <div className="mt-8 border-t border-slate-200 dark:border-[#1f2937] pt-8">
+      {/* <div className="mt-8 border-t border-slate-200 dark:border-[#1f2937] pt-8">
         <p className="text-xs text-slate-400">Help us improve this page.</p>
         <a
           href="#"
@@ -73,7 +73,7 @@ export function DocsToc({ items }: DocsTocProps) {
           <span className="material-symbols-outlined text-[14px]">edit</span>
           Edit this page on GitHub
         </a>
-      </div>
+      </div> */}
     </aside>
   );
 }
