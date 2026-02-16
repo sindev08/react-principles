@@ -12,7 +12,7 @@ interface AppState {
 }
 
 export const useAppStore = create<AppState>((set) => ({
-  theme: "light",
+  theme: "dark",
   sidebarOpen: true,
   setTheme: (theme) => set({ theme }),
   toggleTheme: () =>
