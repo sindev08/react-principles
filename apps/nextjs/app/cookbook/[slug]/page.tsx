@@ -354,7 +354,7 @@ function CookbookFooter() {
             </span>
           </div>
           <p className="text-sm text-slate-500">
-            Helping developers build robust React applications since 2024.
+            Helping developers build robust React applications since 2025.
           </p>
         </div>
         <div className="flex gap-12">
@@ -385,7 +385,7 @@ function CookbookFooter() {
         </div>
       </div>
       <div className="pt-8 mt-12 text-xs text-center border-t border-slate-100 dark:border-[#1f2937] text-slate-400">
-        © 2024 React Patterns Cookbook. Built with ❤️ for the community.
+        © 2025 React Patterns Cookbook. Built with ❤️ for the community.
       </div>
     </footer>
   );
