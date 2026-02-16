@@ -141,7 +141,11 @@ export function TabsContent({ value, children, className, ...props }: TabsConten
   if (active !== value) return null;
 
   return (
-    <div role="tabpanel" className={cn("mt-4", className)} {...props}>
+    <div
+      role="tabpanel"
+      className={cn("mt-4 animate-fade-in", className)}
+      {...props}
+    >
       {children}
     </div>
   );
