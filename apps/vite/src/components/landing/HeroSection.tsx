@@ -55,7 +55,7 @@ export function HeroSection() {
           <div className="w-3 h-3 bg-green-400 rounded-full dark:bg-green-500/50" />
           <div className="ml-4 flex items-center gap-2 rounded border border-slate-200 bg-white px-3 py-1 font-mono text-[10px] text-slate-400 dark:border-white/5 dark:bg-slate-900 dark:text-slate-500">
             <span className="text-xs material-symbols-outlined">lock</span>
-            react-principles.dev/patterns/compound-components
+            react-principles.sindev.my.id/patterns/compound-components
           </div>
         </div>
         <div className="p-8 bg-white aspect-video dark:bg-slate-900">
