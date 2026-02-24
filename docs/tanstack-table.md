@@ -2,19 +2,19 @@
 
 ## Principle
 
-Kenapa TanStack Table dan bukan table library lain yang "batteries included"? Karena TanStack Table itu **headless** — dia cuma logic (sorting, filtering, pagination, selection), tanpa UI. Ini berarti kita 100% control rendering, styling pakai Tailwind kita sendiri, dan ga perlu fight library's CSS. Trade-off-nya: setup awal lebih verbose. Tapi long-term, flexibility-nya worth it — kita ga akan pernah stuck karena library ga support use case tertentu.
+Why TanStack Table and not another "batteries included" table library? Because TanStack Table is **headless** — it's only logic (sorting, filtering, pagination, selection), without UI. This means we have 100% control over rendering, we style with our own Tailwind, and we don't have to fight the library's CSS. The trade-off: initial setup is more verbose. But long-term, the flexibility is worth it — we'll never be stuck because a library doesn't support a specific use case.
 
-Column definitions sebagai data (bukan JSX) itu powerful karena: bisa di-compose, di-generate, di-filter, dan di-type. Satu `ColumnDef<User>[]` bisa serve sorting, filtering, rendering sekaligus — single source of truth untuk table structure.
+Column definitions as data (not JSX) is powerful because: they can be composed, generated, filtered, and typed. A single `ColumnDef<User>[]` can serve sorting, filtering, and rendering all at once — a single source of truth for table structure.
 
 ## Rules
 
-- Column definitions harus typed: `ColumnDef<EntityType>[]`
-- Column defs di-wrap `useMemo` — jangan buat array baru setiap render
-- Gunakan `accessorKey` (string) untuk simple access, `accessorFn` untuk computed columns
-- Cell renderers harus lightweight — no heavy computation in render
-- Sorting, filtering, pagination state di-manage via React state + TanStack callbacks
-- Table component harus reusable — logic di hook/parent, rendering di component
-- Pagination controls di luar `<table>` element
+- Column definitions must be typed: `ColumnDef<EntityType>[]`
+- Column defs are wrapped in `useMemo` — don't create a new array on every render
+- Use `accessorKey` (string) for simple access, `accessorFn` for computed columns
+- Cell renderers must be lightweight — no heavy computation in render
+- Sorting, filtering, pagination state managed via React state + TanStack callbacks
+- Table component must be reusable — logic in hook/parent, rendering in component
+- Pagination controls outside the `<table>` element
 
 ## Pattern
 
@@ -51,7 +51,7 @@ flexRender(cell.column.columnDef.cell, cell.getContext())
 
 ### Complete Table Component
 
-Dari `apps/nextjs/components/examples/UserTable.tsx`:
+From `apps/nextjs/components/examples/UserTable.tsx`:
 
 ```tsx
 "use client";
@@ -300,25 +300,25 @@ const selectedRows = table.getSelectedRowModel().rows.map((r) => r.original);
 
 ### Next.js
 
-- Table component harus `"use client"` karena pakai useState dan event handlers
-- Data bisa di-pass dari Server Component parent ke Client Component table
+- Table component must be `"use client"` because it uses useState and event handlers
+- Data can be passed from a Server Component parent to a Client Component table
 
 ### Vite
 
-- Tidak ada perbedaan — table works out of the box
+- No difference — table works out of the box
 
 ## Common Mistakes
 
-- **Column defs tanpa useMemo** — `const columns = [...]` di component body creates new array setiap render, triggering table re-initialization. Selalu wrap di `useMemo`.
-- **Heavy computation di cell renderer** — Cell renderers dipanggil untuk setiap visible cell setiap render. Keep them lightweight.
-- **Lupa `id` di computed columns** — Kalau pakai `accessorFn` tanpa `id`, TanStack Table ga bisa identify column. Selalu kasih `id`.
-- **Mixing server-side dan client-side pagination** — Kalau data dari API sudah paginated, jangan pakai `getPaginationRowModel()`. Handle pagination via query params.
-- **Global filter di semua columns** — Default global filter checks semua columns. Untuk performance, specify `filterFn` atau `enableGlobalFilter: false` di columns yang ga perlu.
-- **Tidak handle empty state** — `table.getRowModel().rows.length === 0` harus di-handle dengan empty state UI, bukan blank table.
+- **Column defs without useMemo** — `const columns = [...]` in a component body creates a new array on every render, triggering table re-initialization. Always wrap in `useMemo`.
+- **Heavy computation in cell renderers** — Cell renderers are called for every visible cell on every render. Keep them lightweight.
+- **Forgetting `id` on computed columns** — When using `accessorFn` without `id`, TanStack Table can't identify the column. Always provide an `id`.
+- **Mixing server-side and client-side pagination** — If data from the API is already paginated, don't use `getPaginationRowModel()`. Handle pagination via query params.
+- **Global filter on all columns** — The default global filter checks all columns. For performance, specify `filterFn` or `enableGlobalFilter: false` on columns that don't need it.
+- **Not handling empty state** — `table.getRowModel().rows.length === 0` must be handled with an empty state UI, not a blank table.
 
 ## Related
 
-- [Component Patterns](./component-patterns.md) — Table sebagai composed component
-- [React Query](./react-query.md) — Data fetching untuk table data
-- [Styling](./styling.md) — Tailwind patterns untuk table styling
+- [Component Patterns](./component-patterns.md) — Table as a composed component
+- [React Query](./react-query.md) — Data fetching for table data
+- [Styling](./styling.md) — Tailwind patterns for table styling
 - [TypeScript](./typescript.md) — Generic ColumnDef typing

@@ -2,22 +2,22 @@
 
 ## Principle
 
-Kenapa schema-first? Karena form validation itu **data problem, bukan UI problem**. Ketika schema (Zod) jadi single source of truth, validation rules, types, dan error messages semua defined di satu tempat. Ga ada lagi mismatch antara frontend validation dan type definition — `z.infer<typeof schema>` otomatis generate type dari schema.
+Why schema-first? Because form validation is a **data problem, not a UI problem**. When the schema (Zod) is the single source of truth, validation rules, types, and error messages are all defined in one place. No more mismatch between frontend validation and type definitions — `z.infer<typeof schema>` automatically generates types from the schema.
 
-React Hook Form dipilih karena **uncontrolled by default** — artinya form input ga trigger re-render setiap keystroke. Ini critical untuk form besar dengan banyak fields. Controlled forms (useState per field) bisa bikin 50+ re-renders per second di form kompleks. RHF hanya re-render saat submit atau error state change.
+React Hook Form is chosen because it is **uncontrolled by default** — meaning form inputs don't trigger a re-render on every keystroke. This is critical for large forms with many fields. Controlled forms (useState per field) can cause 50+ re-renders per second in complex forms. RHF only re-renders on submit or error state change.
 
-Zod + React Hook Form via `@hookform/resolvers` itu integration yang seamless: define schema, infer type, pass resolver, done. Satu schema = satu form. Reuse via `.pick()`, `.omit()`, `.extend()`.
+Zod + React Hook Form via `@hookform/resolvers` is a seamless integration: define the schema, infer the type, pass the resolver, done. One schema = one form. Reuse via `.pick()`, `.omit()`, `.extend()`.
 
 ## Rules
 
-- Schema-first: define Zod schema **sebelum** form component
-- 1 schema = 1 form (kalau form berbeda, derive schema via pick/omit/extend)
-- Error messages di Zod schema, bukan di JSX
-- Pakai `zodResolver` dari `@hookform/resolvers/zod`
-- Type form values: `z.infer<typeof schema>` — jangan define type manual
-- Default values harus match schema shape
-- Handle submit errors via mutation error state, bukan manual try/catch di JSX
-- Reusable schemas di `packages/shared/src/utils/validators.ts`
+- Schema-first: define the Zod schema **before** the form component
+- 1 schema = 1 form (if forms differ, derive schemas via pick/omit/extend)
+- Error messages in the Zod schema, not in JSX
+- Use `zodResolver` from `@hookform/resolvers/zod`
+- Type form values: `z.infer<typeof schema>` — don't define types manually
+- Default values must match the schema shape
+- Handle submit errors via mutation error state, not manual try/catch in JSX
+- Reusable schemas in `packages/shared/src/utils/validators.ts`
 
 ## Pattern
 
@@ -53,7 +53,7 @@ const onSubmit = (data: FormValues) => { ... };
 
 ### Reusable Schemas
 
-Dari `packages/shared/src/utils/validators.ts`:
+From `packages/shared/src/utils/validators.ts`:
 
 ```ts
 import { z } from "zod";
@@ -131,7 +131,7 @@ const registerSchema = loginSchema
 
 ### Complete Form Component
 
-Dari `apps/nextjs/components/examples/UserForm.tsx`:
+From `apps/nextjs/components/examples/UserForm.tsx`:
 
 ```tsx
 "use client";
@@ -257,26 +257,26 @@ function DynamicForm() {
 
 ### Next.js
 
-- Form components harus `"use client"` karena pakai hooks dan event handlers
-- Server Actions bisa dipakai sebagai alternative submit handler, tapi form validation tetap client-side via Zod + RHF
+- Form components must be `"use client"` because they use hooks and event handlers
+- Server Actions can be used as an alternative submit handler, but form validation remains client-side via Zod + RHF
 
 ### Vite
 
-- Tidak ada perbedaan — form works identically
+- No difference — forms work identically
 
 ## Common Mistakes
 
-- **Validation di JSX** — `{value.length < 3 && <span>Too short</span>}` — validasi harus di schema. JSX cuma render `errors.field.message`.
-- **Manual type instead of infer** — `interface FormValues { name: string; ... }` yang terpisah dari schema. Pakai `z.infer<typeof schema>` supaya selalu in sync.
-- **Controlled inputs tanpa perlu** — `<input value={...} onChange={...}>` instead of `{...register("field")}`. RHF uncontrolled by default = better performance.
-- **Lupa default values** — Form tanpa defaultValues bisa cause uncontrolled-to-controlled warnings dan unexpected behavior.
-- **Schema duplication** — Define user schema di form file padahal sudah ada di shared validators. Import dan derive (`omit`, `pick`, `extend`).
-- **Error handling di submit** — `try { mutate() } catch (e) { setError(e) }` — pakai `mutateAsync` + mutation error state, bukan manual error state.
-- **Nested form tanpa Controller** — Complex fields (date picker, rich text) butuh `Controller` dari RHF, bukan `register`.
+- **Validation in JSX** — `{value.length < 3 && <span>Too short</span>}` — validation belongs in the schema. JSX only renders `errors.field.message`.
+- **Manual type instead of infer** — `interface FormValues { name: string; ... }` defined separately from the schema. Use `z.infer<typeof schema>` to always stay in sync.
+- **Controlled inputs without need** — `<input value={...} onChange={...}>` instead of `{...register("field")}`. RHF is uncontrolled by default = better performance.
+- **Forgetting default values** — A form without `defaultValues` can cause uncontrolled-to-controlled warnings and unexpected behavior.
+- **Schema duplication** — Defining a user schema in the form file even though one already exists in shared validators. Import and derive (`omit`, `pick`, `extend`).
+- **Error handling in submit** — `try { mutate() } catch (e) { setError(e) }` — use `mutateAsync` + mutation error state, not manual error state.
+- **Nested form without Controller** — Complex fields (date picker, rich text) need `Controller` from RHF, not `register`.
 
 ## Related
 
-- [TypeScript](./typescript.md) — Zod infer untuk type generation
-- [React Query](./react-query.md) — Mutation hooks untuk form submission
-- [Services](./services.md) — API types yang harus match form schema
+- [TypeScript](./typescript.md) — Zod infer for type generation
+- [React Query](./react-query.md) — Mutation hooks for form submission
+- [Services](./services.md) — API types that must match the form schema
 - [Component Patterns](./component-patterns.md) — Form component anatomy

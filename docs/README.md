@@ -1,6 +1,6 @@
 # React Principles — Pattern Documentation
 
-Dokumentasi pattern dan konvensi yang dipakai di monorepo ini. Setiap doc menjelaskan **WHY** (principle), **WHAT** (rules & pattern), dan **HOW** (implementation) — supaya keputusan arsitektur bisa dipahami dan direproduksi oleh siapa saja di tim.
+Pattern and convention documentation used in this monorepo. Each doc explains **WHY** (principle), **WHAT** (rules & pattern), and **HOW** (implementation) — so that architectural decisions can be understood and reproduced by anyone on the team.
 
 ## Tech Stack
 
@@ -19,7 +19,7 @@ Dokumentasi pattern dan konvensi yang dipakai di monorepo ini. Setiap doc menjel
 
 | # | Doc | Description |
 |---|-----|-------------|
-| 1 | [Component Patterns](./component-patterns.md) | Anatomi component, composition, compound components, kapan split. |
+| 1 | [Component Patterns](./component-patterns.md) | Component anatomy, composition, compound components, when to split. |
 | 2 | [Hooks](./hooks.md) | Custom hook conventions, naming, extraction rules, shared hooks. |
 | 3 | [TypeScript](./typescript.md) | Strict mode patterns, interface vs type, discriminated unions, generics. |
 | 4 | [React Query](./react-query.md) | Query key factory, cache config, mutations, optimistic updates, invalidation. |
@@ -54,13 +54,13 @@ react-principles/
 
 ## How to Read These Docs
 
-Setiap doc mengikuti format yang sama:
+Each doc follows the same format:
 
-1. **Principle** — Kenapa pattern ini dipilih. Bagian ini timeless.
-2. **Rules** — Aturan yang harus diikuti. Actionable, bisa di-review di PR.
-3. **Pattern** — Abstract pattern tanpa framework-specific detail.
-4. **Implementation** — Actual code dengan version notes.
-5. **Common Mistakes** — Anti-patterns yang sering kejadian.
-6. **Related** — Cross-reference ke doc lain.
+1. **Principle** — Why this pattern was chosen. This section is timeless.
+2. **Rules** — Rules that must be followed. Actionable, reviewable in a PR.
+3. **Pattern** — Abstract pattern without framework-specific detail.
+4. **Implementation** — Actual code with version notes.
+5. **Common Mistakes** — Anti-patterns that frequently occur.
+6. **Related** — Cross-references to other docs.
 
-> Version notes ada di setiap Implementation section. Kalau library update dan pattern berubah, update section itu — bukan Principle atau Rules.
+> Version notes are in every Implementation section. If a library updates and the pattern changes, update that section — not the Principle or Rules.

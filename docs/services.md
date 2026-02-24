@@ -2,21 +2,21 @@
 
 ## Principle
 
-Kenapa butuh service layer terpisah? Karena **API calls seharusnya tidak scattered di components atau hooks**. Service layer itu boundary antara aplikasi kita dan external APIs. Kalau endpoint berubah, cuma satu file yang perlu di-update — bukan hunt di 20 component. Kalau auth token logic berubah, cuma satu interceptor.
+Why do we need a separate service layer? Because **API calls should not be scattered across components or hooks**. The service layer is the boundary between our application and external APIs. If an endpoint changes, only one file needs to be updated — not a hunt across 20 components. If auth token logic changes, only one interceptor.
 
-Factory pattern (`createApiClient`) dipilih supaya client bisa di-configure per environment (baseUrl, headers, auth), tapi semua instance punya behavior yang konsisten: error handling, JSON parsing, query param building. Ini juga bikin testing gampang — inject mock client tanpa ubah consumer code.
+The factory pattern (`createApiClient`) is chosen so the client can be configured per environment (baseUrl, headers, auth), but all instances have consistent behavior: error handling, JSON parsing, query param building. This also makes testing easy — inject a mock client without changing consumer code.
 
-Endpoint constants (`ENDPOINTS`) bukan over-engineering — ini **typo prevention** dan **discoverability**. Hardcoded string `/users/${id}` di 5 tempat berarti 5 tempat yang bisa typo. Centralized constant berarti autocomplete, refactor-safe, dan gampang di-search.
+Endpoint constants (`ENDPOINTS`) are not over-engineering — they provide **typo prevention** and **discoverability**. A hardcoded string `/users/${id}` in 5 places means 5 places that can have typos. A centralized constant means autocomplete, refactor-safe, and easy to search.
 
 ## Rules
 
-- API client di `packages/shared/src/services/api-client.ts` — shared across apps
-- Endpoints di `packages/shared/src/services/endpoints.ts` — centralized constants
-- Never hardcode API paths di components atau hooks — selalu pakai `ENDPOINTS`
-- Request/response types di `packages/shared/src/types/api.ts`
-- Error handling centralized di client, bukan per-call
-- Auth token injection via `getAuthToken` callback — bukan manual header per request
-- Query params auto-filtered: `undefined` values di-skip
+- API client in `packages/shared/src/services/api-client.ts` — shared across apps
+- Endpoints in `packages/shared/src/services/endpoints.ts` — centralized constants
+- Never hardcode API paths in components or hooks — always use `ENDPOINTS`
+- Request/response types in `packages/shared/src/types/api.ts`
+- Error handling centralized in the client, not per-call
+- Auth token injection via `getAuthToken` callback — not manual headers per request
+- Query params auto-filtered: `undefined` values are skipped
 
 ## Pattern
 
@@ -53,7 +53,7 @@ const user = await api.post<ApiResponse<User>>(ENDPOINTS.users.create, {
 
 ### API Client
 
-Dari `packages/shared/src/services/api-client.ts`:
+From `packages/shared/src/services/api-client.ts`:
 
 ```ts
 import type { ApiError, ApiResponse } from "../types/api";
@@ -163,7 +163,7 @@ export type ApiClient = ReturnType<typeof createApiClient>;
 
 ### Endpoint Constants
 
-Dari `packages/shared/src/services/endpoints.ts`:
+From `packages/shared/src/services/endpoints.ts`:
 
 ```ts
 export const ENDPOINTS = {
@@ -192,13 +192,13 @@ export const ENDPOINTS = {
 ```
 
 Key points:
-- `as const` supaya TypeScript preserve literal types (bukan widened ke `string`)
-- Dynamic paths pakai functions: `detail: (id: string) => ...`
+- `as const` so TypeScript preserves literal types (not widened to `string`)
+- Dynamic paths use functions: `detail: (id: string) => ...`
 - Grouped by domain: `auth`, `users`, `products`
 
 ### Response Types
 
-Dari `packages/shared/src/types/api.ts`:
+From `packages/shared/src/types/api.ts`:
 
 ```ts
 // Success wrapper
@@ -296,27 +296,27 @@ const api = createApiClient({
 
 ### Next.js
 
-- `process.env.NEXT_PUBLIC_API_URL` untuk client-side API URL
-- Server-side API calls bisa pakai `process.env.API_URL` (internal network URL)
+- `process.env.NEXT_PUBLIC_API_URL` for client-side API URL
+- Server-side API calls can use `process.env.API_URL` (internal network URL)
 
 ### Vite
 
-- `import.meta.env.VITE_API_URL` untuk API URL (Vite env convention)
-- Semua API calls client-side
+- `import.meta.env.VITE_API_URL` for API URL (Vite env convention)
+- All API calls are client-side
 
 ## Common Mistakes
 
-- **Hardcode URL di component** — `fetch("http://localhost:3001/users")` scattered everywhere. Pakai ENDPOINTS + configured client.
-- **Auth token per-request** — Manually set `Authorization` header di setiap call. Pakai `getAuthToken` callback di client config.
-- **Lupa handle non-JSON error** — Server bisa return HTML error page. Client harus catch `.json()` failure — sudah di-handle di `createApiClient`.
-- **Duplicate API types** — Define response type di component dan di service. Single source di `types/api.ts`.
-- **No global error handler** — 401 errors di-handle per-component. Pakai `onError` callback untuk cross-cutting concerns.
-- **Query params tanpa filter** — Send `{ page: 1, search: undefined }` as `?page=1&search=undefined`. `buildUrl` sudah filter undefined values.
-- **Direct fetch instead of client** — Bypass API client untuk "quick" calls. Semua calls harus lewat client supaya auth, headers, dan error handling consistent.
+- **Hardcoded URL in component** — `fetch("http://localhost:3001/users")` scattered everywhere. Use ENDPOINTS + configured client.
+- **Auth token per-request** — Manually setting `Authorization` header on every call. Use the `getAuthToken` callback in the client config.
+- **Forgetting to handle non-JSON errors** — The server can return an HTML error page. The client must catch `.json()` failures — already handled in `createApiClient`.
+- **Duplicate API types** — Defining response types in a component and in the service. Single source in `types/api.ts`.
+- **No global error handler** — 401 errors handled per-component. Use the `onError` callback for cross-cutting concerns.
+- **Query params without filtering** — Sending `{ page: 1, search: undefined }` as `?page=1&search=undefined`. `buildUrl` already filters out undefined values.
+- **Direct fetch instead of client** — Bypassing the API client for "quick" calls. All calls must go through the client so auth, headers, and error handling are consistent.
 
 ## Related
 
-- [React Query](./react-query.md) — Service functions dipakai sebagai queryFn/mutationFn
-- [TypeScript](./typescript.md) — Generic types untuk API client
-- [Forms](./forms.md) — Form submission pakai mutation + service
-- [Hooks](./hooks.md) — Query/mutation hooks yang wrap service calls
+- [React Query](./react-query.md) — Service functions used as queryFn/mutationFn
+- [TypeScript](./typescript.md) — Generic types for API client
+- [Forms](./forms.md) — Form submission using mutation + service
+- [Hooks](./hooks.md) — Query/mutation hooks that wrap service calls
