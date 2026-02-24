@@ -2,21 +2,21 @@
 
 ## Principle
 
-Kenapa `strict: true`? Karena TypeScript tanpa strict mode itu seperti seat belt yang ga diklik — ada tapi ga protect. Strict mode forces kita untuk handle `null`, `undefined`, dan type narrowing secara explicit. Hasilnya: bugs ketangkap di compile time, bukan di production.
+Why `strict: true`? Because TypeScript without strict mode is like a seat belt that isn't clicked — it's there but doesn't protect. Strict mode forces us to handle `null`, `undefined`, and type narrowing explicitly. The result: bugs are caught at compile time, not in production.
 
-`noUncheckedIndexedAccess` khususnya penting karena array/object access di JavaScript selalu bisa return `undefined`. Tanpa flag ini, `arr[0]` dianggap pasti ada — padahal array bisa kosong. Flag ini bikin TypeScript jujur tentang realita JavaScript.
+`noUncheckedIndexedAccess` is especially important because array/object access in JavaScript can always return `undefined`. Without this flag, `arr[0]` is assumed to definitely exist — but the array can be empty. This flag makes TypeScript honest about the reality of JavaScript.
 
-Interface vs type bukan preferensi — ada semantic difference. `interface` itu contract untuk shape (props, API response), extendable, dan bagus untuk declaration merging. `type` itu computation — unions, intersections, mapped types, conditional types. Pakai yang sesuai context.
+Interface vs type is not just a preference — there is a semantic difference. `interface` is a contract for shape (props, API responses), it's extendable, and good for declaration merging. `type` is for computation — unions, intersections, mapped types, conditional types. Use the one that fits the context.
 
 ## Rules
 
-- `strict: true` + `noUncheckedIndexedAccess: true` wajib di `tsconfig.base.json`
-- **Never use `any`** — pakai `unknown` dan narrow dengan type guard
-- `interface` untuk: component props, API response shapes, class contracts
-- `type` untuk: unions, utility types, function signatures, mapped types
-- Export types dari file tempat mereka defined
-- Discriminated unions untuk state management (loading/error/success)
-- Generic constraints pakai `extends` — jangan biarkan generic terlalu loose
+- `strict: true` + `noUncheckedIndexedAccess: true` required in `tsconfig.base.json`
+- **Never use `any`** — use `unknown` and narrow with a type guard
+- `interface` for: component props, API response shapes, class contracts
+- `type` for: unions, utility types, function signatures, mapped types
+- Export types from the file where they are defined
+- Discriminated unions for state management (loading/error/success)
+- Generic constraints use `extends` — don't leave generics too loose
 - Utility types (`Partial`, `Pick`, `Omit`, `Record`) > manual type duplication
 
 ## Pattern
@@ -50,7 +50,7 @@ function isApiError(value: unknown): value is ApiError {
 
 ### Base Config
 
-Dari `tsconfig.base.json`:
+From `tsconfig.base.json`:
 
 ```json
 {
@@ -69,16 +69,16 @@ Dari `tsconfig.base.json`:
 }
 ```
 
-### Interface untuk Props & API Shapes
+### Interface for Props & API Shapes
 
-Dari `packages/shared/src/types/common.ts`:
+From `packages/shared/src/types/common.ts`:
 
 ```ts
-// User roles — union type karena ini set of literal values
+// User roles — union type because this is a set of literal values
 type UserRole = "admin" | "editor" | "viewer";
 type UserStatus = "active" | "inactive";
 
-// User entity — interface karena ini object shape
+// User entity — interface because this is an object shape
 interface User {
   id: string;
   name: string;
@@ -88,13 +88,13 @@ interface User {
   createdAt: string;
 }
 
-// Generic sort config — interface dengan generic constraint
+// Generic sort config — interface with generic constraint
 interface SortConfig<T> {
   key: keyof T;
   direction: SortDirection;
 }
 
-// Select option — interface dengan default generic
+// Select option — interface with default generic
 interface SelectOption<T = string> {
   label: string;
   value: T;
@@ -123,7 +123,7 @@ type UserFormState = Nullable<User>;
 
 ### API Response Types — Discriminated Union
 
-Dari `packages/shared/src/types/api.ts`:
+From `packages/shared/src/types/api.ts`:
 
 ```ts
 // Success response — discriminated by `success: true`
@@ -171,10 +171,10 @@ function handleResult<T>(result: ApiResult<T>) {
 
 ### Type-safe Input Types
 
-Dari `apps/nextjs/types/user.ts`:
+From `apps/nextjs/types/user.ts`:
 
 ```ts
-// Re-export dari shared — single source of truth
+// Re-export from shared — single source of truth
 export type { User, UserRole, UserStatus } from "@react-principles/shared/types";
 
 // Create input — omit server-generated fields
@@ -240,28 +240,28 @@ try {
 
 ### Next.js
 
-Tidak ada perbedaan TypeScript config antara Next.js dan Vite — keduanya extend `tsconfig.base.json`.
+No TypeScript config difference between Next.js and Vite — both extend `tsconfig.base.json`.
 
 ### Vite
 
-Sama seperti Next.js. Vite menambahkan `vite-env.d.ts` untuk Vite-specific types:
+Same as Next.js. Vite adds `vite-env.d.ts` for Vite-specific types:
 ```ts
 /// <reference types="vite/client" />
 ```
 
 ## Common Mistakes
 
-- **`any` sebagai escape hatch** — Pakai `unknown` dan narrow. `any` turns off the compiler — setiap `any` adalah potential runtime error yang ga bisa di-catch.
-- **Type assertion (`as`) berlebihan** — `data as User` bukan validation. Kalau data dari external source, validate dulu (pakai Zod) baru infer type.
-- **Lupa handle `undefined` dari indexed access** — `users[0].name` crash kalau array kosong. Check dulu: `if (users[0]) { ... }`.
-- **Interface untuk union** — `interface Status = "active" | "inactive"` ga valid. Union = `type`.
-- **Re-defining types** — Kalau type sudah ada di shared package, import — jangan buat ulang.
-- **`enum` usage** — Prefer union types (`type Role = "admin" | "editor"`) over enum. Enum punya runtime cost dan edge cases yang surprising.
-- **Overly complex generics** — Kalau type signature butuh > 3 generic parameters, kemungkinan bisa disimplify.
+- **`any` as an escape hatch** — Use `unknown` and narrow. `any` turns off the compiler — every `any` is a potential runtime error that can't be caught.
+- **Overusing type assertion (`as`)** — `data as User` is not validation. If data comes from an external source, validate it first (with Zod) then infer the type.
+- **Forgetting to handle `undefined` from indexed access** — `users[0].name` crashes if the array is empty. Check first: `if (users[0]) { ... }`.
+- **Interface for union** — `interface Status = "active" | "inactive"` is not valid. Unions use `type`.
+- **Re-defining types** — If a type already exists in a shared package, import it — don't recreate it.
+- **`enum` usage** — Prefer union types (`type Role = "admin" | "editor"`) over enums. Enums have runtime cost and surprising edge cases.
+- **Overly complex generics** — If a type signature needs > 3 generic parameters, it can likely be simplified.
 
 ## Related
 
-- [Component Patterns](./component-patterns.md) — Interface patterns untuk component props
-- [Forms](./forms.md) — Zod schema inference untuk form types
+- [Component Patterns](./component-patterns.md) — Interface patterns for component props
+- [Forms](./forms.md) — Zod schema inference for form types
 - [Services](./services.md) — Generic API client types
-- [React Query](./react-query.md) — Type-safe query keys dan return types
+- [React Query](./react-query.md) — Type-safe query keys and return types

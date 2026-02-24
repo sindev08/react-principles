@@ -1,11 +1,10 @@
 # Project: react-principles
 
-Monorepo reference project — React patterns & principles.
-pnpm workspaces + Next.js 15 + Vite + TypeScript strict.
+Standalone Next.js 15 app — React patterns & principles cookbook.
+Single app, feature-based folder structure, TypeScript strict.
 
 ## Tech Stack
-- Monorepo: pnpm workspaces
-- Apps: Next.js 15 (App Router), Vite (React 18)
+- App: Next.js 15 (App Router)
 - Server State: TanStack Query v5
 - Client State: Zustand v5
 - Tables: TanStack Table v8
@@ -15,10 +14,17 @@ pnpm workspaces + Next.js 15 + Vite + TypeScript strict.
 - Linting: ESLint + Prettier
 
 ## Project Structure
-- `docs/` — Pattern documentation (principle + version notes)
-- `packages/shared/` — Shared hooks, utils, types, services
-- `apps/nextjs/` — Next.js 15 implementation
-- `apps/vite/` — Vite implementation
+```
+src/
+├── app/          — Next.js App Router pages
+├── features/     — Feature modules (components + hooks co-located)
+├── hooks/        — Shared pure-UI hooks (no API calls)
+├── lib/          — API client, query client, query keys, mock data
+├── shared/       — Cross-cutting: components, stores, types, utils
+└── ui/           — Design system primitives
+```
+
+- `docs/` — Pattern documentation
 
 ## Component Anatomy — every component file:
 1. Imports (React → external → internal → relative)
@@ -31,8 +37,8 @@ pnpm workspaces + Next.js 15 + Vite + TypeScript strict.
 | What | Pattern | Example |
 |------|---------|---------|
 | Components | PascalCase | `UserTable.tsx` |
-| Hooks | `use` prefix | `useUsers.ts` |
-| Query hooks | `use` + entity | `useUser.ts` |
+| Hooks | `use` prefix | `useDebounce.ts` |
+| Query hooks | `use` + entity | `useUsers.ts` |
 | Mutation hooks | `use` + action + entity | `useCreateUser.ts` |
 | Stores | `use` + domain + `Store` | `useAppStore.ts` |
 | Utils | camelCase | `formatters.ts` |
@@ -43,7 +49,7 @@ pnpm workspaces + Next.js 15 + Vite + TypeScript strict.
 ## React Query Conventions
 - Query keys: array-based, hierarchical → `["users", "list", { page }]`
 - Use query key factory in `lib/query-keys.ts`
-- Query hooks in `hooks/queries/`, mutations in `hooks/mutations/`
+- Query/mutation hooks live in `features/[name]/hooks/` (co-located with the feature)
 - Always set staleTime (default 5 min for lists, 10 min for details)
 - Mutations always invalidate related queries in onSuccess
 
@@ -77,7 +83,7 @@ pnpm workspaces + Next.js 15 + Vite + TypeScript strict.
 - Props > 7 → refactor
 
 ## Do NOT
-- Modify `components/ui/` directly — extend via wrapper
+- Modify `ui/` directly — extend via wrapper
 - Use `any` type
 - Hardcode user-facing strings
 - Use `console.log` in production code

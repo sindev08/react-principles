@@ -2,23 +2,23 @@
 
 ## Principle
 
-Custom hooks exist karena satu alasan: **separation of concerns**. Component seharusnya cuma urusan rendering — logic yang reusable (debounce, localStorage, media queries, data fetching) harus di-extract ke hooks. Ini bukan premature abstraction — ini boundary yang jelas antara "apa yang di-render" dan "bagaimana data disiapkan".
+Custom hooks exist for one reason: **separation of concerns**. Components should only be concerned with rendering — reusable logic (debounce, localStorage, media queries, data fetching) must be extracted into hooks. This is not premature abstraction — it's a clear boundary between "what is rendered" and "how data is prepared".
 
-Kenapa `use` prefix wajib? Bukan cuma convention — React **depends on it** untuk enforce Rules of Hooks. Kalau function tanpa `use` prefix dipanggil di conditional, React tidak bisa warn. Naming yang konsisten juga bikin grep/search gampang: `useX` = hook, titik.
+Why is the `use` prefix mandatory? It's not just convention — React **depends on it** to enforce the Rules of Hooks. If a function without the `use` prefix is called conditionally, React cannot warn. Consistent naming also makes grep/search easy: `useX` = hook, period.
 
-Shared hooks di `packages/shared/` ada supaya logic yang truly universal (debounce, localStorage, media query) ga perlu di-copy paste antar apps. Kalau hook cuma relevan untuk satu app, taruh di app-level `hooks/`.
+Shared hooks in `packages/shared/` exist so that truly universal logic (debounce, localStorage, media query) doesn't need to be copy-pasted between apps. If a hook is only relevant to one app, put it in the app-level `hooks/`.
 
 ## Rules
 
-- Semua custom hooks harus prefix `use` — `useDebounce`, bukan `debounce`
-- Hook > 150 lines -> extract helper functions (bukan hooks) ke file terpisah
-- Rules of Hooks: jangan panggil hooks di conditional, loop, atau nested function
+- All custom hooks must have a `use` prefix — `useDebounce`, not `debounce`
+- Hook > 150 lines -> extract helper functions (not hooks) into a separate file
+- Rules of Hooks: don't call hooks in conditionals, loops, or nested functions
 - Shared/universal hooks -> `packages/shared/src/hooks/`
 - App-specific hooks -> `apps/{app}/hooks/`
-- Query hooks -> `hooks/queries/useEntity.ts` (contoh: `useUsers.ts`)
-- Mutation hooks -> `hooks/mutations/useActionEntity.ts` (contoh: `useCreateUser.ts`)
-- Hook return: single value, tuple `[value, setter]`, atau object `{ data, isLoading }`
-- Selalu type generic parameters: `useDebounce<T>(value: T, delay: number): T`
+- Query hooks -> `hooks/queries/useEntity.ts` (example: `useUsers.ts`)
+- Mutation hooks -> `hooks/mutations/useActionEntity.ts` (example: `useCreateUser.ts`)
+- Hook return: single value, tuple `[value, setter]`, or object `{ data, isLoading }`
+- Always type generic parameters: `useDebounce<T>(value: T, delay: number): T`
 
 ## Pattern
 
@@ -58,7 +58,7 @@ function useActionEntity() {
 
 ### useDebounce — Generic Debounce Hook
 
-Dari `packages/shared/src/hooks/useDebounce.ts`:
+From `packages/shared/src/hooks/useDebounce.ts`:
 
 ```ts
 import { useEffect, useState } from "react";
@@ -85,13 +85,13 @@ Usage:
 const [search, setSearch] = useState("");
 const debouncedSearch = useDebounce(search, 300);
 
-// debouncedSearch hanya update 300ms setelah user berhenti ngetik
+// debouncedSearch only updates 300ms after the user stops typing
 const { data } = useUsers({ search: debouncedSearch });
 ```
 
 ### useLocalStorage — Type-safe Persistent State
 
-Dari `packages/shared/src/hooks/useLocalStorage.ts`:
+From `packages/shared/src/hooks/useLocalStorage.ts`:
 
 ```ts
 export function useLocalStorage<T>(
@@ -134,13 +134,13 @@ export function useLocalStorage<T>(
 
 Key points:
 - SSR-safe: `typeof window === "undefined"` check
-- Tuple return: `[value, setValue, removeValue]` — mirip useState tapi persistent
+- Tuple return: `[value, setValue, removeValue]` — similar to useState but persistent
 - Cross-tab sync via StorageEvent listener
-- Generic `<T>` supaya type-safe: `useLocalStorage<Theme>("theme", "light")`
+- Generic `<T>` for type safety: `useLocalStorage<Theme>("theme", "light")`
 
 ### useMediaQuery — Responsive Hook
 
-Dari `packages/shared/src/hooks/useMediaQuery.ts`:
+From `packages/shared/src/hooks/useMediaQuery.ts`:
 
 ```ts
 export function useMediaQuery(query: string): boolean {
@@ -174,7 +174,7 @@ const prefersDark = useMediaQuery("(prefers-color-scheme: dark)");
 
 ### Query & Mutation Hooks
 
-Lihat detail di [React Query docs](./react-query.md). Contoh singkat:
+See details in [React Query docs](./react-query.md). Brief example:
 
 ```ts
 // hooks/queries/useUsers.ts
@@ -199,23 +199,23 @@ export function useCreateUser() {
 
 ### Next.js
 
-Hook files sendiri ga perlu `"use client"` — mereka akan di-bundle sebagai client code karena component yang memanggilnya sudah `"use client"`. Tapi kalau hook dipakai langsung di page component, pastikan page itu `"use client"`.
+Hook files themselves don't need `"use client"` — they will be bundled as client code because the component that calls them is already `"use client"`. But if a hook is used directly in a page component, make sure that page is `"use client"`.
 
 ### Vite
 
-Tidak ada perbedaan — hooks langsung usable tanpa directive khusus.
+No difference — hooks are directly usable without any special directive.
 
 ## Common Mistakes
 
-- **Hook di dalam conditional** — `if (isReady) { const data = useQuery(...) }` — ini melanggar Rules of Hooks. Pakai `enabled` option di React Query atau conditional logic di dalam hook.
-- **Lupa cleanup** — `useEffect` yang subscribe ke event tapi tidak return cleanup function. Memory leak.
-- **Over-extraction** — Extract hook yang cuma dipakai 1x di 1 component. Rule of thumb: extract kalau dipakai di 2+ tempat, atau kalau component jadi > 200 lines.
-- **Dependency array salah** — Lupa masukkan dependency ke useEffect/useCallback/useMemo. ESLint rule `react-hooks/exhaustive-deps` harus on.
-- **Return object tanpa useMemo** — `return { data, isLoading }` creates new object setiap render. Untuk hooks yang sering dipanggil, pertimbangkan useMemo atau return tuple.
-- **Naming tanpa `use`** — `getDebounced` bukan hook name yang valid. React ga bisa enforce rules tanpa prefix.
+- **Hook inside a conditional** — `if (isReady) { const data = useQuery(...) }` — this violates the Rules of Hooks. Use the `enabled` option in React Query or put conditional logic inside the hook.
+- **Forgetting cleanup** — A `useEffect` that subscribes to an event but doesn't return a cleanup function. Memory leak.
+- **Over-extraction** — Extracting a hook that is only used once in one component. Rule of thumb: extract if used in 2+ places, or if the component exceeds 200 lines.
+- **Wrong dependency array** — Forgetting to include a dependency in useEffect/useCallback/useMemo. The ESLint rule `react-hooks/exhaustive-deps` must be on.
+- **Return object without useMemo** — `return { data, isLoading }` creates a new object on every render. For hooks called frequently, consider useMemo or returning a tuple.
+- **Naming without `use`** — `getDebounced` is not a valid hook name. React can't enforce the rules without the prefix.
 
 ## Related
 
-- [React Query](./react-query.md) — Query dan mutation hook patterns
-- [Component Patterns](./component-patterns.md) — Kapan extract dari component ke hook
-- [TypeScript](./typescript.md) — Generic patterns untuk hooks
+- [React Query](./react-query.md) — Query and mutation hook patterns
+- [Component Patterns](./component-patterns.md) — When to extract from a component into a hook
+- [TypeScript](./typescript.md) — Generic patterns for hooks

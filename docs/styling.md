@@ -2,22 +2,22 @@
 
 ## Principle
 
-Kenapa Tailwind-only, tanpa CSS modules atau styled-components? Karena **co-location** — styles hidup di tempat yang sama dengan markup. Ga perlu switch context antara `.tsx` dan `.module.css`. Ga perlu invent class names. Ga perlu worry about CSS specificity wars atau unused styles. Tailwind + PurgeCSS = hanya CSS yang dipakai yang di-ship.
+Why Tailwind-only, without CSS modules or styled-components? Because of **co-location** — styles live in the same place as markup. No need to switch context between `.tsx` and `.module.css`. No need to invent class names. No need to worry about CSS specificity wars or unused styles. Tailwind + PurgeCSS = only the CSS that's used gets shipped.
 
-`cn()` utility (clsx + tailwind-merge) itu essential karena conditional Tailwind classes tanpa merge bisa conflict. `px-2 px-4` harusnya resolve ke `px-4`, bukan apply keduanya. `tailwind-merge` solve ini. `clsx` solve conditional application. Combine keduanya = `cn()`.
+The `cn()` utility (clsx + tailwind-merge) is essential because conditional Tailwind classes without merging can conflict. `px-2 px-4` should resolve to `px-4`, not apply both. `tailwind-merge` solves this. `clsx` solves conditional application. Combine both = `cn()`.
 
-Dark mode pakai class-based (`dark:` prefix) bukan media-query-based karena kita mau user bisa toggle manual, bukan cuma follow OS preference. Class-based = kita control kapan `.dark` class di-apply ke `<html>`.
+Dark mode uses class-based strategy (`dark:` prefix) instead of media-query-based because we want users to be able to toggle it manually, not just follow OS preference. Class-based = we control when the `.dark` class is applied to `<html>`.
 
 ## Rules
 
-- **Tailwind only** — no CSS modules, no styled-components, no inline styles (kecuali dynamic values)
-- Pakai `cn()` utility untuk conditional dan merged classes
+- **Tailwind only** — no CSS modules, no styled-components, no inline styles (except dynamic values)
+- Use `cn()` utility for conditional and merged classes
 - Dark mode via `dark:` prefix — class-based strategy
-- Component variants via conditional `cn()`, bukan CSS
+- Component variants via conditional `cn()`, not CSS
 - Responsive via Tailwind breakpoints: `sm:`, `md:`, `lg:`, `xl:`
-- Jangan modify shadcn/ui components langsung — extend via wrapper
-- Hindari `!important` — kalau butuh, kemungkinan ada class conflict yang harus di-fix
-- Consistent spacing: pakai Tailwind scale (4, 8, 12, 16...), jangan arbitrary values kecuali terpaksa
+- Don't modify shadcn/ui components directly — extend via wrapper
+- Avoid `!important` — if needed, there's likely a class conflict that should be fixed
+- Consistent spacing: use Tailwind scale (4, 8, 12, 16...), avoid arbitrary values unless necessary
 
 ## Pattern
 
@@ -46,7 +46,7 @@ cn(
 
 ### cn() Utility
 
-Dari `packages/shared/src/utils/cn.ts`:
+From `packages/shared/src/utils/cn.ts`:
 
 ```ts
 import { type ClassValue, clsx } from "clsx";
@@ -65,14 +65,14 @@ export function cn(...inputs: ClassValue[]): string {
 }
 ```
 
-Kenapa dua library?
-- `clsx` — handle conditionals: `clsx("a", false && "b", "c")` => `"a c"`
-- `tailwind-merge` — resolve conflicts: `twMerge("px-2 px-4")` => `"px-4"`
-- `cn()` — combine keduanya
+Why two libraries?
+- `clsx` — handles conditionals: `clsx("a", false && "b", "c")` => `"a c"`
+- `tailwind-merge` — resolves conflicts: `twMerge("px-2 px-4")` => `"px-4"`
+- `cn()` — combines both
 
 ### Conditional Classes in Components
 
-Dari `apps/nextjs/components/examples/UserTable.tsx` — status badge:
+From `apps/nextjs/components/examples/UserTable.tsx` — status badge:
 
 ```tsx
 <span
@@ -86,7 +86,7 @@ Dari `apps/nextjs/components/examples/UserTable.tsx` — status badge:
 </span>
 ```
 
-Dengan `cn()`:
+With `cn()`:
 ```tsx
 <span
   className={cn(
@@ -141,7 +141,7 @@ function Button({ variant = "primary", size = "md", disabled, children }: Button
 
 ### Dark Mode
 
-Dark mode pakai class strategy. Toggle class `dark` di `<html>`:
+Dark mode uses the class strategy. Toggle the `dark` class on `<html>`:
 
 ```tsx
 // Zustand store controls theme
@@ -185,7 +185,7 @@ const isMobile = useMediaQuery("(max-width: 768px)");
 
 ### Form Input Styling
 
-Consistent pattern dari project forms:
+Consistent pattern from project forms:
 
 ```tsx
 // Input base
@@ -207,7 +207,7 @@ const inputErrorClasses = cn(
 
 ### Table Styling
 
-Consistent pattern dari UserTable:
+Consistent pattern from UserTable:
 
 ```tsx
 // Table container
@@ -229,25 +229,25 @@ Consistent pattern dari UserTable:
 
 ### Next.js
 
-- Tailwind config di `apps/nextjs/tailwind.config.js`
-- PostCSS config di `apps/nextjs/postcss.config.js`
-- Global styles di `app/globals.css` dengan `@tailwind` directives
+- Tailwind config in `apps/nextjs/tailwind.config.js`
+- PostCSS config in `apps/nextjs/postcss.config.js`
+- Global styles in `app/globals.css` with `@tailwind` directives
 
 ### Vite
 
-- Tailwind config di `apps/vite/tailwind.config.js`
-- Global styles di `src/index.css` dengan `@tailwind` directives
-- Sama persis, hanya file location yang beda
+- Tailwind config in `apps/vite/tailwind.config.js`
+- Global styles in `src/index.css` with `@tailwind` directives
+- Identical, only the file location differs
 
 ## Common Mistakes
 
-- **String concatenation tanpa merge** — `` `px-2 ${condition ? "px-4" : ""}` `` bisa produce `px-2 px-4` (both applied). Pakai `cn()` supaya `px-4` override `px-2`.
-- **CSS modules** — Jangan buat `.module.css` files. Semua styling via Tailwind utility classes.
-- **Inline styles** — `style={{ padding: "16px" }}` — pakai `className="p-4"`. Exception: truly dynamic values yang ga bisa di-predict (e.g., position from calculation).
-- **Arbitrary values overuse** — `w-[347px]` biasanya sign of design inconsistency. Prefer Tailwind scale values.
-- **Dark mode lupa** — Component yang cuma punya light styles. Setiap `bg-*`, `text-*`, `border-*` harus ada `dark:` counterpart.
-- **`!important` usage** — Kalau butuh `!important` (`!px-4`), biasanya ada class conflict yang harus di-resolve dengan `cn()` atau restructure.
-- **Giant className strings** — Kalau className > 3 lines, extract ke variable atau `cn()` call di atas return statement.
+- **String concatenation without merge** — `` `px-2 ${condition ? "px-4" : ""}` `` can produce `px-2 px-4` (both applied). Use `cn()` so `px-4` overrides `px-2`.
+- **CSS modules** — Don't create `.module.css` files. All styling via Tailwind utility classes.
+- **Inline styles** — `style={{ padding: "16px" }}` — use `className="p-4"`. Exception: truly dynamic values that can't be predicted (e.g., position from calculation).
+- **Arbitrary values overuse** — `w-[347px]` is usually a sign of design inconsistency. Prefer Tailwind scale values.
+- **Forgetting dark mode** — A component that only has light styles. Every `bg-*`, `text-*`, `border-*` should have a `dark:` counterpart.
+- **`!important` usage** — If `!important` is needed (`!px-4`), there's usually a class conflict that should be resolved with `cn()` or by restructuring.
+- **Giant className strings** — If className is > 3 lines, extract to a variable or a `cn()` call above the return statement.
 
 ## Related
 
