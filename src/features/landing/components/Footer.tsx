@@ -2,12 +2,12 @@ import Link from "next/link";
 
 const RESOURCES = [
   { label: "Documentation", href: "/docs/introduction" },
-  { label: "Cookbook", href: "/cookbook" },
+  { label: "Cookbook", href: "/nextjs/cookbook" },
 ];
 
 const FRAMEWORKS = [
-  { label: "Next.js 15", href: "/cookbook/server-state" },
-  { label: "Vite", href: "/cookbook/client-state" },
+  { label: "Next.js 15", href: "/nextjs/cookbook/server-state" },
+  { label: "Vite", href: "/vitejs/cookbook/client-state" },
 ];
 
 export function Footer() {

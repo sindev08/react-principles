@@ -1,3 +1,22 @@
+export interface CookbookNavItem {
+  label: string;
+  slug: string; // "" for "All Recipes"
+}
+
+export const COOKBOOK_ITEMS: CookbookNavItem[] = [
+  { label: "All Recipes", slug: "" },
+  { label: "Server State", slug: "server-state" },
+  { label: "Client State", slug: "client-state" },
+  { label: "Form Validation", slug: "form-validation" },
+  { label: "Data Tables", slug: "data-tables" },
+  { label: "E-commerce Dashboard", slug: "e-commerce-dashboard" },
+  { label: "SaaS Landing Page", slug: "saas-landing-page" },
+  { label: "Authentication Flow", slug: "authentication-flow" },
+  { label: "OAuth Flow", slug: "oauth-flow" },
+  { label: "Data Visualization", slug: "data-visualization" },
+  { label: "API Integration", slug: "api-integration" },
+];
+
 export interface NavItem {
   label: string;
   href: string;
@@ -34,22 +53,6 @@ export const DOCS_NAV: NavGroup[] = [
       { label: "Drawer", href: "/docs/drawer" },
       { label: "Table", href: "/docs/table" },
       { label: "Tabs", href: "/docs/tabs" },
-    ],
-  },
-  {
-    title: "Cookbook",
-    items: [
-      { label: "All Recipes", href: "/cookbook" },
-      { label: "Server State", href: "/cookbook/server-state" },
-      { label: "Client State", href: "/cookbook/client-state" },
-      { label: "Form Validation", href: "/cookbook/form-validation" },
-      { label: "Data Tables", href: "/cookbook/data-tables" },
-      { label: "E-commerce Dashboard", href: "/cookbook/e-commerce-dashboard" },
-      { label: "SaaS Landing Page", href: "/cookbook/saas-landing-page" },
-      { label: "Authentication Flow", href: "/cookbook/authentication-flow" },
-      { label: "OAuth Flow", href: "/cookbook/oauth-flow" },
-      { label: "Data Visualization", href: "/cookbook/data-visualization" },
-      { label: "API Integration", href: "/cookbook/api-integration" },
     ],
   },
 ];

@@ -43,7 +43,7 @@ export function HeroSection() {
 
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
-            href="/cookbook"
+            href="/nextjs/cookbook"
             className="bg-primary hover:shadow-primary/20 w-full rounded-lg px-8 py-4 text-center text-lg font-bold text-white transition-all hover:shadow-xl sm:w-auto"
           >
             Explore Patterns

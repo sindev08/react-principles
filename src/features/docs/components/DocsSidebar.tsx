@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/shared/utils/cn";
-import { DOCS_NAV } from "./docs-nav";
+import { DOCS_NAV, COOKBOOK_ITEMS } from "./docs-nav";
+
+type Framework = "nextjs" | "vitejs";
 
 interface IndicatorPos {
   top: number;
@@ -12,11 +14,25 @@ interface IndicatorPos {
   visible: boolean;
 }
 
+function cookbookHref(framework: Framework, slug: string) {
+  return slug ? `/${framework}/cookbook/${slug}` : `/${framework}/cookbook`;
+}
+
 export function DocsSidebar() {
   const pathname = usePathname();
   const navRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Record<string, HTMLLIElement | null>>({});
   const [pos, setPos] = useState<IndicatorPos>({ top: 0, height: 0, visible: false });
+
+  // Derive active framework from URL; default to nextjs
+  const urlFramework: Framework = pathname.startsWith("/vitejs/") ? "vitejs" : "nextjs";
+  const [cookbookFramework, setCookbookFramework] = useState<Framework>(urlFramework);
+
+  // Keep switcher in sync when navigating between frameworks via other means
+  useEffect(() => {
+    if (pathname.startsWith("/nextjs/")) setCookbookFramework("nextjs");
+    else if (pathname.startsWith("/vitejs/")) setCookbookFramework("vitejs");
+  }, [pathname]);
 
   useEffect(() => {
     const el = itemRefs.current[pathname];
@@ -41,6 +57,7 @@ export function DocsSidebar() {
           style={{ top: pos.top, height: pos.height, opacity: pos.visible ? 1 : 0 }}
         />
 
+        {/* Docs nav groups (Getting Started, Components) */}
         {DOCS_NAV.map((group) => (
           <div key={group.title}>
             <h4 className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
@@ -87,6 +104,68 @@ export function DocsSidebar() {
             </ul>
           </div>
         ))}
+
+        {/* Cookbook section with inline framework switcher */}
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+              Cookbook
+            </h4>
+            {/* Framework toggle */}
+            <div className="flex items-center gap-0.5 rounded-md border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] p-0.5">
+              <button
+                onClick={() => setCookbookFramework("nextjs")}
+                className={cn(
+                  "rounded px-2 py-0.5 text-[10px] font-bold transition-all",
+                  cookbookFramework === "nextjs"
+                    ? "bg-white dark:bg-[#0d1117] text-primary shadow-sm"
+                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300",
+                )}
+              >
+                Next.js
+              </button>
+              <button
+                onClick={() => setCookbookFramework("vitejs")}
+                className={cn(
+                  "rounded px-2 py-0.5 text-[10px] font-bold transition-all",
+                  cookbookFramework === "vitejs"
+                    ? "bg-white dark:bg-[#0d1117] text-primary shadow-sm"
+                    : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300",
+                )}
+              >
+                Vite
+              </button>
+            </div>
+          </div>
+
+          <ul className="flex flex-col gap-1.5">
+            {COOKBOOK_ITEMS.map((item) => {
+              const href = cookbookHref(cookbookFramework, item.slug);
+              const isActive = pathname === href;
+
+              return (
+                <li
+                  key={item.slug}
+                  ref={(el) => {
+                    itemRefs.current[href] = el;
+                  }}
+                >
+                  <Link
+                    href={href}
+                    className={cn(
+                      "relative z-10 flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                      isActive
+                        ? "text-primary font-semibold"
+                        : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white",
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </div>
     </aside>
   );
