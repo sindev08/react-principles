@@ -37,7 +37,7 @@ const SEARCH_INDEX: SearchItem[] = [
   ),
   ...RECIPES.map((recipe) => ({
     title: recipe.title,
-    href: `/cookbook/${recipe.slug}`,
+    href: `/nextjs/cookbook/${recipe.slug}`,
     description: recipe.description,
     group: "Cookbook" as const,
     icon: recipe.icon,
@@ -50,7 +50,7 @@ export function DocsHeader() {
   const { open, setOpen, toggle } = useSearchStore();
   const { savedSlugs } = useSavedStore();
   const isDocsActive = pathname.startsWith("/docs");
-  const isCookbookActive = pathname.startsWith("/cookbook");
+  const isCookbookActive = pathname.startsWith("/nextjs/cookbook") || pathname.startsWith("/vitejs/cookbook");
 
   // ⌘K / Ctrl+K shortcut
   useEffect(() => {
@@ -84,7 +84,7 @@ export function DocsHeader() {
               <Link href="/docs/introduction" className={navLinkClass(isDocsActive)}>
                 Docs
               </Link>
-              <Link href="/cookbook" className={navLinkClass(isCookbookActive)}>
+              <Link href="/nextjs/cookbook" className={navLinkClass(isCookbookActive)}>
                 Cookbook
               </Link>
             </nav>
