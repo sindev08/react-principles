@@ -241,9 +241,8 @@ function ResultGroup({
       {items.map((item) => {
         const globalIdx = allResults.indexOf(item);
         const isActive = globalIdx === activeIndex;
-        const slug = item.href.startsWith("/cookbook/")
-          ? item.href.replace("/cookbook/", "")
-          : null;
+        const cookbookMatch = item.href.match(/\/(nextjs|vitejs)\/cookbook\/(.+)/);
+        const slug = cookbookMatch ? cookbookMatch[2] : null;
         const isSaved = slug ? savedSlugs.includes(slug) : false;
         return (
           <button
