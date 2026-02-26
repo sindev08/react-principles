@@ -70,10 +70,7 @@ export function DocsHeader() {
         <div className="relative mx-auto flex h-14 max-w-[1440px] items-center justify-between px-6 lg:px-10">
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
-                <span className="material-symbols-outlined text-[20px]">layers</span>
-              </div>
-              <h2 className="text-base font-bold leading-tight tracking-tight text-slate-900 dark:text-white">
+              <h2 className="text-base font-extrabold leading-tight tracking-tight text-primary">
                 react-principles
               </h2>
             </Link>

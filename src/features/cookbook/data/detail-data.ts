@@ -16,6 +16,7 @@ export interface RecipeDetail {
   title: string;
   breadcrumbCategory: string;
   description: string;
+  lastUpdated: string;
   principle: { text: string; tip: string };
   rules: RuleItem[];
   pattern: { filename: string; code: string };
@@ -92,7 +93,8 @@ export function DashboardPage() {
 }`,
       },
     },
-    contributor: { name: "Alex Rivera", role: "React Specialist" },
+    lastUpdated: "Feb 26, 2026",
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
   },
 
   "saas-landing-page": {
@@ -162,7 +164,8 @@ export function LandingPage() {
 }`,
       },
     },
-    contributor: { name: "Maria Chen", role: "Frontend Architect" },
+    lastUpdated: "Feb 26, 2026",
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
   },
 
   "authentication-flow": {
@@ -231,7 +234,8 @@ export function PrivateRoute() {
 }`,
       },
     },
-    contributor: { name: "Jordan Kim", role: "Security Engineer" },
+    lastUpdated: "Feb 26, 2026",
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
   },
 
   "api-integration": {
@@ -296,7 +300,8 @@ export const usePosts = () =>
   });`,
       },
     },
-    contributor: { name: "Sam Osei", role: "API Architect" },
+    lastUpdated: "Feb 26, 2026",
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
   },
 
   "server-state": {
@@ -370,7 +375,8 @@ export function UsersPage() {
 }`,
       },
     },
-    contributor: { name: "Alex Rivera", role: "React Specialist" },
+    lastUpdated: "Feb 26, 2026",
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
     demoKey: "react-query",
   },
 
@@ -469,7 +475,8 @@ export function UserFilters() {
 }`,
       },
     },
-    contributor: { name: "Jordan Kim", role: "Security Engineer" },
+    lastUpdated: "Feb 26, 2026",
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
     demoKey: "zustand",
   },
 
@@ -553,7 +560,8 @@ export function useCreateUser() {
 }`,
       },
     },
-    contributor: { name: "Maria Chen", role: "Frontend Architect" },
+    lastUpdated: "Feb 26, 2026",
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
     demoKey: "forms",
   },
 
@@ -637,7 +645,8 @@ export function UsersPage() {
 }`,
       },
     },
-    contributor: { name: "Sam Osei", role: "API Architect" },
+    lastUpdated: "Feb 26, 2026",
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
     demoKey: "table",
   },
 
@@ -753,7 +762,8 @@ export function RevenueChart({ range }: { range: string }) {
 }`,
       },
     },
-    contributor: { name: "Mia Chen", role: "Data Visualization Engineer" },
+    lastUpdated: "Feb 26, 2026",
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
   },
 
   "oauth-flow": {
@@ -874,7 +884,8 @@ app.get('/auth/callback/github', async (c) => {
 });`,
       },
     },
-    contributor: { name: "Jordan Kim", role: "Auth & Security Lead" },
+    lastUpdated: "Feb 26, 2026",
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
   },
 };
 

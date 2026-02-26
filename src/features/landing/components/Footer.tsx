@@ -18,10 +18,7 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2 mb-6">
-              <span className="text-3xl material-symbols-outlined text-primary">
-                terminal
-              </span>
-              <span className="text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">
+              <span className="text-lg font-extrabold tracking-tight text-primary">
                 react-principles
               </span>
             </div>

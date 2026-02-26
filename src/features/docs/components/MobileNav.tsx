@@ -42,10 +42,7 @@ export function MobileNav() {
       >
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-white">
-              <span className="material-symbols-outlined text-[16px]">layers</span>
-            </div>
-            <span className="text-sm font-bold text-slate-900 dark:text-white">
+            <span className="text-sm font-extrabold text-primary">
               react-principles
             </span>
           </div>
