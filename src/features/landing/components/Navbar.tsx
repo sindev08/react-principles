@@ -9,10 +9,7 @@ export function Navbar() {
     <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background-light/80 dark:bg-background-dark/80 border-primary/10 dark:border-white/5 backdrop-blur-md">
       <div className="flex items-center justify-between h-16 px-6 mx-auto max-w-7xl">
         <div className="flex items-center gap-2">
-          <span className="text-3xl material-symbols-outlined text-primary">
-            terminal
-          </span>
-          <span className="text-lg font-extrabold tracking-tight text-slate-900 dark:text-white">
+          <span className="text-lg font-extrabold tracking-tight text-primary">
             react-principles
           </span>
         </div>
