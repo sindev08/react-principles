@@ -90,6 +90,32 @@ export function CookbookListPage({ framework }: CookbookListPageProps) {
             </button>
           </div>
 
+          {/* Foundation Entry */}
+          <Link
+            href={`/${framework}/cookbook/foundation`}
+            className="group flex items-center justify-between gap-4 mb-8 px-5 py-4 rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] hover:border-primary/50 transition-all"
+          >
+            <div className="flex items-center gap-4">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                <span className="material-symbols-outlined text-[20px] text-primary">
+                  layers
+                </span>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-900 dark:text-white text-sm">
+                  New here? Start with the Foundation
+                </p>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Learn how this cookbook is structured before diving into recipes.
+                </p>
+              </div>
+            </div>
+            <span className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary/10 text-primary text-sm font-semibold group-hover:bg-primary group-hover:text-white transition-all">
+              Start Here
+              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </span>
+          </Link>
+
           {/* Category Filters */}
           <div className="flex flex-wrap items-center gap-3 pb-6 mb-8 border-b border-slate-200 dark:border-[#1f2937]">
             {CATEGORIES.map((cat) => (
