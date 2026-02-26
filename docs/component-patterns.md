@@ -2,20 +2,20 @@
 
 ## Principle
 
-Kenapa kita butuh konvensi anatomy yang ketat? Karena **consistency reduces cognitive load**. Ketika setiap component file punya struktur yang sama, developer baru bisa langsung navigasi tanpa mikir "di mana ya types-nya?" atau "export-nya di atas atau di bawah?". Ini bukan tentang estetika — ini tentang **scanability** dan **reviewability**. PR review jadi cepat kalau semua file predictable.
+Why do we need strict anatomy conventions? Because **consistency reduces cognitive load**. When every component file has the same structure, a new developer can navigate immediately without thinking "where are the types?" or "is the export at the top or the bottom?". This isn't about aesthetics — it's about **scanability** and **reviewability**. PR reviews go faster when all files are predictable.
 
-Composition over inheritance bukan cuma mantra React — ini fundamental karena UI itu inherently **tree-shaped**, bukan class hierarchy. Component yang kecil dan composable lebih gampang di-test, di-reuse, dan di-reason tentang side effect-nya.
+Composition over inheritance isn't just a React mantra — it's fundamental because UI is inherently **tree-shaped**, not a class hierarchy. Small, composable components are easier to test, reuse, and reason about in terms of side effects.
 
 ## Rules
 
-- Setiap component file harus mengikuti anatomy: **Imports -> Types -> Constants -> Component -> Export**
-- Satu file = satu exported component (internal helpers boleh di file yang sama)
-- Component > 200 lines -> split ke sub-components
-- Props > 7 -> refactor (gunakan composition atau object props)
-- Jangan modify `components/ui/` langsung — extend via wrapper component
-- Semua component punya explicit return type atau `JSX.Element` via inference
-- Gunakan `interface` untuk props, bukan `type` (kecuali union)
-- Nama file = nama component: `UserTable.tsx` exports `UserTable`
+- Every component file must follow the anatomy: **Imports -> Types -> Constants -> Component -> Export**
+- One file = one exported component (internal helpers are allowed in the same file)
+- Component > 200 lines -> split into sub-components
+- Props > 7 -> refactor (use composition or object props)
+- Don't modify `components/ui/` directly — extend via wrapper component
+- All components have an explicit return type or `JSX.Element` via inference
+- Use `interface` for props, not `type` (except for unions)
+- File name = component name: `UserTable.tsx` exports `UserTable`
 
 ## Pattern
 
@@ -51,7 +51,7 @@ export { Component };
 
 ### Component Anatomy — Real Example
 
-Dari `apps/nextjs/components/examples/UserList.tsx`:
+From `apps/nextjs/components/examples/UserList.tsx`:
 
 ```tsx
 // 1. Imports — React, external, internal, relative
@@ -63,9 +63,9 @@ import { LoadingState } from "@/components/common/LoadingState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 
-// 2. Types (inline di sini karena tidak ada custom props)
+// 2. Types (inline here since there are no custom props)
 
-// 3. Constants — tidak ada untuk component ini
+// 3. Constants — none for this component
 
 // 4. Component
 function UserListInner() {
@@ -114,7 +114,7 @@ export function UserList() {
 
 ### Composition Pattern — ErrorBoundary Wrapper
 
-Daripada setiap component handle error sendiri, kita compose dengan `ErrorBoundary`:
+Instead of each component handling errors on its own, we compose with `ErrorBoundary`:
 
 ```tsx
 // ErrorBoundary accepts children and optional fallback
@@ -136,7 +136,7 @@ interface ErrorBoundaryProps {
 
 ### Common UI Components
 
-Components di `components/common/` adalah reusable building blocks:
+Components in `components/common/` are reusable building blocks:
 
 ```tsx
 // LoadingState — skeleton placeholder
@@ -148,9 +148,9 @@ Components di `components/common/` adalah reusable building blocks:
 
 ### Next.js
 
-- Tambahkan `"use client"` directive di component yang pakai hooks, state, atau browser APIs
-- Server Components adalah default di App Router — hanya tambah `"use client"` kalau memang butuh
-- Provider components (`Providers`) harus `"use client"` karena pakai context
+- Add the `"use client"` directive to components that use hooks, state, or browser APIs
+- Server Components are the default in App Router — only add `"use client"` when actually needed
+- Provider components (`Providers`) must be `"use client"` because they use context
 
 ```tsx
 // apps/nextjs/app/providers.tsx
@@ -172,8 +172,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
 ### Vite
 
-- Tidak perlu `"use client"` — semua component sudah client-side by default
-- Provider structure sama, tapi di-mount di `main.tsx` atau `providers.tsx`
+- No need for `"use client"` — all components are already client-side by default
+- Provider structure is the same, but mounted in `main.tsx` or `providers.tsx`
 
 ```tsx
 // apps/vite/src/providers.tsx
@@ -193,15 +193,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
 ## Common Mistakes
 
-- **Mixing concerns** — Satu component yang fetch data, handle form, dan render table sekaligus. Split: container (data) vs presentational (UI).
-- **Arrow function exports** — `export const UserList = () => { ... }`. Pakai named function declaration supaya stack trace jelas dan hoisting works.
-- **Props drilling > 2 levels** — Kalau prop harus pass through 2+ component, pertimbangkan composition (children), context, atau Zustand.
-- **Lupa `"use client"`** — Di Next.js App Router, component tanpa directive = Server Component. Kalau pakai useState/useEffect, akan error.
-- **Giant component files** — File > 200 lines berarti ada logic yang bisa di-extract ke hook atau sub-component.
-- **Modifying `components/ui/`** — File dari shadcn/ui jangan diubah langsung. Buat wrapper: `components/common/Button.tsx` yang extends UI button.
+- **Mixing concerns** — A single component that fetches data, handles a form, and renders a table all at once. Split: container (data) vs presentational (UI).
+- **Arrow function exports** — `export const UserList = () => { ... }`. Use named function declarations so stack traces are clear and hoisting works.
+- **Props drilling > 2 levels** — If a prop has to pass through 2+ components, consider composition (children), context, or Zustand.
+- **Forgetting `"use client"`** — In Next.js App Router, a component without the directive = Server Component. Using useState/useEffect will cause an error.
+- **Giant component files** — Files > 200 lines mean there's logic that can be extracted into a hook or sub-component.
+- **Modifying `components/ui/`** — Don't modify shadcn/ui files directly. Create a wrapper: `components/common/Button.tsx` that extends the UI button.
 
 ## Related
 
-- [Hooks](./hooks.md) — Kapan extract logic dari component ke custom hook
-- [Styling](./styling.md) — Tailwind patterns untuk component styling
-- [TypeScript](./typescript.md) — Interface patterns untuk component props
+- [Hooks](./hooks.md) — When to extract logic from a component into a custom hook
+- [Styling](./styling.md) — Tailwind patterns for component styling
+- [TypeScript](./typescript.md) — Interface patterns for component props

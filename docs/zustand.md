@@ -2,22 +2,22 @@
 
 ## Principle
 
-Kenapa Zustand dan bukan Redux atau Context API? Karena Zustand punya **simplicity tanpa sacrifice**. Redux terlalu verbose untuk kebanyakan use case (actions, reducers, dispatch, selectors — semua terpisah). Context API re-renders semua consumers setiap value berubah. Zustand kasih kita store yang simple, performant (granular subscriptions), dan zero-boilerplate.
+Why Zustand and not Redux or Context API? Because Zustand has **simplicity without sacrifice**. Redux is too verbose for most use cases (actions, reducers, dispatch, selectors — all separate). Context API re-renders all consumers every time a value changes. Zustand gives us a store that is simple, performant (granular subscriptions), and zero-boilerplate.
 
-Rule "1 store per domain" itu penting karena monolithic store (satu store untuk semua) bikin coupling tinggi — perubahan di satu domain bisa unintentionally affect domain lain. Tapi terlalu banyak store juga masalah (coordination nightmare). Sweet spot: 1 store per feature/domain boundary.
+The "1 store per domain" rule is important because a monolithic store (one store for everything) creates high coupling — a change in one domain can unintentionally affect another. But too many stores are also a problem (coordination nightmare). The sweet spot: 1 store per feature/domain boundary.
 
-"Never put server state in Zustand" itu **non-negotiable**. Server state (data dari API) harus di-manage oleh React Query — dia yang handle caching, staleness, background refetch, deduplication. Kalau copy server data ke Zustand, kita punya dua sources of truth yang bisa out of sync. Zustand cuma untuk **client state**: theme, sidebar open/close, filter selections, UI preferences.
+"Never put server state in Zustand" is **non-negotiable**. Server state (data from an API) must be managed by React Query — it handles caching, staleness, background refetching, and deduplication. If you copy server data into Zustand, you have two sources of truth that can go out of sync. Zustand is only for **client state**: theme, sidebar open/close, filter selections, UI preferences.
 
 ## Rules
 
 - 1 store per domain/feature: `useAppStore` (app-wide UI), `useFilterStore` (filter state)
-- Actions (setters/togglers) harus **inside** the store, bukan external functions
-- Naming: `use` + Domain + `Store` — contoh: `useAppStore`, `useFilterStore`
-- Never put server state di Zustand (that's React Query's job)
-- Gunakan selectors untuk granular subscriptions: `useAppStore((s) => s.theme)`
-- Initial state sebagai separate object untuk easy reset
-- Slices pattern untuk large stores (> 10 state fields)
-- Stores di `stores/` folder, 1 file per store
+- Actions (setters/togglers) must be **inside** the store, not external functions
+- Naming: `use` + Domain + `Store` — example: `useAppStore`, `useFilterStore`
+- Never put server state in Zustand (that's React Query's job)
+- Use selectors for granular subscriptions: `useAppStore((s) => s.theme)`
+- Initial state as a separate object for easy reset
+- Slices pattern for large stores (> 10 state fields)
+- Stores in `stores/` folder, 1 file per store
 
 ## Pattern
 
@@ -50,7 +50,7 @@ const useDerived = () => useXStore((state) => compute(state));
 
 ### App Store — Global UI State
 
-Dari `apps/nextjs/stores/useAppStore.ts`:
+From `apps/nextjs/stores/useAppStore.ts`:
 
 ```ts
 import { create } from "zustand";
@@ -98,7 +98,7 @@ function Header() {
 
 ### Filter Store — Domain-specific State with Reset
 
-Dari `apps/nextjs/stores/useFilterStore.ts`:
+From `apps/nextjs/stores/useFilterStore.ts`:
 
 ```ts
 import { create } from "zustand";
@@ -130,11 +130,11 @@ export const useFilterStore = create<FilterState>((set) => ({
 }));
 ```
 
-Key pattern: `initialState` sebagai separate object supaya `reset()` bisa return ke state awal tanpa re-define setiap field.
+Key pattern: `initialState` as a separate object so `reset()` can return to the initial state without re-defining every field.
 
 ### Derived Selectors
 
-Dari `apps/nextjs/stores/useFilterStore.ts`:
+From `apps/nextjs/stores/useFilterStore.ts`:
 
 ```ts
 /** Selector: returns true when any filter is active. */
@@ -158,7 +158,7 @@ function FilterBar() {
 
 ### Slices Pattern (Large Stores)
 
-Untuk store yang grow > 10 fields, split ke slices:
+For stores that grow > 10 fields, split into slices:
 
 ```ts
 // slices/uiSlice.ts
@@ -195,7 +195,7 @@ export const useAppStore = create<AppState>((...args) => ({
 
 ### Zustand with Middleware (Persist)
 
-Kalau butuh persist state ke localStorage:
+If you need to persist state to localStorage:
 
 ```ts
 import { create } from "zustand";
@@ -217,23 +217,23 @@ export const useAppStore = create<AppState>()(
 
 ### Next.js
 
-- Store files ga perlu `"use client"` — mereka di-import oleh client components
-- SSR caveat: Zustand store adalah singleton. Di Next.js dengan SSR, hati-hati hydration mismatch. Pakai `persist` middleware dengan `skipHydration` kalau perlu
+- Store files don't need `"use client"` — they are imported by client components
+- SSR caveat: Zustand stores are singletons. In Next.js with SSR, be careful of hydration mismatch. Use `persist` middleware with `skipHydration` if needed
 
 ### Vite
 
-- Tidak ada SSR concern — store langsung usable
-- Sama persis dengan Next.js dalam usage
+- No SSR concerns — stores are directly usable
+- Identical to Next.js in usage
 
 ## Common Mistakes
 
-- **Taruh server state di store** — `useAppStore.setState({ users: fetchedUsers })` — ini double caching. Users harus di React Query, bukan Zustand.
-- **Actions di luar store** — `const setTheme = (theme) => useAppStore.setState({ theme })` — actions harus di dalam create(). External actions bikin logic scattered.
-- **Subscribe ke seluruh store** — `const state = useAppStore()` tanpa selector = re-render setiap ANY state change. Selalu pakai selector: `useAppStore((s) => s.theme)`.
-- **Lupa initial state object** — Tanpa separate `initialState`, reset function harus hardcode setiap value. Error-prone kalau state grow.
-- **Store yang terlalu besar** — Store dengan 20+ fields tanpa slices. Split ke slices per concern.
-- **Derived state di store** — `isFilterActive: search !== ""` sebagai state field — ini bisa jadi computed selector. Jangan store derived values, compute them.
-- **Mutating state directly** — `set((state) => { state.theme = "dark"; return state; })` — Zustand pakai shallow merge, tapi mutating parameter itu bad practice. Always return new object.
+- **Putting server state in the store** — `useAppStore.setState({ users: fetchedUsers })` — this is double caching. Users should be in React Query, not Zustand.
+- **Actions outside the store** — `const setTheme = (theme) => useAppStore.setState({ theme })` — actions must be inside `create()`. External actions scatter logic.
+- **Subscribing to the entire store** — `const state = useAppStore()` without a selector = re-render on ANY state change. Always use a selector: `useAppStore((s) => s.theme)`.
+- **Forgetting the initial state object** — Without a separate `initialState`, the reset function must hardcode every value. Error-prone as state grows.
+- **Store that is too large** — A store with 20+ fields without slices. Split into slices per concern.
+- **Derived state in the store** — `isFilterActive: search !== ""` as a state field — this can be a computed selector. Don't store derived values, compute them.
+- **Mutating state directly** — `set((state) => { state.theme = "dark"; return state; })` — Zustand uses shallow merge, but mutating the parameter is bad practice. Always return a new object.
 
 ## Related
 
