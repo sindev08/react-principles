@@ -46,7 +46,7 @@ export function WhySection() {
               React Principles is a collection of{" "}
               <strong>isolated patterns</strong> combined with{" "}
               <strong>real-world implementations</strong>. We show you how a
-              pattern behaves in a Next.js 15 Server Component environment
+              pattern behaves in a Next.js 16 Server Component environment
               versus a Vite-based Client-side application.
             </p>
             <div className="grid grid-cols-1 gap-4">
@@ -66,7 +66,7 @@ export function WhySection() {
             <div className="absolute inset-0 transform scale-75 rounded-full bg-primary/5 -z-10 blur-3xl" />
             <div className="p-8 border rounded-2xl shadow-2xl bg-background-light dark:bg-slate-900 border-slate-200 dark:border-white/5">
               <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg shadow-sm bg-white dark:bg-slate-800">
+                <div className="p-3 rounded-lg shadow-xs bg-white dark:bg-slate-800">
                   <span className="material-symbols-outlined text-primary">
                     science
                   </span>

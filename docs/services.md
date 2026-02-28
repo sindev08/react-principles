@@ -10,10 +10,10 @@ Endpoint constants (`ENDPOINTS`) are not over-engineering — they provide **typ
 
 ## Rules
 
-- API client in `packages/shared/src/services/api-client.ts` — shared across apps
-- Endpoints in `packages/shared/src/services/endpoints.ts` — centralized constants
+- API client in `src/lib/api-client.ts` — centralized request boundary
+- Endpoints in `src/lib/endpoints.ts` — centralized constants
 - Never hardcode API paths in components or hooks — always use `ENDPOINTS`
-- Request/response types in `packages/shared/src/types/api.ts`
+- Request/response types in `src/shared/types/api.ts`
 - Error handling centralized in the client, not per-call
 - Auth token injection via `getAuthToken` callback — not manual headers per request
 - Query params auto-filtered: `undefined` values are skipped
@@ -53,7 +53,7 @@ const user = await api.post<ApiResponse<User>>(ENDPOINTS.users.create, {
 
 ### API Client
 
-From `packages/shared/src/services/api-client.ts`:
+From `src/lib/api-client.ts`:
 
 ```ts
 import type { ApiError, ApiResponse } from "../types/api";
@@ -163,7 +163,7 @@ export type ApiClient = ReturnType<typeof createApiClient>;
 
 ### Endpoint Constants
 
-From `packages/shared/src/services/endpoints.ts`:
+From `src/lib/endpoints.ts`:
 
 ```ts
 export const ENDPOINTS = {
@@ -198,7 +198,7 @@ Key points:
 
 ### Response Types
 
-From `packages/shared/src/types/api.ts`:
+From `src/shared/types/api.ts`:
 
 ```ts
 // Success wrapper
@@ -242,8 +242,8 @@ interface QueryParams {
 
 ```ts
 // In query hook
-import { createApiClient } from "@react-principles/shared/services";
-import { ENDPOINTS } from "@react-principles/shared/services";
+import { createApiClient } from "@/lib/api-client";
+import { ENDPOINTS } from "@/lib/endpoints";
 
 const api = createApiClient({
   baseUrl: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001",
@@ -299,10 +299,9 @@ const api = createApiClient({
 - `process.env.NEXT_PUBLIC_API_URL` for client-side API URL
 - Server-side API calls can use `process.env.API_URL` (internal network URL)
 
-### Vite
+### Runtime Note
 
-- `import.meta.env.VITE_API_URL` for API URL (Vite env convention)
-- All API calls are client-side
+This repository currently uses Next.js environment variables (`NEXT_PUBLIC_*` on client, server-only vars without prefix on server code).
 
 ## Common Mistakes
 

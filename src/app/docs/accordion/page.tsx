@@ -25,7 +25,7 @@ const TYPES: AccordionType[] = ["single", "multiple"];
 const CODE_SNIPPET = `import {
   Accordion, AccordionItem,
   AccordionTrigger, AccordionContent,
-} from "@/components/ui/Accordion";
+} from "@/ui/Accordion";
 
 // Single — only one item open at a time
 <Accordion type="single" defaultValue="item-1">
@@ -100,9 +100,9 @@ const FAQ_ITEMS = [
 ];
 
 const INSTALL_ITEMS = [
-  { value: "react", q: "React", a: "This component requires React 18+ and uses createContext, useState, and useContext from the standard React package." },
-  { value: "tailwind", q: "Tailwind CSS", a: "Styling is fully Tailwind-based. Make sure your tailwind.config.js includes the component paths in the content array." },
-  { value: "cn", q: "cn() utility", a: "Uses cn() from @react-principles/shared/utils (clsx + tailwind-merge) for conditional class merging." },
+  { value: "react", q: "React", a: "This component requires React 19+ and uses createContext, useState, and useContext from the standard React package." },
+  { value: "tailwind", q: "Tailwind CSS", a: "Styling is fully Tailwind-based with Tailwind v4. Theme tokens and variants are configured in src/app/globals.css." },
+  { value: "cn", q: "cn() utility", a: "Uses cn() from @/shared/utils/cn (clsx + tailwind-merge) for conditional class merging." },
 ];
 
 // ─── Forced-theme preview ─────────────────────────────────────────────────────
@@ -151,8 +151,8 @@ function ThemedAccordionPreview({ theme }: { theme: "light" | "dark" }) {
   const c = FORCED[theme];
   const dot =
     theme === "dark"
-      ? "h-3 w-3 rounded-full bg-indigo-500 shadow-sm shadow-indigo-400"
-      : "h-3 w-3 rounded-full bg-amber-400 shadow-sm shadow-amber-300";
+      ? "h-3 w-3 rounded-full bg-indigo-500 shadow-xs shadow-indigo-400"
+      : "h-3 w-3 rounded-full bg-amber-400 shadow-xs shadow-amber-300";
 
   return (
     <div>
@@ -225,7 +225,7 @@ export default function AccordionDocPage() {
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
@@ -242,12 +242,12 @@ export default function AccordionDocPage() {
         {/* 02 Live Demo */}
         <section id="demo" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">02</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
           </div>
-          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-sm space-y-6">
+          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-xs space-y-6">
 
             {/* Type selector */}
             <div className="flex items-center gap-3">
@@ -308,12 +308,12 @@ export default function AccordionDocPage() {
         {/* 03 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
           </div>
-          <CodeBlock filename="components/ui/Accordion.tsx" copyText={CODE_SNIPPET}>
+          <CodeBlock filename="src/ui/Accordion.tsx" copyText={CODE_SNIPPET}>
             {CODE_SNIPPET}
           </CodeBlock>
         </section>
@@ -321,7 +321,7 @@ export default function AccordionDocPage() {
         {/* 04 Props */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
@@ -347,7 +347,7 @@ export default function AccordionDocPage() {
                       <code className="text-xs font-mono font-semibold text-primary">{row.prop}</code>
                     </td>
                     <td className="px-4 py-3 max-w-[160px]">
-                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 break-words">{row.type}</code>
+                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
                     </td>
                     <td className="px-4 py-3">
                       <code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code>

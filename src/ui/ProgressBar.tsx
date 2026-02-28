@@ -24,7 +24,7 @@ export function ProgressBar({ progress, visible }: ProgressBarProps) {
       aria-valuenow={progress}
       aria-hidden="true"
       className={cn(
-        "pointer-events-none fixed left-0 top-0 z-[200] h-[2px] bg-primary",
+        "pointer-events-none fixed left-0 top-0 z-200 h-0.5 bg-primary",
         // Glow effect matching the primary color
         "shadow-[0_0_8px_1px_rgba(70,40,241,0.7)]",
         "transition-opacity duration-300",

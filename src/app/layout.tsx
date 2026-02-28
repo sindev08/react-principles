@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import { Providers } from "./providers";
 import "./globals.css";
+import "@material-symbols/font-400/outlined.css";
 
 const BASE_URL = "https://react-principles.dev";
 const TITLE = "React Principles";
 const DESCRIPTION =
-  "A living cookbook of production-grade React patterns. Real implementations with Next.js 15, Vite, TanStack Query, Zustand, React Hook Form, and TypeScript.";
+  "A living cookbook of production-grade React patterns. Real implementations with Next.js 16, Vite, TanStack Query, Zustand, React Hook Form, and TypeScript.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -91,7 +92,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased">
+      <body className="min-h-screen bg-(--background) text-(--foreground) antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>

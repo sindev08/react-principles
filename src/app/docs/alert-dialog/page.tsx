@@ -18,7 +18,7 @@ const TOC_ITEMS = [
 
 const VARIANTS: AlertDialogVariant[] = ["destructive", "warning", "default"];
 
-const CODE_SNIPPET = `import { AlertDialog } from "@/components/ui/AlertDialog";
+const CODE_SNIPPET = `import { AlertDialog } from "@/ui/AlertDialog";
 
 const [open, setOpen] = useState(false);
 const [loading, setLoading] = useState(false);
@@ -119,8 +119,8 @@ function ThemedAlertPreview({ theme }: { theme: "light" | "dark" }) {
   const v = FORCED_VARIANTS.destructive;
   const dot =
     theme === "dark"
-      ? "h-3 w-3 rounded-full bg-indigo-500 shadow-sm shadow-indigo-400"
-      : "h-3 w-3 rounded-full bg-amber-400 shadow-sm shadow-amber-300";
+      ? "h-3 w-3 rounded-full bg-indigo-500 shadow-xs shadow-indigo-400"
+      : "h-3 w-3 rounded-full bg-amber-400 shadow-xs shadow-amber-300";
 
   return (
     <div>
@@ -253,7 +253,7 @@ export default function AlertDialogDocPage() {
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
@@ -270,12 +270,12 @@ export default function AlertDialogDocPage() {
         {/* 02 Live Demo */}
         <section id="demo" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">02</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
           </div>
-          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-sm space-y-5">
+          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-xs space-y-5">
 
             {/* Variant selector */}
             <div className="flex items-center gap-3">
@@ -329,12 +329,12 @@ export default function AlertDialogDocPage() {
         {/* 03 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
           </div>
-          <CodeBlock filename="components/ui/AlertDialog.tsx" copyText={CODE_SNIPPET}>
+          <CodeBlock filename="src/ui/AlertDialog.tsx" copyText={CODE_SNIPPET}>
             {CODE_SNIPPET}
           </CodeBlock>
         </section>
@@ -342,7 +342,7 @@ export default function AlertDialogDocPage() {
         {/* 04 Props */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
@@ -365,7 +365,7 @@ export default function AlertDialogDocPage() {
                       <code className="text-xs font-mono font-semibold text-primary">{row.prop}</code>
                     </td>
                     <td className="px-4 py-3 max-w-[180px]">
-                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 break-words">{row.type}</code>
+                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
                     </td>
                     <td className="px-4 py-3">
                       <code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code>

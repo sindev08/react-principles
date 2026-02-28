@@ -17,7 +17,7 @@ Zod + React Hook Form via `@hookform/resolvers` is a seamless integration: defin
 - Type form values: `z.infer<typeof schema>` — don't define types manually
 - Default values must match the schema shape
 - Handle submit errors via mutation error state, not manual try/catch in JSX
-- Reusable schemas in `packages/shared/src/utils/validators.ts`
+- Reusable schemas in `src/shared/utils/validators.ts`
 
 ## Pattern
 
@@ -49,11 +49,11 @@ const onSubmit = (data: FormValues) => { ... };
 
 ## Implementation
 
-> **Version:** React Hook Form v7 + Zod v3 + @hookform/resolvers v3 | Tested on: 2025-05
+> **Version:** React Hook Form v7 + Zod v4 + @hookform/resolvers v5 | Tested on: 2026-02
 
 ### Reusable Schemas
 
-From `packages/shared/src/utils/validators.ts`:
+From `src/shared/utils/validators.ts`:
 
 ```ts
 import { z } from "zod";
@@ -131,7 +131,7 @@ const registerSchema = loginSchema
 
 ### Complete Form Component
 
-From `apps/nextjs/components/examples/UserForm.tsx`:
+From `src/features/examples/components/UserForm.tsx`:
 
 ```tsx
 "use client";
@@ -139,8 +139,8 @@ From `apps/nextjs/components/examples/UserForm.tsx`:
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { userSchema } from "@react-principles/shared/utils";
-import { useCreateUser } from "@/hooks/mutations/useCreateUser";
+import { userSchema } from "@/shared/utils/validators";
+import { useCreateUser } from "@/features/examples/hooks/useCreateUser";
 
 // 1. Derive schema from base
 const createUserFormSchema = userSchema.omit({ id: true, createdAt: true });
@@ -260,9 +260,9 @@ function DynamicForm() {
 - Form components must be `"use client"` because they use hooks and event handlers
 - Server Actions can be used as an alternative submit handler, but form validation remains client-side via Zod + RHF
 
-### Vite
+### Runtime Note
 
-- No difference — forms work identically
+This repository currently uses a Next.js App Router implementation for form examples.
 
 ## Common Mistakes
 

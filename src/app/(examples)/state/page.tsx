@@ -26,7 +26,7 @@ export default function StatePage() {
               <span className="text-sm text-gray-600 dark:text-gray-400">
                 Theme
               </span>
-              <span className="rounded bg-gray-100 px-2 py-0.5 text-sm font-mono dark:bg-gray-800">
+              <span className="rounded-sm bg-gray-100 px-2 py-0.5 text-sm font-mono dark:bg-gray-800">
                 {theme}
               </span>
             </div>
@@ -34,7 +34,7 @@ export default function StatePage() {
               <span className="text-sm text-gray-600 dark:text-gray-400">
                 Sidebar
               </span>
-              <span className="rounded bg-gray-100 px-2 py-0.5 text-sm font-mono dark:bg-gray-800">
+              <span className="rounded-sm bg-gray-100 px-2 py-0.5 text-sm font-mono dark:bg-gray-800">
                 {sidebarOpen ? "open" : "closed"}
               </span>
             </div>
@@ -68,7 +68,7 @@ export default function StatePage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search users..."
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900"
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900"
               />
             </div>
             <div>
@@ -82,7 +82,7 @@ export default function StatePage() {
                     (e.target.value || null) as "admin" | "editor" | "viewer" | null,
                   )
                 }
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900"
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900"
               >
                 <option value="">All roles</option>
                 <option value="admin">Admin</option>
@@ -101,7 +101,7 @@ export default function StatePage() {
                     (e.target.value || null) as "active" | "inactive" | null,
                   )
                 }
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900"
+                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900"
               >
                 <option value="">All statuses</option>
                 <option value="active">Active</option>

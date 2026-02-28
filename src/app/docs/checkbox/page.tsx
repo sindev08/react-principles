@@ -22,7 +22,7 @@ const NOTIFICATION_ITEMS = [
   { id: "digest", label: "Weekly digest", description: "A summary every Monday." },
 ];
 
-const CODE_SNIPPET = `import { Checkbox } from "@/components/ui/Checkbox";
+const CODE_SNIPPET = `import { Checkbox } from "@/ui/Checkbox";
 
 // Basic
 <Checkbox label="Accept terms and conditions" />
@@ -97,7 +97,7 @@ function ThemedCheckboxPreview({ theme }: { theme: "light" | "dark" }) {
     <div className={`rounded-xl border ${border} ${bg} p-6 space-y-4`}>
       {states.map((s) => (
         <div key={s.stateLabel} className="flex items-center gap-3">
-          <div className={`h-5 w-5 shrink-0 rounded flex items-center justify-center ${s.boxCls}`}>
+          <div className={`h-5 w-5 shrink-0 rounded-sm flex items-center justify-center ${s.boxCls}`}>
             {s.showCheck && (
               <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none">
                 <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -169,7 +169,7 @@ export default function CheckboxDocPage() {
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
@@ -181,14 +181,14 @@ export default function CheckboxDocPage() {
           <div className="grid gap-6 lg:grid-cols-2">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <div className="h-3 w-3 rounded-full bg-amber-400 shadow-sm shadow-amber-300" />
+                <div className="h-3 w-3 rounded-full bg-amber-400 shadow-xs shadow-amber-300" />
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Light</span>
               </div>
               <ThemedCheckboxPreview theme="light" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <div className="h-3 w-3 rounded-full bg-indigo-500 shadow-sm shadow-indigo-400" />
+                <div className="h-3 w-3 rounded-full bg-indigo-500 shadow-xs shadow-indigo-400" />
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Dark</span>
               </div>
               <ThemedCheckboxPreview theme="dark" />
@@ -199,12 +199,12 @@ export default function CheckboxDocPage() {
         {/* 02 Live Demo */}
         <section id="demo" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">02</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
           </div>
-          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-sm space-y-6">
+          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-xs space-y-6">
             {/* Size selector */}
             <div className="flex items-center gap-3">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Size</span>
@@ -262,12 +262,12 @@ export default function CheckboxDocPage() {
         {/* 03 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
           </div>
-          <CodeBlock filename="components/ui/Checkbox.tsx" copyText={CODE_SNIPPET}>
+          <CodeBlock filename="src/ui/Checkbox.tsx" copyText={CODE_SNIPPET}>
             {CODE_SNIPPET}
           </CodeBlock>
         </section>
@@ -275,7 +275,7 @@ export default function CheckboxDocPage() {
         {/* 04 Props */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
@@ -298,7 +298,7 @@ export default function CheckboxDocPage() {
                       <code className="text-xs font-mono font-semibold text-primary">{row.prop}</code>
                     </td>
                     <td className="px-4 py-3 max-w-[180px]">
-                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 break-words">{row.type}</code>
+                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
                     </td>
                     <td className="px-4 py-3">
                       <code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code>

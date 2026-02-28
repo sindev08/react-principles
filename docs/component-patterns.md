@@ -12,7 +12,7 @@ Composition over inheritance isn't just a React mantra — it's fundamental beca
 - One file = one exported component (internal helpers are allowed in the same file)
 - Component > 200 lines -> split into sub-components
 - Props > 7 -> refactor (use composition or object props)
-- Don't modify `components/ui/` directly — extend via wrapper component
+- Keep `src/ui/` as the design-system source of truth; extend thoughtfully instead of duplicating primitives
 - All components have an explicit return type or `JSX.Element` via inference
 - Use `interface` for props, not `type` (except for unions)
 - File name = component name: `UserTable.tsx` exports `UserTable`
@@ -47,21 +47,21 @@ export { Component };
 
 ## Implementation
 
-> **Version:** React v18 | Next.js v15 | Tested on: 2025-05
+> **Version:** React v19 | Next.js v16 | Tested on: 2026-02
 
 ### Component Anatomy — Real Example
 
-From `apps/nextjs/components/examples/UserList.tsx`:
+From `src/features/examples/components/UserList.tsx`:
 
 ```tsx
 // 1. Imports — React, external, internal, relative
 "use client";
 
 import { useState } from "react";
-import { useUsers } from "@/hooks/queries/useUsers";
-import { LoadingState } from "@/components/common/LoadingState";
-import { EmptyState } from "@/components/common/EmptyState";
-import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import { useUsers } from "@/features/examples/hooks/useUsers";
+import { LoadingState } from "@/shared/components/LoadingState";
+import { EmptyState } from "@/shared/components/EmptyState";
+import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 
 // 2. Types (inline here since there are no custom props)
 
@@ -153,7 +153,7 @@ Components in `components/common/` are reusable building blocks:
 - Provider components (`Providers`) must be `"use client"` because they use context
 
 ```tsx
-// apps/nextjs/app/providers.tsx
+// src/app/providers.tsx
 "use client";
 
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -170,26 +170,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
 }
 ```
 
-### Vite
+### Runtime Note
 
-- No need for `"use client"` — all components are already client-side by default
-- Provider structure is the same, but mounted in `main.tsx` or `providers.tsx`
-
-```tsx
-// apps/vite/src/providers.tsx
-import { QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { queryClient } from "@/lib/query-client";
-
-export function Providers({ children }: { children: React.ReactNode }) {
-  return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
-  );
-}
-```
+This repository currently ships a Next.js App Router app; examples should follow the `src/app` + `src/features` structure.
 
 ## Common Mistakes
 
@@ -198,7 +181,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 - **Props drilling > 2 levels** — If a prop has to pass through 2+ components, consider composition (children), context, or Zustand.
 - **Forgetting `"use client"`** — In Next.js App Router, a component without the directive = Server Component. Using useState/useEffect will cause an error.
 - **Giant component files** — Files > 200 lines mean there's logic that can be extracted into a hook or sub-component.
-- **Modifying `components/ui/`** — Don't modify shadcn/ui files directly. Create a wrapper: `components/common/Button.tsx` that extends the UI button.
+- **Bypassing `src/ui/` primitives** — Avoid creating duplicate button/input primitives in feature folders. Reuse `src/ui` as the canonical design-system layer.
 
 ## Related
 

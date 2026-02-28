@@ -18,7 +18,7 @@ const TOC_ITEMS = [
 
 const VARIANTS: TabsVariant[] = ["underline", "pills"];
 
-const CODE_SNIPPET = `import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/Tabs";
+const CODE_SNIPPET = `import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/ui/Tabs";
 
 // Uncontrolled
 <Tabs defaultValue="overview">
@@ -82,7 +82,7 @@ const FORCED: Record<"light" | "dark", ForcedTheme> = {
     contentTitle: "text-slate-900",
     contentText: "text-slate-500",
     pillsListBg: "bg-slate-100",
-    pillsActive: "bg-white text-slate-900 shadow-sm",
+    pillsActive: "bg-white text-slate-900 shadow-xs",
     pillsInactive: "text-slate-500",
   },
   dark: {
@@ -96,7 +96,7 @@ const FORCED: Record<"light" | "dark", ForcedTheme> = {
     contentTitle: "text-white",
     contentText: "text-slate-400",
     pillsListBg: "bg-[#161b22]",
-    pillsActive: "bg-[#0d1117] text-white shadow-sm",
+    pillsActive: "bg-[#0d1117] text-white shadow-xs",
     pillsInactive: "text-slate-500",
   },
 };
@@ -105,8 +105,8 @@ function ThemedTabsPreview({ theme }: { theme: "light" | "dark" }) {
   const c = FORCED[theme];
   const dot =
     theme === "dark"
-      ? "h-3 w-3 rounded-full bg-indigo-500 shadow-sm shadow-indigo-400"
-      : "h-3 w-3 rounded-full bg-amber-400 shadow-sm shadow-amber-300";
+      ? "h-3 w-3 rounded-full bg-indigo-500 shadow-xs shadow-indigo-400"
+      : "h-3 w-3 rounded-full bg-amber-400 shadow-xs shadow-amber-300";
 
   return (
     <div>
@@ -208,7 +208,7 @@ export default function TabsDocPage() {
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
@@ -225,12 +225,12 @@ export default function TabsDocPage() {
         {/* 02 Live Demo */}
         <section id="demo" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">02</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
           </div>
-          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-sm space-y-8">
+          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-xs space-y-8">
 
             {/* Variant selector */}
             <div className="flex items-center gap-3">
@@ -359,12 +359,12 @@ export default function TabsDocPage() {
         {/* 03 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
           </div>
-          <CodeBlock filename="components/ui/Tabs.tsx" copyText={CODE_SNIPPET}>
+          <CodeBlock filename="src/ui/Tabs.tsx" copyText={CODE_SNIPPET}>
             {CODE_SNIPPET}
           </CodeBlock>
         </section>
@@ -372,7 +372,7 @@ export default function TabsDocPage() {
         {/* 04 Props */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
@@ -398,7 +398,7 @@ export default function TabsDocPage() {
                       <code className="text-xs font-mono font-semibold text-primary">{row.prop}</code>
                     </td>
                     <td className="px-4 py-3 max-w-[160px]">
-                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 break-words">{row.type}</code>
+                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
                     </td>
                     <td className="px-4 py-3">
                       <code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code>

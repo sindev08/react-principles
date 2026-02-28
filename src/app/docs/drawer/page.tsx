@@ -30,8 +30,8 @@ const SIDES: DrawerSide[] = ["right", "left"];
 const CODE_SNIPPET = `import {
   Drawer, DrawerHeader, DrawerTitle,
   DrawerDescription, DrawerContent, DrawerFooter,
-} from "@/components/ui/Drawer";
-import { Button } from "@/components/ui/Button";
+} from "@/ui/Drawer";
+import { Button } from "@/ui/Button";
 
 const [open, setOpen] = useState(false);
 
@@ -123,8 +123,8 @@ function ThemedDrawerPreview({ theme }: { theme: "light" | "dark" }) {
   const c = FORCED[theme];
   const dot =
     theme === "dark"
-      ? "h-3 w-3 rounded-full bg-indigo-500 shadow-sm shadow-indigo-400"
-      : "h-3 w-3 rounded-full bg-amber-400 shadow-sm shadow-amber-300";
+      ? "h-3 w-3 rounded-full bg-indigo-500 shadow-xs shadow-indigo-400"
+      : "h-3 w-3 rounded-full bg-amber-400 shadow-xs shadow-amber-300";
 
   return (
     <div>
@@ -247,7 +247,7 @@ export default function DrawerDocPage() {
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
@@ -264,12 +264,12 @@ export default function DrawerDocPage() {
         {/* 02 Live Demo */}
         <section id="demo" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">02</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
           </div>
-          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-sm space-y-5">
+          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-xs space-y-5">
 
             {/* Controls */}
             <div className="flex flex-wrap gap-6 items-center">
@@ -345,7 +345,7 @@ export default function DrawerDocPage() {
                         activeItems[item.id] ? "bg-primary" : "bg-slate-200 dark:bg-[#1f2937]"
                       }`}
                     >
-                      <span className={`pointer-events-none h-4 w-4 rounded-full bg-white shadow transition-transform ${activeItems[item.id] ? "translate-x-4" : "translate-x-0"}`} />
+                      <span className={`pointer-events-none h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${activeItems[item.id] ? "translate-x-4" : "translate-x-0"}`} />
                     </div>
                   </label>
                 ))}
@@ -439,12 +439,12 @@ export default function DrawerDocPage() {
         {/* 03 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
           </div>
-          <CodeBlock filename="components/ui/Drawer.tsx" copyText={CODE_SNIPPET}>
+          <CodeBlock filename="src/ui/Drawer.tsx" copyText={CODE_SNIPPET}>
             {CODE_SNIPPET}
           </CodeBlock>
         </section>
@@ -452,7 +452,7 @@ export default function DrawerDocPage() {
         {/* 04 Props */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
@@ -475,7 +475,7 @@ export default function DrawerDocPage() {
                       <code className="text-xs font-mono font-semibold text-primary">{row.prop}</code>
                     </td>
                     <td className="px-4 py-3 max-w-[180px]">
-                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 break-words">{row.type}</code>
+                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
                     </td>
                     <td className="px-4 py-3">
                       <code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code>

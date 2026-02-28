@@ -54,7 +54,7 @@ export function Button({
       disabled={disabled || isLoading}
       className={cn(
         "inline-flex items-center justify-center font-semibold rounded-lg transition-all",
-        "focus-visible:outline-none focus-visible:ring-2",
+        "focus-visible:outline-hidden focus-visible:ring-2",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         VARIANT_CLASSES[variant],
         SIZE_CLASSES[size],

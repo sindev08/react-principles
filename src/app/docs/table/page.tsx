@@ -155,7 +155,7 @@ export default function TableDocPage() {
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
@@ -170,7 +170,7 @@ export default function TableDocPage() {
             {/* Light */}
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <div className="h-3 w-3 rounded-full bg-amber-400 shadow-sm shadow-amber-300" />
+                <div className="h-3 w-3 rounded-full bg-amber-400 shadow-xs shadow-amber-300" />
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Light</span>
                 <span className="ml-auto text-xs text-slate-400">bg-white · border-slate-200</span>
               </div>
@@ -180,7 +180,7 @@ export default function TableDocPage() {
             {/* Dark */}
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <div className="h-3 w-3 rounded-full bg-indigo-500 shadow-sm shadow-indigo-400" />
+                <div className="h-3 w-3 rounded-full bg-indigo-500 shadow-xs shadow-indigo-400" />
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Dark</span>
                 <span className="ml-auto text-xs text-slate-400">bg-[#0d1117] · border-[#1f2937]</span>
               </div>
@@ -192,7 +192,7 @@ export default function TableDocPage() {
         {/* 02 Live Demo */}
         <section id="demo" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">02</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
@@ -201,7 +201,7 @@ export default function TableDocPage() {
             Fully interactive — try sorting columns, filtering rows, and navigating pages.
             The table responds to the current app theme automatically.
           </p>
-          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-sm">
+          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-xs">
             <UserTable />
           </div>
         </section>
@@ -209,14 +209,14 @@ export default function TableDocPage() {
         {/* 03 Column Config */}
         <section id="columns" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Column Config</h2>
           </div>
           <p className="mb-6 leading-relaxed text-slate-600 dark:text-slate-400">
-            Define columns with <code className="rounded bg-slate-100 dark:bg-[#1f2937] px-1.5 py-0.5 text-xs font-mono text-primary">ColumnDef&lt;T&gt;</code>.
-            Wrap in <code className="rounded bg-slate-100 dark:bg-[#1f2937] px-1.5 py-0.5 text-xs font-mono text-primary">useMemo</code> to
+            Define columns with <code className="rounded-sm bg-slate-100 dark:bg-[#1f2937] px-1.5 py-0.5 text-xs font-mono text-primary">ColumnDef&lt;T&gt;</code>.
+            Wrap in <code className="rounded-sm bg-slate-100 dark:bg-[#1f2937] px-1.5 py-0.5 text-xs font-mono text-primary">useMemo</code> to
             prevent re-instantiation on every render.
           </p>
           <CodeBlock filename="components/UserTable.tsx" copyText={COLUMN_CONFIG_CODE}>
@@ -227,7 +227,7 @@ export default function TableDocPage() {
         {/* 04 Props */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>

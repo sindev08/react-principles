@@ -15,7 +15,7 @@ const ZUSTAND_STORE = `// stores/useAppStore.ts
 type Theme = "light" | "dark";
 
 export const useAppStore = create<AppState>((set) => ({
-  theme: "light",
+  theme: "dark",
   toggleTheme: () =>
     set((state) => ({
       theme: state.theme === "light" ? "dark" : "light",
@@ -24,7 +24,7 @@ export const useAppStore = create<AppState>((set) => ({
   // ...
 }));`;
 
-const TOGGLE_COMPONENT = `// components/landing/ThemeToggle.tsx
+const TOGGLE_COMPONENT = `// src/features/landing/components/ThemeToggle.tsx
 export function ThemeToggle() {
   const { theme, toggleTheme } = useAppStore();
 
@@ -56,7 +56,7 @@ export function ThemeToggle() {
   );
 }`;
 
-const CSS_VARS = `/* app/globals.css (Next.js) | src/index.css (Vite) */
+const CSS_VARS = `/* src/app/globals.css */
 :root {
   --background: #f6f6f8;
   --foreground: #0f172a;
@@ -80,7 +80,7 @@ const DARK_WRITING = `// ✅ Standard dark mode — use dark: prefix
 </div>
 
 // ✅ Conditional with cn()
-import { cn } from "@react-principles/shared/utils";
+import { cn } from "@/shared/utils/cn";
 
 <div className={cn(
   "rounded-lg border p-4",
@@ -172,7 +172,7 @@ export default function DarkModePage() {
             The <code className="font-mono text-xs text-primary">ThemeToggle</code> component lives in the navbar.
             It bridges Zustand state to the DOM and handles initialization on mount.
           </p>
-          <CodeBlock filename="components/landing/ThemeToggle.tsx" copyText={TOGGLE_COMPONENT}>
+          <CodeBlock filename="src/features/landing/components/ThemeToggle.tsx" copyText={TOGGLE_COMPONENT}>
             {TOGGLE_COMPONENT}
           </CodeBlock>
 

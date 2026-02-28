@@ -44,7 +44,7 @@ const FORCED_DARK: Record<ButtonVariant, string> = {
 
 const BASE_BTN = "inline-flex items-center justify-center font-semibold rounded-lg text-sm px-4 py-2 h-9 transition-all";
 
-const CODE_SNIPPET = `import { Button } from "@/components/ui/Button";
+const CODE_SNIPPET = `import { Button } from "@/ui/Button";
 
 // Variants
 <Button variant="primary">Save changes</Button>
@@ -149,7 +149,7 @@ export default function ButtonDocPage() {
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
@@ -161,14 +161,14 @@ export default function ButtonDocPage() {
           <div className="grid gap-6 lg:grid-cols-2">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <div className="h-3 w-3 rounded-full bg-amber-400 shadow-sm shadow-amber-300" />
+                <div className="h-3 w-3 rounded-full bg-amber-400 shadow-xs shadow-amber-300" />
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Light</span>
               </div>
               <ThemedButtonGrid theme="light" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <div className="h-3 w-3 rounded-full bg-indigo-500 shadow-sm shadow-indigo-400" />
+                <div className="h-3 w-3 rounded-full bg-indigo-500 shadow-xs shadow-indigo-400" />
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Dark</span>
               </div>
               <ThemedButtonGrid theme="dark" />
@@ -179,12 +179,12 @@ export default function ButtonDocPage() {
         {/* 02 Live Demo */}
         <section id="demo" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">02</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
           </div>
-          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-sm space-y-6">
+          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-xs space-y-6">
             {/* Controls */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
@@ -232,7 +232,7 @@ export default function ButtonDocPage() {
                   type="checkbox"
                   checked={isDisabled}
                   onChange={(e) => setIsDisabled(e.target.checked)}
-                  className="rounded border-slate-300 dark:border-slate-600 accent-primary"
+                  className="rounded-sm border-slate-300 dark:border-slate-600 accent-primary"
                 />
                 <span className="text-xs font-medium text-slate-600 dark:text-slate-400">disabled</span>
               </label>
@@ -262,12 +262,12 @@ export default function ButtonDocPage() {
         {/* 03 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
           </div>
-          <CodeBlock filename="components/ui/Button.tsx" copyText={CODE_SNIPPET}>
+          <CodeBlock filename="src/ui/Button.tsx" copyText={CODE_SNIPPET}>
             {CODE_SNIPPET}
           </CodeBlock>
         </section>
@@ -275,14 +275,14 @@ export default function ButtonDocPage() {
         {/* 04 Props */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>
           <p className="mb-6 text-sm text-slate-600 dark:text-slate-400">
             Extends all native{" "}
-            <code className="rounded bg-slate-100 dark:bg-[#1f2937] px-1.5 py-0.5 text-xs font-mono text-primary">HTMLButtonElement</code>
+            <code className="rounded-sm bg-slate-100 dark:bg-[#1f2937] px-1.5 py-0.5 text-xs font-mono text-primary">HTMLButtonElement</code>
             {" "}attributes (onClick, type, form, etc.).
           </p>
           <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#1f2937]">
@@ -303,7 +303,7 @@ export default function ButtonDocPage() {
                       <code className="text-xs font-mono font-semibold text-primary">{row.prop}</code>
                     </td>
                     <td className="px-4 py-3 max-w-[200px]">
-                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 break-words">{row.type}</code>
+                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
                     </td>
                     <td className="px-4 py-3">
                       <code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code>

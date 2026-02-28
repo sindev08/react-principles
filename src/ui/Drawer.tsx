@@ -44,7 +44,7 @@ export interface DrawerFooterProps extends HTMLAttributes<HTMLDivElement> {
 const SIZE_CLASSES: Record<DrawerSize, string> = {
   sm: "w-80",
   md: "w-96",
-  lg: "w-[32rem]",
+  lg: "w-lg",
   full: "w-full",
 };
 
@@ -132,7 +132,7 @@ export function Drawer({ open, onClose, side = "right", size = "md", children, c
       {/* Backdrop */}
       <div
         className={cn(
-          "absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300",
+          "absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300",
           visible ? "opacity-100" : "opacity-0"
         )}
       />

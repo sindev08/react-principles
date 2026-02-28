@@ -160,7 +160,7 @@ export function CookbookFoundationPage({ framework }: CookbookFoundationPageProp
             {RECIPE_STEPS.map(({ step, label, description }, i) => (
               <div key={step} className="flex gap-4">
                 <div className="flex flex-col items-center">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-primary/10 text-primary">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-sm bg-primary/10 text-primary">
                     <span className="text-sm font-bold">{step}</span>
                   </div>
                   {i < RECIPE_STEPS.length - 1 && (

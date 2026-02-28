@@ -15,7 +15,7 @@ Dark mode uses class-based strategy (`dark:` prefix) instead of media-query-base
 - Dark mode via `dark:` prefix — class-based strategy
 - Component variants via conditional `cn()`, not CSS
 - Responsive via Tailwind breakpoints: `sm:`, `md:`, `lg:`, `xl:`
-- Don't modify shadcn/ui components directly — extend via wrapper
+- `src/ui` is custom (shadcn-style) — maintain components in-repo directly
 - Avoid `!important` — if needed, there's likely a class conflict that should be fixed
 - Consistent spacing: use Tailwind scale (4, 8, 12, 16...), avoid arbitrary values unless necessary
 
@@ -42,11 +42,11 @@ cn(
 
 ## Implementation
 
-> **Version:** Tailwind CSS v3 + clsx + tailwind-merge | Tested on: 2025-05
+> **Version:** Tailwind CSS v4 + clsx + tailwind-merge | Tested on: 2026-02
 
 ### cn() Utility
 
-From `packages/shared/src/utils/cn.ts`:
+From `src/shared/utils/cn.ts`:
 
 ```ts
 import { type ClassValue, clsx } from "clsx";
@@ -72,7 +72,7 @@ Why two libraries?
 
 ### Conditional Classes in Components
 
-From `apps/nextjs/components/examples/UserTable.tsx` — status badge:
+From `src/features/examples/components/UserTable.tsx` — status badge:
 
 ```tsx
 <span
@@ -116,7 +116,7 @@ function Button({ variant = "primary", size = "md", disabled, children }: Button
       disabled={disabled}
       className={cn(
         // Base styles — always applied
-        "inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2",
+        "inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-hidden focus:ring-2 focus:ring-offset-2",
 
         // Variant
         variant === "primary" && "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500",
@@ -191,7 +191,7 @@ Consistent pattern from project forms:
 // Input base
 const inputClasses = cn(
   "w-full rounded-lg border px-3 py-2 text-sm",
-  "border-gray-300 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500",
+  "border-gray-300 focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500",
   "dark:border-gray-700 dark:bg-gray-900",
 );
 
@@ -227,17 +227,11 @@ Consistent pattern from UserTable:
 </div>
 ```
 
-### Next.js
+### Current Setup
 
-- Tailwind config in `apps/nextjs/tailwind.config.js`
-- PostCSS config in `apps/nextjs/postcss.config.js`
-- Global styles in `app/globals.css` with `@tailwind` directives
-
-### Vite
-
-- Tailwind config in `apps/vite/tailwind.config.js`
-- Global styles in `src/index.css` with `@tailwind` directives
-- Identical, only the file location differs
+- Tailwind is configured through `src/app/globals.css` (`@import "tailwindcss"` + theme tokens)
+- PostCSS uses `@tailwindcss/postcss` in `postcss.config.js`
+- Dark mode remains class-based via `.dark`
 
 ## Common Mistakes
 
@@ -246,7 +240,7 @@ Consistent pattern from UserTable:
 - **Inline styles** — `style={{ padding: "16px" }}` — use `className="p-4"`. Exception: truly dynamic values that can't be predicted (e.g., position from calculation).
 - **Arbitrary values overuse** — `w-[347px]` is usually a sign of design inconsistency. Prefer Tailwind scale values.
 - **Forgetting dark mode** — A component that only has light styles. Every `bg-*`, `text-*`, `border-*` should have a `dark:` counterpart.
-- **`!important` usage** — If `!important` is needed (`!px-4`), there's usually a class conflict that should be resolved with `cn()` or by restructuring.
+- **`!important` usage** — If `!important` is needed (`px-4!`), there's usually a class conflict that should be resolved with `cn()` or by restructuring.
 - **Giant className strings** — If className is > 3 lines, extract to a variable or a `cn()` call above the return statement.
 
 ## Related

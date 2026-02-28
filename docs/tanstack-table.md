@@ -47,11 +47,11 @@ flexRender(cell.column.columnDef.cell, cell.getContext())
 
 ## Implementation
 
-> **Version:** TanStack Table v8 | Tested on: 2025-05
+> **Version:** TanStack Table v8 | Tested on: 2026-02
 
 ### Complete Table Component
 
-From `apps/nextjs/components/examples/UserTable.tsx`:
+From `src/features/examples/components/UserTable.tsx`:
 
 ```tsx
 "use client";
@@ -67,7 +67,7 @@ import {
   type ColumnDef,
   type SortingState,
 } from "@tanstack/react-table";
-import type { User } from "@react-principles/shared/types";
+import type { User } from "@/shared/types/common";
 
 export function UserTable() {
   // State for table features
@@ -303,9 +303,9 @@ const selectedRows = table.getSelectedRowModel().rows.map((r) => r.original);
 - Table component must be `"use client"` because it uses useState and event handlers
 - Data can be passed from a Server Component parent to a Client Component table
 
-### Vite
+### Runtime Note
 
-- No difference — table works out of the box
+This repository currently demonstrates TanStack Table usage in Next.js client components.
 
 ## Common Mistakes
 
