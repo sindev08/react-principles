@@ -11,7 +11,7 @@ Separating query hooks and mutation hooks is not just about folder organization 
 ## Rules
 
 - Query keys must be hierarchical, array-based, and created via factory in `lib/query-keys.ts`
-- Query hooks in `hooks/queries/`, mutations in `hooks/mutations/`
+- In this repository, query and mutation hooks are colocated in `src/features/examples/hooks/`
 - Naming: `useEntity` (query), `useActionEntity` (mutation) — example: `useUsers`, `useCreateUser`
 - Default `staleTime`: 5 minutes for lists, 10 minutes for details
 - Default `gcTime` (garbage collection): 10 minutes
@@ -43,11 +43,11 @@ const queryKeys = {
 
 ## Implementation
 
-> **Version:** TanStack Query v5 | Tested on: 2025-05
+> **Version:** TanStack Query v5 | Tested on: 2026-02
 
 ### Query Key Factory
 
-From `apps/nextjs/lib/query-keys.ts`:
+From `src/lib/query-keys.ts`:
 
 ```ts
 export const queryKeys = {
@@ -73,7 +73,7 @@ Hierarchy visualization:
 
 ### QueryClient Config
 
-From `apps/nextjs/lib/query-client.ts`:
+From `src/lib/query-client.ts`:
 
 ```ts
 import { QueryClient } from "@tanstack/react-query";
@@ -94,7 +94,7 @@ Why `staleTime: 5 min`? Because most data doesn't change within seconds. Without
 
 ### Query Hook — List
 
-From `apps/nextjs/hooks/queries/useUsers.ts`:
+From `src/features/examples/hooks/useUsers.ts`:
 
 ```ts
 import { useQuery } from "@tanstack/react-query";
@@ -111,7 +111,7 @@ export function useUsers(params: GetUsersParams = {}) {
 
 ### Query Hook — Detail (Dependent Query)
 
-From `apps/nextjs/hooks/queries/useUser.ts`:
+From `src/features/examples/hooks/useUser.ts`:
 
 ```ts
 import { useQuery } from "@tanstack/react-query";
@@ -129,13 +129,13 @@ export function useUser(id: string) {
 
 ### Mutation Hook — Create
 
-From `apps/nextjs/hooks/mutations/useCreateUser.ts`:
+From `src/features/examples/hooks/useCreateUser.ts`:
 
 ```ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import { createUser } from "@/lib/mock-data";
-import type { CreateUserInput } from "@/types/user";
+import type { CreateUserInput } from "@/shared/types/user";
 
 export function useCreateUser() {
   const queryClient = useQueryClient();
@@ -152,13 +152,13 @@ export function useCreateUser() {
 
 ### Mutation Hook — Update with Cache Update
 
-From `apps/nextjs/hooks/mutations/useUpdateUser.ts`:
+From `src/features/examples/hooks/useUpdateUser.ts`:
 
 ```ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/query-keys";
 import { updateUser } from "@/lib/mock-data";
-import type { UpdateUserInput } from "@/types/user";
+import type { UpdateUserInput } from "@/shared/types/user";
 
 export function useUpdateUser(id: string) {
   const queryClient = useQueryClient();
@@ -230,10 +230,9 @@ export function useUpdateUser(id: string) {
 - Query hooks can only be called in Client Components
 - For Server Component data fetching, use React Server Components directly (fetch in component) — not React Query
 
-### Vite
+### Runtime Note
 
-- No client/server restriction — all components can use query hooks
-- Set up provider in `providers.tsx` or `main.tsx`
+This repository currently ships Next.js App Router pages; React Query hooks are consumed from client components only.
 
 ## Common Mistakes
 

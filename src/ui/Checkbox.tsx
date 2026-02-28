@@ -97,7 +97,7 @@ export function Checkbox({
         />
         <div
           className={cn(
-            "flex items-center justify-center rounded border-2 transition-all",
+            "flex items-center justify-center rounded-sm border-2 transition-all",
             BOX_SIZES[size],
             isFilled
               ? "bg-primary border-primary"

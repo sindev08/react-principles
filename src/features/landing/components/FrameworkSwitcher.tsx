@@ -36,7 +36,7 @@ export function FrameworkSwitcher() {
         onClick={() => switchTo("nextjs")}
         className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-bold transition-all ${
           isNextjs
-            ? "bg-white dark:bg-[#0d1117] text-primary shadow-sm"
+            ? "bg-white dark:bg-[#0d1117] text-primary shadow-xs"
             : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
         }`}
       >
@@ -49,7 +49,7 @@ export function FrameworkSwitcher() {
         onClick={() => switchTo("vitejs")}
         className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-bold transition-all ${
           isVitejs
-            ? "bg-white dark:bg-[#0d1117] text-primary shadow-sm"
+            ? "bg-white dark:bg-[#0d1117] text-primary shadow-xs"
             : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
         }`}
       >

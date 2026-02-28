@@ -206,7 +206,7 @@ const panelClass = cn(
 
 // Backdrop class
 const backdropClass = cn(
-  "absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300",
+  "absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300",
   open ? "opacity-100" : "opacity-0"
 )
 ```

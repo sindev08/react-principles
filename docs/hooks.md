@@ -6,17 +6,16 @@ Custom hooks exist for one reason: **separation of concerns**. Components should
 
 Why is the `use` prefix mandatory? It's not just convention — React **depends on it** to enforce the Rules of Hooks. If a function without the `use` prefix is called conditionally, React cannot warn. Consistent naming also makes grep/search easy: `useX` = hook, period.
 
-Shared hooks in `packages/shared/` exist so that truly universal logic (debounce, localStorage, media query) doesn't need to be copy-pasted between apps. If a hook is only relevant to one app, put it in the app-level `hooks/`.
+Shared hooks in `src/shared/` exist so universal logic (debounce, localStorage, media query, animation utilities) does not get duplicated across features. Feature-specific hooks live close to their feature modules.
 
 ## Rules
 
 - All custom hooks must have a `use` prefix — `useDebounce`, not `debounce`
 - Hook > 150 lines -> extract helper functions (not hooks) into a separate file
 - Rules of Hooks: don't call hooks in conditionals, loops, or nested functions
-- Shared/universal hooks -> `packages/shared/src/hooks/`
-- App-specific hooks -> `apps/{app}/hooks/`
-- Query hooks -> `hooks/queries/useEntity.ts` (example: `useUsers.ts`)
-- Mutation hooks -> `hooks/mutations/useActionEntity.ts` (example: `useCreateUser.ts`)
+- Shared/universal hooks -> `src/shared/hooks/`
+- Feature-specific hooks -> `src/features/<feature>/hooks/`
+- Query and mutation hooks in this repo are colocated under `src/features/examples/hooks/`
 - Hook return: single value, tuple `[value, setter]`, or object `{ data, isLoading }`
 - Always type generic parameters: `useDebounce<T>(value: T, delay: number): T`
 
@@ -54,11 +53,11 @@ function useActionEntity() {
 
 ## Implementation
 
-> **Version:** React v18 | Tested on: 2025-05
+> **Version:** React v19 | Tested on: 2026-02
 
 ### useDebounce — Generic Debounce Hook
 
-From `packages/shared/src/hooks/useDebounce.ts`:
+From `src/shared/hooks/useDebounce.ts`:
 
 ```ts
 import { useEffect, useState } from "react";
@@ -91,7 +90,7 @@ const { data } = useUsers({ search: debouncedSearch });
 
 ### useLocalStorage — Type-safe Persistent State
 
-From `packages/shared/src/hooks/useLocalStorage.ts`:
+From `src/shared/hooks/useLocalStorage.ts`:
 
 ```ts
 export function useLocalStorage<T>(
@@ -140,7 +139,7 @@ Key points:
 
 ### useMediaQuery — Responsive Hook
 
-From `packages/shared/src/hooks/useMediaQuery.ts`:
+From `src/shared/hooks/useMediaQuery.ts`:
 
 ```ts
 export function useMediaQuery(query: string): boolean {
@@ -177,7 +176,7 @@ const prefersDark = useMediaQuery("(prefers-color-scheme: dark)");
 See details in [React Query docs](./react-query.md). Brief example:
 
 ```ts
-// hooks/queries/useUsers.ts
+// src/features/examples/hooks/useUsers.ts
 export function useUsers(params: GetUsersParams = {}) {
   return useQuery({
     queryKey: queryKeys.users.list(params as Record<string, unknown>),
@@ -185,7 +184,7 @@ export function useUsers(params: GetUsersParams = {}) {
   });
 }
 
-// hooks/mutations/useCreateUser.ts
+// src/features/examples/hooks/useCreateUser.ts
 export function useCreateUser() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -201,9 +200,9 @@ export function useCreateUser() {
 
 Hook files themselves don't need `"use client"` — they will be bundled as client code because the component that calls them is already `"use client"`. But if a hook is used directly in a page component, make sure that page is `"use client"`.
 
-### Vite
+### Runtime Note
 
-No difference — hooks are directly usable without any special directive.
+This repository currently uses Next.js App Router; hook usage should follow `src/app` + `src/features` conventions.
 
 ## Common Mistakes
 

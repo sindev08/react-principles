@@ -141,7 +141,7 @@ export function AccordionTrigger({ children, className, ...props }: AccordionTri
         "flex w-full items-center justify-between px-5 py-4 text-left text-sm font-medium",
         "text-slate-900 dark:text-white",
         "hover:bg-slate-50 dark:hover:bg-[#1f2937] transition-colors",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40",
+        "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40",
         className
       )}
       {...props}

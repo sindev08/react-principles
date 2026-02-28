@@ -124,7 +124,7 @@ export function CookbookListPage({ framework }: CookbookListPageProps) {
                 onClick={() => handleCategoryChange(cat)}
                 className={
                   activeCategory === cat
-                    ? "px-4 py-2 text-sm font-semibold text-white rounded-full bg-primary shadow-sm"
+                    ? "px-4 py-2 text-sm font-semibold text-white rounded-full bg-primary shadow-xs"
                     : "px-4 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 rounded-full border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#0d1117] hover:border-primary hover:text-primary transition-all"
                 }
               >
@@ -135,7 +135,7 @@ export function CookbookListPage({ framework }: CookbookListPageProps) {
               onClick={() => handleCategoryChange("Saved")}
               className={
                 activeCategory === "Saved"
-                  ? "flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white rounded-full bg-primary shadow-sm"
+                  ? "flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white rounded-full bg-primary shadow-xs"
                   : "flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 rounded-full border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#0d1117] hover:border-primary hover:text-primary transition-all"
               }
             >
@@ -219,7 +219,7 @@ function RecipeCard({ recipe, framework }: { recipe: Recipe; framework: Framewor
   const saved = isSaved(recipe.slug);
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-xl border border-slate-100 dark:border-[#1f2937] bg-white dark:bg-[#161b22] shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-xl">
+    <div className="group flex flex-col overflow-hidden rounded-xl border border-slate-100 dark:border-[#1f2937] bg-white dark:bg-[#161b22] shadow-xs transition-all duration-200 hover:-translate-y-1 hover:shadow-xl">
       <div
         className="relative flex h-48 items-center justify-center"
         style={{ backgroundImage: recipe.gradient }}
@@ -231,7 +231,7 @@ function RecipeCard({ recipe, framework }: { recipe: Recipe; framework: Framewor
           {recipe.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded bg-white/20 px-2 py-1 text-[10px] font-bold uppercase text-white backdrop-blur-md"
+              className="rounded-sm bg-white/20 px-2 py-1 text-[10px] font-bold uppercase text-white backdrop-blur-md"
             >
               {tag}
             </span>

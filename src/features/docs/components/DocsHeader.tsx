@@ -94,7 +94,7 @@ export function DocsHeader() {
             >
               <span className="material-symbols-outlined text-[16px]">search</span>
               <span className="text-xs">Search...</span>
-              <kbd className="ml-2 rounded border border-slate-200 dark:border-[#1f2937] px-1.5 py-0.5 text-[10px] font-medium">
+              <kbd className="ml-2 rounded-sm border border-slate-200 dark:border-[#1f2937] px-1.5 py-0.5 text-[10px] font-medium">
                 ⌘K
               </kbd>
             </button>

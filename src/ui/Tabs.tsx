@@ -107,7 +107,7 @@ export function TabsTrigger({ value, children, disabled, className, ...props }: 
       disabled={disabled}
       onClick={() => setActive(value)}
       className={cn(
-        "text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded",
+        "text-sm font-medium transition-all outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm",
         disabled && "opacity-40 cursor-not-allowed pointer-events-none",
 
         // underline variant
@@ -122,7 +122,7 @@ export function TabsTrigger({ value, children, disabled, className, ...props }: 
         variant === "pills" && [
           "px-4 py-1.5 rounded-lg",
           isActive
-            ? "bg-white dark:bg-[#0d1117] text-slate-900 dark:text-white shadow-sm"
+            ? "bg-white dark:bg-[#0d1117] text-slate-900 dark:text-white shadow-xs"
             : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200",
         ],
 
