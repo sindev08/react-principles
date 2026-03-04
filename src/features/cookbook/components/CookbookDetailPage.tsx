@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { DocsPageLayout } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { UserList } from "@/features/examples/components/UserList";
@@ -59,7 +58,7 @@ function ZustandDemo() {
           </div>
           <button
             onClick={toggleTheme}
-            className="w-full rounded-lg bg-primary/10 px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary/20"
+            className="w-full px-4 py-2 text-sm font-semibold transition-colors rounded-lg bg-primary/10 text-primary hover:bg-primary/20"
           >
             Toggle Theme
           </button>
@@ -123,7 +122,6 @@ function LiveDemo({ demoKey }: { demoKey: DemoKey }) {
 function DetailContent({ detail, framework }: { detail: RecipeDetail; framework: Framework }) {
   const [copied, setCopied] = useState(false);
   const { isSaved, toggleSaved } = useSavedStore();
-  const router = useRouter();
   const saved = isSaved(detail.slug);
 
   const activeImpl =
@@ -137,58 +135,27 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
     }
   };
 
-  const switchFramework = (fw: Framework) => {
-    router.push(`/${fw}/cookbook/${detail.slug}`);
-  };
-
   return (
     <div className="max-w-3xl">
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center justify-between gap-2 text-sm font-medium text-slate-500">
+      <nav className="flex items-center justify-between gap-2 mb-6 text-sm font-medium text-slate-500">
         <div className="flex items-center gap-2">
-          <Link href={`/${framework}/cookbook`} className="hover:text-primary transition-colors">
+          <Link href={`/${framework}/cookbook`} className="transition-colors hover:text-primary">
             Cookbook
           </Link>
           <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-          <span className="hover:text-primary transition-colors cursor-pointer">
+          <span className="transition-colors cursor-pointer hover:text-primary">
             {detail.breadcrumbCategory}
           </span>
           <span className="material-symbols-outlined text-[14px]">chevron_right</span>
           <span className="text-slate-900 dark:text-white">{detail.title}</span>
         </div>
-        <span className="shrink-0 text-xs text-slate-400">Updated {detail.lastUpdated}</span>
+        <span className="text-xs shrink-0 text-slate-400">Updated {detail.lastUpdated}</span>
       </nav>
-
-      {/* Framework Switcher */}
-      <div className="flex items-center gap-2 mb-6">
-        <span className="text-xs font-medium text-slate-400 dark:text-slate-500">Viewing for:</span>
-        <div className="flex items-center gap-0.5 rounded-lg border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] p-1">
-          <button
-            onClick={() => switchFramework("nextjs")}
-            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-bold transition-all ${
-              framework === "nextjs"
-                ? "bg-white dark:bg-[#0d1117] text-primary shadow-sm"
-                : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
-            }`}
-          >
-            Next.js
-          </button>
-          <button
-            onClick={() => switchFramework("vitejs")}
-            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-bold transition-all ${
-              framework === "vitejs"
-                ? "bg-white dark:bg-[#0d1117] text-primary shadow-sm"
-                : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
-            }`}
-          >
-            Vite
-          </button>
-        </div>
-      </div>
 
       {/* Page Header */}
       <div className="pb-10 mb-12 border-b border-slate-200 dark:border-[#1f2937]">
-        <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white lg:text-5xl mb-4">
+        <h1 className="mb-4 text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white lg:text-5xl">
           {detail.title}
         </h1>
         <p className="max-w-2xl text-lg leading-relaxed text-slate-600 dark:text-slate-400">
@@ -223,7 +190,7 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
       {/* 01 Principle */}
       <section className="mb-16" id="principle">
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+          <div className="flex items-center justify-center w-8 h-8 rounded bg-primary/10 text-primary">
             <span className="text-sm font-bold">01</span>
           </div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Principle</h2>
@@ -244,7 +211,7 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
       {/* 02 Rules */}
       <section className="mb-16" id="rules">
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+          <div className="flex items-center justify-center w-8 h-8 rounded bg-primary/10 text-primary">
             <span className="text-sm font-bold">02</span>
           </div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Rules</h2>
@@ -272,7 +239,7 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
       {/* 03 Pattern */}
       <section className="mb-16" id="pattern">
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+          <div className="flex items-center justify-center w-8 h-8 rounded bg-primary/10 text-primary">
             <span className="text-sm font-bold">03</span>
           </div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Pattern</h2>
@@ -285,14 +252,14 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
       {/* 04 Implementation */}
       <section className="mb-16" id="implementation">
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+          <div className="flex items-center justify-center w-8 h-8 rounded bg-primary/10 text-primary">
             <span className="text-sm font-bold">04</span>
           </div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
             Implementation
           </h2>
         </div>
-        <div className="flex gap-4 p-4 mb-8 border border-amber-200 dark:border-amber-900/50 rounded-lg bg-amber-50 dark:bg-amber-900/20">
+        <div className="flex gap-4 p-4 mb-8 border rounded-lg border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-900/20">
           <span className="material-symbols-outlined text-amber-600">info</span>
           <div>
             <p className="text-sm font-bold tracking-tight text-amber-900 dark:text-amber-300">
@@ -317,7 +284,7 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
       {detail.demoKey && (
         <section className="mb-16" id="demo">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded bg-primary/10 text-primary">
               <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
@@ -339,7 +306,7 @@ function CookbookFooter() {
       <div className="flex flex-col justify-between gap-8 md:flex-row">
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <div className="flex h-6 w-6 items-center justify-center rounded bg-primary text-white">
+            <div className="flex items-center justify-center w-6 h-6 text-white rounded bg-primary">
               <span className="material-symbols-outlined text-[16px]">menu_book</span>
             </div>
             <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-white">
@@ -358,7 +325,7 @@ function CookbookFooter() {
             <ul className="space-y-2 text-sm text-slate-500">
               {["GitHub", "Discord", "NPM Package"].map((item) => (
                 <li key={item}>
-                  <a href="#" className="hover:text-primary transition-colors">{item}</a>
+                  <a href="#" className="transition-colors hover:text-primary">{item}</a>
                 </li>
               ))}
             </ul>
@@ -370,7 +337,7 @@ function CookbookFooter() {
             <ul className="space-y-2 text-sm text-slate-500">
               {["Privacy", "License"].map((item) => (
                 <li key={item}>
-                  <a href="#" className="hover:text-primary transition-colors">{item}</a>
+                  <a href="#" className="transition-colors hover:text-primary">{item}</a>
                 </li>
               ))}
             </ul>
