@@ -10,6 +10,45 @@ import { useSavedStore } from "@/features/cookbook/stores/useSavedStore";
 import { RECIPES } from "@/features/cookbook/data/cookbook-data";
 import { DOCS_NAV } from "./docs-nav";
 
+type Framework = "nextjs" | "vitejs";
+
+function FrameworkSwitcher() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const activeFramework: Framework = pathname.startsWith("/vitejs/") ? "vitejs" : "nextjs";
+
+  const switchTo = (fw: Framework) => {
+    if (fw === activeFramework) return;
+    const newPath = pathname.replace(/^\/(nextjs|vitejs)\//, `/${fw}/`);
+    router.push(newPath);
+  };
+
+  return (
+    <div className="flex items-center gap-0.5 rounded-lg border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] p-1">
+      <button
+        onClick={() => switchTo("nextjs")}
+        className={`rounded-md px-5 py-1.5 text-xs font-bold transition-all ${
+          activeFramework === "nextjs"
+            ? "bg-white dark:bg-[#0d1117] text-primary shadow-sm"
+            : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+        }`}
+      >
+        Next.js
+      </button>
+      <button
+        onClick={() => switchTo("vitejs")}
+        className={`rounded-md px-5 py-1.5 text-xs font-bold transition-all ${
+          activeFramework === "vitejs"
+            ? "bg-white dark:bg-[#0d1117] text-primary shadow-sm"
+            : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+        }`}
+      >
+        Vite
+      </button>
+    </div>
+  );
+}
+
 function GithubIcon() {
   return (
     <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
@@ -87,6 +126,7 @@ export function DocsHeader() {
             </nav>
           </div>
           <div className="flex items-center gap-3">
+            {isCookbookActive && <FrameworkSwitcher />}
             {/* Search trigger */}
             <button
               onClick={toggle}
