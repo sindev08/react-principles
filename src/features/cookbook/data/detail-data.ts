@@ -1222,6 +1222,422 @@ app.get('/auth/callback/github', async (c) => {
     lastUpdated: "Feb 26, 2026",
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
   },
+
+  "useeffect-render-cycle": {
+    slug: "useeffect-render-cycle",
+    title: "useEffect & Render Cycle",
+    breadcrumbCategory: "Foundations",
+    description: "When effects run, why the dependency array exists, and how to clean up after yourself.",
+    lastUpdated: "2025-03-01",
+    principle: {
+      text: "useEffect is not a lifecycle method — it is a synchronization tool. It answers one question: 'what side effects need to stay in sync with this data?' Every time the dependency array changes, React re-runs the effect to keep things synchronized. When you understand this mental model, dependency arrays stop feeling like magic rules and start making sense.",
+      tip: "If you find yourself writing useEffect to fetch data, stop. That is what React Query is for. useEffect is for synchronizing with things outside React — browser APIs, subscriptions, timers.",
+    },
+    rules: [
+      {
+        title: "Always declare dependencies honestly",
+        description: "Every value from the component scope used inside the effect belongs in the dependency array. If you add eslint-disable to hide a missing dependency, you have a bug.",
+      },
+      {
+        title: "Return a cleanup function when needed",
+        description: "If your effect creates a subscription, timer, or event listener — clean it up in the return function. Otherwise you get memory leaks and stale handlers.",
+      },
+      {
+        title: "Empty array means once on mount",
+        description: "[] runs the effect once after the first render. Only use this when the effect truly has no dependencies — not as a shortcut to avoid thinking about deps.",
+      },
+      {
+        title: "Do not use useEffect for data fetching",
+        description: "Fetching data inside useEffect causes race conditions, no loading state management, and no caching. Use React Query instead.",
+      },
+    ],
+    pattern: {
+      filename: "hooks/useWindowSize.ts — effect with cleanup",
+      code: `import { useEffect, useState } from 'react';
+
+interface WindowSize {
+  width: number;
+  height: number;
+}
+
+export function useWindowSize(): WindowSize {
+  const [size, setSize] = useState<WindowSize>({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  useEffect(() => {
+    // The effect: subscribe to resize events
+    function handleResize() {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+
+    window.addEventListener('resize', handleResize);
+
+    // The cleanup: unsubscribe when component unmounts
+    // or before the effect re-runs
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []); // No deps — window never changes
+
+  return size;
+}`,
+    },
+    implementation: {
+      nextjs: {
+        description: "In Next.js, window is not available on the server. Guard all browser API access with a typeof window check or use 'use client'.",
+        filename: "shared/hooks/useWindowSize.ts",
+        code: `'use client'; // Required — window only exists in browser
+
+import { useEffect, useState } from 'react';
+
+export function useWindowSize() {
+  // ✅ Safe initial state — no window access during SSR
+  const [size, setSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    // ✅ Now safe — this only runs in the browser
+    function handleResize() {
+      setSize({ width: window.innerWidth, height: window.innerHeight });
+    }
+
+    handleResize(); // Set initial size
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return size;
+}`,
+      },
+      vite: {
+        description: "In Vite, all code runs in the browser — no SSR concerns. The pattern is straightforward.",
+        filename: "shared/hooks/useWindowSize.ts",
+        code: `import { useEffect, useState } from 'react';
+
+export function useWindowSize() {
+  const [size, setSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  useEffect(() => {
+    function handleResize() {
+      setSize({ width: window.innerWidth, height: window.innerHeight });
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return size;
+}`,
+      },
+    },
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+  },
+
+  "component-composition": {
+    slug: "component-composition",
+    title: "Component Composition",
+    breadcrumbCategory: "Foundations",
+    description: "How components combine and communicate — children props, slot patterns, and why composition beats deep prop drilling.",
+    lastUpdated: "2025-03-01",
+    principle: {
+      text: "Prop drilling happens when you pass data through multiple components that do not use it — just to get it to a component deep in the tree. Composition solves this differently: instead of passing data down, you pass components down. The parent controls what gets rendered, and children receive exactly what they need directly.",
+      tip: "When you find yourself adding a prop to a component just to pass it further down, stop. That is the signal to use composition instead.",
+    },
+    rules: [
+      {
+        title: "Use children for flexible content",
+        description: "The children prop lets a parent inject content into a component without the component needing to know what it is.",
+      },
+      {
+        title: "Use named slots for multiple injection points",
+        description: "When you need more than one place to inject content (header + footer + body), use named props instead of children.",
+      },
+      {
+        title: "Prefer composition over configuration",
+        description: "A component that accepts children is more flexible than one with 10 props controlling its internals. Compose behavior, do not configure it.",
+      },
+      {
+        title: "Keep components focused",
+        description: "Each component does one thing. Composition is how you build complex UIs from simple, focused pieces.",
+      },
+    ],
+    pattern: {
+      filename: "components/Card.tsx — slot composition pattern",
+      code: `// ❌ Prop drilling — Card needs to know about title, footer, etc.
+<Card
+  title="Recipe"
+  subtitle="Foundations"
+  footer={<Button>View</Button>}
+  headerIcon="layers"
+/>
+
+// ✅ Composition — Card just provides structure
+<Card>
+  <Card.Header>
+    <span>Foundations</span>
+    <h2>Recipe</h2>
+  </Card.Header>
+  <Card.Body>
+    Content goes here
+  </Card.Body>
+  <Card.Footer>
+    <Button>View</Button>
+  </Card.Footer>
+</Card>
+
+// The Card implementation
+interface CardProps { children: React.ReactNode }
+interface CardHeaderProps { children: React.ReactNode }
+
+function Card({ children }: CardProps) {
+  return <div className="rounded-xl border bg-white">{children}</div>;
+}
+
+function CardHeader({ children }: CardHeaderProps) {
+  return <div className="p-4 border-b">{children}</div>;
+}
+
+Card.Header = CardHeader;
+Card.Body = ({ children }: CardProps) => <div className="p-4">{children}</div>;
+Card.Footer = ({ children }: CardProps) => <div className="p-4 border-t">{children}</div>;`,
+    },
+    implementation: {
+      nextjs: {
+        description: "In Next.js, composition works the same way. Server Components can pass Client Components as children — this is how you keep server/client boundaries clean.",
+        filename: "features/cookbook/components/RecipeLayout.tsx",
+        code: `// Server Component — fetches data
+export default async function RecipePage({ params }: PageProps) {
+  const detail = await getRecipeDetail(params.slug);
+
+  return (
+    // Passes a Client Component as children
+    <RecipeLayout
+      header={<RecipeHeader title={detail.title} />}
+      sidebar={<RecipeToc sections={detail.sections} />}
+    >
+      {/* Client Component receives data as props, not fetching itself */}
+      <RecipeContent detail={detail} />
+    </RecipeLayout>
+  );
+}
+
+// RecipeLayout — just structure, no data concerns
+interface RecipeLayoutProps {
+  header: React.ReactNode;
+  sidebar: React.ReactNode;
+  children: React.ReactNode;
+}
+
+export function RecipeLayout({ header, sidebar, children }: RecipeLayoutProps) {
+  return (
+    <div>
+      <header>{header}</header>
+      <div className="flex">
+        <aside>{sidebar}</aside>
+        <main>{children}</main>
+      </div>
+    </div>
+  );
+}`,
+      },
+      vite: {
+        description: "In Vite, all components are client-side. Composition is the primary tool for managing component complexity without prop drilling.",
+        filename: "features/cookbook/components/RecipeLayout.tsx",
+        code: `interface RecipeLayoutProps {
+  header: React.ReactNode;
+  sidebar: React.ReactNode;
+  children: React.ReactNode;
+}
+
+export function RecipeLayout({ header, sidebar, children }: RecipeLayoutProps) {
+  return (
+    <div className="min-h-screen">
+      <header className="border-b">{header}</header>
+      <div className="flex max-w-7xl mx-auto">
+        <aside className="w-64 shrink-0">{sidebar}</aside>
+        <main className="flex-1 px-8">{children}</main>
+      </div>
+    </div>
+  );
+}
+
+// Usage in a route component
+export function RecipePage() {
+  const { slug } = useParams<{ slug: string }>();
+  const { data: detail } = useRecipeDetail(slug!);
+
+  if (!detail) return null;
+
+  return (
+    <RecipeLayout
+      header={<RecipeHeader title={detail.title} />}
+      sidebar={<RecipeToc sections={detail.sections} />}
+    >
+      <RecipeContent detail={detail} />
+    </RecipeLayout>
+  );
+}`,
+      },
+    },
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+  },
+
+  "custom-hooks": {
+    slug: "custom-hooks",
+    title: "Custom Hooks",
+    breadcrumbCategory: "Foundations",
+    description: "The boundary between logic and rendering. When to extract a hook, what the rules are, and how to avoid the most common mistake.",
+    lastUpdated: "2025-03-01",
+    principle: {
+      text: "A custom hook is not just a function that starts with 'use' — it is a boundary between logic and rendering. The component handles what the user sees. The hook handles how data gets there. When you separate these two concerns, components become easier to read, logic becomes easier to test, and both become easier to change independently.",
+      tip: "If you would write a unit test for the logic, it belongs in a hook. If you would write a component test for it, it belongs in the JSX.",
+    },
+    rules: [
+      {
+        title: "Name starts with 'use'",
+        description: "This is not just a convention — React uses it to enforce the rules of hooks. A function starting with 'use' is treated as a hook.",
+      },
+      {
+        title: "Extract when logic repeats",
+        description: "If the same stateful logic appears in two components, extract it to a hook. Do not copy-paste hooks between components.",
+      },
+      {
+        title: "Extract when logic is complex",
+        description: "If a component has more than one useEffect, multiple useState calls, or complex derived state — that logic belongs in a hook.",
+      },
+      {
+        title: "Hooks are not global state",
+        description: "Each component that calls a hook gets its own isolated instance. Hooks do not share state between components unless backed by a store or context.",
+      },
+    ],
+    pattern: {
+      filename: "hooks/useDebounce.ts — logic extracted from component",
+      code: `// ❌ Before — logic mixed into component
+function SearchInput() {
+  const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  // Component is doing too much
+  return <input value={query} onChange={e => setQuery(e.target.value)} />;
+}
+
+// ✅ After — logic extracted to a hook
+function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState<T>(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debounced;
+}
+
+// Component is now focused on rendering only
+function SearchInput() {
+  const [query, setQuery] = useState('');
+  const debouncedQuery = useDebounce(query, 300);
+
+  return <input value={query} onChange={e => setQuery(e.target.value)} />;
+}`,
+    },
+    implementation: {
+      nextjs: {
+        description: "In Next.js, hooks can only run in Client Components. If a hook uses browser APIs, add 'use client' to the component that calls it — not to the hook file itself.",
+        filename: "shared/hooks/useDebounce.ts",
+        code: `// The hook itself has no 'use client' — it is framework-agnostic
+import { useEffect, useState } from 'react';
+
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState<T>(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debounced;
+}
+
+// The component that calls it gets 'use client'
+// features/cookbook/components/SearchInput.tsx
+'use client';
+
+import { useDebounce } from '@/shared/hooks/useDebounce';
+
+export function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
+  const [query, setQuery] = useState('');
+  const debouncedQuery = useDebounce(query, 300);
+
+  useEffect(() => {
+    onSearch(debouncedQuery);
+  }, [debouncedQuery, onSearch]);
+
+  return (
+    <input
+      value={query}
+      onChange={e => setQuery(e.target.value)}
+      placeholder="Search recipes..."
+    />
+  );
+}`,
+      },
+      vite: {
+        description: "In Vite, hooks work the same way with no SSR considerations. Co-locate feature-specific hooks inside the feature folder.",
+        filename: "shared/hooks/useDebounce.ts",
+        code: `import { useEffect, useState } from 'react';
+
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState<T>(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debounced;
+}
+
+// Usage in a component
+// features/cookbook/components/SearchInput.tsx
+import { useState, useEffect } from 'react';
+import { useDebounce } from '@/shared/hooks/useDebounce';
+
+export function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
+  const [query, setQuery] = useState('');
+  const debouncedQuery = useDebounce(query, 300);
+
+  useEffect(() => {
+    onSearch(debouncedQuery);
+  }, [debouncedQuery, onSearch]);
+
+  return (
+    <input
+      value={query}
+      onChange={e => setQuery(e.target.value)}
+      placeholder="Search recipes..."
+    />
+  );
+}`,
+      },
+    },
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+  },
 };
 
 export function getRecipeDetail(slug: string): RecipeDetail | null {
