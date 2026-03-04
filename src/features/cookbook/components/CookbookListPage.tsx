@@ -20,17 +20,25 @@ interface CookbookListPageProps {
   framework: Framework;
 }
 
+const isDev = process.env.NODE_ENV === "development";
+
+const SORTED_RECIPES = [...RECIPES].sort((a, b) => a.order - b.order);
+
 export function CookbookListPage({ framework }: CookbookListPageProps) {
   const [activeCategory, setActiveCategory] = useState<ActiveFilter>("All Patterns");
   const [currentPage, setCurrentPage] = useState(1);
   const { savedSlugs } = useSavedStore();
 
+  const visibleRecipes = isDev
+    ? SORTED_RECIPES
+    : SORTED_RECIPES.filter((r) => r.status !== "coming-soon");
+
   const filtered =
     activeCategory === "All Patterns"
-      ? RECIPES
+      ? visibleRecipes
       : activeCategory === "Saved"
-        ? RECIPES.filter((r) => savedSlugs.includes(r.slug))
-        : RECIPES.filter((r) => r.category === activeCategory);
+        ? visibleRecipes.filter((r) => savedSlugs.includes(r.slug))
+        : visibleRecipes.filter((r) => r.category === activeCategory);
 
   const totalPages = Math.ceil(filtered.length / CARDS_PER_PAGE);
   const paginated = filtered.slice(
@@ -157,9 +165,13 @@ export function CookbookListPage({ framework }: CookbookListPageProps) {
           {/* Recipe Grid */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {paginated.length > 0 ? (
-              paginated.map((recipe) => (
-                <RecipeCard key={recipe.id} recipe={recipe} framework={framework} />
-              ))
+              paginated.map((recipe) =>
+                isDev && recipe.status === "coming-soon" ? (
+                  <ComingSoonCard key={recipe.id} recipe={recipe} framework={framework} />
+                ) : (
+                  <RecipeCard key={recipe.id} recipe={recipe} framework={framework} />
+                ),
+              )
             ) : (
               <div className="col-span-full flex flex-col items-center justify-center py-24 text-center">
                 <span className="material-symbols-outlined text-[48px] text-slate-300 dark:text-slate-600 mb-3">bookmark</span>
@@ -273,5 +285,52 @@ function RecipeCard({ recipe, framework }: { recipe: Recipe; framework: Framewor
         </Link>
       </div>
     </div>
+  );
+}
+
+function ComingSoonCard({ recipe, framework }: { recipe: Recipe; framework: Framework }) {
+  return (
+    <Link
+      href={`/${framework}/cookbook/${recipe.slug}`}
+      className="group flex flex-col overflow-hidden rounded-xl border border-dashed border-amber-300 dark:border-amber-700 bg-white dark:bg-[#161b22] shadow-sm opacity-70 transition-all duration-200 hover:opacity-90 hover:-translate-y-1"
+    >
+      <div
+        className="relative flex h-48 items-center justify-center opacity-60"
+        style={{ backgroundImage: recipe.gradient }}
+      >
+        <span className="material-symbols-outlined text-[64px] text-white opacity-30">
+          {recipe.icon}
+        </span>
+        <div className="absolute left-4 top-4 flex gap-2">
+          <span className="rounded bg-amber-400/80 px-2 py-1 text-[10px] font-bold uppercase text-white backdrop-blur-md">
+            Coming Soon
+          </span>
+        </div>
+        <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-black/40 px-2 py-0.5 backdrop-blur-md">
+          <span className="text-[9px] font-bold uppercase tracking-wider text-amber-300">
+            DEV PREVIEW
+          </span>
+        </div>
+        <div className="absolute bottom-3 right-3 flex items-center justify-center rounded bg-black/30 px-2 py-0.5 backdrop-blur-md">
+          <span className="text-[11px] font-bold text-white/70">
+            #{recipe.order}
+          </span>
+        </div>
+      </div>
+      <div className="flex flex-1 flex-col p-6">
+        <h3 className="mb-2 text-xl font-bold text-slate-400 dark:text-slate-500">
+          {recipe.title}
+        </h3>
+        <p className="mb-6 flex-1 text-sm leading-relaxed text-slate-400 dark:text-slate-600">
+          {recipe.description}
+        </p>
+        <div className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-amber-300 dark:border-amber-700 py-2.5 font-semibold text-amber-500 dark:text-amber-600">
+          Preview
+          <span className="material-symbols-outlined text-[18px]">
+            arrow_forward
+          </span>
+        </div>
+      </div>
+    </Link>
   );
 }

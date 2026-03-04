@@ -766,6 +766,341 @@ export function RevenueChart({ range }: { range: string }) {
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
   },
 
+  "folder-structure": {
+    slug: "folder-structure",
+    title: "Folder Structure",
+    breadcrumbCategory: "Foundations",
+    description: "A feature-based folder structure so you always know where a file goes — and why it belongs there.",
+    lastUpdated: "2025-03-01",
+    principle: {
+      text: "A good folder structure answers one question instantly: 'where does this file go?' Feature-based organization groups everything related to a feature together — its components, hooks, and data — so you spend time building, not searching. When a feature grows or gets deleted, everything moves together.",
+      tip: "If you can't decide where a file goes in under 10 seconds, your structure is too abstract. Feature-based organization should make the answer obvious.",
+    },
+    rules: [
+      {
+        title: "Feature-based grouping",
+        description: "Everything related to a feature lives in src/features/[name]/ — its components, hooks, and data together.",
+      },
+      {
+        title: "Co-location",
+        description: "Tests, types, and constants live next to the code they describe. Avoid global /types or /constants folders.",
+      },
+      {
+        title: "No cross-feature imports",
+        description: "Features never import directly from each other. Code needed by multiple features moves to src/shared/.",
+      },
+      {
+        title: "Public API via index.ts",
+        description: "Each feature exposes only what needs to be exposed via an index.ts file. Internals stay internal.",
+      },
+    ],
+    pattern: {
+      filename: "src/ — feature-based structure",
+      code: `src/
+├── app/              # Next.js routing only — no business logic here
+├── features/         # One folder per domain feature
+│   ├── cookbook/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   ├── data/
+│   │   └── index.ts  # Public API — only export what others need
+│   └── examples/
+│       ├── components/
+│       ├── hooks/
+│       └── index.ts
+├── shared/           # Truly cross-cutting code
+│   ├── components/   # Used by 2+ features
+│   ├── hooks/
+│   ├── stores/
+│   └── utils/
+├── lib/              # External service clients (API, query client)
+└── ui/               # Design system primitives (Button, Input, etc.)`,
+    },
+    implementation: {
+      nextjs: {
+        description: "Next.js adds the app/ directory for file-based routing. Route logic (pages) lives in app/, all business logic stays in features/.",
+        filename: "src/app/ — routing only",
+        code: `src/
+├── app/
+│   ├── layout.tsx          # Root layout
+│   ├── page.tsx            # Landing page → renders <LandingPage />
+│   ├── (examples)/         # Route group — no URL segment
+│   │   └── forms/page.tsx  # Renders <UserForm /> from features/
+│   └── nextjs/
+│       └── cookbook/
+│           └── [slug]/page.tsx
+├── features/
+│   └── landing/
+│       └── components/
+│           └── LandingPage.tsx  # Actual component lives here
+└── shared/`,
+      },
+      vite: {
+        description: "Vite projects use React Router for routing. The same src/ structure applies — routing config lives separately from feature code.",
+        filename: "src/ — Vite structure",
+        code: `src/
+├── routes/             # React Router config — routing only
+│   ├── index.tsx       # Route definitions
+│   └── layouts/
+├── features/           # Same feature-based structure
+│   └── cookbook/
+│       ├── components/
+│       ├── hooks/
+│       └── index.ts
+├── shared/
+├── lib/
+└── ui/`,
+      },
+    },
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+  },
+
+  "typescript-for-react": {
+    slug: "typescript-for-react",
+    title: "TypeScript for React",
+    breadcrumbCategory: "Foundations",
+    description: "How to type component props, event handlers, and hooks correctly. The contracts that prevent silent bugs.",
+    lastUpdated: "2025-03-01",
+    principle: {
+      text: "Bugs caught at compile time cost nothing to fix. Bugs caught in production cost everything. TypeScript for React is not about learning the full TypeScript language — it is about writing the right contracts between your components so that mistakes are caught before the code even runs.",
+      tip: "Start by typing your component props. If you can describe what a component accepts and returns, the rest of the types follow naturally.",
+    },
+    rules: [
+      {
+        title: "interface for component props",
+        description: "Use interface to define component props. It is extendable and reads clearly as a contract.",
+      },
+      {
+        title: "type for unions and utilities",
+        description: "Use type for union types, utility types, and function signatures — things that are not directly 'objects with fields'.",
+      },
+      {
+        title: "Never use any",
+        description: "any disables type checking completely. Use unknown and narrow it with type guards instead.",
+      },
+      {
+        title: "strict: true in tsconfig",
+        description: "Strict mode enables the full set of type checks. Without it, TypeScript catches only the most obvious errors.",
+      },
+    ],
+    pattern: {
+      filename: "components/UserCard.tsx — typed component",
+      code: `import type { ReactNode } from 'react';
+
+// ✅ interface for component props
+interface UserCardProps {
+  name: string;
+  email: string;
+  role: 'admin' | 'editor' | 'viewer';  // union type
+  isActive: boolean;
+  onEdit: (id: string) => void;          // typed event handler
+  children?: ReactNode;
+}
+
+// ✅ typed event handler
+function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
+  event.preventDefault();
+}
+
+// ✅ typed useState
+const [count, setCount] = useState<number>(0);
+
+// ❌ never do this
+const fetchUser = async (): Promise<any> => { ... }
+
+// ✅ use unknown and narrow
+const fetchUser = async (): Promise<unknown> => { ... }`,
+    },
+    implementation: {
+      nextjs: {
+        description: "Next.js page components receive typed params and searchParams. Always type these explicitly.",
+        filename: "app/users/[id]/page.tsx",
+        code: `// ✅ Typed Next.js page props
+interface PageProps {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ tab?: string }>;
+}
+
+export default async function UserPage({ params }: PageProps) {
+  const { id } = await params;
+  return <UserDetail id={id} />;
+}
+
+// ✅ Typed Server Action
+async function updateUser(
+  id: string,
+  data: UpdateUserInput
+): Promise<{ success: boolean }> {
+  'use server';
+  // ...
+}`,
+      },
+      vite: {
+        description: "In Vite + React Router, type your route params using useParams with a generic.",
+        filename: "features/users/components/UserDetail.tsx",
+        code: `import { useParams } from 'react-router-dom';
+
+// ✅ Typed route params
+function UserDetail() {
+  const { id } = useParams<{ id: string }>();
+
+  // id is string | undefined — handle both cases
+  if (!id) return null;
+
+  return <div>{id}</div>;
+}
+
+// ✅ Typed custom hook return
+function useUser(id: string): {
+  user: User | null;
+  isLoading: boolean;
+  error: Error | null;
+} {
+  // ...
+}`,
+      },
+    },
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+  },
+
+  "component-anatomy": {
+    slug: "component-anatomy",
+    title: "Component Anatomy",
+    breadcrumbCategory: "Foundations",
+    description: "The consistent internal structure every component follows — imports, types, constants, function, export.",
+    lastUpdated: "2025-03-01",
+    principle: {
+      text: "When every component follows the same structure, you stop thinking about where things go inside a file and start thinking about what the component actually does. Consistent anatomy means anyone on the team can open any file and immediately know where to look — props are always at the top, constants are always before the function, exports are always at the bottom.",
+      tip: "The hardest part of component anatomy is constants vs. props. Rule of thumb: if it never changes based on what's passed in, it is a constant. If it could change from outside, it is a prop.",
+    },
+    rules: [
+      {
+        title: "Imports first",
+        description: "Order: React → external libraries → internal aliases (@/) → relative imports (./). This makes dependencies visible at a glance.",
+      },
+      {
+        title: "Types and interfaces second",
+        description: "Define all types used in this file immediately after imports. Props interface always comes first.",
+      },
+      {
+        title: "Constants third",
+        description: "Component-scoped constants (static data, config, labels) come before the function. Never define constants inside the function body.",
+      },
+      {
+        title: "Component function fourth",
+        description: "The function itself comes after everything it depends on. Keep it focused — if it grows past 200 lines, split it.",
+      },
+      {
+        title: "Named export last",
+        description: "Always use named exports, never default exports. Named exports make refactoring and search easier.",
+      },
+    ],
+    pattern: {
+      filename: "components/RecipeCard.tsx — anatomy template",
+      code: `// 1. IMPORTS — React → external → internal → relative
+import { useState } from 'react';
+import Link from 'next/link';
+import { cn } from '@/shared/utils/cn';
+import { useSavedStore } from '../stores/useSavedStore';
+
+// 2. TYPES
+interface RecipeCardProps {
+  slug: string;
+  title: string;
+  description: string;
+  category: string;
+}
+
+// 3. CONSTANTS — static, never changes based on props
+const MAX_DESCRIPTION_LENGTH = 120;
+const CARD_BASE_CLASS = 'rounded-xl border bg-white shadow-sm';
+
+// 4. COMPONENT FUNCTION
+export function RecipeCard({ slug, title, description, category }: RecipeCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const { isSaved } = useSavedStore();
+
+  const truncated = description.slice(0, MAX_DESCRIPTION_LENGTH);
+
+  return (
+    <div className={cn(CARD_BASE_CLASS, isHovered && 'shadow-lg')}>
+      {/* ... */}
+    </div>
+  );
+}
+
+// 5. EXPORT — named, at the bottom
+// (already exported above with "export function")`,
+    },
+    implementation: {
+      nextjs: {
+        description: "In Next.js, mark client components explicitly with 'use client' — it goes above all imports as the very first line.",
+        filename: "features/cookbook/components/RecipeCard.tsx",
+        code: `// 'use client' goes ABOVE imports if the component is a Client Component
+'use client';
+
+// 1. IMPORTS
+import { useState } from 'react';
+import Link from 'next/link';
+import { cn } from '@/shared/utils/cn';
+
+// 2. TYPES
+interface RecipeCardProps {
+  slug: string;
+  title: string;
+  framework: 'nextjs' | 'vitejs';
+}
+
+// 3. CONSTANTS
+const HREF_MAP = {
+  nextjs: '/nextjs/cookbook',
+  vitejs: '/vitejs/cookbook',
+} as const;
+
+// 4. COMPONENT
+export function RecipeCard({ slug, title, framework }: RecipeCardProps) {
+  const [saved, setSaved] = useState(false);
+  const href = \`\${HREF_MAP[framework]}/\${slug}\`;
+
+  return (
+    <Link href={href}>
+      <span>{title}</span>
+    </Link>
+  );
+}`,
+      },
+      vite: {
+        description: "In Vite + React, all components are client-side by default. No 'use client' needed — just follow the anatomy.",
+        filename: "features/cookbook/components/RecipeCard.tsx",
+        code: `// 1. IMPORTS
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { cn } from '@/shared/utils/cn';
+
+// 2. TYPES
+interface RecipeCardProps {
+  slug: string;
+  title: string;
+}
+
+// 3. CONSTANTS
+const BASE_PATH = '/cookbook';
+
+// 4. COMPONENT
+export function RecipeCard({ slug, title }: RecipeCardProps) {
+  const [saved, setSaved] = useState(false);
+
+  return (
+    <Link to={\`\${BASE_PATH}/\${slug}\`}>
+      <span>{title}</span>
+    </Link>
+  );
+}`,
+      },
+    },
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+  },
+
   "oauth-flow": {
     slug: "oauth-flow",
     title: "OAuth Flow",
