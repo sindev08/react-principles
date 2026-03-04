@@ -3,60 +3,61 @@ const FILE_TREE = [
     indent: 0,
     icon: "folder_open",
     iconColor: "text-primary/50",
-    label: "react-principles/",
+    label: "src/",
+    bold: false,
+  },
+  {
+    indent: 1,
+    icon: "folder_open",
+    iconColor: "text-primary",
+    label: "features/",
+    comment: "// domain modules — components + hooks co-located",
+    bold: true,
+    highlight: true,
+  },
+  {
+    indent: 2,
+    icon: "folder",
+    iconColor: "text-slate-500",
+    label: "cookbook/",
+    bold: false,
+  },
+  {
+    indent: 2,
+    icon: "folder",
+    iconColor: "text-slate-500",
+    label: "docs/",
+    bold: false,
+  },
+  {
+    indent: 2,
+    icon: "folder",
+    iconColor: "text-slate-500",
+    label: "examples/",
     bold: false,
   },
   {
     indent: 1,
     icon: "folder",
     iconColor: "text-slate-500",
-    label: "apps/",
-    bold: false,
-  },
-  {
-    indent: 2,
-    icon: "web",
-    iconColor: "text-primary",
-    label: "nextjs/",
-    comment: "// Next.js 15 App Router",
-    bold: true,
-  },
-  {
-    indent: 2,
-    icon: "bolt",
-    iconColor: "text-slate-500",
-    label: "vite/",
-    comment: "// Vite + React 18",
-    bold: false,
-  },
-  {
-    indent: 1,
-    icon: "folder_open",
-    iconColor: "text-slate-500",
-    label: "packages/",
-    bold: false,
-  },
-  {
-    indent: 2,
-    icon: "extension",
-    iconColor: "text-primary",
     label: "shared/",
-    comment: "// Components, hooks, utils, types",
-    bold: false,
-    highlight: true,
-  },
-  {
-    indent: 1,
-    icon: "description",
-    iconColor: "text-slate-500",
-    label: "pnpm-workspace.yaml",
+    comment: "// cross-feature: components, hooks, stores, utils",
     bold: false,
   },
   {
     indent: 1,
-    icon: "description",
+    icon: "folder",
     iconColor: "text-slate-500",
-    label: "package.json",
+    label: "lib/",
+    comment: "// api-client, query-client, query-keys",
+    bold: false,
+  },
+  {
+    indent: 1,
+    icon: "folder",
+    iconColor: "text-slate-500",
+    label: "ui/",
+    comment: "// design system primitives",
     bold: false,
   },
 ];
@@ -72,11 +73,11 @@ export function MonorepoSection() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-16 text-center">
           <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-            Monorepo First
+            Feature-Based Architecture
           </h2>
           <p className="max-w-xl mx-auto text-slate-500">
-            See how logic is shared between the documentation, Vite playgrounds,
-            and Next.js implementations.
+            Every domain is a self-contained module. Logic stays close to where
+            it's used — no hunting across folders.
           </p>
         </div>
 
