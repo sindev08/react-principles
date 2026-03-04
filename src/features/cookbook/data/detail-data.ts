@@ -1490,6 +1490,274 @@ export function RecipePage() {
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
   },
 
+  "services-layer": {
+    slug: "services-layer",
+    title: "Services Layer",
+    breadcrumbCategory: "Foundations",
+    description: "How to organize all backend communication in one place — so when an API changes, you fix it in one file, not twenty.",
+    lastUpdated: "2025-03-01",
+    principle: {
+      text: "When you fetch data directly inside a component, the component becomes responsible for knowing the URL, the HTTP method, the request format, and the error handling. That is four responsibilities too many. A services layer centralizes all backend communication — components just call a function and get data back. When the API changes, you fix it in one file, not twenty.",
+      tip: "A service function should read like plain English: getUserById(id), createOrder(data), deletePost(id). If it needs more than one argument object, consider splitting it into two functions.",
+    },
+    rules: [
+      {
+        title: "Services only talk to the API",
+        description: "A service function takes inputs, calls the API, and returns data. It does not touch state, does not render anything, and does not know about React.",
+      },
+      {
+        title: "One file per resource",
+        description: "Group service functions by the API resource they belong to: users.ts, orders.ts, recipes.ts. Not by HTTP method.",
+      },
+      {
+        title: "Services live in lib/",
+        description: "The services layer belongs in src/lib/ alongside the API client and query keys — not inside a feature folder.",
+      },
+      {
+        title: "Hooks consume services, components consume hooks",
+        description: "Components never call service functions directly. The chain is: service → custom hook → component.",
+      },
+    ],
+    pattern: {
+      filename: "lib/services/users.ts — service layer pattern",
+      code: `import { apiClient } from '@/lib/api-client';
+import type { User, CreateUserInput, UpdateUserInput } from '@/shared/types/user';
+
+// ✅ Service functions — pure API communication
+export const usersService = {
+  getAll: async (): Promise<User[]> => {
+    const response = await apiClient.get('/users');
+    return response.data;
+  },
+
+  getById: async (id: string): Promise<User> => {
+    const response = await apiClient.get(\`/users/\${id}\`);
+    return response.data;
+  },
+
+  create: async (data: CreateUserInput): Promise<User> => {
+    const response = await apiClient.post('/users', data);
+    return response.data;
+  },
+
+  update: async (id: string, data: UpdateUserInput): Promise<User> => {
+    const response = await apiClient.patch(\`/users/\${id}\`, data);
+    return response.data;
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await apiClient.delete(\`/users/\${id}\`);
+  },
+};`,
+    },
+    implementation: {
+      nextjs: {
+        description: "In Next.js App Router, service functions can be called directly in Server Components. For Client Components, wrap them in React Query hooks.",
+        filename: "lib/services/users.ts + hooks usage",
+        code: `// lib/api-client.ts — axios instance
+import axios from 'axios';
+
+export const apiClient = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+// lib/services/users.ts — service layer
+import { apiClient } from '@/lib/api-client';
+import type { User } from '@/shared/types/user';
+
+export const usersService = {
+  getAll: async (): Promise<User[]> => {
+    const { data } = await apiClient.get('/users');
+    return data;
+  },
+  getById: async (id: string): Promise<User> => {
+    const { data } = await apiClient.get(\`/users/\${id}\`);
+    return data;
+  },
+};
+
+// features/examples/hooks/useUsers.ts — hook wraps service
+import { useQuery } from '@tanstack/react-query';
+import { usersService } from '@/lib/services/users';
+
+export function useUsers() {
+  return useQuery({
+    queryKey: ['users', 'list'],
+    queryFn: usersService.getAll,
+  });
+}`,
+      },
+      vite: {
+        description: "In Vite, the pattern is identical. The services layer is framework-agnostic — the same service files work in both Next.js and Vite projects.",
+        filename: "lib/services/users.ts + hooks usage",
+        code: `// lib/api-client.ts
+import axios from 'axios';
+
+export const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+// lib/services/users.ts — same as Next.js version
+import { apiClient } from '@/lib/api-client';
+import type { User } from '@/shared/types/user';
+
+export const usersService = {
+  getAll: async (): Promise<User[]> => {
+    const { data } = await apiClient.get('/users');
+    return data;
+  },
+};
+
+// features/examples/hooks/useUsers.ts
+import { useQuery } from '@tanstack/react-query';
+import { usersService } from '@/lib/services/users';
+
+export function useUsers() {
+  return useQuery({
+    queryKey: ['users', 'list'],
+    queryFn: usersService.getAll,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}`,
+      },
+    },
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+  },
+
+  "state-taxonomy": {
+    slug: "state-taxonomy",
+    title: "State Taxonomy",
+    breadcrumbCategory: "Foundations",
+    description: "Three categories of state — local, shared, and server — and exactly which tool handles each one.",
+    lastUpdated: "2025-03-01",
+    principle: {
+      text: "Not all state is the same. Before reaching for any state management library, ask one question: where does this data come from? Local state lives inside one component. Shared state is UI state needed by multiple components. Server state comes from an API and has its own lifecycle — loading, error, stale, and needs refreshing. Each category has a different tool, and mixing them up causes bugs that are hard to trace.",
+      tip: "When you find yourself putting API data into Zustand, stop. Server state belongs in React Query. When you find yourself using React Query for a toggle or a modal, stop. UI state belongs in useState or Zustand.",
+    },
+    rules: [
+      {
+        title: "Local state: useState",
+        description: "If only one component needs it, keep it local. A form input value, a toggle, a hover state — these are all local state.",
+      },
+      {
+        title: "Shared state: Zustand",
+        description: "If multiple components need the same UI state — sidebar open/closed, active theme, search dialog open — use Zustand. This is not server data.",
+      },
+      {
+        title: "Server state: React Query",
+        description: "If it comes from an API, it is server state. React Query handles caching, background refetching, loading states, and error states automatically.",
+      },
+      {
+        title: "Never put server state in Zustand",
+        description: "Storing API data in Zustand means you manage caching, staleness, and loading manually. React Query already does this — use the right tool.",
+      },
+    ],
+    pattern: {
+      filename: "The three categories — decision guide",
+      code: `// ─── LOCAL STATE ──────────────────────────────────────────────
+// One component needs it. No sharing needed.
+const [isOpen, setIsOpen] = useState(false);
+const [inputValue, setInputValue] = useState('');
+const [hovering, setHovering] = useState(false);
+
+// ─── SHARED STATE (Zustand) ───────────────────────────────────
+// Multiple components need the same UI state.
+// This is NOT data from an API.
+const { sidebarOpen, toggleSidebar } = useAppStore();
+const { theme, setTheme } = useAppStore();
+const { open: searchOpen } = useSearchStore();
+
+// ─── SERVER STATE (React Query) ───────────────────────────────
+// Comes from an API. Has loading, error, and cache lifecycle.
+const { data: users, isLoading, error } = useUsers();
+const { data: user } = useUser(id);
+
+// ❌ WRONG — API data in Zustand
+const useUserStore = create((set) => ({
+  users: [],
+  fetchUsers: async () => {
+    const data = await usersService.getAll(); // ← belongs in React Query
+    set({ users: data });
+  },
+}));
+
+// ✅ RIGHT — API data in React Query, UI state in Zustand
+const { data: users } = useUsers();             // React Query
+const { activeFilter } = useFilterStore();      // Zustand`,
+    },
+    implementation: {
+      nextjs: {
+        description: "In Next.js App Router, Server Components fetch server state directly — no React Query or Zustand needed. React Query is for Client Components that fetch after mount.",
+        filename: "Taxonomy in Next.js App Router",
+        code: `// ─── SERVER STATE in Server Components ───────────────────────
+// fetch() directly — no React Query, no Zustand
+export default async function UsersPage() {
+  const users = await usersService.getAll(); // Direct async call
+  return <UserList users={users} />;
+}
+
+// ─── SERVER STATE in Client Components ───────────────────────
+// Need to fetch after interaction? Use React Query
+'use client';
+export function UserSearch() {
+  const [query, setQuery] = useState('');
+  const { data: users } = useQuery({
+    queryKey: ['users', 'search', query],
+    queryFn: () => usersService.search(query),
+    enabled: query.length > 2,
+  });
+  // ...
+}
+
+// ─── SHARED STATE ─────────────────────────────────────────────
+// UI state only — no API data
+'use client';
+export function Sidebar() {
+  const { sidebarOpen, toggleSidebar } = useAppStore();
+  return (
+    <aside className={sidebarOpen ? 'w-64' : 'w-0'}>
+      <button onClick={toggleSidebar}>Toggle</button>
+    </aside>
+  );
+}`,
+      },
+      vite: {
+        description: "In Vite, all rendering is client-side. Server state always goes through React Query, shared state through Zustand, and local state through useState.",
+        filename: "Taxonomy in Vite + React",
+        code: `// ─── LOCAL STATE ──────────────────────────────────────────────
+function RecipeCard() {
+  const [bookmarked, setBookmarked] = useState(false); // local only
+  return (
+    <button onClick={() => setBookmarked(b => !b)}>
+      {bookmarked ? 'Saved' : 'Save'}
+    </button>
+  );
+}
+
+// ─── SERVER STATE (React Query) ───────────────────────────────
+function RecipeList() {
+  const { data: recipes, isLoading } = useQuery({
+    queryKey: ['recipes'],
+    queryFn: recipesService.getAll,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  if (isLoading) return <Spinner />;
+  return <div>{recipes?.map(r => <RecipeCard key={r.id} {...r} />)}</div>;
+}
+
+// ─── SHARED STATE (Zustand) ───────────────────────────────────
+function Navbar() {
+  const { theme, toggleTheme } = useAppStore(); // shared UI state
+  return <button onClick={toggleTheme}>{theme}</button>;
+}`,
+      },
+    },
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+  },
+
   "custom-hooks": {
     slug: "custom-hooks",
     title: "Custom Hooks",
