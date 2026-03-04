@@ -84,10 +84,15 @@ export function CookbookListPage({ framework }: CookbookListPageProps) {
                 reference architectures, and reusable boilerplate code.
               </p>
             </div>
-            <button className="flex shrink-0 items-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary/90">
+            <a
+              href="https://github.com/sindev08/react-principles/issues/new?template=recipe_proposal.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex shrink-0 items-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary/90"
+            >
               <span className="material-symbols-outlined text-[20px]">add</span>
               Submit Recipe
-            </button>
+            </a>
           </div>
 
           {/* Foundation Entry */}
