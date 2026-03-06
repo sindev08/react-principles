@@ -64,7 +64,7 @@ function useItem() {
 
 // ─── Components ───────────────────────────────────────────────────────────────
 
-export function Accordion({
+function AccordionRoot({
   type = "single",
   defaultValue,
   value: controlledValue,
@@ -180,3 +180,17 @@ export function AccordionContent({ children, className, ...props }: AccordionCon
     </div>
   );
 }
+
+type AccordionCompoundComponent = typeof AccordionRoot & {
+  Root: typeof AccordionRoot;
+  Item: typeof AccordionItem;
+  Trigger: typeof AccordionTrigger;
+  Content: typeof AccordionContent;
+};
+
+export const Accordion = Object.assign(AccordionRoot, {
+  Root: AccordionRoot,
+  Item: AccordionItem,
+  Trigger: AccordionTrigger,
+  Content: AccordionContent,
+}) as AccordionCompoundComponent;

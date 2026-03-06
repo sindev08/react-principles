@@ -10,6 +10,7 @@ const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
+  { label: "Copy-Paste", href: "#copy-paste" },
   { label: "Props", href: "#props" },
 ];
 
@@ -47,20 +48,75 @@ const BASE_BTN = "inline-flex items-center justify-center font-semibold rounded-
 const CODE_SNIPPET = `import { Button } from "@/ui/Button";
 
 // Variants
-<Button variant="primary">Save changes</Button>
-<Button variant="secondary">Cancel</Button>
-<Button variant="ghost">Learn more</Button>
-<Button variant="destructive">Delete account</Button>
-<Button variant="outline">View details</Button>
+<Button.Root variant="primary">Save changes</Button.Root>
+<Button.Root variant="secondary">Cancel</Button.Root>
+<Button.Root variant="ghost">Learn more</Button.Root>
+<Button.Root variant="destructive">Delete account</Button.Root>
+<Button.Root variant="outline">View details</Button.Root>
 
 // Sizes
-<Button size="sm">Small</Button>
-<Button size="md">Medium</Button>
-<Button size="lg">Large</Button>
+<Button.Root size="sm">Small</Button.Root>
+<Button.Root size="md">Medium</Button.Root>
+<Button.Root size="lg">Large</Button.Root>
 
 // States
-<Button isLoading>Saving...</Button>
-<Button disabled>Unavailable</Button>`;
+<Button.Root isLoading>Saving...</Button.Root>
+<Button.Root disabled>Unavailable</Button.Root>`;
+
+const COPY_PASTE_SNIPPET = `import type { ButtonHTMLAttributes, ReactNode } from "react";
+
+type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive" | "outline";
+type ButtonSize = "sm" | "md" | "lg";
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  isLoading?: boolean;
+  children: ReactNode;
+}
+
+const cn = (...classes: Array<string | undefined | false>) => classes.filter(Boolean).join(" ");
+
+const VARIANT_CLASSES: Record<ButtonVariant, string> = {
+  primary: "bg-primary text-white hover:bg-primary/90",
+  secondary: "bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700",
+  ghost: "text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800",
+  destructive: "bg-red-600 text-white hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600",
+  outline: "border border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800/50",
+};
+
+const SIZE_CLASSES: Record<ButtonSize, string> = {
+  sm: "text-xs px-3 py-1.5 h-7 gap-1.5",
+  md: "text-sm px-4 py-2 h-9 gap-2",
+  lg: "text-base px-6 py-2.5 h-11 gap-2",
+};
+
+function Spinner() {
+  return <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />;
+}
+
+function ButtonRoot({ variant = "primary", size = "md", isLoading = false, disabled, children, className, ...props }: ButtonProps) {
+  return (
+    <button
+      {...props}
+      disabled={disabled || isLoading}
+      className={cn(
+        "inline-flex items-center justify-center rounded-lg font-semibold transition-all",
+        "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40",
+        "disabled:cursor-not-allowed disabled:opacity-50",
+        VARIANT_CLASSES[variant],
+        SIZE_CLASSES[size],
+        className,
+      )}
+    >
+      {isLoading && <Spinner />}
+      {children}
+    </button>
+  );
+}
+
+type ButtonCompound = typeof ButtonRoot & { Root: typeof ButtonRoot; Spinner: typeof Spinner };
+export const Button = Object.assign(ButtonRoot, { Root: ButtonRoot, Spinner }) as ButtonCompound;`;
 
 const PROPS_ROWS = [
   { prop: "variant", type: '"primary" | "secondary" | "ghost" | "destructive" | "outline"', default: '"primary"', description: "Visual style of the button." },
@@ -240,21 +296,21 @@ export default function ButtonDocPage() {
 
             {/* Preview */}
             <div className="flex flex-wrap items-center gap-4 py-6 border-t border-slate-100 dark:border-[#1f2937]">
-              <Button
+              <Button.Root
                 variant={activeVariant}
                 size={activeSize}
                 disabled={isDisabled}
               >
                 Click me
-              </Button>
-              <Button
+              </Button.Root>
+              <Button.Root
                 variant={activeVariant}
                 size={activeSize}
                 isLoading={isLoading}
                 onClick={handleLoadingDemo}
               >
                 {isLoading ? "Loading..." : "Try loading"}
-              </Button>
+              </Button.Root>
             </div>
           </div>
         </section>
@@ -270,13 +326,30 @@ export default function ButtonDocPage() {
           <CodeBlock filename="src/ui/Button.tsx" copyText={CODE_SNIPPET}>
             {CODE_SNIPPET}
           </CodeBlock>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+            Backward compatible: API lama <code className="font-mono">{"<Button />"}</code> tetap didukung, tapi style utama sekarang
+            <code className="font-mono"> {"<Button.Root />"}</code>.
+          </p>
         </section>
 
-        {/* 04 Props */}
-        <section id="props" className="mb-16">
+        {/* 04 Copy-Paste */}
+        <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
+          </div>
+          <CodeBlock filename="Button.tsx" copyText={COPY_PASTE_SNIPPET}>
+            {COPY_PASTE_SNIPPET}
+          </CodeBlock>
+        </section>
+
+        {/* 05 Props */}
+        <section id="props" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>

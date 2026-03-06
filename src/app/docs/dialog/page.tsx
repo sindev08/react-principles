@@ -3,14 +3,7 @@
 import { useState } from "react";
 import { DocsPageLayout } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
-import {
-  Dialog,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogContent,
-  DialogFooter,
-} from "@/ui/Dialog";
+import { Dialog } from "@/ui/Dialog";
 import { Button } from "@/ui/Button";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -19,13 +12,11 @@ const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
+  { label: "Copy-Paste", href: "#copy-paste" },
   { label: "Props", href: "#props" },
 ];
 
-const CODE_SNIPPET = `import {
-  Dialog, DialogHeader, DialogTitle,
-  DialogDescription, DialogContent, DialogFooter,
-} from "@/ui/Dialog";
+const CODE_SNIPPET = `import { Dialog } from "@/ui/Dialog";
 import { Button } from "@/ui/Button";
 
 // Confirm dialog
@@ -33,23 +24,161 @@ const [open, setOpen] = useState(false);
 
 <Button onClick={() => setOpen(true)}>Delete item</Button>
 
-<Dialog open={open} onClose={() => setOpen(false)} size="sm">
-  <DialogHeader>
-    <DialogTitle>Delete item?</DialogTitle>
-    <DialogDescription>
+<Dialog.Root open={open} onClose={() => setOpen(false)} size="sm">
+  <Dialog.Header>
+    <Dialog.Title>Delete item?</Dialog.Title>
+    <Dialog.Description>
       This action is permanent and cannot be undone.
-    </DialogDescription>
-  </DialogHeader>
-  <DialogFooter>
+    </Dialog.Description>
+  </Dialog.Header>
+  <Dialog.Footer>
     <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
     <Button variant="destructive" onClick={() => setOpen(false)}>Delete</Button>
-  </DialogFooter>
-</Dialog>
+  </Dialog.Footer>
+</Dialog.Root>
 
 // Sizes: "sm" | "md" | "lg" | "xl"
-<Dialog open={open} onClose={() => setOpen(false)} size="lg">
+<Dialog.Root open={open} onClose={() => setOpen(false)} size="lg">
   ...
-</Dialog>`;
+</Dialog.Root>`;
+
+const COPY_PASTE_SNIPPET = `"use client";
+
+import { useEffect, useRef, useState, type HTMLAttributes, type ReactNode } from "react";
+import { createPortal } from "react-dom";
+
+type ClassValue = string | false | null | undefined;
+const cn = (...classes: ClassValue[]) => classes.filter(Boolean).join(" ");
+
+export type DialogSize = "sm" | "md" | "lg" | "xl";
+
+export interface DialogProps {
+  open: boolean;
+  onClose: () => void;
+  size?: DialogSize;
+  children: ReactNode;
+  className?: string;
+}
+
+const SIZE_CLASSES: Record<DialogSize, string> = {
+  sm: "max-w-sm",
+  md: "max-w-md",
+  lg: "max-w-lg",
+  xl: "max-w-xl",
+};
+
+function useAnimatedMount(open: boolean, durationMs = 200) {
+  const [mounted, setMounted] = useState(open);
+  const [visible, setVisible] = useState(open);
+
+  useEffect(() => {
+    if (open) {
+      setMounted(true);
+      requestAnimationFrame(() => setVisible(true));
+      return;
+    }
+
+    setVisible(false);
+    const timer = window.setTimeout(() => setMounted(false), durationMs);
+    return () => window.clearTimeout(timer);
+  }, [open, durationMs]);
+
+  return { mounted, visible };
+}
+
+function DialogHeader({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn("px-6 pt-6 pb-4", className)} {...props}>{children}</div>;
+}
+
+function DialogTitle({ className, children, ...props }: HTMLAttributes<HTMLHeadingElement>) {
+  return <h2 className={cn("pr-8 text-lg font-semibold text-slate-900", className)} {...props}>{children}</h2>;
+}
+
+function DialogDescription({ className, children, ...props }: HTMLAttributes<HTMLParagraphElement>) {
+  return <p className={cn("mt-1.5 text-sm leading-relaxed text-slate-500", className)} {...props}>{children}</p>;
+}
+
+function DialogContent({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn("px-6 py-2", className)} {...props}>{children}</div>;
+}
+
+function DialogFooter({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn("flex items-center justify-end gap-3 border-t border-slate-100 px-6 py-4", className)} {...props}>{children}</div>;
+}
+
+function DialogRoot({ open, onClose, size = "md", children, className }: DialogProps) {
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const { mounted, visible } = useAnimatedMount(open, 200);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [open, onClose]);
+
+  if (!mounted) return null;
+
+  return createPortal(
+    <div
+      ref={overlayRef}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      onClick={(event) => {
+        if (event.target === overlayRef.current) onClose();
+      }}
+    >
+      <div className={cn("absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-200", visible ? "opacity-100" : "opacity-0")} />
+
+      <div
+        role="dialog"
+        aria-modal="true"
+        className={cn(
+          "relative w-full rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-black/20 transition-all duration-200",
+          visible ? "scale-100 opacity-100" : "scale-95 opacity-0",
+          SIZE_CLASSES[size],
+          className
+        )}
+      >
+        <button
+          onClick={onClose}
+          aria-label="Close dialog"
+          className="absolute right-4 top-4 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+        >
+          ×
+        </button>
+        {children}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+type DialogCompound = typeof DialogRoot & {
+  Root: typeof DialogRoot;
+  Header: typeof DialogHeader;
+  Title: typeof DialogTitle;
+  Description: typeof DialogDescription;
+  Content: typeof DialogContent;
+  Footer: typeof DialogFooter;
+};
+
+export const Dialog = Object.assign(DialogRoot, {
+  Root: DialogRoot,
+  Header: DialogHeader,
+  Title: DialogTitle,
+  Description: DialogDescription,
+  Content: DialogContent,
+  Footer: DialogFooter,
+}) as DialogCompound;`;
 
 const PROPS_ROWS = [
   { prop: "open", type: "boolean", default: "—", description: "Controls dialog visibility." },
@@ -215,28 +344,28 @@ export default function DialogDocPage() {
           </div>
 
           {/* Confirm Delete — sm */}
-          <Dialog open={openDialog === "confirm"} onClose={() => setOpenDialog(null)} size="sm">
-            <DialogHeader>
-              <DialogTitle>Delete item?</DialogTitle>
-              <DialogDescription>
+          <Dialog.Root open={openDialog === "confirm"} onClose={() => setOpenDialog(null)} size="sm">
+            <Dialog.Header>
+              <Dialog.Title>Delete item?</Dialog.Title>
+              <Dialog.Description>
                 This action is permanent and cannot be undone. All associated data will be removed from our servers.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogFooter>
+              </Dialog.Description>
+            </Dialog.Header>
+            <Dialog.Footer>
               <Button variant="ghost" onClick={() => setOpenDialog(null)}>Cancel</Button>
               <Button variant="destructive" onClick={() => setOpenDialog(null)}>Delete</Button>
-            </DialogFooter>
-          </Dialog>
+            </Dialog.Footer>
+          </Dialog.Root>
 
           {/* Edit Profile — md */}
-          <Dialog open={openDialog === "edit"} onClose={() => setOpenDialog(null)} size="md">
-            <DialogHeader>
-              <DialogTitle>Edit Profile</DialogTitle>
-              <DialogDescription>
+          <Dialog.Root open={openDialog === "edit"} onClose={() => setOpenDialog(null)} size="md">
+            <Dialog.Header>
+              <Dialog.Title>Edit Profile</Dialog.Title>
+              <Dialog.Description>
                 Update your display name and bio. Changes are visible to other users immediately.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogContent>
+              </Dialog.Description>
+            </Dialog.Header>
+            <Dialog.Content>
               <div className="space-y-4 py-2">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
@@ -259,22 +388,22 @@ export default function DialogDocPage() {
                   />
                 </div>
               </div>
-            </DialogContent>
-            <DialogFooter>
+            </Dialog.Content>
+            <Dialog.Footer>
               <Button variant="ghost" onClick={() => setOpenDialog(null)}>Cancel</Button>
               <Button variant="primary" onClick={() => setOpenDialog(null)}>Save changes</Button>
-            </DialogFooter>
-          </Dialog>
+            </Dialog.Footer>
+          </Dialog.Root>
 
           {/* View Details — lg */}
-          <Dialog open={openDialog === "details"} onClose={() => setOpenDialog(null)} size="lg">
-            <DialogHeader>
-              <DialogTitle>Package details</DialogTitle>
-              <DialogDescription>
+          <Dialog.Root open={openDialog === "details"} onClose={() => setOpenDialog(null)} size="lg">
+            <Dialog.Header>
+              <Dialog.Title>Package details</Dialog.Title>
+              <Dialog.Description>
                 Full metadata for the selected dependency.
-              </DialogDescription>
-            </DialogHeader>
-            <DialogContent>
+              </Dialog.Description>
+            </Dialog.Header>
+            <Dialog.Content>
               <div className="divide-y divide-slate-100 dark:divide-[#1f2937] py-2">
                 {[
                   { label: "Name", value: "react-principles" },
@@ -289,11 +418,11 @@ export default function DialogDocPage() {
                   </div>
                 ))}
               </div>
-            </DialogContent>
-            <DialogFooter>
+            </Dialog.Content>
+            <Dialog.Footer>
               <Button variant="primary" onClick={() => setOpenDialog(null)}>Got it</Button>
-            </DialogFooter>
-          </Dialog>
+            </Dialog.Footer>
+          </Dialog.Root>
         </section>
 
         {/* 03 Code Snippet */}
@@ -307,13 +436,33 @@ export default function DialogDocPage() {
           <CodeBlock filename="src/ui/Dialog.tsx" copyText={CODE_SNIPPET}>
             {CODE_SNIPPET}
           </CodeBlock>
+          <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
+            Flat exports seperti <code>DialogHeader</code>, <code>DialogContent</code>, dan
+            lainnya tetap didukung untuk migrasi bertahap.
+          </p>
         </section>
 
-        {/* 04 Props */}
-        <section id="props" className="mb-16">
+        {/* 04 Copy-Paste */}
+        <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
+          </div>
+          <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">
+            Versi ini sudah self-contained, termasuk helper class merge dan animated mount, jadi minim setup saat dipindahkan.
+          </p>
+          <CodeBlock filename="Dialog.tsx" copyText={COPY_PASTE_SNIPPET}>
+            {COPY_PASTE_SNIPPET}
+          </CodeBlock>
+        </section>
+
+        {/* 05 Props */}
+        <section id="props" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>

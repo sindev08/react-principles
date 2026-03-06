@@ -26,7 +26,7 @@ const SIZE_CLASSES: Record<BadgeSize, string> = {
   lg: "text-sm px-3 py-1",
 };
 
-export function Badge({ variant = "default", size = "md", children, className }: BadgeProps) {
+function BadgeRoot({ variant = "default", size = "md", children, className }: BadgeProps) {
   return (
     <span
       className={cn(
@@ -40,3 +40,11 @@ export function Badge({ variant = "default", size = "md", children, className }:
     </span>
   );
 }
+
+type BadgeCompoundComponent = typeof BadgeRoot & {
+  Root: typeof BadgeRoot;
+};
+
+export const Badge = Object.assign(BadgeRoot, {
+  Root: BadgeRoot,
+}) as BadgeCompoundComponent;

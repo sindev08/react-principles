@@ -13,6 +13,7 @@ const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
+  { label: "Copy-Paste", href: "#copy-paste" },
   { label: "Props", href: "#props" },
 ];
 
@@ -34,7 +35,7 @@ const handleConfirm = async () => {
   Delete project
 </Button>
 
-<AlertDialog
+<AlertDialog.Root
   open={open}
   onClose={() => setOpen(false)}
   onConfirm={handleConfirm}
@@ -47,6 +48,94 @@ const handleConfirm = async () => {
 />
 
 // Variants: "destructive" | "warning" | "default"`;
+
+const COPY_PASTE_SNIPPET = `"use client";
+
+import { useEffect, type ReactNode } from "react";
+import { createPortal } from "react-dom";
+
+type ClassValue = string | false | null | undefined;
+const cn = (...classes: ClassValue[]) => classes.filter(Boolean).join(" ");
+
+type AlertDialogVariant = "destructive" | "warning" | "default";
+
+interface AlertDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: string;
+  description: string;
+  cancelLabel?: string;
+  confirmLabel?: string;
+  variant?: AlertDialogVariant;
+  isLoading?: boolean;
+}
+
+const CONFIRM_CLASSES: Record<AlertDialogVariant, string> = {
+  destructive: "bg-red-500 text-white hover:bg-red-600",
+  warning: "bg-amber-500 text-white hover:bg-amber-600",
+  default: "bg-blue-600 text-white hover:bg-blue-700",
+};
+
+function Spinner() {
+  return (
+    <svg className="h-4 w-4 animate-spin" viewBox="0 0 16 16" fill="none">
+      <circle cx="8" cy="8" r="6" stroke="currentColor" strokeOpacity="0.25" strokeWidth="2" />
+      <path d="M14 8a6 6 0 0 0-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function AlertDialogRoot({
+  open,
+  onClose,
+  onConfirm,
+  title,
+  description,
+  cancelLabel = "Cancel",
+  confirmLabel = "Confirm",
+  variant = "default",
+  isLoading = false,
+}: AlertDialogProps) {
+  useEffect(() => {
+    if (!open) return;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
+  if (!open) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50" />
+      <div role="alertdialog" aria-modal="true" className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-black/20">
+        <div className="p-6">
+          <h2 className="text-base font-semibold text-slate-900">{title}</h2>
+          <p className="mt-1.5 text-sm leading-relaxed text-slate-500">{description}</p>
+        </div>
+        <div className="flex items-center justify-end gap-3 px-6 pb-6">
+          <button onClick={onClose} disabled={isLoading} className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 disabled:opacity-50">
+            {cancelLabel}
+          </button>
+          <button onClick={onConfirm} disabled={isLoading} className={cn("inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-70", CONFIRM_CLASSES[variant])}>
+            {isLoading && <Spinner />}
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+type AlertDialogCompound = typeof AlertDialogRoot & { Root: typeof AlertDialogRoot };
+
+export const AlertDialog = Object.assign(AlertDialogRoot, { Root: AlertDialogRoot }) as AlertDialogCompound;
+
+export type AlertDialogTriggerProps = {
+  onClick: () => void;
+  children: ReactNode;
+};`;
 
 const PROPS_ROWS = [
   { prop: "open", type: "boolean", default: "—", description: "Controls visibility." },
@@ -311,7 +400,7 @@ export default function AlertDialogDocPage() {
 
           {/* Alert dialogs for each variant */}
           {VARIANTS.map((v) => (
-            <AlertDialog
+            <AlertDialog.Root
               key={v}
               open={openVariant === v}
               onClose={() => { if (!isLoading) setOpenVariant(null); }}
@@ -337,13 +426,33 @@ export default function AlertDialogDocPage() {
           <CodeBlock filename="src/ui/AlertDialog.tsx" copyText={CODE_SNIPPET}>
             {CODE_SNIPPET}
           </CodeBlock>
+          <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
+            Bentuk lama <code>&lt;AlertDialog /&gt;</code> tetap jalan. Bentuk baru
+            namespaced yang direkomendasikan adalah <code>&lt;AlertDialog.Root /&gt;</code>.
+          </p>
         </section>
 
-        {/* 04 Props */}
-        <section id="props" className="mb-16">
+        {/* 04 Copy-Paste */}
+        <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
+          </div>
+          <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">
+            Versi ringkas self-contained yang bisa dipindahkan langsung ke project lain.
+          </p>
+          <CodeBlock filename="AlertDialog.tsx" copyText={COPY_PASTE_SNIPPET}>
+            {COPY_PASTE_SNIPPET}
+          </CodeBlock>
+        </section>
+
+        {/* 05 Props */}
+        <section id="props" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>

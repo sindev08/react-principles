@@ -1,0 +1,83 @@
+"use client";
+
+import { DocsPageLayout } from "@/features/docs/components";
+import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
+import { Skeleton } from "@/ui/Skeleton";
+
+const TOC_ITEMS = [
+  { label: "Live Demo", href: "#demo" },
+  { label: "Code Snippet", href: "#snippet" },
+  { label: "Copy-Paste", href: "#copy-paste" },
+];
+
+const CODE_SNIPPET = `import { Skeleton } from "@/ui/Skeleton";
+
+<div className="space-y-3">
+  <Skeleton.Root variant="line" width="70%" />
+  <Skeleton.Root variant="line" width="45%" />
+  <Skeleton.Root variant="rect" className="h-24" />
+</div>`;
+
+const COPY_PASTE_SNIPPET = `type SkeletonProps = {
+  variant?: "line" | "rect" | "circle";
+  width?: number | string;
+  height?: number | string;
+  className?: string;
+};
+
+function SkeletonRoot({ variant = "line", width, height, className }: SkeletonProps) {
+  const base = "inline-block animate-pulse bg-slate-200 dark:bg-[#1f2937]";
+  const shape =
+    variant === "line"
+      ? "h-4 w-40 rounded-md"
+      : variant === "circle"
+        ? "h-10 w-10 rounded-full"
+        : "h-24 w-full rounded-xl";
+  return (
+    <span
+      aria-hidden="true"
+      className={base + " " + shape + " " + (className ?? "")}
+      style={{ width, height }}
+    />
+  );
+}
+
+type SkeletonCompound = typeof SkeletonRoot & { Root: typeof SkeletonRoot };
+export const Skeleton = Object.assign(SkeletonRoot, { Root: SkeletonRoot }) as SkeletonCompound;`;
+
+export default function SkeletonDocPage() {
+  return (
+    <DocsPageLayout tocItems={TOC_ITEMS}>
+      <div className="max-w-4xl">
+        <h1 className="mb-3 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">Skeleton</h1>
+        <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">
+          Loading placeholder to maintain layout stability while data is being fetched.
+        </p>
+
+        <section id="demo" className="mb-16">
+          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
+          <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
+            <div className="flex items-center gap-3">
+              <Skeleton.Root variant="circle" />
+              <div className="flex-1 space-y-2">
+                <Skeleton.Root variant="line" width="50%" />
+                <Skeleton.Root variant="line" width="35%" />
+              </div>
+            </div>
+            <Skeleton.Root variant="rect" className="h-24" />
+          </div>
+        </section>
+
+        <section id="snippet" className="mb-16">
+          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">02 Code Snippet</h2>
+          <CodeBlock filename="src/ui/Skeleton.tsx" copyText={CODE_SNIPPET}>{CODE_SNIPPET}</CodeBlock>
+        </section>
+
+        <section id="copy-paste" className="mb-16">
+          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">03 Copy-Paste (Single File)</h2>
+          <CodeBlock filename="Skeleton.tsx" copyText={COPY_PASTE_SNIPPET}>{COPY_PASTE_SNIPPET}</CodeBlock>
+        </section>
+      </div>
+    </DocsPageLayout>
+  );
+}

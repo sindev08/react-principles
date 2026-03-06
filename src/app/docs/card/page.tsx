@@ -3,9 +3,7 @@
 import { useState } from "react";
 import { DocsPageLayout } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
-import {
-  Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter,
-} from "@/ui/Card";
+import { Card } from "@/ui/Card";
 import { Button } from "@/ui/Button";
 import { Badge } from "@/ui/Badge";
 import type { CardVariant } from "@/ui/Card";
@@ -14,6 +12,7 @@ const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
+  { label: "Copy-Paste", href: "#copy-paste" },
   { label: "Props", href: "#props" },
 ];
 
@@ -55,38 +54,98 @@ const FORCED = {
   },
 };
 
-const CODE_SNIPPET = `import {
-  Card, CardHeader, CardTitle,
-  CardDescription, CardContent, CardFooter,
-} from "@/ui/Card";
+const CODE_SNIPPET = `import { Card } from "@/ui/Card";
 import { Button } from "@/ui/Button";
 
-<Card variant="elevated">
-  <CardHeader>
-    <CardTitle>Account Settings</CardTitle>
-    <CardDescription>
+<Card.Root variant="elevated">
+  <Card.Header>
+    <Card.Title>Account Settings</Card.Title>
+    <Card.Description>
       Manage your profile and preferences.
-    </CardDescription>
-  </CardHeader>
-  <CardContent>
+    </Card.Description>
+  </Card.Header>
+  <Card.Content>
     <p className="text-sm text-slate-600 dark:text-slate-400">
       Your account was last updated 3 days ago.
     </p>
-  </CardContent>
-  <CardFooter>
+  </Card.Content>
+  <Card.Footer>
     <Button size="sm">Save changes</Button>
     <Button variant="ghost" size="sm">Cancel</Button>
-  </CardFooter>
-</Card>`;
+  </Card.Footer>
+</Card.Root>`;
+
+const COPY_PASTE_SNIPPET = `import type { HTMLAttributes } from "react";
+
+type ClassValue = string | false | null | undefined;
+const cn = (...classes: ClassValue[]) => classes.filter(Boolean).join(" ");
+
+export type CardVariant = "default" | "elevated" | "flat";
+
+export interface CardProps extends HTMLAttributes<HTMLDivElement> {
+  variant?: CardVariant;
+}
+
+const CARD_VARIANT_CLASSES: Record<CardVariant, string> = {
+  default: "rounded-xl border border-slate-200 bg-white",
+  elevated: "rounded-xl border border-slate-200 bg-white shadow-lg shadow-slate-200/60",
+  flat: "rounded-xl border border-transparent bg-slate-50",
+};
+
+function CardRoot({ variant = "default", className, children, ...props }: CardProps) {
+  return (
+    <div className={cn(CARD_VARIANT_CLASSES[variant], className)} {...props}>
+      {children}
+    </div>
+  );
+}
+
+function CardHeader({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn("p-6 pb-4", className)} {...props}>{children}</div>;
+}
+
+function CardTitle({ className, children, ...props }: HTMLAttributes<HTMLHeadingElement>) {
+  return <h3 className={cn("text-base font-bold text-slate-900", className)} {...props}>{children}</h3>;
+}
+
+function CardDescription({ className, children, ...props }: HTMLAttributes<HTMLParagraphElement>) {
+  return <p className={cn("mt-1 text-sm text-slate-500", className)} {...props}>{children}</p>;
+}
+
+function CardContent({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn("px-6 pb-4", className)} {...props}>{children}</div>;
+}
+
+function CardFooter({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn("px-6 pb-6 flex items-center gap-3", className)} {...props}>{children}</div>;
+}
+
+type CardCompound = typeof CardRoot & {
+  Root: typeof CardRoot;
+  Header: typeof CardHeader;
+  Title: typeof CardTitle;
+  Description: typeof CardDescription;
+  Content: typeof CardContent;
+  Footer: typeof CardFooter;
+};
+
+export const Card = Object.assign(CardRoot, {
+  Root: CardRoot,
+  Header: CardHeader,
+  Title: CardTitle,
+  Description: CardDescription,
+  Content: CardContent,
+  Footer: CardFooter,
+}) as CardCompound;`;
 
 const PROPS_ROWS = [
-  { component: "Card", prop: "variant", type: '"default" | "elevated" | "flat"', default: '"default"', description: "Visual style — border only, shadow, or flat background." },
-  { component: "Card", prop: "className", type: "string", default: "—", description: "Additional CSS classes." },
-  { component: "CardHeader", prop: "className", type: "string", default: "—", description: "Spacing wrapper for title + description." },
-  { component: "CardTitle", prop: "className", type: "string", default: "—", description: "Renders as h3. Bold, dark text." },
-  { component: "CardDescription", prop: "className", type: "string", default: "—", description: "Renders as p. Muted, secondary text." },
-  { component: "CardContent", prop: "className", type: "string", default: "—", description: "Main body area with horizontal padding." },
-  { component: "CardFooter", prop: "className", type: "string", default: "—", description: "Action row with flex + gap. Usually holds buttons." },
+  { component: "Card.Root", prop: "variant", type: '"default" | "elevated" | "flat"', default: '"default"', description: "Visual style — border only, shadow, or flat background." },
+  { component: "Card.Root", prop: "className", type: "string", default: "—", description: "Additional CSS classes." },
+  { component: "Card.Header", prop: "className", type: "string", default: "—", description: "Spacing wrapper for title + description." },
+  { component: "Card.Title", prop: "className", type: "string", default: "—", description: "Renders as h3. Bold, dark text." },
+  { component: "Card.Description", prop: "className", type: "string", default: "—", description: "Renders as p. Muted, secondary text." },
+  { component: "Card.Content", prop: "className", type: "string", default: "—", description: "Main body area with horizontal padding." },
+  { component: "Card.Footer", prop: "className", type: "string", default: "—", description: "Action row with flex + gap. Usually holds buttons." },
 ];
 
 // ─── Forced-theme preview ─────────────────────────────────────────────────────
@@ -223,14 +282,14 @@ export default function CardDocPage() {
             {/* Cards grid */}
             <div className="grid gap-4 sm:grid-cols-3 bg-slate-50 dark:bg-[#0d1117] rounded-xl p-4">
               {/* Profile card */}
-              <Card variant={activeVariant}>
-                <CardHeader>
+              <Card.Root variant={activeVariant}>
+                <Card.Header>
                   <div className="flex items-center gap-3 mb-2">
                     <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
                       <span className="text-xs font-bold text-primary">AJ</span>
                     </div>
                     <div>
-                      <CardTitle className="text-sm">Alice Johnson</CardTitle>
+                      <Card.Title className="text-sm">Alice Johnson</Card.Title>
                       <p className="text-xs text-slate-400 dark:text-slate-500">alice@example.com</p>
                     </div>
                   </div>
@@ -238,16 +297,16 @@ export default function CardDocPage() {
                     <Badge variant="info" size="sm">Admin</Badge>
                     <Badge variant="success" size="sm">Active</Badge>
                   </div>
-                </CardHeader>
-                <CardFooter className="pt-2">
+                </Card.Header>
+                <Card.Footer className="pt-2">
                   <Button size="sm" className="flex-1">Follow</Button>
                   <Button variant="outline" size="sm" className="flex-1">Message</Button>
-                </CardFooter>
-              </Card>
+                </Card.Footer>
+              </Card.Root>
 
               {/* Stats card */}
-              <Card variant={activeVariant}>
-                <CardContent className="pt-6">
+              <Card.Root variant={activeVariant}>
+                <Card.Content className="pt-6">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30">
                       <span className="material-symbols-outlined text-[18px] text-green-600 dark:text-green-400">trending_up</span>
@@ -258,26 +317,26 @@ export default function CardDocPage() {
                   </div>
                   <p className="text-2xl font-black text-slate-900 dark:text-white">8,249</p>
                   <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Monthly visitors</p>
-                </CardContent>
-              </Card>
+                </Card.Content>
+              </Card.Root>
 
               {/* Notification card */}
-              <Card variant={activeVariant}>
-                <CardHeader>
+              <Card.Root variant={activeVariant}>
+                <Card.Header>
                   <div className="flex items-start gap-3">
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
                       <span className="material-symbols-outlined text-[16px] text-primary">notifications</span>
                     </div>
                     <div>
-                      <CardTitle className="text-sm">New comment</CardTitle>
-                      <CardDescription className="text-xs">Bob left a reply on your post.</CardDescription>
+                      <Card.Title className="text-sm">New comment</Card.Title>
+                      <Card.Description className="text-xs">Bob left a reply on your post.</Card.Description>
                     </div>
                   </div>
-                </CardHeader>
-                <CardFooter className="pt-0">
+                </Card.Header>
+                <Card.Footer className="pt-0">
                   <Button variant="ghost" size="sm" className="w-full text-xs">View thread</Button>
-                </CardFooter>
-              </Card>
+                </Card.Footer>
+              </Card.Root>
             </div>
           </div>
         </section>
@@ -293,13 +352,33 @@ export default function CardDocPage() {
           <CodeBlock filename="src/ui/Card.tsx" copyText={CODE_SNIPPET}>
             {CODE_SNIPPET}
           </CodeBlock>
+          <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
+            Flat exports seperti <code>CardHeader</code>, <code>CardContent</code>, dan
+            lainnya tetap didukung untuk migrasi bertahap.
+          </p>
         </section>
 
-        {/* 04 Props */}
-        <section id="props" className="mb-16">
+        {/* 04 Copy-Paste */}
+        <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
+          </div>
+          <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">
+            Snippet ini self-contained dan bisa dipindahkan ke project lain tanpa setup alias atau util tambahan.
+          </p>
+          <CodeBlock filename="Card.tsx" copyText={COPY_PASTE_SNIPPET}>
+            {COPY_PASTE_SNIPPET}
+          </CodeBlock>
+        </section>
+
+        {/* 05 Props */}
+        <section id="props" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>

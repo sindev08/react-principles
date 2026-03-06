@@ -51,7 +51,7 @@ function MinusIcon({ className }: { className?: string }) {
   );
 }
 
-export function Checkbox({
+function CheckboxRoot({
   checked,
   defaultChecked,
   indeterminate = false,
@@ -127,3 +127,11 @@ export function Checkbox({
     </label>
   );
 }
+
+type CheckboxCompoundComponent = typeof CheckboxRoot & {
+  Root: typeof CheckboxRoot;
+};
+
+export const Checkbox = Object.assign(CheckboxRoot, {
+  Root: CheckboxRoot,
+}) as CheckboxCompoundComponent;
