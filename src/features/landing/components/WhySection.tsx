@@ -19,10 +19,11 @@ const FEATURES = [
 ];
 
 const LAB_ITEMS = [
-  "Fully typed with TypeScript 5.x",
-  "Multi-app implementation testing",
-  "Performance profiling for every pattern",
-  "Automated accessibility audits",
+  "Framework switcher — Next.js ↔ Vite per recipe",
+  "Live interactive demo per pattern",
+  "Save & bookmark recipes",
+  "Fully typed — TypeScript strict mode",
+  "Fully searchable — ⌘K",
 ];
 
 export function WhySection() {
@@ -68,11 +69,11 @@ export function WhySection() {
               <div className="flex items-center gap-4 mb-8">
                 <div className="p-3 rounded-lg shadow-xs bg-white dark:bg-slate-800">
                   <span className="material-symbols-outlined text-primary">
-                    science
+                    auto_awesome
                   </span>
                 </div>
                 <h4 className="text-xl italic font-black tracking-tight uppercase text-slate-900 dark:text-white">
-                  Lab Environment
+                  What's Inside
                 </h4>
               </div>
               <ul className="space-y-4">

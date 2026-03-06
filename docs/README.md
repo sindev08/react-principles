@@ -1,17 +1,18 @@
 # React Principles — Pattern Documentation
 
-Pattern and convention documentation for this project. Each doc explains **WHY** (principle), **WHAT** (rules & pattern), and **HOW** (implementation) — so that architectural decisions can be understood and reproduced by anyone on the team.
+Pattern and convention documentation used in this monorepo. Each doc explains **WHY** (principle), **WHAT** (rules & pattern), and **HOW** (implementation) — so that architectural decisions can be understood and reproduced by anyone on the team.
 
 ## Tech Stack
 
 | Layer | Library | Version |
 |-------|---------|---------|
-| App | Next.js 16 (App Router) | - |
+| Monorepo | pnpm workspaces | - |
+| Apps | Next.js 15 (App Router), Vite (React 18) | - |
 | Server State | TanStack Query | v5 |
 | Client State | Zustand | v5 |
 | Tables | TanStack Table | v8 |
-| Forms | React Hook Form + Zod | v7 + v4 |
-| Styling | Tailwind CSS + custom `src/ui` primitives (shadcn-style) | v4 |
+| Forms | React Hook Form + Zod | v7 + v3 |
+| Styling | Tailwind CSS + shadcn/ui | v3 |
 | TypeScript | strict + noUncheckedIndexedAccess | v5 |
 
 ## Pattern Docs
@@ -30,15 +31,25 @@ Pattern and convention documentation for this project. Each doc explains **WHY**
 
 ## Project Structure
 
-```text
+```
 react-principles/
   docs/                   # <-- you are here
-  src/
-    app/                  # Next.js App Router routes
-    features/             # Feature modules
-    shared/               # Shared hooks/stores/types/utils/components
-    ui/                   # Design system primitives
-    lib/                  # API client/query/mock-data utilities
+  packages/
+    shared/src/
+      hooks/              # useDebounce, useLocalStorage, useMediaQuery
+      utils/              # cn, formatters, validators (Zod schemas)
+      types/              # api.ts, common.ts
+      services/           # api-client, endpoints
+  apps/
+    nextjs/               # Next.js 15 App Router implementation
+      hooks/queries/      # useUsers, useUser
+      hooks/mutations/    # useCreateUser, useUpdateUser
+      stores/             # useAppStore, useFilterStore
+      components/examples # UserList, UserTable, UserForm
+    vite/                 # Vite + React 18 implementation
+      src/hooks/          # Same hook structure
+      src/stores/         # Same store structure
+      src/components/     # Same component structure
 ```
 
 ## How to Read These Docs

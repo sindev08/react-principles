@@ -46,11 +46,11 @@ const useDerived = () => useXStore((state) => compute(state));
 
 ## Implementation
 
-> **Version:** Zustand v5 | Tested on: 2026-02
+> **Version:** Zustand v5 | Tested on: 2025-05
 
 ### App Store — Global UI State
 
-From `src/shared/stores/useAppStore.ts`:
+From `apps/nextjs/stores/useAppStore.ts`:
 
 ```ts
 import { create } from "zustand";
@@ -70,7 +70,7 @@ interface AppState {
 }
 
 export const useAppStore = create<AppState>((set) => ({
-  theme: "dark",
+  theme: "light",
   sidebarOpen: true,
 
   setTheme: (theme) => set({ theme }),
@@ -98,11 +98,11 @@ function Header() {
 
 ### Filter Store — Domain-specific State with Reset
 
-From `src/shared/stores/useFilterStore.ts`:
+From `apps/nextjs/stores/useFilterStore.ts`:
 
 ```ts
 import { create } from "zustand";
-import type { UserRole, UserStatus } from "@/shared/types/common";
+import type { UserRole, UserStatus } from "@react-principles/shared/types";
 
 interface FilterState {
   search: string;
@@ -134,7 +134,7 @@ Key pattern: `initialState` as a separate object so `reset()` can return to the 
 
 ### Derived Selectors
 
-From `src/shared/stores/useFilterStore.ts`:
+From `apps/nextjs/stores/useFilterStore.ts`:
 
 ```ts
 /** Selector: returns true when any filter is active. */
@@ -220,9 +220,10 @@ export const useAppStore = create<AppState>()(
 - Store files don't need `"use client"` — they are imported by client components
 - SSR caveat: Zustand stores are singletons. In Next.js with SSR, be careful of hydration mismatch. Use `persist` middleware with `skipHydration` if needed
 
-### Runtime Note
+### Vite
 
-This repository currently uses Next.js App Router. Keep store usage in client components and avoid SSR hydration mismatches for persisted state.
+- No SSR concerns — stores are directly usable
+- Identical to Next.js in usage
 
 ## Common Mistakes
 
