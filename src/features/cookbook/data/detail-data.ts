@@ -766,6 +766,341 @@ export function RevenueChart({ range }: { range: string }) {
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
   },
 
+  "folder-structure": {
+    slug: "folder-structure",
+    title: "Folder Structure",
+    breadcrumbCategory: "Foundations",
+    description: "A feature-based folder structure so you always know where a file goes — and why it belongs there.",
+    lastUpdated: "2025-03-01",
+    principle: {
+      text: "A good folder structure answers one question instantly: 'where does this file go?' Feature-based organization groups everything related to a feature together — its components, hooks, and data — so you spend time building, not searching. When a feature grows or gets deleted, everything moves together.",
+      tip: "If you can't decide where a file goes in under 10 seconds, your structure is too abstract. Feature-based organization should make the answer obvious.",
+    },
+    rules: [
+      {
+        title: "Feature-based grouping",
+        description: "Everything related to a feature lives in src/features/[name]/ — its components, hooks, and data together.",
+      },
+      {
+        title: "Co-location",
+        description: "Tests, types, and constants live next to the code they describe. Avoid global /types or /constants folders.",
+      },
+      {
+        title: "No cross-feature imports",
+        description: "Features never import directly from each other. Code needed by multiple features moves to src/shared/.",
+      },
+      {
+        title: "Public API via index.ts",
+        description: "Each feature exposes only what needs to be exposed via an index.ts file. Internals stay internal.",
+      },
+    ],
+    pattern: {
+      filename: "src/ — feature-based structure",
+      code: `src/
+├── app/              # Next.js routing only — no business logic here
+├── features/         # One folder per domain feature
+│   ├── cookbook/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   ├── data/
+│   │   └── index.ts  # Public API — only export what others need
+│   └── examples/
+│       ├── components/
+│       ├── hooks/
+│       └── index.ts
+├── shared/           # Truly cross-cutting code
+│   ├── components/   # Used by 2+ features
+│   ├── hooks/
+│   ├── stores/
+│   └── utils/
+├── lib/              # External service clients (API, query client)
+└── ui/               # Design system primitives (Button, Input, etc.)`,
+    },
+    implementation: {
+      nextjs: {
+        description: "Next.js adds the app/ directory for file-based routing. Route logic (pages) lives in app/, all business logic stays in features/.",
+        filename: "src/app/ — routing only",
+        code: `src/
+├── app/
+│   ├── layout.tsx          # Root layout
+│   ├── page.tsx            # Landing page → renders <LandingPage />
+│   ├── (examples)/         # Route group — no URL segment
+│   │   └── forms/page.tsx  # Renders <UserForm /> from features/
+│   └── nextjs/
+│       └── cookbook/
+│           └── [slug]/page.tsx
+├── features/
+│   └── landing/
+│       └── components/
+│           └── LandingPage.tsx  # Actual component lives here
+└── shared/`,
+      },
+      vite: {
+        description: "Vite projects use React Router for routing. The same src/ structure applies — routing config lives separately from feature code.",
+        filename: "src/ — Vite structure",
+        code: `src/
+├── routes/             # React Router config — routing only
+│   ├── index.tsx       # Route definitions
+│   └── layouts/
+├── features/           # Same feature-based structure
+│   └── cookbook/
+│       ├── components/
+│       ├── hooks/
+│       └── index.ts
+├── shared/
+├── lib/
+└── ui/`,
+      },
+    },
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+  },
+
+  "typescript-for-react": {
+    slug: "typescript-for-react",
+    title: "TypeScript for React",
+    breadcrumbCategory: "Foundations",
+    description: "How to type component props, event handlers, and hooks correctly. The contracts that prevent silent bugs.",
+    lastUpdated: "2025-03-01",
+    principle: {
+      text: "Bugs caught at compile time cost nothing to fix. Bugs caught in production cost everything. TypeScript for React is not about learning the full TypeScript language — it is about writing the right contracts between your components so that mistakes are caught before the code even runs.",
+      tip: "Start by typing your component props. If you can describe what a component accepts and returns, the rest of the types follow naturally.",
+    },
+    rules: [
+      {
+        title: "interface for component props",
+        description: "Use interface to define component props. It is extendable and reads clearly as a contract.",
+      },
+      {
+        title: "type for unions and utilities",
+        description: "Use type for union types, utility types, and function signatures — things that are not directly 'objects with fields'.",
+      },
+      {
+        title: "Never use any",
+        description: "any disables type checking completely. Use unknown and narrow it with type guards instead.",
+      },
+      {
+        title: "strict: true in tsconfig",
+        description: "Strict mode enables the full set of type checks. Without it, TypeScript catches only the most obvious errors.",
+      },
+    ],
+    pattern: {
+      filename: "components/UserCard.tsx — typed component",
+      code: `import type { ReactNode } from 'react';
+
+// ✅ interface for component props
+interface UserCardProps {
+  name: string;
+  email: string;
+  role: 'admin' | 'editor' | 'viewer';  // union type
+  isActive: boolean;
+  onEdit: (id: string) => void;          // typed event handler
+  children?: ReactNode;
+}
+
+// ✅ typed event handler
+function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
+  event.preventDefault();
+}
+
+// ✅ typed useState
+const [count, setCount] = useState<number>(0);
+
+// ❌ never do this
+const fetchUser = async (): Promise<any> => { ... }
+
+// ✅ use unknown and narrow
+const fetchUser = async (): Promise<unknown> => { ... }`,
+    },
+    implementation: {
+      nextjs: {
+        description: "Next.js page components receive typed params and searchParams. Always type these explicitly.",
+        filename: "app/users/[id]/page.tsx",
+        code: `// ✅ Typed Next.js page props
+interface PageProps {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ tab?: string }>;
+}
+
+export default async function UserPage({ params }: PageProps) {
+  const { id } = await params;
+  return <UserDetail id={id} />;
+}
+
+// ✅ Typed Server Action
+async function updateUser(
+  id: string,
+  data: UpdateUserInput
+): Promise<{ success: boolean }> {
+  'use server';
+  // ...
+}`,
+      },
+      vite: {
+        description: "In Vite + React Router, type your route params using useParams with a generic.",
+        filename: "features/users/components/UserDetail.tsx",
+        code: `import { useParams } from 'react-router-dom';
+
+// ✅ Typed route params
+function UserDetail() {
+  const { id } = useParams<{ id: string }>();
+
+  // id is string | undefined — handle both cases
+  if (!id) return null;
+
+  return <div>{id}</div>;
+}
+
+// ✅ Typed custom hook return
+function useUser(id: string): {
+  user: User | null;
+  isLoading: boolean;
+  error: Error | null;
+} {
+  // ...
+}`,
+      },
+    },
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+  },
+
+  "component-anatomy": {
+    slug: "component-anatomy",
+    title: "Component Anatomy",
+    breadcrumbCategory: "Foundations",
+    description: "The consistent internal structure every component follows — imports, types, constants, function, export.",
+    lastUpdated: "2025-03-01",
+    principle: {
+      text: "When every component follows the same structure, you stop thinking about where things go inside a file and start thinking about what the component actually does. Consistent anatomy means anyone on the team can open any file and immediately know where to look — props are always at the top, constants are always before the function, exports are always at the bottom.",
+      tip: "The hardest part of component anatomy is constants vs. props. Rule of thumb: if it never changes based on what's passed in, it is a constant. If it could change from outside, it is a prop.",
+    },
+    rules: [
+      {
+        title: "Imports first",
+        description: "Order: React → external libraries → internal aliases (@/) → relative imports (./). This makes dependencies visible at a glance.",
+      },
+      {
+        title: "Types and interfaces second",
+        description: "Define all types used in this file immediately after imports. Props interface always comes first.",
+      },
+      {
+        title: "Constants third",
+        description: "Component-scoped constants (static data, config, labels) come before the function. Never define constants inside the function body.",
+      },
+      {
+        title: "Component function fourth",
+        description: "The function itself comes after everything it depends on. Keep it focused — if it grows past 200 lines, split it.",
+      },
+      {
+        title: "Named export last",
+        description: "Always use named exports, never default exports. Named exports make refactoring and search easier.",
+      },
+    ],
+    pattern: {
+      filename: "components/RecipeCard.tsx — anatomy template",
+      code: `// 1. IMPORTS — React → external → internal → relative
+import { useState } from 'react';
+import Link from 'next/link';
+import { cn } from '@/shared/utils/cn';
+import { useSavedStore } from '../stores/useSavedStore';
+
+// 2. TYPES
+interface RecipeCardProps {
+  slug: string;
+  title: string;
+  description: string;
+  category: string;
+}
+
+// 3. CONSTANTS — static, never changes based on props
+const MAX_DESCRIPTION_LENGTH = 120;
+const CARD_BASE_CLASS = 'rounded-xl border bg-white shadow-sm';
+
+// 4. COMPONENT FUNCTION
+export function RecipeCard({ slug, title, description, category }: RecipeCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const { isSaved } = useSavedStore();
+
+  const truncated = description.slice(0, MAX_DESCRIPTION_LENGTH);
+
+  return (
+    <div className={cn(CARD_BASE_CLASS, isHovered && 'shadow-lg')}>
+      {/* ... */}
+    </div>
+  );
+}
+
+// 5. EXPORT — named, at the bottom
+// (already exported above with "export function")`,
+    },
+    implementation: {
+      nextjs: {
+        description: "In Next.js, mark client components explicitly with 'use client' — it goes above all imports as the very first line.",
+        filename: "features/cookbook/components/RecipeCard.tsx",
+        code: `// 'use client' goes ABOVE imports if the component is a Client Component
+'use client';
+
+// 1. IMPORTS
+import { useState } from 'react';
+import Link from 'next/link';
+import { cn } from '@/shared/utils/cn';
+
+// 2. TYPES
+interface RecipeCardProps {
+  slug: string;
+  title: string;
+  framework: 'nextjs' | 'vitejs';
+}
+
+// 3. CONSTANTS
+const HREF_MAP = {
+  nextjs: '/nextjs/cookbook',
+  vitejs: '/vitejs/cookbook',
+} as const;
+
+// 4. COMPONENT
+export function RecipeCard({ slug, title, framework }: RecipeCardProps) {
+  const [saved, setSaved] = useState(false);
+  const href = \`\${HREF_MAP[framework]}/\${slug}\`;
+
+  return (
+    <Link href={href}>
+      <span>{title}</span>
+    </Link>
+  );
+}`,
+      },
+      vite: {
+        description: "In Vite + React, all components are client-side by default. No 'use client' needed — just follow the anatomy.",
+        filename: "features/cookbook/components/RecipeCard.tsx",
+        code: `// 1. IMPORTS
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { cn } from '@/shared/utils/cn';
+
+// 2. TYPES
+interface RecipeCardProps {
+  slug: string;
+  title: string;
+}
+
+// 3. CONSTANTS
+const BASE_PATH = '/cookbook';
+
+// 4. COMPONENT
+export function RecipeCard({ slug, title }: RecipeCardProps) {
+  const [saved, setSaved] = useState(false);
+
+  return (
+    <Link to={\`\${BASE_PATH}/\${slug}\`}>
+      <span>{title}</span>
+    </Link>
+  );
+}`,
+      },
+    },
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+  },
+
   "oauth-flow": {
     slug: "oauth-flow",
     title: "OAuth Flow",
@@ -885,6 +1220,690 @@ app.get('/auth/callback/github', async (c) => {
       },
     },
     lastUpdated: "Feb 26, 2026",
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+  },
+
+  "useeffect-render-cycle": {
+    slug: "useeffect-render-cycle",
+    title: "useEffect & Render Cycle",
+    breadcrumbCategory: "Foundations",
+    description: "When effects run, why the dependency array exists, and how to clean up after yourself.",
+    lastUpdated: "2025-03-01",
+    principle: {
+      text: "useEffect is not a lifecycle method — it is a synchronization tool. It answers one question: 'what side effects need to stay in sync with this data?' Every time the dependency array changes, React re-runs the effect to keep things synchronized. When you understand this mental model, dependency arrays stop feeling like magic rules and start making sense.",
+      tip: "If you find yourself writing useEffect to fetch data, stop. That is what React Query is for. useEffect is for synchronizing with things outside React — browser APIs, subscriptions, timers.",
+    },
+    rules: [
+      {
+        title: "Always declare dependencies honestly",
+        description: "Every value from the component scope used inside the effect belongs in the dependency array. If you add eslint-disable to hide a missing dependency, you have a bug.",
+      },
+      {
+        title: "Return a cleanup function when needed",
+        description: "If your effect creates a subscription, timer, or event listener — clean it up in the return function. Otherwise you get memory leaks and stale handlers.",
+      },
+      {
+        title: "Empty array means once on mount",
+        description: "[] runs the effect once after the first render. Only use this when the effect truly has no dependencies — not as a shortcut to avoid thinking about deps.",
+      },
+      {
+        title: "Do not use useEffect for data fetching",
+        description: "Fetching data inside useEffect causes race conditions, no loading state management, and no caching. Use React Query instead.",
+      },
+    ],
+    pattern: {
+      filename: "hooks/useWindowSize.ts — effect with cleanup",
+      code: `import { useEffect, useState } from 'react';
+
+interface WindowSize {
+  width: number;
+  height: number;
+}
+
+export function useWindowSize(): WindowSize {
+  const [size, setSize] = useState<WindowSize>({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  useEffect(() => {
+    // The effect: subscribe to resize events
+    function handleResize() {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    }
+
+    window.addEventListener('resize', handleResize);
+
+    // The cleanup: unsubscribe when component unmounts
+    // or before the effect re-runs
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []); // No deps — window never changes
+
+  return size;
+}`,
+    },
+    implementation: {
+      nextjs: {
+        description: "In Next.js, window is not available on the server. Guard all browser API access with a typeof window check or use 'use client'.",
+        filename: "shared/hooks/useWindowSize.ts",
+        code: `'use client'; // Required — window only exists in browser
+
+import { useEffect, useState } from 'react';
+
+export function useWindowSize() {
+  // ✅ Safe initial state — no window access during SSR
+  const [size, setSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    // ✅ Now safe — this only runs in the browser
+    function handleResize() {
+      setSize({ width: window.innerWidth, height: window.innerHeight });
+    }
+
+    handleResize(); // Set initial size
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return size;
+}`,
+      },
+      vite: {
+        description: "In Vite, all code runs in the browser — no SSR concerns. The pattern is straightforward.",
+        filename: "shared/hooks/useWindowSize.ts",
+        code: `import { useEffect, useState } from 'react';
+
+export function useWindowSize() {
+  const [size, setSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  useEffect(() => {
+    function handleResize() {
+      setSize({ width: window.innerWidth, height: window.innerHeight });
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return size;
+}`,
+      },
+    },
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+  },
+
+  "component-composition": {
+    slug: "component-composition",
+    title: "Component Composition",
+    breadcrumbCategory: "Foundations",
+    description: "How components combine and communicate — children props, slot patterns, and why composition beats deep prop drilling.",
+    lastUpdated: "2025-03-01",
+    principle: {
+      text: "Prop drilling happens when you pass data through multiple components that do not use it — just to get it to a component deep in the tree. Composition solves this differently: instead of passing data down, you pass components down. The parent controls what gets rendered, and children receive exactly what they need directly.",
+      tip: "When you find yourself adding a prop to a component just to pass it further down, stop. That is the signal to use composition instead.",
+    },
+    rules: [
+      {
+        title: "Use children for flexible content",
+        description: "The children prop lets a parent inject content into a component without the component needing to know what it is.",
+      },
+      {
+        title: "Use named slots for multiple injection points",
+        description: "When you need more than one place to inject content (header + footer + body), use named props instead of children.",
+      },
+      {
+        title: "Prefer composition over configuration",
+        description: "A component that accepts children is more flexible than one with 10 props controlling its internals. Compose behavior, do not configure it.",
+      },
+      {
+        title: "Keep components focused",
+        description: "Each component does one thing. Composition is how you build complex UIs from simple, focused pieces.",
+      },
+    ],
+    pattern: {
+      filename: "components/Card.tsx — slot composition pattern",
+      code: `// ❌ Prop drilling — Card needs to know about title, footer, etc.
+<Card
+  title="Recipe"
+  subtitle="Foundations"
+  footer={<Button>View</Button>}
+  headerIcon="layers"
+/>
+
+// ✅ Composition — Card just provides structure
+<Card>
+  <Card.Header>
+    <span>Foundations</span>
+    <h2>Recipe</h2>
+  </Card.Header>
+  <Card.Body>
+    Content goes here
+  </Card.Body>
+  <Card.Footer>
+    <Button>View</Button>
+  </Card.Footer>
+</Card>
+
+// The Card implementation
+interface CardProps { children: React.ReactNode }
+interface CardHeaderProps { children: React.ReactNode }
+
+function Card({ children }: CardProps) {
+  return <div className="rounded-xl border bg-white">{children}</div>;
+}
+
+function CardHeader({ children }: CardHeaderProps) {
+  return <div className="p-4 border-b">{children}</div>;
+}
+
+Card.Header = CardHeader;
+Card.Body = ({ children }: CardProps) => <div className="p-4">{children}</div>;
+Card.Footer = ({ children }: CardProps) => <div className="p-4 border-t">{children}</div>;`,
+    },
+    implementation: {
+      nextjs: {
+        description: "In Next.js, composition works the same way. Server Components can pass Client Components as children — this is how you keep server/client boundaries clean.",
+        filename: "features/cookbook/components/RecipeLayout.tsx",
+        code: `// Server Component — fetches data
+export default async function RecipePage({ params }: PageProps) {
+  const detail = await getRecipeDetail(params.slug);
+
+  return (
+    // Passes a Client Component as children
+    <RecipeLayout
+      header={<RecipeHeader title={detail.title} />}
+      sidebar={<RecipeToc sections={detail.sections} />}
+    >
+      {/* Client Component receives data as props, not fetching itself */}
+      <RecipeContent detail={detail} />
+    </RecipeLayout>
+  );
+}
+
+// RecipeLayout — just structure, no data concerns
+interface RecipeLayoutProps {
+  header: React.ReactNode;
+  sidebar: React.ReactNode;
+  children: React.ReactNode;
+}
+
+export function RecipeLayout({ header, sidebar, children }: RecipeLayoutProps) {
+  return (
+    <div>
+      <header>{header}</header>
+      <div className="flex">
+        <aside>{sidebar}</aside>
+        <main>{children}</main>
+      </div>
+    </div>
+  );
+}`,
+      },
+      vite: {
+        description: "In Vite, all components are client-side. Composition is the primary tool for managing component complexity without prop drilling.",
+        filename: "features/cookbook/components/RecipeLayout.tsx",
+        code: `interface RecipeLayoutProps {
+  header: React.ReactNode;
+  sidebar: React.ReactNode;
+  children: React.ReactNode;
+}
+
+export function RecipeLayout({ header, sidebar, children }: RecipeLayoutProps) {
+  return (
+    <div className="min-h-screen">
+      <header className="border-b">{header}</header>
+      <div className="flex max-w-7xl mx-auto">
+        <aside className="w-64 shrink-0">{sidebar}</aside>
+        <main className="flex-1 px-8">{children}</main>
+      </div>
+    </div>
+  );
+}
+
+// Usage in a route component
+export function RecipePage() {
+  const { slug } = useParams<{ slug: string }>();
+  const { data: detail } = useRecipeDetail(slug!);
+
+  if (!detail) return null;
+
+  return (
+    <RecipeLayout
+      header={<RecipeHeader title={detail.title} />}
+      sidebar={<RecipeToc sections={detail.sections} />}
+    >
+      <RecipeContent detail={detail} />
+    </RecipeLayout>
+  );
+}`,
+      },
+    },
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+  },
+
+  "services-layer": {
+    slug: "services-layer",
+    title: "Services Layer",
+    breadcrumbCategory: "Foundations",
+    description: "How to organize all backend communication in one place — so when an API changes, you fix it in one file, not twenty.",
+    lastUpdated: "2025-03-01",
+    principle: {
+      text: "When you fetch data directly inside a component, the component becomes responsible for knowing the URL, the HTTP method, the request format, and the error handling. That is four responsibilities too many. A services layer centralizes all backend communication — components just call a function and get data back. When the API changes, you fix it in one file, not twenty.",
+      tip: "A service function should read like plain English: getUserById(id), createOrder(data), deletePost(id). If it needs more than one argument object, consider splitting it into two functions.",
+    },
+    rules: [
+      {
+        title: "Services only talk to the API",
+        description: "A service function takes inputs, calls the API, and returns data. It does not touch state, does not render anything, and does not know about React.",
+      },
+      {
+        title: "One file per resource",
+        description: "Group service functions by the API resource they belong to: users.ts, orders.ts, recipes.ts. Not by HTTP method.",
+      },
+      {
+        title: "Services live in lib/",
+        description: "The services layer belongs in src/lib/ alongside the API client and query keys — not inside a feature folder.",
+      },
+      {
+        title: "Hooks consume services, components consume hooks",
+        description: "Components never call service functions directly. The chain is: service → custom hook → component.",
+      },
+    ],
+    pattern: {
+      filename: "lib/services/users.ts — service layer pattern",
+      code: `import { apiClient } from '@/lib/api-client';
+import type { User, CreateUserInput, UpdateUserInput } from '@/shared/types/user';
+
+// ✅ Service functions — pure API communication
+export const usersService = {
+  getAll: async (): Promise<User[]> => {
+    const response = await apiClient.get('/users');
+    return response.data;
+  },
+
+  getById: async (id: string): Promise<User> => {
+    const response = await apiClient.get(\`/users/\${id}\`);
+    return response.data;
+  },
+
+  create: async (data: CreateUserInput): Promise<User> => {
+    const response = await apiClient.post('/users', data);
+    return response.data;
+  },
+
+  update: async (id: string, data: UpdateUserInput): Promise<User> => {
+    const response = await apiClient.patch(\`/users/\${id}\`, data);
+    return response.data;
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await apiClient.delete(\`/users/\${id}\`);
+  },
+};`,
+    },
+    implementation: {
+      nextjs: {
+        description: "In Next.js App Router, service functions can be called directly in Server Components. For Client Components, wrap them in React Query hooks.",
+        filename: "lib/services/users.ts + hooks usage",
+        code: `// lib/api-client.ts — axios instance
+import axios from 'axios';
+
+export const apiClient = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+// lib/services/users.ts — service layer
+import { apiClient } from '@/lib/api-client';
+import type { User } from '@/shared/types/user';
+
+export const usersService = {
+  getAll: async (): Promise<User[]> => {
+    const { data } = await apiClient.get('/users');
+    return data;
+  },
+  getById: async (id: string): Promise<User> => {
+    const { data } = await apiClient.get(\`/users/\${id}\`);
+    return data;
+  },
+};
+
+// features/examples/hooks/useUsers.ts — hook wraps service
+import { useQuery } from '@tanstack/react-query';
+import { usersService } from '@/lib/services/users';
+
+export function useUsers() {
+  return useQuery({
+    queryKey: ['users', 'list'],
+    queryFn: usersService.getAll,
+  });
+}`,
+      },
+      vite: {
+        description: "In Vite, the pattern is identical. The services layer is framework-agnostic — the same service files work in both Next.js and Vite projects.",
+        filename: "lib/services/users.ts + hooks usage",
+        code: `// lib/api-client.ts
+import axios from 'axios';
+
+export const apiClient = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+// lib/services/users.ts — same as Next.js version
+import { apiClient } from '@/lib/api-client';
+import type { User } from '@/shared/types/user';
+
+export const usersService = {
+  getAll: async (): Promise<User[]> => {
+    const { data } = await apiClient.get('/users');
+    return data;
+  },
+};
+
+// features/examples/hooks/useUsers.ts
+import { useQuery } from '@tanstack/react-query';
+import { usersService } from '@/lib/services/users';
+
+export function useUsers() {
+  return useQuery({
+    queryKey: ['users', 'list'],
+    queryFn: usersService.getAll,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}`,
+      },
+    },
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+  },
+
+  "state-taxonomy": {
+    slug: "state-taxonomy",
+    title: "State Taxonomy",
+    breadcrumbCategory: "Foundations",
+    description: "Three categories of state — local, shared, and server — and exactly which tool handles each one.",
+    lastUpdated: "2025-03-01",
+    principle: {
+      text: "Not all state is the same. Before reaching for any state management library, ask one question: where does this data come from? Local state lives inside one component. Shared state is UI state needed by multiple components. Server state comes from an API and has its own lifecycle — loading, error, stale, and needs refreshing. Each category has a different tool, and mixing them up causes bugs that are hard to trace.",
+      tip: "When you find yourself putting API data into Zustand, stop. Server state belongs in React Query. When you find yourself using React Query for a toggle or a modal, stop. UI state belongs in useState or Zustand.",
+    },
+    rules: [
+      {
+        title: "Local state: useState",
+        description: "If only one component needs it, keep it local. A form input value, a toggle, a hover state — these are all local state.",
+      },
+      {
+        title: "Shared state: Zustand",
+        description: "If multiple components need the same UI state — sidebar open/closed, active theme, search dialog open — use Zustand. This is not server data.",
+      },
+      {
+        title: "Server state: React Query",
+        description: "If it comes from an API, it is server state. React Query handles caching, background refetching, loading states, and error states automatically.",
+      },
+      {
+        title: "Never put server state in Zustand",
+        description: "Storing API data in Zustand means you manage caching, staleness, and loading manually. React Query already does this — use the right tool.",
+      },
+    ],
+    pattern: {
+      filename: "The three categories — decision guide",
+      code: `// ─── LOCAL STATE ──────────────────────────────────────────────
+// One component needs it. No sharing needed.
+const [isOpen, setIsOpen] = useState(false);
+const [inputValue, setInputValue] = useState('');
+const [hovering, setHovering] = useState(false);
+
+// ─── SHARED STATE (Zustand) ───────────────────────────────────
+// Multiple components need the same UI state.
+// This is NOT data from an API.
+const { sidebarOpen, toggleSidebar } = useAppStore();
+const { theme, setTheme } = useAppStore();
+const { open: searchOpen } = useSearchStore();
+
+// ─── SERVER STATE (React Query) ───────────────────────────────
+// Comes from an API. Has loading, error, and cache lifecycle.
+const { data: users, isLoading, error } = useUsers();
+const { data: user } = useUser(id);
+
+// ❌ WRONG — API data in Zustand
+const useUserStore = create((set) => ({
+  users: [],
+  fetchUsers: async () => {
+    const data = await usersService.getAll(); // ← belongs in React Query
+    set({ users: data });
+  },
+}));
+
+// ✅ RIGHT — API data in React Query, UI state in Zustand
+const { data: users } = useUsers();             // React Query
+const { activeFilter } = useFilterStore();      // Zustand`,
+    },
+    implementation: {
+      nextjs: {
+        description: "In Next.js App Router, Server Components fetch server state directly — no React Query or Zustand needed. React Query is for Client Components that fetch after mount.",
+        filename: "Taxonomy in Next.js App Router",
+        code: `// ─── SERVER STATE in Server Components ───────────────────────
+// fetch() directly — no React Query, no Zustand
+export default async function UsersPage() {
+  const users = await usersService.getAll(); // Direct async call
+  return <UserList users={users} />;
+}
+
+// ─── SERVER STATE in Client Components ───────────────────────
+// Need to fetch after interaction? Use React Query
+'use client';
+export function UserSearch() {
+  const [query, setQuery] = useState('');
+  const { data: users } = useQuery({
+    queryKey: ['users', 'search', query],
+    queryFn: () => usersService.search(query),
+    enabled: query.length > 2,
+  });
+  // ...
+}
+
+// ─── SHARED STATE ─────────────────────────────────────────────
+// UI state only — no API data
+'use client';
+export function Sidebar() {
+  const { sidebarOpen, toggleSidebar } = useAppStore();
+  return (
+    <aside className={sidebarOpen ? 'w-64' : 'w-0'}>
+      <button onClick={toggleSidebar}>Toggle</button>
+    </aside>
+  );
+}`,
+      },
+      vite: {
+        description: "In Vite, all rendering is client-side. Server state always goes through React Query, shared state through Zustand, and local state through useState.",
+        filename: "Taxonomy in Vite + React",
+        code: `// ─── LOCAL STATE ──────────────────────────────────────────────
+function RecipeCard() {
+  const [bookmarked, setBookmarked] = useState(false); // local only
+  return (
+    <button onClick={() => setBookmarked(b => !b)}>
+      {bookmarked ? 'Saved' : 'Save'}
+    </button>
+  );
+}
+
+// ─── SERVER STATE (React Query) ───────────────────────────────
+function RecipeList() {
+  const { data: recipes, isLoading } = useQuery({
+    queryKey: ['recipes'],
+    queryFn: recipesService.getAll,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  if (isLoading) return <Spinner />;
+  return <div>{recipes?.map(r => <RecipeCard key={r.id} {...r} />)}</div>;
+}
+
+// ─── SHARED STATE (Zustand) ───────────────────────────────────
+function Navbar() {
+  const { theme, toggleTheme } = useAppStore(); // shared UI state
+  return <button onClick={toggleTheme}>{theme}</button>;
+}`,
+      },
+    },
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+  },
+
+  "custom-hooks": {
+    slug: "custom-hooks",
+    title: "Custom Hooks",
+    breadcrumbCategory: "Foundations",
+    description: "The boundary between logic and rendering. When to extract a hook, what the rules are, and how to avoid the most common mistake.",
+    lastUpdated: "2025-03-01",
+    principle: {
+      text: "A custom hook is not just a function that starts with 'use' — it is a boundary between logic and rendering. The component handles what the user sees. The hook handles how data gets there. When you separate these two concerns, components become easier to read, logic becomes easier to test, and both become easier to change independently.",
+      tip: "If you would write a unit test for the logic, it belongs in a hook. If you would write a component test for it, it belongs in the JSX.",
+    },
+    rules: [
+      {
+        title: "Name starts with 'use'",
+        description: "This is not just a convention — React uses it to enforce the rules of hooks. A function starting with 'use' is treated as a hook.",
+      },
+      {
+        title: "Extract when logic repeats",
+        description: "If the same stateful logic appears in two components, extract it to a hook. Do not copy-paste hooks between components.",
+      },
+      {
+        title: "Extract when logic is complex",
+        description: "If a component has more than one useEffect, multiple useState calls, or complex derived state — that logic belongs in a hook.",
+      },
+      {
+        title: "Hooks are not global state",
+        description: "Each component that calls a hook gets its own isolated instance. Hooks do not share state between components unless backed by a store or context.",
+      },
+    ],
+    pattern: {
+      filename: "hooks/useDebounce.ts — logic extracted from component",
+      code: `// ❌ Before — logic mixed into component
+function SearchInput() {
+  const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  // Component is doing too much
+  return <input value={query} onChange={e => setQuery(e.target.value)} />;
+}
+
+// ✅ After — logic extracted to a hook
+function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState<T>(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debounced;
+}
+
+// Component is now focused on rendering only
+function SearchInput() {
+  const [query, setQuery] = useState('');
+  const debouncedQuery = useDebounce(query, 300);
+
+  return <input value={query} onChange={e => setQuery(e.target.value)} />;
+}`,
+    },
+    implementation: {
+      nextjs: {
+        description: "In Next.js, hooks can only run in Client Components. If a hook uses browser APIs, add 'use client' to the component that calls it — not to the hook file itself.",
+        filename: "shared/hooks/useDebounce.ts",
+        code: `// The hook itself has no 'use client' — it is framework-agnostic
+import { useEffect, useState } from 'react';
+
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState<T>(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debounced;
+}
+
+// The component that calls it gets 'use client'
+// features/cookbook/components/SearchInput.tsx
+'use client';
+
+import { useDebounce } from '@/shared/hooks/useDebounce';
+
+export function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
+  const [query, setQuery] = useState('');
+  const debouncedQuery = useDebounce(query, 300);
+
+  useEffect(() => {
+    onSearch(debouncedQuery);
+  }, [debouncedQuery, onSearch]);
+
+  return (
+    <input
+      value={query}
+      onChange={e => setQuery(e.target.value)}
+      placeholder="Search recipes..."
+    />
+  );
+}`,
+      },
+      vite: {
+        description: "In Vite, hooks work the same way with no SSR considerations. Co-locate feature-specific hooks inside the feature folder.",
+        filename: "shared/hooks/useDebounce.ts",
+        code: `import { useEffect, useState } from 'react';
+
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState<T>(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debounced;
+}
+
+// Usage in a component
+// features/cookbook/components/SearchInput.tsx
+import { useState, useEffect } from 'react';
+import { useDebounce } from '@/shared/hooks/useDebounce';
+
+export function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
+  const [query, setQuery] = useState('');
+  const debouncedQuery = useDebounce(query, 300);
+
+  useEffect(() => {
+    onSearch(debouncedQuery);
+  }, [debouncedQuery, onSearch]);
+
+  return (
+    <input
+      value={query}
+      onChange={e => setQuery(e.target.value)}
+      placeholder="Search recipes..."
+    />
+  );
+}`,
+      },
+    },
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
   },
 };

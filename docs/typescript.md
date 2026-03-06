@@ -10,7 +10,7 @@ Interface vs type is not just a preference — there is a semantic difference. `
 
 ## Rules
 
-- `strict: true` + `noUncheckedIndexedAccess: true` required in `tsconfig.json`
+- `strict: true` + `noUncheckedIndexedAccess: true` required in `tsconfig.base.json`
 - **Never use `any`** — use `unknown` and narrow with a type guard
 - `interface` for: component props, API response shapes, class contracts
 - `type` for: unions, utility types, function signatures, mapped types
@@ -46,11 +46,11 @@ function isApiError(value: unknown): value is ApiError {
 
 ## Implementation
 
-> **Version:** TypeScript v5 | Tested on: 2026-02
+> **Version:** TypeScript v5 | Tested on: 2025-05
 
 ### Base Config
 
-From `tsconfig.json`:
+From `tsconfig.base.json`:
 
 ```json
 {
@@ -71,7 +71,7 @@ From `tsconfig.json`:
 
 ### Interface for Props & API Shapes
 
-From `src/shared/types/common.ts`:
+From `packages/shared/src/types/common.ts`:
 
 ```ts
 // User roles — union type because this is a set of literal values
@@ -123,7 +123,7 @@ type UserFormState = Nullable<User>;
 
 ### API Response Types — Discriminated Union
 
-From `src/shared/types/api.ts`:
+From `packages/shared/src/types/api.ts`:
 
 ```ts
 // Success response — discriminated by `success: true`
@@ -171,11 +171,11 @@ function handleResult<T>(result: ApiResult<T>) {
 
 ### Type-safe Input Types
 
-From `src/shared/types/user.ts`:
+From `apps/nextjs/types/user.ts`:
 
 ```ts
 // Re-export from shared — single source of truth
-export type { User, UserRole, UserStatus } from "@/shared/types/common";
+export type { User, UserRole, UserStatus } from "@react-principles/shared/types";
 
 // Create input — omit server-generated fields
 interface CreateUserInput {
@@ -240,7 +240,14 @@ try {
 
 ### Next.js
 
-TypeScript configuration is managed in a single `tsconfig.json` for this repository.
+No TypeScript config difference between Next.js and Vite — both extend `tsconfig.base.json`.
+
+### Vite
+
+Same as Next.js. Vite adds `vite-env.d.ts` for Vite-specific types:
+```ts
+/// <reference types="vite/client" />
+```
 
 ## Common Mistakes
 
