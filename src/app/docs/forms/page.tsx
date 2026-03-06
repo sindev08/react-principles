@@ -29,8 +29,10 @@ const settingsSchema = z.object({
   pushNotifications: z.boolean().default(false),
 });
 
-type LoginValues = z.infer<typeof loginSchema>;
-type SettingsValues = z.infer<typeof settingsSchema>;
+type LoginFormInput = z.input<typeof loginSchema>;
+type LoginValues = z.output<typeof loginSchema>;
+type SettingsFormInput = z.input<typeof settingsSchema>;
+type SettingsValues = z.output<typeof settingsSchema>;
 
 export default function FormsDocPage() {
   return (
@@ -88,7 +90,7 @@ export default function FormsDocPage() {
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
               Settings Example
             </h2>
-            <span className="bg-primary/10 text-primary rounded px-2 py-1 text-[10px] font-bold uppercase">
+            <span className="bg-primary/10 text-primary rounded-sm px-2 py-1 text-[10px] font-bold uppercase">
               Grid Layout
             </span>
           </div>
@@ -112,7 +114,7 @@ export default function FormsDocPage() {
                   <input
                     readOnly
                     value="invalid_user!"
-                    className="w-full pr-10 text-sm rounded-lg border-red-300 bg-red-50 dark:border-red-900 dark:bg-red-900/10 focus:outline-none px-3 py-2 border"
+                    className="w-full pr-10 text-sm rounded-lg border-red-300 bg-red-50 dark:border-red-900 dark:bg-red-900/10 focus:outline-hidden px-3 py-2 border"
                   />
                   <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[20px] text-red-500">
                     error
@@ -132,7 +134,7 @@ export default function FormsDocPage() {
                   <input
                     readOnly
                     value="valid_user_123"
-                    className="w-full pr-10 text-sm rounded-lg border-emerald-300 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-900/10 focus:outline-none px-3 py-2 border"
+                    className="w-full pr-10 text-sm rounded-lg border-emerald-300 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-900/10 focus:outline-hidden px-3 py-2 border"
                   />
                   <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[20px] text-emerald-500">
                     check_circle
@@ -200,7 +202,7 @@ function PreviewCodeTabs({
 }) {
   const [tab, setTab] = useState<"preview" | "code">("preview");
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+    <div className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs">
       <div className="flex items-center gap-4 px-4 py-2 border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900">
         {(["preview", "code"] as const).map((t) => (
           <button
@@ -234,7 +236,14 @@ function LoginFormDemo() {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<LoginValues>({ resolver: zodResolver(loginSchema) });
+  } = useForm<LoginFormInput, unknown, LoginValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+  });
 
   const onSubmit = async (_data: LoginValues) => {
     await new Promise((r) => setTimeout(r, 600));
@@ -261,7 +270,7 @@ function LoginFormDemo() {
           type="email"
           {...register("email")}
           placeholder="name@company.com"
-          className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+          className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-hidden"
         />
         {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
       </div>
@@ -274,12 +283,12 @@ function LoginFormDemo() {
           type="password"
           {...register("password")}
           placeholder="••••••••"
-          className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+          className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-hidden"
         />
         {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>}
       </div>
       <div className="flex items-center gap-2 py-2">
-        <input type="checkbox" id="remember" {...register("rememberMe")} className="rounded text-primary border-slate-300" />
+        <input type="checkbox" id="remember" {...register("rememberMe")} className="rounded-sm text-primary border-slate-300" />
         <label htmlFor="remember" className="text-sm text-slate-600 dark:text-slate-400">Keep me logged in</label>
       </div>
       <button
@@ -299,9 +308,15 @@ function SettingsFormDemo() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<SettingsValues>({
+  } = useForm<SettingsFormInput, unknown, SettingsValues>({
     resolver: zodResolver(settingsSchema),
-    defaultValues: { firstName: "Jane", lastName: "Cooper", emailUpdates: true },
+    defaultValues: {
+      firstName: "Jane",
+      lastName: "Cooper",
+      bio: "",
+      emailUpdates: true,
+      pushNotifications: false,
+    },
   });
 
   const onSubmit = async (_data: SettingsValues) => {
@@ -321,12 +336,12 @@ function SettingsFormDemo() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block mb-1 text-xs font-bold tracking-wider uppercase text-slate-500">First Name</label>
-              <input type="text" {...register("firstName")} className="w-full text-sm rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 focus:border-primary focus:outline-none px-3 py-2" />
+              <input type="text" {...register("firstName")} className="w-full text-sm rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 focus:border-primary focus:outline-hidden px-3 py-2" />
               {errors.firstName && <p className="mt-1 text-xs text-red-500">{errors.firstName.message}</p>}
             </div>
             <div>
               <label className="block mb-1 text-xs font-bold tracking-wider uppercase text-slate-500">Last Name</label>
-              <input type="text" {...register("lastName")} className="w-full text-sm rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 focus:border-primary focus:outline-none px-3 py-2" />
+              <input type="text" {...register("lastName")} className="w-full text-sm rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 focus:border-primary focus:outline-hidden px-3 py-2" />
             </div>
           </div>
           <div>
@@ -334,7 +349,7 @@ function SettingsFormDemo() {
             <textarea
               {...register("bio")}
               placeholder="Tell us a bit about yourself..."
-              className="w-full h-24 text-sm rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 focus:border-primary focus:outline-none px-3 py-2 resize-none"
+              className="w-full h-24 text-sm rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 focus:border-primary focus:outline-hidden px-3 py-2 resize-none"
             />
           </div>
         </div>
@@ -346,14 +361,14 @@ function SettingsFormDemo() {
         </div>
         <div className="space-y-3 md:col-span-2">
           <div className="flex items-start gap-3">
-            <input type="checkbox" id="emailUpdates" {...register("emailUpdates")} className="mt-1 rounded text-primary border-slate-300" />
+            <input type="checkbox" id="emailUpdates" {...register("emailUpdates")} className="mt-1 rounded-sm text-primary border-slate-300" />
             <div>
               <label htmlFor="emailUpdates" className="block text-sm font-semibold">Email updates</label>
               <span className="text-xs text-slate-500">Get notified when someone mentions you.</span>
             </div>
           </div>
           <div className="flex items-start gap-3">
-            <input type="checkbox" id="pushNotifications" {...register("pushNotifications")} className="mt-1 rounded text-primary border-slate-300" />
+            <input type="checkbox" id="pushNotifications" {...register("pushNotifications")} className="mt-1 rounded-sm text-primary border-slate-300" />
             <div>
               <label htmlFor="pushNotifications" className="block text-sm font-semibold">Push notifications</label>
               <span className="text-xs text-slate-500">Receive mobile alerts for new messages.</span>

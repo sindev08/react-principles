@@ -19,7 +19,7 @@ interface SearchDialogProps {
   savedSlugs?: string[];
 }
 
-export function SearchDialog({ open, items, onClose, onNavigate, savedSlugs = [] }: SearchDialogProps) {
+function SearchDialogRoot({ open, items, onClose, onNavigate, savedSlugs = [] }: SearchDialogProps) {
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -85,7 +85,7 @@ export function SearchDialog({ open, items, onClose, onNavigate, savedSlugs = []
     >
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/50 backdrop-blur-xs"
         onClick={onClose}
       />
 
@@ -106,7 +106,7 @@ export function SearchDialog({ open, items, onClose, onNavigate, savedSlugs = []
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search docs, components, patterns..."
-            className="flex-1 bg-transparent text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none"
+            className="flex-1 bg-transparent text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-hidden"
           />
           {query ? (
             <button
@@ -116,7 +116,7 @@ export function SearchDialog({ open, items, onClose, onNavigate, savedSlugs = []
               <span className="material-symbols-outlined text-[18px]">close</span>
             </button>
           ) : (
-            <kbd className="hidden rounded border border-slate-200 dark:border-[#1f2937] px-1.5 py-0.5 text-[10px] font-medium text-slate-400 sm:inline-flex">
+            <kbd className="hidden rounded-sm border border-slate-200 dark:border-[#1f2937] px-1.5 py-0.5 text-[10px] font-medium text-slate-400 sm:inline-flex">
               ESC
             </kbd>
           )}
@@ -171,16 +171,16 @@ export function SearchDialog({ open, items, onClose, onNavigate, savedSlugs = []
         <div className="flex items-center justify-between border-t border-slate-100 dark:border-[#1f2937] px-4 py-2.5 text-[11px] text-slate-400">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
-              <kbd className="rounded border border-slate-200 dark:border-[#2d3748] px-1 py-0.5 font-mono">
+              <kbd className="rounded-sm border border-slate-200 dark:border-[#2d3748] px-1 py-0.5 font-mono">
                 ↑
               </kbd>
-              <kbd className="rounded border border-slate-200 dark:border-[#2d3748] px-1 py-0.5 font-mono">
+              <kbd className="rounded-sm border border-slate-200 dark:border-[#2d3748] px-1 py-0.5 font-mono">
                 ↓
               </kbd>
               navigate
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="rounded border border-slate-200 dark:border-[#2d3748] px-1 py-0.5 font-mono">
+              <kbd className="rounded-sm border border-slate-200 dark:border-[#2d3748] px-1 py-0.5 font-mono">
                 ↵
               </kbd>
               select
@@ -195,6 +195,14 @@ export function SearchDialog({ open, items, onClose, onNavigate, savedSlugs = []
   );
 }
 
+type SearchDialogCompoundComponent = typeof SearchDialogRoot & {
+  Root: typeof SearchDialogRoot;
+};
+
+export const SearchDialog = Object.assign(SearchDialogRoot, {
+  Root: SearchDialogRoot,
+}) as SearchDialogCompoundComponent;
+
 // --- helpers ---
 
 function highlight(text: string, query: string) {
@@ -204,7 +212,7 @@ function highlight(text: string, query: string) {
   return (
     <>
       {text.slice(0, idx)}
-      <mark className="rounded-sm bg-primary/20 px-0.5 font-semibold text-primary not-italic">
+      <mark className="rounded-xs bg-primary/20 px-0.5 font-semibold text-primary not-italic">
         {text.slice(idx, idx + query.length)}
       </mark>
       {text.slice(idx + query.length)}

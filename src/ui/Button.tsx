@@ -39,7 +39,7 @@ function Spinner() {
   );
 }
 
-export function Button({
+function ButtonRoot({
   variant = "primary",
   size = "md",
   isLoading = false,
@@ -54,7 +54,7 @@ export function Button({
       disabled={disabled || isLoading}
       className={cn(
         "inline-flex items-center justify-center font-semibold rounded-lg transition-all",
-        "focus-visible:outline-none focus-visible:ring-2",
+        "focus-visible:outline-hidden focus-visible:ring-2",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         VARIANT_CLASSES[variant],
         SIZE_CLASSES[size],
@@ -66,3 +66,15 @@ export function Button({
     </button>
   );
 }
+
+type ButtonCompoundComponent = typeof ButtonRoot & {
+  Root: typeof ButtonRoot;
+  Spinner: typeof Spinner;
+};
+
+export const Button = Object.assign(ButtonRoot, {
+  Root: ButtonRoot,
+  Spinner,
+}) as ButtonCompoundComponent;
+
+export { Spinner as ButtonSpinner };

@@ -1,28 +1,28 @@
 # react-principles
 
-Monorepo reference project — a living cookbook of React patterns & principles.
+Reference project for React patterns and principles with real examples in a Next.js App Router app.
 
 ## What This Is
 
-- **Living cookbook** — patterns used in real projects, documented with WHY
-- **Reference implementation** — real code you can copy to new projects
-- **Content source** — basis for LinkedIn posts and blog articles
+- **Living cookbook** for production React patterns, with WHY and HOW
+- **Reference implementation** for data fetching, state management, forms, and UI composition
+- **Content source** for docs and social/technical writeups
 
-This is NOT a demo app or showcase. It's a collection of isolated patterns + real implementations in Next.js and Vite apps.
+This project is not a marketing showcase. It is a practical pattern library with runnable pages and detailed docs.
 
 ## Tech Stack
 
 | Category | Tool |
 |----------|------|
-| Monorepo | pnpm workspaces |
-| Apps | Next.js 15 (App Router), Vite (React 18) |
+| Framework | Next.js 16 (App Router) |
+| Runtime UI | React 19 |
 | Server State | TanStack Query v5 |
 | Client State | Zustand v5 |
 | Tables | TanStack Table v8 |
-| Forms | React Hook Form v7 + Zod v3 |
-| UI | Tailwind CSS + shadcn/ui |
-| Testing | Vitest + Testing Library |
+| Forms | React Hook Form v7 + Zod v4 |
+| UI | Tailwind CSS + custom `src/ui` primitives (shadcn-style) |
 | Linting | ESLint + Prettier |
+| Type Safety | TypeScript strict mode |
 
 ## Getting Started
 
@@ -30,27 +30,31 @@ This is NOT a demo app or showcase. It's a collection of isolated patterns + rea
 # Install dependencies
 pnpm install
 
-# Run Next.js app
-pnpm dev:nextjs
+# Run app (http://localhost:3001)
+pnpm dev
 
-# Run Vite app
-pnpm dev:vite
+# Lint
+pnpm lint
 
-# Run tests
-pnpm test
-
-# Type check all packages
+# Type check
 pnpm typecheck
+
+# Production build
+pnpm build
 ```
 
 ## Project Structure
 
-```
+```text
 react-principles/
 ├── docs/                    # Pattern documentation
-├── packages/shared/         # Shared hooks, utils, types, services
-├── apps/nextjs/             # Next.js 15 implementation
-├── apps/vite/               # Vite implementation
+├── public/                  # Static assets
+├── src/
+│   ├── app/                 # Next.js App Router routes
+│   ├── features/            # Feature modules (landing, docs, cookbook, examples)
+│   ├── shared/              # Shared hooks, stores, types, utils, components
+│   ├── ui/                  # Design system primitives
+│   └── lib/                 # Data/client utilities and mock API layer
 ├── CLAUDE.md                # AI instruction file
 └── README.md
 ```
@@ -69,14 +73,15 @@ All patterns are documented in [`docs/`](./docs/README.md):
 - [Services](./docs/services.md) — API service layer
 - [Styling](./docs/styling.md) — Tailwind conventions
 
-## Example Pages
-
-Both apps have the same example pages:
+## Example Routes
 
 | Route | What It Shows |
-|-------|--------------|
-| `/` | Home with navigation |
+|-------|---------------|
+| `/` | Landing page and project entry |
 | `/react-query` | React Query data fetching patterns |
-| `/table` | TanStack Table with sorting, filtering, pagination |
+| `/table` | TanStack Table patterns |
 | `/forms` | React Hook Form + Zod validation |
 | `/state` | Zustand store patterns |
+| `/docs/*` | Component and pattern documentation |
+| `/nextjs/cookbook/*` | Cookbook examples for Next.js context |
+| `/vitejs/cookbook/*` | Cookbook examples for Vite context |

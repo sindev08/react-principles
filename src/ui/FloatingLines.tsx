@@ -223,7 +223,7 @@ export interface FloatingLinesProps {
 
 type WaveType = "top" | "middle" | "bottom";
 
-export function FloatingLines({
+function FloatingLinesRoot({
   linesGradient,
   enabledWaves = ["top", "middle", "bottom"],
   lineCount = 6,
@@ -467,3 +467,11 @@ export function FloatingLines({
     />
   );
 }
+
+type FloatingLinesCompoundComponent = typeof FloatingLinesRoot & {
+  Root: typeof FloatingLinesRoot;
+};
+
+export const FloatingLines = Object.assign(FloatingLinesRoot, {
+  Root: FloatingLinesRoot,
+}) as FloatingLinesCompoundComponent;

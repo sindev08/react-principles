@@ -71,7 +71,7 @@ function Spinner() {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function AlertDialog({
+function AlertDialogRoot({
   open,
   onClose,
   onConfirm,
@@ -98,7 +98,7 @@ export function AlertDialog({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
         className={cn(
-          "absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-200",
+          "absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-200",
           visible ? "opacity-100" : "opacity-0"
         )}
       />
@@ -136,7 +136,7 @@ export function AlertDialog({
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-[#1f2937] hover:bg-slate-50 dark:hover:bg-[#1f2937] disabled:opacity-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            className="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-[#1f2937] hover:bg-slate-50 dark:hover:bg-[#1f2937] disabled:opacity-50 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40"
           >
             {cancelLabel}
           </button>
@@ -144,7 +144,7 @@ export function AlertDialog({
             onClick={onConfirm}
             disabled={isLoading}
             className={cn(
-              "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-70 transition-colors focus-visible:outline-none focus-visible:ring-2",
+              "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-70 transition-colors focus-visible:outline-hidden focus-visible:ring-2",
               CONFIRM_CLASSES[variant]
             )}
           >
@@ -165,3 +165,11 @@ export type AlertDialogTriggerProps = {
   onClick: () => void;
   children: ReactNode;
 };
+
+type AlertDialogCompoundComponent = typeof AlertDialogRoot & {
+  Root: typeof AlertDialogRoot;
+};
+
+export const AlertDialog = Object.assign(AlertDialogRoot, {
+  Root: AlertDialogRoot,
+}) as AlertDialogCompoundComponent;

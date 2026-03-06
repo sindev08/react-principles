@@ -4,11 +4,17 @@ export const LOGIN_CODE = `const loginSchema = z.object({
   rememberMe: z.boolean().default(false),
 })
 
+type LoginInput = z.input<typeof loginSchema>
+type LoginValues = z.output<typeof loginSchema>
+
 export function LoginForm() {
   const { register, handleSubmit, formState: { errors, isSubmitting } } =
-    useForm<z.infer<typeof loginSchema>>({ resolver: zodResolver(loginSchema) })
+    useForm<LoginInput, unknown, LoginValues>({
+      resolver: zodResolver(loginSchema),
+      defaultValues: { email: "", password: "", rememberMe: false },
+    })
 
-  const onSubmit = async (data: z.infer<typeof loginSchema>) => {
+  const onSubmit = async (data: LoginValues) => {
     await fetch("/api/auth/login", { method: "POST", body: JSON.stringify(data) })
   }
 
@@ -50,11 +56,20 @@ export const SETTINGS_CODE = `const settingsSchema = z.object({
   pushNotifications: z.boolean().default(false),
 })
 
+type SettingsInput = z.input<typeof settingsSchema>
+type SettingsValues = z.output<typeof settingsSchema>
+
 export function SettingsForm() {
   const { register, handleSubmit, formState: { errors } } =
-    useForm<z.infer<typeof settingsSchema>>({
+    useForm<SettingsInput, unknown, SettingsValues>({
       resolver: zodResolver(settingsSchema),
-      defaultValues: { firstName: "Jane", lastName: "Cooper", emailUpdates: true },
+      defaultValues: {
+        firstName: "Jane",
+        lastName: "Cooper",
+        bio: "",
+        emailUpdates: true,
+        pushNotifications: false,
+      },
     })
 
   return (

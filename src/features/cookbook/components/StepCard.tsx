@@ -11,7 +11,7 @@ export function StepCard({ step, title, description, className }: StepCardProps)
   return (
     <div
       className={cn(
-        "p-6 border shadow-sm rounded-xl",
+        "p-6 border shadow-xs rounded-xl",
         "bg-white border-slate-200 dark:bg-slate-900 dark:border-white/5",
         className,
       )}

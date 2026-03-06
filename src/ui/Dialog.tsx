@@ -90,7 +90,7 @@ export function DialogFooter({ children, className, ...props }: DialogFooterProp
 
 // ─── Dialog ───────────────────────────────────────────────────────────────────
 
-export function Dialog({ open, onClose, size = "md", children, className }: DialogProps) {
+function DialogRoot({ open, onClose, size = "md", children, className }: DialogProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const { mounted, visible } = useAnimatedMount(open, 200);
 
@@ -123,7 +123,7 @@ export function Dialog({ open, onClose, size = "md", children, className }: Dial
       {/* Backdrop */}
       <div
         className={cn(
-          "absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-200",
+          "absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-200",
           visible ? "opacity-100" : "opacity-0"
         )}
       />
@@ -159,3 +159,21 @@ export function Dialog({ open, onClose, size = "md", children, className }: Dial
 
   return createPortal(panel, document.body);
 }
+
+type DialogCompoundComponent = typeof DialogRoot & {
+  Root: typeof DialogRoot;
+  Header: typeof DialogHeader;
+  Title: typeof DialogTitle;
+  Description: typeof DialogDescription;
+  Content: typeof DialogContent;
+  Footer: typeof DialogFooter;
+};
+
+export const Dialog = Object.assign(DialogRoot, {
+  Root: DialogRoot,
+  Header: DialogHeader,
+  Title: DialogTitle,
+  Description: DialogDescription,
+  Content: DialogContent,
+  Footer: DialogFooter,
+}) as DialogCompoundComponent;

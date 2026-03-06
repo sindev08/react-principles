@@ -12,12 +12,25 @@ const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
+<<<<<<< HEAD
+  { label: "Copy-Paste", href: "#copy-paste" },
+=======
+>>>>>>> development
   { label: "Props", href: "#props" },
 ];
 
 const SIZES: InputSize[] = ["sm", "md", "lg"];
 const VARIANTS: InputVariant[] = ["default", "filled", "ghost"];
 
+<<<<<<< HEAD
+const CODE_SNIPPET = `import { Input } from "@/ui/Input";
+
+// Basic
+<Input.Root placeholder="Enter your email" />
+
+// With label + description
+<Input.Root
+=======
 const CODE_SNIPPET = `import { Input } from "@/components/ui/Input";
 
 // Basic
@@ -25,6 +38,7 @@ const CODE_SNIPPET = `import { Input } from "@/components/ui/Input";
 
 // With label + description
 <Input
+>>>>>>> development
   label="Email address"
   description="We'll never share your email."
   placeholder="you@example.com"
@@ -32,14 +46,22 @@ const CODE_SNIPPET = `import { Input } from "@/components/ui/Input";
 />
 
 // Error state
+<<<<<<< HEAD
+<Input.Root
+=======
 <Input
+>>>>>>> development
   label="Username"
   error="Username is already taken."
   defaultValue="johndoe"
 />
 
 // With icons
+<<<<<<< HEAD
+<Input.Root
+=======
 <Input
+>>>>>>> development
   label="Search"
   leadingIcon={<SearchIcon />}
   trailingIcon={<ClearIcon />}
@@ -48,7 +70,68 @@ const CODE_SNIPPET = `import { Input } from "@/components/ui/Input";
 
 // Sizes: "sm" | "md" | "lg"
 // Variants: "default" | "filled" | "ghost"
+<<<<<<< HEAD
+<Input.Root size="lg" variant="filled" label="Display name" />`;
+
+const COPY_PASTE_SNIPPET = `import { forwardRef, type InputHTMLAttributes, type ReactNode } from "react";
+
+type InputSize = "sm" | "md" | "lg";
+type InputVariant = "default" | "filled" | "ghost";
+
+interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
+  label?: string;
+  description?: string;
+  error?: string;
+  size?: InputSize;
+  variant?: InputVariant;
+  leadingIcon?: ReactNode;
+  trailingIcon?: ReactNode;
+}
+
+const cn = (...classes: Array<string | undefined | false>) => classes.filter(Boolean).join(" ");
+
+const SIZE_CLASSES = {
+  sm: { input: "h-8 px-3 text-xs", label: "text-xs" },
+  md: { input: "h-10 px-3.5 text-sm", label: "text-sm" },
+  lg: { input: "h-12 px-4 text-base", label: "text-sm" },
+} as const;
+
+const VARIANT_CLASSES = {
+  default: "border border-slate-200 bg-white dark:border-[#1f2937] dark:bg-[#0d1117]",
+  filled: "border border-transparent bg-slate-100 dark:bg-[#161b22]",
+  ghost: "border border-transparent bg-transparent",
+} as const;
+
+const InputRoot = forwardRef<HTMLInputElement, InputProps>(function InputRoot(
+  { label, description, error, size = "md", variant = "default", leadingIcon, trailingIcon, className, id, ...props },
+  ref
+) {
+  const inputId = id ?? (label ? label.toLowerCase().replace(/\\s+/g, "-") : undefined);
+  const s = SIZE_CLASSES[size];
+  return (
+    <div className={cn("flex flex-col gap-1.5", className)}>
+      {label && <label htmlFor={inputId} className={cn("font-medium text-slate-700 dark:text-slate-300", s.label)}>{label}</label>}
+      <div className={cn("relative flex items-center rounded-lg transition-all focus-within:ring-2 focus-within:ring-primary/20", VARIANT_CLASSES[variant], error && "border-red-400 dark:border-red-500")}>
+        {leadingIcon && <span className="absolute left-3 text-slate-400">{leadingIcon}</span>}
+        <input
+          ref={ref}
+          id={inputId}
+          className={cn("w-full bg-transparent text-slate-900 outline-hidden placeholder:text-slate-400 dark:text-white dark:placeholder:text-slate-500", s.input, leadingIcon && "pl-9", trailingIcon && "pr-9")}
+          {...props}
+        />
+        {trailingIcon && <span className="absolute right-3 text-slate-400">{trailingIcon}</span>}
+      </div>
+      {description && !error && <p className="text-xs text-slate-500 dark:text-slate-400">{description}</p>}
+      {error && <p className="text-xs text-red-500 dark:text-red-400">{error}</p>}
+    </div>
+  );
+});
+
+type InputCompound = typeof InputRoot & { Root: typeof InputRoot };
+export const Input = Object.assign(InputRoot, { Root: InputRoot }) as InputCompound;`;
+=======
 <Input size="lg" variant="filled" label="Display name" />`;
+>>>>>>> development
 
 const PROPS_ROWS = [
   { prop: "label", type: "string", default: "—", description: "Label rendered above the input." },
@@ -170,8 +253,13 @@ function ThemedInputPreview({ theme }: { theme: "light" | "dark" }) {
   const c = FORCED[theme];
   const dot =
     theme === "dark"
+<<<<<<< HEAD
+      ? "h-3 w-3 rounded-full bg-indigo-500 shadow-xs shadow-indigo-400"
+      : "h-3 w-3 rounded-full bg-amber-400 shadow-xs shadow-amber-300";
+=======
       ? "h-3 w-3 rounded-full bg-indigo-500 shadow-sm shadow-indigo-400"
       : "h-3 w-3 rounded-full bg-amber-400 shadow-sm shadow-amber-300";
+>>>>>>> development
 
   return (
     <div>
@@ -247,7 +335,11 @@ export default function InputDocPage() {
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
+<<<<<<< HEAD
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+=======
             <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+>>>>>>> development
               <span className="text-sm font-bold">01</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
@@ -264,12 +356,20 @@ export default function InputDocPage() {
         {/* 02 Live Demo */}
         <section id="demo" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
+<<<<<<< HEAD
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+=======
             <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+>>>>>>> development
               <span className="text-sm font-bold">02</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
           </div>
+<<<<<<< HEAD
+          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-xs space-y-6">
+=======
           <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-sm space-y-6">
+>>>>>>> development
 
             {/* Controls */}
             <div className="flex flex-wrap gap-6 items-center">
@@ -313,7 +413,11 @@ export default function InputDocPage() {
 
             {/* Inputs */}
             <div className="grid gap-4 sm:grid-cols-2">
+<<<<<<< HEAD
+              <Input.Root
+=======
               <Input
+>>>>>>> development
                 size={activeSize}
                 variant={activeVariant}
                 label="Search"
@@ -322,7 +426,11 @@ export default function InputDocPage() {
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
               />
+<<<<<<< HEAD
+              <Input.Root
+=======
               <Input
+>>>>>>> development
                 size={activeSize}
                 variant={activeVariant}
                 label="Email address"
@@ -331,7 +439,11 @@ export default function InputDocPage() {
                 leadingIcon={<MailIcon />}
                 description="We'll never share your email."
               />
+<<<<<<< HEAD
+              <Input.Root
+=======
               <Input
+>>>>>>> development
                 size={activeSize}
                 variant={activeVariant}
                 label="Username"
@@ -340,7 +452,11 @@ export default function InputDocPage() {
                 error="Username is already taken."
                 defaultValue="johndoe"
               />
+<<<<<<< HEAD
+              <Input.Root
+=======
               <Input
+>>>>>>> development
                 size={activeSize}
                 variant={activeVariant}
                 label="Password"
@@ -356,11 +472,44 @@ export default function InputDocPage() {
         {/* 03 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
+<<<<<<< HEAD
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+=======
             <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+>>>>>>> development
               <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
           </div>
+<<<<<<< HEAD
+          <CodeBlock filename="src/ui/Input.tsx" copyText={CODE_SNIPPET}>
+            {CODE_SNIPPET}
+          </CodeBlock>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+            Backward compatible: API lama <code className="font-mono">{"<Input />"}</code> tetap jalan, canonical style pakai
+            <code className="font-mono"> {"<Input.Root />"}</code>.
+          </p>
+        </section>
+
+        {/* 04 Copy-Paste */}
+        <section id="copy-paste" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">04</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
+          </div>
+          <CodeBlock filename="Input.tsx" copyText={COPY_PASTE_SNIPPET}>
+            {COPY_PASTE_SNIPPET}
+          </CodeBlock>
+        </section>
+
+        {/* 05 Props */}
+        <section id="props" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">05</span>
+=======
           <CodeBlock filename="components/ui/Input.tsx" copyText={CODE_SNIPPET}>
             {CODE_SNIPPET}
           </CodeBlock>
@@ -371,6 +520,7 @@ export default function InputDocPage() {
           <div className="flex items-center gap-3 mb-6">
             <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
+>>>>>>> development
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>
@@ -395,7 +545,11 @@ export default function InputDocPage() {
                       <code className="text-xs font-mono font-semibold text-primary">{row.prop}</code>
                     </td>
                     <td className="px-4 py-3 max-w-[180px]">
+<<<<<<< HEAD
+                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
+=======
                       <code className="text-xs font-mono text-slate-600 dark:text-slate-400 break-words">{row.type}</code>
+>>>>>>> development
                     </td>
                     <td className="px-4 py-3">
                       <code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code>
