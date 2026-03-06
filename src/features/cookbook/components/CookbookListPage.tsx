@@ -232,7 +232,7 @@ function RecipeCard({ recipe, framework }: { recipe: Recipe; framework: Framewor
         className="relative flex items-center justify-center h-48"
         style={{ backgroundImage: recipe.gradient }}
       >
-        <span className="material-symbols-outlined text-[64px] text-white opacity-30 transition-transform duration-300 group-hover:scale-110">
+        <span className="text-white transition-transform duration-300 material-symbols-outlined opacity-40 group-hover:scale-110" style={{ fontSize: 72 }}>
           {recipe.icon}
         </span>
         <div className="absolute flex gap-2 left-4 top-4">
@@ -289,7 +289,7 @@ function ComingSoonCard({ recipe, framework }: { recipe: Recipe; framework: Fram
         className="relative flex items-center justify-center h-48 opacity-60"
         style={{ backgroundImage: recipe.gradient }}
       >
-        <span className="material-symbols-outlined text-[64px] text-white opacity-30">
+        <span className="text-white material-symbols-outlined opacity-40" style={{ fontSize: 72 }}>
           {recipe.icon}
         </span>
         <div className="absolute flex gap-2 left-4 top-4">
