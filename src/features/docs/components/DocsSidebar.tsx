@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/shared/utils/cn";
@@ -46,14 +46,14 @@ export function DocsSidebar() {
         {/* Sliding active indicator */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 rounded-lg bg-primary/10 dark:bg-primary/20 transition-all duration-200 ease-out"
+          className="absolute inset-x-0 transition-all duration-200 ease-out rounded-lg pointer-events-none bg-primary/10 dark:bg-primary/20"
           style={{ top: pos.top, height: pos.height, opacity: pos.visible ? 1 : 0 }}
         />
 
         {/* Docs nav groups (Getting Started, Components) */}
         {DOCS_NAV.map((group) => (
           <div key={group.title}>
-            <h4 className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+            <h4 className="mb-4 text-xs font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">
               {group.title}
             </h4>
             <ul className="flex flex-col gap-1.5">
@@ -63,7 +63,7 @@ export function DocsSidebar() {
                 if (item.soon) {
                   return (
                     <li key={item.label}>
-                      <span className="flex cursor-not-allowed items-center justify-between px-3 py-2 text-sm font-medium rounded-lg text-slate-300 dark:text-slate-600">
+                      <span className="flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg cursor-not-allowed text-slate-300 dark:text-slate-600">
                         {item.label}
                         <span className="text-[9px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-[#1f2937] text-slate-400 dark:text-slate-500 px-1.5 py-0.5 rounded-sm">
                           Soon
@@ -101,7 +101,7 @@ export function DocsSidebar() {
         {/* Cookbook section */}
         <div>
           <div className="mb-4">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+            <h4 className="text-xs font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">
               Cookbook
             </h4>
           </div>
