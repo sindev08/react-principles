@@ -10,6 +10,7 @@ const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
+  { label: "Copy-Paste", href: "#copy-paste" },
   { label: "Props", href: "#props" },
 ];
 
@@ -25,10 +26,10 @@ const NOTIFICATION_ITEMS = [
 const CODE_SNIPPET = `import { Checkbox } from "@/ui/Checkbox";
 
 // Basic
-<Checkbox label="Accept terms and conditions" />
+<Checkbox.Root label="Accept terms and conditions" />
 
 // Controlled
-<Checkbox
+<Checkbox.Root
   checked={isChecked}
   onChange={setIsChecked}
   label="Email notifications"
@@ -36,7 +37,7 @@ const CODE_SNIPPET = `import { Checkbox } from "@/ui/Checkbox";
 />
 
 // Indeterminate (select-all pattern)
-<Checkbox
+<Checkbox.Root
   checked={allSelected}
   indeterminate={someSelected && !allSelected}
   onChange={handleSelectAll}
@@ -44,15 +45,72 @@ const CODE_SNIPPET = `import { Checkbox } from "@/ui/Checkbox";
 />
 
 // States
-<Checkbox checked label="Checked" />
-<Checkbox indeterminate label="Indeterminate" />
-<Checkbox disabled label="Disabled" />
-<Checkbox checked disabled label="Checked + disabled" />
+<Checkbox.Root checked label="Checked" />
+<Checkbox.Root indeterminate label="Indeterminate" />
+<Checkbox.Root disabled label="Disabled" />
+<Checkbox.Root checked disabled label="Checked + disabled" />
 
 // Sizes
-<Checkbox size="sm" label="Small" />
-<Checkbox size="md" label="Medium" />
-<Checkbox size="lg" label="Large" />`;
+<Checkbox.Root size="sm" label="Small" />
+<Checkbox.Root size="md" label="Medium" />
+<Checkbox.Root size="lg" label="Large" />`;
+
+const COPY_PASTE_SNIPPET = `import { useEffect, useRef } from "react";
+
+type CheckboxSize = "sm" | "md" | "lg";
+
+interface CheckboxProps {
+  checked?: boolean;
+  defaultChecked?: boolean;
+  indeterminate?: boolean;
+  disabled?: boolean;
+  size?: CheckboxSize;
+  label?: string;
+  description?: string;
+  id?: string;
+  name?: string;
+  onChange?: (checked: boolean) => void;
+  className?: string;
+}
+
+const cn = (...classes: Array<string | undefined | false>) => classes.filter(Boolean).join(" ");
+
+const BOX_SIZES: Record<CheckboxSize, string> = {
+  sm: "h-4 w-4",
+  md: "h-5 w-5",
+  lg: "h-6 w-6",
+};
+
+function CheckboxRoot({ checked, defaultChecked, indeterminate = false, disabled = false, size = "md", label, description, id, name, onChange, className }: CheckboxProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (inputRef.current) inputRef.current.indeterminate = indeterminate;
+  }, [indeterminate]);
+
+  const isChecked = checked ?? false;
+  const isFilled = isChecked || indeterminate;
+
+  return (
+    <label className={cn("inline-flex items-start gap-3", disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer", className)}>
+      <div className="relative mt-0.5 shrink-0">
+        <input ref={inputRef} type="checkbox" id={id} name={name} checked={checked} defaultChecked={defaultChecked} disabled={disabled} onChange={(e) => onChange?.(e.target.checked)} className="sr-only" />
+        <div className={cn("flex items-center justify-center rounded-sm border-2 transition-all", BOX_SIZES[size], isFilled ? "border-primary bg-primary text-white" : "border-slate-300 bg-white dark:border-slate-600 dark:bg-[#0d1117]")}>
+          {isChecked && <span className="text-[10px]">✓</span>}
+          {indeterminate && !isChecked && <span className="text-[10px]">−</span>}
+        </div>
+      </div>
+      {(label ?? description) && (
+        <div className="min-w-0">
+          {label && <span className="block text-sm font-medium leading-tight text-slate-900 dark:text-white">{label}</span>}
+          {description && <p className="mt-0.5 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{description}</p>}
+        </div>
+      )}
+    </label>
+  );
+}
+
+type CheckboxCompound = typeof CheckboxRoot & { Root: typeof CheckboxRoot };
+export const Checkbox = Object.assign(CheckboxRoot, { Root: CheckboxRoot }) as CheckboxCompound;`;
 
 const PROPS_ROWS = [
   { prop: "checked", type: "boolean", default: "—", description: "Controlled checked state." },
@@ -228,7 +286,7 @@ export default function CheckboxDocPage() {
             {/* Select all group */}
             <div className="space-y-1">
               <div className="pb-3 border-b border-slate-100 dark:border-[#1f2937]">
-                <Checkbox
+                <Checkbox.Root
                   size={activeSize}
                   checked={allChecked}
                   indeterminate={someChecked}
@@ -239,7 +297,7 @@ export default function CheckboxDocPage() {
               </div>
               <div className="pt-2 space-y-3 pl-2">
                 {NOTIFICATION_ITEMS.map((item) => (
-                  <Checkbox
+                  <Checkbox.Root
                     key={item.id}
                     size={activeSize}
                     checked={checked[item.id]}
@@ -253,8 +311,8 @@ export default function CheckboxDocPage() {
 
             {/* Disabled states */}
             <div className="pt-4 border-t border-slate-100 dark:border-[#1f2937] flex flex-wrap gap-6">
-              <Checkbox size={activeSize} disabled label="Disabled unchecked" />
-              <Checkbox size={activeSize} disabled checked label="Disabled checked" />
+              <Checkbox.Root size={activeSize} disabled label="Disabled unchecked" />
+              <Checkbox.Root size={activeSize} disabled checked label="Disabled checked" />
             </div>
           </div>
         </section>
@@ -270,13 +328,30 @@ export default function CheckboxDocPage() {
           <CodeBlock filename="src/ui/Checkbox.tsx" copyText={CODE_SNIPPET}>
             {CODE_SNIPPET}
           </CodeBlock>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+            Backward compatible: API lama <code className="font-mono">{"<Checkbox />"}</code> masih didukung, tapi docs sekarang pakai
+            <code className="font-mono"> {"<Checkbox.Root />"}</code>.
+          </p>
         </section>
 
-        {/* 04 Props */}
-        <section id="props" className="mb-16">
+        {/* 04 Copy-Paste */}
+        <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
+          </div>
+          <CodeBlock filename="Checkbox.tsx" copyText={COPY_PASTE_SNIPPET}>
+            {COPY_PASTE_SNIPPET}
+          </CodeBlock>
+        </section>
+
+        {/* 05 Props */}
+        <section id="props" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>

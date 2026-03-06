@@ -39,7 +39,7 @@ function Spinner() {
   );
 }
 
-export function Button({
+function ButtonRoot({
   variant = "primary",
   size = "md",
   isLoading = false,
@@ -66,3 +66,15 @@ export function Button({
     </button>
   );
 }
+
+type ButtonCompoundComponent = typeof ButtonRoot & {
+  Root: typeof ButtonRoot;
+  Spinner: typeof Spinner;
+};
+
+export const Button = Object.assign(ButtonRoot, {
+  Root: ButtonRoot,
+  Spinner,
+}) as ButtonCompoundComponent;
+
+export { Spinner as ButtonSpinner };

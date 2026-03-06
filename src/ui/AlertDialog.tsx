@@ -71,7 +71,7 @@ function Spinner() {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export function AlertDialog({
+function AlertDialogRoot({
   open,
   onClose,
   onConfirm,
@@ -165,3 +165,11 @@ export type AlertDialogTriggerProps = {
   onClick: () => void;
   children: ReactNode;
 };
+
+type AlertDialogCompoundComponent = typeof AlertDialogRoot & {
+  Root: typeof AlertDialogRoot;
+};
+
+export const AlertDialog = Object.assign(AlertDialogRoot, {
+  Root: AlertDialogRoot,
+}) as AlertDialogCompoundComponent;

@@ -13,7 +13,7 @@ const CARD_VARIANT_CLASSES: Record<CardVariant, string> = {
   flat: "bg-slate-50 dark:bg-[#0d1117] border border-transparent",
 };
 
-export function Card({ variant = "default", className, children, ...props }: CardProps) {
+function CardRoot({ variant = "default", className, children, ...props }: CardProps) {
   return (
     <div className={cn("rounded-xl", CARD_VARIANT_CLASSES[variant], className)} {...props}>
       {children}
@@ -60,3 +60,21 @@ export function CardFooter({ className, children, ...props }: HTMLAttributes<HTM
     </div>
   );
 }
+
+type CardCompoundComponent = typeof CardRoot & {
+  Root: typeof CardRoot;
+  Header: typeof CardHeader;
+  Title: typeof CardTitle;
+  Description: typeof CardDescription;
+  Content: typeof CardContent;
+  Footer: typeof CardFooter;
+};
+
+export const Card = Object.assign(CardRoot, {
+  Root: CardRoot,
+  Header: CardHeader,
+  Title: CardTitle,
+  Description: CardDescription,
+  Content: CardContent,
+  Footer: CardFooter,
+}) as CardCompoundComponent;

@@ -10,6 +10,7 @@ const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
+  { label: "Copy-Paste", href: "#copy-paste" },
   { label: "Props", href: "#props" },
 ];
 
@@ -47,17 +48,57 @@ const SIZES: BadgeSize[] = ["sm", "md", "lg"];
 const CODE_SNIPPET = `import { Badge } from "@/ui/Badge";
 
 // Variants
-<Badge variant="default">Default</Badge>
-<Badge variant="success">Active</Badge>
-<Badge variant="warning">Pending</Badge>
-<Badge variant="error">Inactive</Badge>
-<Badge variant="info">Review</Badge>
-<Badge variant="outline">Draft</Badge>
+<Badge.Root variant="default">Default</Badge.Root>
+<Badge.Root variant="success">Active</Badge.Root>
+<Badge.Root variant="warning">Pending</Badge.Root>
+<Badge.Root variant="error">Inactive</Badge.Root>
+<Badge.Root variant="info">Review</Badge.Root>
+<Badge.Root variant="outline">Draft</Badge.Root>
 
 // Sizes
-<Badge size="sm" variant="success">Small</Badge>
-<Badge size="md" variant="info">Medium</Badge>
-<Badge size="lg" variant="default">Large</Badge>`;
+<Badge.Root size="sm" variant="success">Small</Badge.Root>
+<Badge.Root size="md" variant="info">Medium</Badge.Root>
+<Badge.Root size="lg" variant="default">Large</Badge.Root>`;
+
+const COPY_PASTE_SNIPPET = `import type { ReactNode } from "react";
+
+type BadgeVariant = "default" | "success" | "warning" | "error" | "info" | "outline";
+type BadgeSize = "sm" | "md" | "lg";
+
+interface BadgeProps {
+  variant?: BadgeVariant;
+  size?: BadgeSize;
+  children: ReactNode;
+  className?: string;
+}
+
+const cn = (...classes: Array<string | undefined | false>) => classes.filter(Boolean).join(" ");
+
+const VARIANT_CLASSES: Record<BadgeVariant, string> = {
+  default: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+  success: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400",
+  warning: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400",
+  error: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400",
+  info: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400",
+  outline: "border border-slate-300 text-slate-600 dark:border-slate-600 dark:text-slate-400",
+};
+
+const SIZE_CLASSES: Record<BadgeSize, string> = {
+  sm: "text-[10px] px-2 py-0.5",
+  md: "text-xs px-2.5 py-0.5",
+  lg: "text-sm px-3 py-1",
+};
+
+function BadgeRoot({ variant = "default", size = "md", children, className }: BadgeProps) {
+  return (
+    <span className={cn("inline-flex items-center rounded-full font-medium", VARIANT_CLASSES[variant], SIZE_CLASSES[size], className)}>
+      {children}
+    </span>
+  );
+}
+
+type BadgeCompound = typeof BadgeRoot & { Root: typeof BadgeRoot };
+export const Badge = Object.assign(BadgeRoot, { Root: BadgeRoot }) as BadgeCompound;`;
 
 const PROPS_ROWS = [
   { prop: "variant", type: '"default" | "success" | "warning" | "error" | "info" | "outline"', required: false, default: '"default"', description: "Controls the color scheme of the badge." },
@@ -190,12 +231,14 @@ export default function BadgeDocPage() {
               </div>
             </div>
             {/* All variants */}
-            <div className="flex flex-wrap items-center gap-3">
-              {VARIANTS.map(({ variant, label }) => (
-                <Badge key={variant} variant={variant} size={activeSize}>{label}</Badge>
-              ))}
+              <div className="flex flex-wrap items-center gap-3">
+                {VARIANTS.map(({ variant, label }) => (
+                  <Badge.Root key={variant} variant={variant} size={activeSize}>
+                    {label}
+                  </Badge.Root>
+                ))}
+              </div>
             </div>
-          </div>
         </section>
 
         {/* 03 Code Snippet */}
@@ -209,13 +252,30 @@ export default function BadgeDocPage() {
           <CodeBlock filename="src/ui/Badge.tsx" copyText={CODE_SNIPPET}>
             {CODE_SNIPPET}
           </CodeBlock>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
+            Backward compatible: API lama <code className="font-mono">{"<Badge />"}</code> tetap didukung, canonical style pakai
+            <code className="font-mono"> {"<Badge.Root />"}</code>.
+          </p>
         </section>
 
-        {/* 04 Props */}
-        <section id="props" className="mb-16">
+        {/* 04 Copy-Paste */}
+        <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
+          </div>
+          <CodeBlock filename="Badge.tsx" copyText={COPY_PASTE_SNIPPET}>
+            {COPY_PASTE_SNIPPET}
+          </CodeBlock>
+        </section>
+
+        {/* 05 Props */}
+        <section id="props" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>

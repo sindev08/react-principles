@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { DocsPageLayout } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/ui/Tabs";
+import { Tabs } from "@/ui/Tabs";
 import { Badge } from "@/ui/Badge";
 import type { TabsVariant } from "@/ui/Tabs";
 
@@ -13,44 +13,192 @@ const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
+  { label: "Copy-Paste", href: "#copy-paste" },
   { label: "Props", href: "#props" },
 ];
 
 const VARIANTS: TabsVariant[] = ["underline", "pills"];
 
-const CODE_SNIPPET = `import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/ui/Tabs";
+const CODE_SNIPPET = `import { Tabs } from "@/ui/Tabs";
 
 // Uncontrolled
-<Tabs defaultValue="overview">
-  <TabsList>
-    <TabsTrigger value="overview">Overview</TabsTrigger>
-    <TabsTrigger value="activity">Activity</TabsTrigger>
-    <TabsTrigger value="settings">Settings</TabsTrigger>
-    <TabsTrigger value="disabled" disabled>Disabled</TabsTrigger>
-  </TabsList>
-  <TabsContent value="overview">Overview content</TabsContent>
-  <TabsContent value="activity">Activity content</TabsContent>
-  <TabsContent value="settings">Settings content</TabsContent>
-</Tabs>
+<Tabs.Root defaultValue="overview">
+  <Tabs.List>
+    <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
+    <Tabs.Trigger value="activity">Activity</Tabs.Trigger>
+    <Tabs.Trigger value="settings">Settings</Tabs.Trigger>
+    <Tabs.Trigger value="disabled" disabled>Disabled</Tabs.Trigger>
+  </Tabs.List>
+  <Tabs.Content value="overview">Overview content</Tabs.Content>
+  <Tabs.Content value="activity">Activity content</Tabs.Content>
+  <Tabs.Content value="settings">Settings content</Tabs.Content>
+</Tabs.Root>
 
 // Controlled
-<Tabs value={activeTab} onChange={setActiveTab}>
+<Tabs.Root value={activeTab} onChange={setActiveTab}>
   ...
-</Tabs>
+</Tabs.Root>
 
 // Variants: "underline" (default) | "pills"
-<Tabs defaultValue="tab1" variant="pills">
+<Tabs.Root defaultValue="tab1" variant="pills">
   ...
-</Tabs>`;
+</Tabs.Root>`;
+
+const COPY_PASTE_SNIPPET = `"use client";
+
+import {
+  createContext,
+  useContext,
+  useState,
+  type ButtonHTMLAttributes,
+  type HTMLAttributes,
+  type ReactNode,
+} from "react";
+
+type ClassValue = string | false | null | undefined;
+const cn = (...classes: ClassValue[]) => classes.filter(Boolean).join(" ");
+
+export type TabsVariant = "underline" | "pills";
+
+export interface TabsProps {
+  value?: string;
+  defaultValue?: string;
+  onChange?: (value: string) => void;
+  variant?: TabsVariant;
+  children: ReactNode;
+  className?: string;
+}
+
+interface TabsContextValue {
+  active: string;
+  setActive: (value: string) => void;
+  variant: TabsVariant;
+}
+
+const TabsContext = createContext<TabsContextValue | null>(null);
+
+function useTabsContext() {
+  const context = useContext(TabsContext);
+  if (!context) throw new Error("Tabs sub-components must be used inside <Tabs.Root>");
+  return context;
+}
+
+function TabsRoot({
+  value,
+  defaultValue = "",
+  onChange,
+  variant = "underline",
+  children,
+  className,
+}: TabsProps) {
+  const [internalValue, setInternalValue] = useState(defaultValue);
+  const isControlled = value !== undefined;
+  const active = isControlled ? value : internalValue;
+
+  const setActive = (next: string) => {
+    if (!isControlled) setInternalValue(next);
+    onChange?.(next);
+  };
+
+  return (
+    <TabsContext.Provider value={{ active, setActive, variant }}>
+      <div className={cn("w-full", className)}>{children}</div>
+    </TabsContext.Provider>
+  );
+}
+
+function TabsList({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
+  const { variant } = useTabsContext();
+  return (
+    <div
+      role="tablist"
+      className={cn(
+        "flex",
+        variant === "underline" && "gap-0 border-b border-slate-200",
+        variant === "pills" && "w-fit gap-1 rounded-xl bg-slate-100 p-1",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+function TabsTrigger({
+  value,
+  className,
+  children,
+  disabled,
+  ...props
+}: Omit<ButtonHTMLAttributes<HTMLButtonElement>, "value"> & { value: string }) {
+  const { active, setActive, variant } = useTabsContext();
+  const isActive = active === value;
+
+  return (
+    <button
+      role="tab"
+      aria-selected={isActive}
+      disabled={disabled}
+      onClick={() => setActive(value)}
+      className={cn(
+        "rounded-sm text-sm font-medium transition-all outline-hidden focus-visible:ring-2 focus-visible:ring-blue-500/40",
+        disabled && "pointer-events-none cursor-not-allowed opacity-40",
+        variant === "underline" && [
+          "-mb-px border-b-2 px-4 py-2.5",
+          isActive ? "border-blue-600 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-800",
+        ],
+        variant === "pills" && [
+          "rounded-lg px-4 py-1.5",
+          isActive ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-700",
+        ],
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
+function TabsContent({
+  value,
+  className,
+  children,
+  ...props
+}: HTMLAttributes<HTMLDivElement> & { value: string }) {
+  const { active } = useTabsContext();
+  if (active !== value) return null;
+
+  return (
+    <div role="tabpanel" className={cn("mt-4", className)} {...props}>
+      {children}
+    </div>
+  );
+}
+
+type TabsCompound = typeof TabsRoot & {
+  Root: typeof TabsRoot;
+  List: typeof TabsList;
+  Trigger: typeof TabsTrigger;
+  Content: typeof TabsContent;
+};
+
+export const Tabs = Object.assign(TabsRoot, {
+  Root: TabsRoot,
+  List: TabsList,
+  Trigger: TabsTrigger,
+  Content: TabsContent,
+}) as TabsCompound;`;
 
 const PROPS_ROWS = [
-  { component: "Tabs", prop: "defaultValue", type: "string", default: '""', description: "Initially active tab (uncontrolled)." },
-  { component: "Tabs", prop: "value", type: "string", default: "—", description: "Controlled active tab value." },
-  { component: "Tabs", prop: "onChange", type: "(value: string) => void", default: "—", description: "Callback fired when the active tab changes." },
-  { component: "Tabs", prop: "variant", type: '"underline" | "pills"', default: '"underline"', description: "Visual style for the tab list." },
-  { component: "TabsTrigger", prop: "value", type: "string", default: "—", description: "Unique identifier for this tab." },
-  { component: "TabsTrigger", prop: "disabled", type: "boolean", default: "false", description: "Prevents selection and reduces opacity." },
-  { component: "TabsContent", prop: "value", type: "string", default: "—", description: "Renders only when this matches the active tab." },
+  { component: "Tabs.Root", prop: "defaultValue", type: "string", default: '""', description: "Initially active tab (uncontrolled)." },
+  { component: "Tabs.Root", prop: "value", type: "string", default: "—", description: "Controlled active tab value." },
+  { component: "Tabs.Root", prop: "onChange", type: "(value: string) => void", default: "—", description: "Callback fired when the active tab changes." },
+  { component: "Tabs.Root", prop: "variant", type: '"underline" | "pills"', default: '"underline"', description: "Visual style for the tab list." },
+  { component: "Tabs.Trigger", prop: "value", type: "string", default: "—", description: "Unique identifier for this tab." },
+  { component: "Tabs.Trigger", prop: "disabled", type: "boolean", default: "false", description: "Prevents selection and reduces opacity." },
+  { component: "Tabs.Content", prop: "value", type: "string", default: "—", description: "Renders only when this matches the active tab." },
 ];
 
 // ─── Forced-theme preview ─────────────────────────────────────────────────────
@@ -253,17 +401,17 @@ export default function TabsDocPage() {
             </div>
 
             {/* Repository tabs */}
-            <Tabs defaultValue="overview" variant={activeVariant}>
-              <TabsList>
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="activity">
+            <Tabs.Root defaultValue="overview" variant={activeVariant}>
+              <Tabs.List>
+                <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
+                <Tabs.Trigger value="activity">
                   Activity <Badge variant="default" size="sm" className="ml-1.5">{ACTIVITY_ITEMS.length}</Badge>
-                </TabsTrigger>
-                <TabsTrigger value="settings">Settings</TabsTrigger>
-                <TabsTrigger value="disabled" disabled>Archived</TabsTrigger>
-              </TabsList>
+                </Tabs.Trigger>
+                <Tabs.Trigger value="settings">Settings</Tabs.Trigger>
+                <Tabs.Trigger value="disabled" disabled>Archived</Tabs.Trigger>
+              </Tabs.List>
 
-              <TabsContent value="overview">
+              <Tabs.Content value="overview">
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                   {METRICS.map((m) => (
                     <div key={m.label} className="rounded-xl border border-slate-100 dark:border-[#1f2937] p-4">
@@ -273,9 +421,9 @@ export default function TabsDocPage() {
                     </div>
                   ))}
                 </div>
-              </TabsContent>
+              </Tabs.Content>
 
-              <TabsContent value="activity">
+              <Tabs.Content value="activity">
                 <div className="divide-y divide-slate-100 dark:divide-[#1f2937]">
                   {ACTIVITY_ITEMS.map((item, i) => (
                     <div key={i} className="flex items-start gap-3 py-3">
@@ -298,17 +446,17 @@ export default function TabsDocPage() {
                     </div>
                   ))}
                 </div>
-              </TabsContent>
+              </Tabs.Content>
 
-              <TabsContent value="settings">
+              <Tabs.Content value="settings">
                 {/* Nested controlled tabs */}
-                <Tabs value={settingsTab} onChange={setSettingsTab} variant="pills">
-                  <TabsList>
-                    <TabsTrigger value="profile">Profile</TabsTrigger>
-                    <TabsTrigger value="security">Security</TabsTrigger>
-                    <TabsTrigger value="billing">Billing</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="profile">
+                <Tabs.Root value={settingsTab} onChange={setSettingsTab} variant="pills">
+                  <Tabs.List>
+                    <Tabs.Trigger value="profile">Profile</Tabs.Trigger>
+                    <Tabs.Trigger value="security">Security</Tabs.Trigger>
+                    <Tabs.Trigger value="billing">Billing</Tabs.Trigger>
+                  </Tabs.List>
+                  <Tabs.Content value="profile">
                     <div className="space-y-3 py-2">
                       {[
                         { label: "Display name", value: "John Doe" },
@@ -321,8 +469,8 @@ export default function TabsDocPage() {
                         </div>
                       ))}
                     </div>
-                  </TabsContent>
-                  <TabsContent value="security">
+                  </Tabs.Content>
+                  <Tabs.Content value="security">
                     <div className="space-y-3 py-2">
                       {[
                         { label: "Two-factor auth", value: "Enabled" },
@@ -335,8 +483,8 @@ export default function TabsDocPage() {
                         </div>
                       ))}
                     </div>
-                  </TabsContent>
-                  <TabsContent value="billing">
+                  </Tabs.Content>
+                  <Tabs.Content value="billing">
                     <div className="space-y-3 py-2">
                       {[
                         { label: "Plan", value: "Pro" },
@@ -349,10 +497,10 @@ export default function TabsDocPage() {
                         </div>
                       ))}
                     </div>
-                  </TabsContent>
-                </Tabs>
-              </TabsContent>
-            </Tabs>
+                  </Tabs.Content>
+                </Tabs.Root>
+              </Tabs.Content>
+            </Tabs.Root>
           </div>
         </section>
 
@@ -367,13 +515,33 @@ export default function TabsDocPage() {
           <CodeBlock filename="src/ui/Tabs.tsx" copyText={CODE_SNIPPET}>
             {CODE_SNIPPET}
           </CodeBlock>
+          <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
+            Flat exports seperti <code>TabsList</code>, <code>TabsTrigger</code>, dan
+            <code>TabsContent</code> tetap didukung untuk migrasi bertahap.
+          </p>
         </section>
 
-        {/* 04 Props */}
-        <section id="props" className="mb-16">
+        {/* 04 Copy-Paste */}
+        <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
+          </div>
+          <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">
+            Snippet ini self-contained dan bisa langsung dipakai di project React/Next lain tanpa util tambahan.
+          </p>
+          <CodeBlock filename="Tabs.tsx" copyText={COPY_PASTE_SNIPPET}>
+            {COPY_PASTE_SNIPPET}
+          </CodeBlock>
+        </section>
+
+        {/* 05 Props */}
+        <section id="props" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>

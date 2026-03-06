@@ -47,13 +47,13 @@ const TabsContext = createContext<TabsContextValue | null>(null);
 
 function useTabsContext() {
   const ctx = useContext(TabsContext);
-  if (!ctx) throw new Error("Tabs sub-components must be used inside <Tabs>");
+  if (!ctx) throw new Error("Tabs sub-components must be used inside <Tabs> or <Tabs.Root>");
   return ctx;
 }
 
 // ─── Components ───────────────────────────────────────────────────────────────
 
-export function Tabs({
+function TabsRoot({
   value,
   defaultValue = "",
   onChange,
@@ -150,3 +150,17 @@ export function TabsContent({ value, children, className, ...props }: TabsConten
     </div>
   );
 }
+
+type TabsCompoundComponent = typeof TabsRoot & {
+  Root: typeof TabsRoot;
+  List: typeof TabsList;
+  Trigger: typeof TabsTrigger;
+  Content: typeof TabsContent;
+};
+
+export const Tabs = Object.assign(TabsRoot, {
+  Root: TabsRoot,
+  List: TabsList,
+  Trigger: TabsTrigger,
+  Content: TabsContent,
+}) as TabsCompoundComponent;

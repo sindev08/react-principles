@@ -44,7 +44,7 @@ const ERROR_OVERRIDE =
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+const InputRoot = forwardRef<HTMLInputElement, InputProps>(function InputRoot(
   {
     label,
     description,
@@ -121,3 +121,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     </div>
   );
 });
+
+type InputCompoundComponent = typeof InputRoot & {
+  Root: typeof InputRoot;
+};
+
+export const Input = Object.assign(InputRoot, {
+  Root: InputRoot,
+}) as InputCompoundComponent;
