@@ -20,17 +20,25 @@ interface CookbookListPageProps {
   framework: Framework;
 }
 
+const isDev = process.env.NODE_ENV === "development";
+
+const SORTED_RECIPES = [...RECIPES].sort((a, b) => a.order - b.order);
+
 export function CookbookListPage({ framework }: CookbookListPageProps) {
   const [activeCategory, setActiveCategory] = useState<ActiveFilter>("All Patterns");
   const [currentPage, setCurrentPage] = useState(1);
   const { savedSlugs } = useSavedStore();
 
+  const visibleRecipes = isDev
+    ? SORTED_RECIPES
+    : SORTED_RECIPES.filter((r) => r.status !== "coming-soon");
+
   const filtered =
     activeCategory === "All Patterns"
-      ? RECIPES
+      ? visibleRecipes
       : activeCategory === "Saved"
-        ? RECIPES.filter((r) => savedSlugs.includes(r.slug))
-        : RECIPES.filter((r) => r.category === activeCategory);
+        ? visibleRecipes.filter((r) => savedSlugs.includes(r.slug))
+        : visibleRecipes.filter((r) => r.category === activeCategory);
 
   const totalPages = Math.ceil(filtered.length / CARDS_PER_PAGE);
   const paginated = filtered.slice(
@@ -50,8 +58,8 @@ export function CookbookListPage({ framework }: CookbookListPageProps) {
         <DocsSidebar />
         <main className="flex-1 min-w-0 px-0 py-8 lg:px-12 lg:py-10">
           {/* Breadcrumb */}
-          <nav className="mb-6 flex items-center gap-2 text-sm text-slate-500">
-            <span className="hover:text-primary cursor-pointer transition-colors">
+          <nav className="flex items-center gap-2 mb-6 text-sm text-slate-500">
+            <span className="transition-colors cursor-pointer hover:text-primary">
               Guide
             </span>
             <span className="material-symbols-outlined text-[14px]">
@@ -75,7 +83,7 @@ export function CookbookListPage({ framework }: CookbookListPageProps) {
                 <h1 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white">
                   Developer Cookbook
                 </h1>
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+                <span className="px-3 py-1 text-xs font-bold rounded-full bg-primary/10 text-primary">
                   {framework === "nextjs" ? "Next.js" : "Vite"}
                 </span>
               </div>
@@ -84,10 +92,15 @@ export function CookbookListPage({ framework }: CookbookListPageProps) {
                 reference architectures, and reusable boilerplate code.
               </p>
             </div>
-            <button className="flex shrink-0 items-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary/90">
+            <a
+              href="https://github.com/sindev08/react-principles/issues/new?template=recipe_proposal.md"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex shrink-0 items-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary/90"
+            >
               <span className="material-symbols-outlined text-[20px]">add</span>
               Submit Recipe
-            </button>
+            </a>
           </div>
 
           {/* Foundation Entry */}
@@ -96,13 +109,13 @@ export function CookbookListPage({ framework }: CookbookListPageProps) {
             className="group flex items-center justify-between gap-4 mb-8 px-5 py-4 rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] hover:border-primary/50 transition-all"
           >
             <div className="flex items-center gap-4">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+              <div className="flex items-center justify-center rounded-lg h-9 w-9 shrink-0 bg-primary/10">
                 <span className="material-symbols-outlined text-[20px] text-primary">
                   layers
                 </span>
               </div>
               <div>
-                <p className="font-semibold text-slate-900 dark:text-white text-sm">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   New here? Start with the Foundation
                 </p>
                 <p className="text-xs text-slate-400 mt-0.5">
@@ -152,11 +165,15 @@ export function CookbookListPage({ framework }: CookbookListPageProps) {
           {/* Recipe Grid */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {paginated.length > 0 ? (
-              paginated.map((recipe) => (
-                <RecipeCard key={recipe.id} recipe={recipe} framework={framework} />
-              ))
+              paginated.map((recipe) =>
+                isDev && recipe.status === "coming-soon" ? (
+                  <ComingSoonCard key={recipe.id} recipe={recipe} framework={framework} />
+                ) : (
+                  <RecipeCard key={recipe.id} recipe={recipe} framework={framework} />
+                ),
+              )
             ) : (
-              <div className="col-span-full flex flex-col items-center justify-center py-24 text-center">
+              <div className="flex flex-col items-center justify-center py-24 text-center col-span-full">
                 <span className="material-symbols-outlined text-[48px] text-slate-300 dark:text-slate-600 mb-3">bookmark</span>
                 <p className="text-slate-500 dark:text-slate-400">No saved patterns yet.</p>
                 <button onClick={() => handleCategoryChange("All Patterns")} className="mt-3 text-sm font-medium text-primary hover:underline">
@@ -221,13 +238,13 @@ function RecipeCard({ recipe, framework }: { recipe: Recipe; framework: Framewor
   return (
     <div className="group flex flex-col overflow-hidden rounded-xl border border-slate-100 dark:border-[#1f2937] bg-white dark:bg-[#161b22] shadow-xs transition-all duration-200 hover:-translate-y-1 hover:shadow-xl">
       <div
-        className="relative flex h-48 items-center justify-center"
+        className="relative flex items-center justify-center h-48"
         style={{ backgroundImage: recipe.gradient }}
       >
         <span className="material-symbols-outlined text-[64px] text-white opacity-30 transition-transform duration-300 group-hover:scale-110">
           {recipe.icon}
         </span>
-        <div className="absolute left-4 top-4 flex gap-2">
+        <div className="absolute flex gap-2 left-4 top-4">
           {recipe.tags.map((tag) => (
             <span
               key={tag}
@@ -240,7 +257,7 @@ function RecipeCard({ recipe, framework }: { recipe: Recipe; framework: Framewor
         <button
           onClick={() => toggleSaved(recipe.slug)}
           aria-label={saved ? "Unsave pattern" : "Save pattern"}
-          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/20 backdrop-blur-md transition-all hover:bg-white/30"
+          className="absolute flex items-center justify-center w-8 h-8 transition-all rounded-full right-3 top-3 bg-white/20 backdrop-blur-md hover:bg-white/30"
         >
           <span
             className="material-symbols-outlined text-[18px] text-white transition-all"
@@ -250,11 +267,11 @@ function RecipeCard({ recipe, framework }: { recipe: Recipe; framework: Framewor
           </span>
         </button>
       </div>
-      <div className="flex flex-1 flex-col p-6">
+      <div className="flex flex-col flex-1 p-6">
         <h3 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
           {recipe.title}
         </h3>
-        <p className="mb-6 flex-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+        <p className="flex-1 mb-6 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
           {recipe.description}
         </p>
         <Link
@@ -268,5 +285,52 @@ function RecipeCard({ recipe, framework }: { recipe: Recipe; framework: Framewor
         </Link>
       </div>
     </div>
+  );
+}
+
+function ComingSoonCard({ recipe, framework }: { recipe: Recipe; framework: Framework }) {
+  return (
+    <Link
+      href={`/${framework}/cookbook/${recipe.slug}`}
+      className="group flex flex-col overflow-hidden rounded-xl border border-dashed border-amber-300 dark:border-amber-700 bg-white dark:bg-[#161b22] shadow-xs opacity-70 transition-all duration-200 hover:opacity-90 hover:-translate-y-1"
+    >
+      <div
+        className="relative flex items-center justify-center h-48 opacity-60"
+        style={{ backgroundImage: recipe.gradient }}
+      >
+        <span className="material-symbols-outlined text-[64px] text-white opacity-30">
+          {recipe.icon}
+        </span>
+        <div className="absolute flex gap-2 left-4 top-4">
+          <span className="rounded-sm bg-amber-400/80 px-2 py-1 text-[10px] font-bold uppercase text-white backdrop-blur-md">
+            Coming Soon
+          </span>
+        </div>
+        <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-black/40 px-2 py-0.5 backdrop-blur-md">
+          <span className="text-[9px] font-bold uppercase tracking-wider text-amber-300">
+            DEV PREVIEW
+          </span>
+        </div>
+        <div className="absolute bottom-3 right-3 flex items-center justify-center rounded bg-black/30 px-2 py-0.5 backdrop-blur-md">
+          <span className="text-[11px] font-bold text-white/70">
+            #{recipe.order}
+          </span>
+        </div>
+      </div>
+      <div className="flex flex-col flex-1 p-6">
+        <h3 className="mb-2 text-xl font-bold text-slate-400 dark:text-slate-500">
+          {recipe.title}
+        </h3>
+        <p className="flex-1 mb-6 text-sm leading-relaxed text-slate-400 dark:text-slate-600">
+          {recipe.description}
+        </p>
+        <div className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-amber-300 dark:border-amber-700 py-2.5 font-semibold text-amber-500 dark:text-amber-600">
+          Preview
+          <span className="material-symbols-outlined text-[18px]">
+            arrow_forward
+          </span>
+        </div>
+      </div>
+    </Link>
   );
 }
