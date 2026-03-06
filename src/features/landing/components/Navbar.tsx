@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
-import { FrameworkSwitcher } from "./FrameworkSwitcher";
 
 export function Navbar() {
   return (
@@ -39,7 +38,6 @@ export function Navbar() {
           >
             Structure
           </Link>
-          <FrameworkSwitcher />
           <Link
             href="/docs/introduction"
             className="text-sm font-medium transition-colors hover:text-primary text-slate-600 dark:text-slate-400"

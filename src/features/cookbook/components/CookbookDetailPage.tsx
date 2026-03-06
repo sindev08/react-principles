@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { DocsPageLayout } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { UserList } from "@/features/examples/components/UserList";
@@ -123,7 +122,6 @@ function LiveDemo({ demoKey }: { demoKey: DemoKey }) {
 function DetailContent({ detail, framework }: { detail: RecipeDetail; framework: Framework }) {
   const [copied, setCopied] = useState(false);
   const { isSaved, toggleSaved } = useSavedStore();
-  const router = useRouter();
   const saved = isSaved(detail.slug);
 
   const activeImpl =
@@ -135,10 +133,6 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
-  };
-
-  const switchFramework = (fw: Framework) => {
-    router.push(`/${fw}/cookbook/${detail.slug}`);
   };
 
   return (
@@ -158,33 +152,6 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
         </div>
         <span className="shrink-0 text-xs text-slate-400">Updated {detail.lastUpdated}</span>
       </nav>
-
-      {/* Framework Switcher */}
-      <div className="flex items-center gap-2 mb-6">
-        <span className="text-xs font-medium text-slate-400 dark:text-slate-500">Viewing for:</span>
-        <div className="flex items-center gap-0.5 rounded-lg border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] p-1">
-          <button
-            onClick={() => switchFramework("nextjs")}
-            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-bold transition-all ${
-              framework === "nextjs"
-                ? "bg-white dark:bg-[#0d1117] text-primary shadow-xs"
-                : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
-            }`}
-          >
-            Next.js
-          </button>
-          <button
-            onClick={() => switchFramework("vitejs")}
-            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-bold transition-all ${
-              framework === "vitejs"
-                ? "bg-white dark:bg-[#0d1117] text-primary shadow-xs"
-                : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
-            }`}
-          >
-            Vite
-          </button>
-        </div>
-      </div>
 
       {/* Page Header */}
       <div className="pb-10 mb-12 border-b border-slate-200 dark:border-[#1f2937]">

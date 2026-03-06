@@ -92,15 +92,6 @@ export function CookbookListPage({ framework }: CookbookListPageProps) {
                 reference architectures, and reusable boilerplate code.
               </p>
             </div>
-            <a
-              href="https://github.com/sindev08/react-principles/issues/new?template=recipe_proposal.md"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex shrink-0 items-center gap-2 rounded-lg bg-primary px-5 py-2.5 font-semibold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary/90"
-            >
-              <span className="material-symbols-outlined text-[20px]">add</span>
-              Submit Recipe
-            </a>
           </div>
 
           {/* Foundation Entry */}
@@ -241,7 +232,7 @@ function RecipeCard({ recipe, framework }: { recipe: Recipe; framework: Framewor
         className="relative flex items-center justify-center h-48"
         style={{ backgroundImage: recipe.gradient }}
       >
-        <span className="material-symbols-outlined text-[64px] text-white opacity-30 transition-transform duration-300 group-hover:scale-110">
+        <span className="text-white transition-transform duration-300 material-symbols-outlined opacity-40 group-hover:scale-110" style={{ fontSize: 72 }}>
           {recipe.icon}
         </span>
         <div className="absolute flex gap-2 left-4 top-4">
@@ -298,7 +289,7 @@ function ComingSoonCard({ recipe, framework }: { recipe: Recipe; framework: Fram
         className="relative flex items-center justify-center h-48 opacity-60"
         style={{ backgroundImage: recipe.gradient }}
       >
-        <span className="material-symbols-outlined text-[64px] text-white opacity-30">
+        <span className="text-white material-symbols-outlined opacity-40" style={{ fontSize: 72 }}>
           {recipe.icon}
         </span>
         <div className="absolute flex gap-2 left-4 top-4">
