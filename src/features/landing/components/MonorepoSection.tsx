@@ -3,61 +3,77 @@ const FILE_TREE = [
     indent: 0,
     icon: "folder_open",
     iconColor: "text-primary/50",
-    label: "src/",
+    label: "react-principles/",
     bold: false,
   },
   {
     indent: 1,
     icon: "folder_open",
-    iconColor: "text-primary",
-    label: "features/",
-    comment: "// domain modules — components + hooks co-located",
-    bold: true,
-    highlight: true,
-  },
-  {
-    indent: 2,
-    icon: "folder",
     iconColor: "text-slate-500",
-    label: "cookbook/",
+    label: "src/",
     bold: false,
   },
   {
     indent: 2,
-    icon: "folder",
+    icon: "web",
+    iconColor: "text-primary",
+    label: "app/",
+    comment: "// Next.js 16 App Router",
+    bold: true,
+  },
+  {
+    indent: 2,
+    icon: "category",
+    iconColor: "text-slate-300",
+    label: "features/",
+    comment: "// landing, docs, cookbook, examples",
+    bold: false,
+  },
+  {
+    indent: 2,
+    icon: "hub",
+    iconColor: "text-primary",
+    label: "shared/",
+    comment: "// shared hooks, stores, types, utils",
+    bold: false,
+    highlight: true,
+  },
+  {
+    indent: 2,
+    icon: "dns",
+    iconColor: "text-slate-300",
+    label: "lib/",
+    comment: "// query + API client layer",
+    bold: false,
+  },
+  {
+    indent: 2,
+    icon: "extension",
+    iconColor: "text-primary",
+    label: "ui/",
+    comment: "// custom shadcn-style primitives",
+    bold: false,
+    highlight: true,
+  },
+  {
+    indent: 1,
+    icon: "description",
     iconColor: "text-slate-500",
     label: "docs/",
     bold: false,
   },
   {
-    indent: 2,
+    indent: 1,
     icon: "folder",
     iconColor: "text-slate-500",
-    label: "examples/",
+    label: "public/",
     bold: false,
   },
   {
     indent: 1,
-    icon: "folder",
+    icon: "description",
     iconColor: "text-slate-500",
-    label: "shared/",
-    comment: "// cross-feature: components, hooks, stores, utils",
-    bold: false,
-  },
-  {
-    indent: 1,
-    icon: "folder",
-    iconColor: "text-slate-500",
-    label: "lib/",
-    comment: "// api-client, query-client, query-keys",
-    bold: false,
-  },
-  {
-    indent: 1,
-    icon: "folder",
-    iconColor: "text-slate-500",
-    label: "ui/",
-    comment: "// design system primitives",
+    label: "package.json",
     bold: false,
   },
 ];
@@ -73,11 +89,11 @@ export function MonorepoSection() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-16 text-center">
           <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-            Feature-Based Architecture
+            Project Structure First
           </h2>
           <p className="max-w-xl mx-auto text-slate-500">
-            Every domain is a self-contained module. Logic stays close to where
-            it's used — no hunting across folders.
+            One Next.js codebase with clear boundaries for app routes, feature
+            modules, shared logic, and UI primitives.
           </p>
         </div>
 

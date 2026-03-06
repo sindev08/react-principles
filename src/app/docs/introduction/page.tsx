@@ -8,7 +8,7 @@ const TOC_ITEMS = [
   { label: "Usage", href: "#usage" },
 ];
 
-const CODE_EXAMPLE = `import { Button } from "@/components/ui/button"
+const CODE_EXAMPLE = `import { Button } from "@/ui/Button"
 
 export function ButtonDemo() {
   return (
@@ -55,7 +55,7 @@ export default function IntroductionPage() {
           <h2 className="mb-6 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
             Featured Component
           </h2>
-          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#0d1117] p-1 shadow-sm">
+          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#0d1117] p-1 shadow-xs">
             <div className="flex h-[320px] w-full items-center justify-center rounded-lg bg-white dark:bg-[#0b0e14] p-8">
               <PaymentCard />
             </div>
@@ -76,7 +76,7 @@ export default function IntroductionPage() {
             {" { Button } "}
             <span className="text-primary">from</span>
             {" "}
-            <span className="text-[#a5d6ff]">&quot;@/components/ui/button&quot;</span>
+            <span className="text-[#a5d6ff]">&quot;@/ui/Button&quot;</span>
             {"\n\n"}
             <span className="text-primary">export function</span>
             {" "}
@@ -134,7 +134,7 @@ function PaymentCard() {
       </p>
       <div className="flex flex-col gap-3">
         <div className="group-hover:border-primary/30 flex items-center gap-3 rounded-lg border border-slate-200 dark:border-[#30363d] p-3 transition-colors">
-          <div className="flex h-8 w-12 items-center justify-center rounded bg-slate-100 dark:bg-[#f1f5f9]">
+          <div className="flex h-8 w-12 items-center justify-center rounded-sm bg-slate-100 dark:bg-[#f1f5f9]">
             <span className="material-symbols-outlined text-[18px] text-slate-500">
               payments
             </span>

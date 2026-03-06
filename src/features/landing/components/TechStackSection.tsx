@@ -3,7 +3,7 @@ import { StackCard } from "@/features/cookbook/components/StackCard";
 const STACK_ITEMS = [
   {
     icon: <span className="text-3xl material-symbols-outlined">deployed_code</span>,
-    title: "Next.js 15",
+    title: "Next.js 16",
     subtitle: "App Router",
   },
   {

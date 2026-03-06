@@ -1,10 +1,8 @@
 import { use } from "react";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { DocsPageLayout } from "@/features/docs/components";
 import { CookbookDetailPage } from "@/features/cookbook/components/CookbookDetailPage";
 import { getRecipeDetail } from "@/features/cookbook/data/detail-data";
-import { RECIPES } from "@/features/cookbook/data/cookbook-data";
 
 export default function NextjsCookbookDetailPage({
   params,
@@ -12,12 +10,6 @@ export default function NextjsCookbookDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = use(params);
-
-  const recipe = RECIPES.find((r) => r.slug === slug);
-  if (recipe?.status === "coming-soon" && process.env.NODE_ENV === "production") {
-    redirect("/nextjs/cookbook");
-  }
-
   const detail = getRecipeDetail(slug);
 
   if (!detail) {

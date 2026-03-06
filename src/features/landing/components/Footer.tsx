@@ -6,7 +6,7 @@ const RESOURCES = [
 ];
 
 const FRAMEWORKS = [
-  { label: "Next.js 15", href: "/nextjs/cookbook/server-state" },
+  { label: "Next.js 16", href: "/nextjs/cookbook/server-state" },
   { label: "Vite", href: "/vitejs/cookbook/client-state" },
 ];
 

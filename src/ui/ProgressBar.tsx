@@ -15,7 +15,7 @@ export interface ProgressBarProps {
  * Thin top-of-page progress bar for navigation feedback.
  * Pair with `useProgressBar` hook.
  */
-export function ProgressBar({ progress, visible }: ProgressBarProps) {
+function ProgressBarRoot({ progress, visible }: ProgressBarProps) {
   return (
     <div
       role="progressbar"
@@ -24,7 +24,7 @@ export function ProgressBar({ progress, visible }: ProgressBarProps) {
       aria-valuenow={progress}
       aria-hidden="true"
       className={cn(
-        "pointer-events-none fixed left-0 top-0 z-[200] h-[2px] bg-primary",
+        "pointer-events-none fixed left-0 top-0 z-200 h-0.5 bg-primary",
         // Glow effect matching the primary color
         "shadow-[0_0_8px_1px_rgba(70,40,241,0.7)]",
         "transition-opacity duration-300",
@@ -38,3 +38,11 @@ export function ProgressBar({ progress, visible }: ProgressBarProps) {
     />
   );
 }
+
+type ProgressBarCompoundComponent = typeof ProgressBarRoot & {
+  Root: typeof ProgressBarRoot;
+};
+
+export const ProgressBar = Object.assign(ProgressBarRoot, {
+  Root: ProgressBarRoot,
+}) as ProgressBarCompoundComponent;

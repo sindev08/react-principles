@@ -44,7 +44,7 @@ export interface DrawerFooterProps extends HTMLAttributes<HTMLDivElement> {
 const SIZE_CLASSES: Record<DrawerSize, string> = {
   sm: "w-80",
   md: "w-96",
-  lg: "w-[32rem]",
+  lg: "w-lg",
   full: "w-full",
 };
 
@@ -97,7 +97,7 @@ export function DrawerFooter({ children, className, ...props }: DrawerFooterProp
 
 // ─── Drawer ───────────────────────────────────────────────────────────────────
 
-export function Drawer({ open, onClose, side = "right", size = "md", children, className }: DrawerProps) {
+function DrawerRoot({ open, onClose, side = "right", size = "md", children, className }: DrawerProps) {
   const backdropRef = useRef<HTMLDivElement>(null);
   const { mounted, visible } = useAnimatedMount(open, 300);
 
@@ -132,7 +132,7 @@ export function Drawer({ open, onClose, side = "right", size = "md", children, c
       {/* Backdrop */}
       <div
         className={cn(
-          "absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300",
+          "absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300",
           visible ? "opacity-100" : "opacity-0"
         )}
       />
@@ -171,3 +171,21 @@ export function Drawer({ open, onClose, side = "right", size = "md", children, c
 
   return createPortal(drawer, document.body);
 }
+
+type DrawerCompoundComponent = typeof DrawerRoot & {
+  Root: typeof DrawerRoot;
+  Header: typeof DrawerHeader;
+  Title: typeof DrawerTitle;
+  Description: typeof DrawerDescription;
+  Content: typeof DrawerContent;
+  Footer: typeof DrawerFooter;
+};
+
+export const Drawer = Object.assign(DrawerRoot, {
+  Root: DrawerRoot,
+  Header: DrawerHeader,
+  Title: DrawerTitle,
+  Description: DrawerDescription,
+  Content: DrawerContent,
+  Footer: DrawerFooter,
+}) as DrawerCompoundComponent;

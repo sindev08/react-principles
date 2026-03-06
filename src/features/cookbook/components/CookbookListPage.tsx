@@ -58,8 +58,8 @@ export function CookbookListPage({ framework }: CookbookListPageProps) {
         <DocsSidebar />
         <main className="flex-1 min-w-0 px-0 py-8 lg:px-12 lg:py-10">
           {/* Breadcrumb */}
-          <nav className="mb-6 flex items-center gap-2 text-sm text-slate-500">
-            <span className="hover:text-primary cursor-pointer transition-colors">
+          <nav className="flex items-center gap-2 mb-6 text-sm text-slate-500">
+            <span className="transition-colors cursor-pointer hover:text-primary">
               Guide
             </span>
             <span className="material-symbols-outlined text-[14px]">
@@ -83,7 +83,7 @@ export function CookbookListPage({ framework }: CookbookListPageProps) {
                 <h1 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white">
                   Developer Cookbook
                 </h1>
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+                <span className="px-3 py-1 text-xs font-bold rounded-full bg-primary/10 text-primary">
                   {framework === "nextjs" ? "Next.js" : "Vite"}
                 </span>
               </div>
@@ -109,13 +109,13 @@ export function CookbookListPage({ framework }: CookbookListPageProps) {
             className="group flex items-center justify-between gap-4 mb-8 px-5 py-4 rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] hover:border-primary/50 transition-all"
           >
             <div className="flex items-center gap-4">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+              <div className="flex items-center justify-center rounded-lg h-9 w-9 shrink-0 bg-primary/10">
                 <span className="material-symbols-outlined text-[20px] text-primary">
                   layers
                 </span>
               </div>
               <div>
-                <p className="font-semibold text-slate-900 dark:text-white text-sm">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   New here? Start with the Foundation
                 </p>
                 <p className="text-xs text-slate-400 mt-0.5">
@@ -137,7 +137,7 @@ export function CookbookListPage({ framework }: CookbookListPageProps) {
                 onClick={() => handleCategoryChange(cat)}
                 className={
                   activeCategory === cat
-                    ? "px-4 py-2 text-sm font-semibold text-white rounded-full bg-primary shadow-sm"
+                    ? "px-4 py-2 text-sm font-semibold text-white rounded-full bg-primary shadow-xs"
                     : "px-4 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 rounded-full border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#0d1117] hover:border-primary hover:text-primary transition-all"
                 }
               >
@@ -148,7 +148,7 @@ export function CookbookListPage({ framework }: CookbookListPageProps) {
               onClick={() => handleCategoryChange("Saved")}
               className={
                 activeCategory === "Saved"
-                  ? "flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white rounded-full bg-primary shadow-sm"
+                  ? "flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white rounded-full bg-primary shadow-xs"
                   : "flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 rounded-full border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#0d1117] hover:border-primary hover:text-primary transition-all"
               }
             >
@@ -173,7 +173,7 @@ export function CookbookListPage({ framework }: CookbookListPageProps) {
                 ),
               )
             ) : (
-              <div className="col-span-full flex flex-col items-center justify-center py-24 text-center">
+              <div className="flex flex-col items-center justify-center py-24 text-center col-span-full">
                 <span className="material-symbols-outlined text-[48px] text-slate-300 dark:text-slate-600 mb-3">bookmark</span>
                 <p className="text-slate-500 dark:text-slate-400">No saved patterns yet.</p>
                 <button onClick={() => handleCategoryChange("All Patterns")} className="mt-3 text-sm font-medium text-primary hover:underline">
@@ -236,19 +236,19 @@ function RecipeCard({ recipe, framework }: { recipe: Recipe; framework: Framewor
   const saved = isSaved(recipe.slug);
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-xl border border-slate-100 dark:border-[#1f2937] bg-white dark:bg-[#161b22] shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-xl">
+    <div className="group flex flex-col overflow-hidden rounded-xl border border-slate-100 dark:border-[#1f2937] bg-white dark:bg-[#161b22] shadow-xs transition-all duration-200 hover:-translate-y-1 hover:shadow-xl">
       <div
-        className="relative flex h-48 items-center justify-center"
+        className="relative flex items-center justify-center h-48"
         style={{ backgroundImage: recipe.gradient }}
       >
         <span className="material-symbols-outlined text-[64px] text-white opacity-30 transition-transform duration-300 group-hover:scale-110">
           {recipe.icon}
         </span>
-        <div className="absolute left-4 top-4 flex gap-2">
+        <div className="absolute flex gap-2 left-4 top-4">
           {recipe.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded bg-white/20 px-2 py-1 text-[10px] font-bold uppercase text-white backdrop-blur-md"
+              className="rounded-sm bg-white/20 px-2 py-1 text-[10px] font-bold uppercase text-white backdrop-blur-md"
             >
               {tag}
             </span>
@@ -257,7 +257,7 @@ function RecipeCard({ recipe, framework }: { recipe: Recipe; framework: Framewor
         <button
           onClick={() => toggleSaved(recipe.slug)}
           aria-label={saved ? "Unsave pattern" : "Save pattern"}
-          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/20 backdrop-blur-md transition-all hover:bg-white/30"
+          className="absolute flex items-center justify-center w-8 h-8 transition-all rounded-full right-3 top-3 bg-white/20 backdrop-blur-md hover:bg-white/30"
         >
           <span
             className="material-symbols-outlined text-[18px] text-white transition-all"
@@ -267,11 +267,11 @@ function RecipeCard({ recipe, framework }: { recipe: Recipe; framework: Framewor
           </span>
         </button>
       </div>
-      <div className="flex flex-1 flex-col p-6">
+      <div className="flex flex-col flex-1 p-6">
         <h3 className="mb-2 text-xl font-bold text-slate-900 dark:text-white">
           {recipe.title}
         </h3>
-        <p className="mb-6 flex-1 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+        <p className="flex-1 mb-6 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
           {recipe.description}
         </p>
         <Link
@@ -292,17 +292,17 @@ function ComingSoonCard({ recipe, framework }: { recipe: Recipe; framework: Fram
   return (
     <Link
       href={`/${framework}/cookbook/${recipe.slug}`}
-      className="group flex flex-col overflow-hidden rounded-xl border border-dashed border-amber-300 dark:border-amber-700 bg-white dark:bg-[#161b22] shadow-sm opacity-70 transition-all duration-200 hover:opacity-90 hover:-translate-y-1"
+      className="group flex flex-col overflow-hidden rounded-xl border border-dashed border-amber-300 dark:border-amber-700 bg-white dark:bg-[#161b22] shadow-xs opacity-70 transition-all duration-200 hover:opacity-90 hover:-translate-y-1"
     >
       <div
-        className="relative flex h-48 items-center justify-center opacity-60"
+        className="relative flex items-center justify-center h-48 opacity-60"
         style={{ backgroundImage: recipe.gradient }}
       >
         <span className="material-symbols-outlined text-[64px] text-white opacity-30">
           {recipe.icon}
         </span>
-        <div className="absolute left-4 top-4 flex gap-2">
-          <span className="rounded bg-amber-400/80 px-2 py-1 text-[10px] font-bold uppercase text-white backdrop-blur-md">
+        <div className="absolute flex gap-2 left-4 top-4">
+          <span className="rounded-sm bg-amber-400/80 px-2 py-1 text-[10px] font-bold uppercase text-white backdrop-blur-md">
             Coming Soon
           </span>
         </div>
@@ -317,11 +317,11 @@ function ComingSoonCard({ recipe, framework }: { recipe: Recipe; framework: Fram
           </span>
         </div>
       </div>
-      <div className="flex flex-1 flex-col p-6">
+      <div className="flex flex-col flex-1 p-6">
         <h3 className="mb-2 text-xl font-bold text-slate-400 dark:text-slate-500">
           {recipe.title}
         </h3>
-        <p className="mb-6 flex-1 text-sm leading-relaxed text-slate-400 dark:text-slate-600">
+        <p className="flex-1 mb-6 text-sm leading-relaxed text-slate-400 dark:text-slate-600">
           {recipe.description}
         </p>
         <div className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-amber-300 dark:border-amber-700 py-2.5 font-semibold text-amber-500 dark:text-amber-600">
