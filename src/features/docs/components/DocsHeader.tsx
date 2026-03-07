@@ -51,6 +51,12 @@ export function DocsHeader() {
   const { savedSlugs } = useSavedStore();
   const isDocsActive = pathname.startsWith("/docs");
   const isCookbookActive = pathname.startsWith("/nextjs/cookbook") || pathname.startsWith("/vitejs/cookbook");
+  const activeFramework = pathname.startsWith("/vitejs/") ? "vitejs" : "nextjs";
+
+  const switchFramework = (fw: "nextjs" | "vitejs") => {
+    const next = pathname.replace(/^\/(nextjs|vitejs)\//, `/${fw}/`);
+    router.push(next);
+  };
 
   // ⌘K / Ctrl+K shortcut
   useEffect(() => {
@@ -87,6 +93,31 @@ export function DocsHeader() {
             </nav>
           </div>
           <div className="flex items-center gap-3">
+            {/* Framework switcher — cookbook only */}
+            {isCookbookActive && (
+              <div className="hidden items-center gap-0.5 rounded-lg border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] p-1 sm:flex">
+                <button
+                  onClick={() => switchFramework("nextjs")}
+                  className={`rounded-md px-3 py-1.5 text-xs font-bold transition-all ${
+                    activeFramework === "nextjs"
+                      ? "bg-white dark:bg-[#0d1117] text-primary shadow-sm"
+                      : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+                  }`}
+                >
+                  Next.js
+                </button>
+                <button
+                  onClick={() => switchFramework("vitejs")}
+                  className={`rounded-md px-3 py-1.5 text-xs font-bold transition-all ${
+                    activeFramework === "vitejs"
+                      ? "bg-white dark:bg-[#0d1117] text-primary shadow-sm"
+                      : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+                  }`}
+                >
+                  Vite
+                </button>
+              </div>
+            )}
             {/* Search trigger */}
             <button
               onClick={toggle}
@@ -94,7 +125,7 @@ export function DocsHeader() {
             >
               <span className="material-symbols-outlined text-[16px]">search</span>
               <span className="text-xs">Search...</span>
-              <kbd className="ml-2 rounded border border-slate-200 dark:border-[#1f2937] px-1.5 py-0.5 text-[10px] font-medium">
+              <kbd className="ml-2 rounded-sm border border-slate-200 dark:border-[#1f2937] px-1.5 py-0.5 text-[10px] font-medium">
                 ⌘K
               </kbd>
             </button>
@@ -107,7 +138,9 @@ export function DocsHeader() {
             </button>
             <ThemeToggle />
             <a
-              href="#"
+              href="https://github.com/sindev08/react-principles"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 rounded-lg bg-primary px-4 py-1.5 text-[11px] font-bold text-white transition-colors hover:bg-primary/90"
             >
               <GithubIcon />

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
   Navbar,
   HeroSection,
@@ -7,6 +8,12 @@ import {
   DocsSection,
   Footer,
 } from "@/features/landing/components";
+
+export const metadata: Metadata = {
+  title: "React Principles — A Living Cookbook of React Patterns",
+  description:
+    "Production-grade React patterns with real implementations using Next.js, Vite, TanStack Query, Zustand, React Hook Form, and TypeScript.",
+};
 
 export default function LandingPage() {
   return (

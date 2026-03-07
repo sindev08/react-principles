@@ -1,6 +1,6 @@
 # ui/
 
-Design system — shadcn/ui components and custom UI primitives.
+Design system primitives inspired by shadcn/ui conventions, implemented as custom components in this repo.
 
 ## What Goes Here
 
@@ -9,7 +9,7 @@ Reusable, stateless UI components that are part of the design system. These are 
 ## Rules
 
 - Components here must be **stateless** — no API calls, no business logic
-- Never modify shadcn/ui source files directly — extend via wrapper component
+- This repo does not use generated shadcn registry files; maintain components directly in `src/ui`
 - Use `cn()` utility from `lib/utils` for conditional class names
 - PascalCase filenames matching the component name: `Button.tsx` → `<Button />`
 

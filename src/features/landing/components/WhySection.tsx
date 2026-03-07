@@ -19,10 +19,11 @@ const FEATURES = [
 ];
 
 const LAB_ITEMS = [
-  "Fully typed with TypeScript 5.x",
-  "Multi-app implementation testing",
-  "Performance profiling for every pattern",
-  "Automated accessibility audits",
+  "Framework switcher — Next.js ↔ Vite per recipe",
+  "Live interactive demo per pattern",
+  "Save & bookmark recipes",
+  "Fully typed — TypeScript strict mode",
+  "Fully searchable — ⌘K",
 ];
 
 export function WhySection() {
@@ -46,7 +47,7 @@ export function WhySection() {
               React Principles is a collection of{" "}
               <strong>isolated patterns</strong> combined with{" "}
               <strong>real-world implementations</strong>. We show you how a
-              pattern behaves in a Next.js 15 Server Component environment
+              pattern behaves in a Next.js 16 Server Component environment
               versus a Vite-based Client-side application.
             </p>
             <div className="grid grid-cols-1 gap-4">
@@ -66,13 +67,13 @@ export function WhySection() {
             <div className="absolute inset-0 transform scale-75 rounded-full bg-primary/5 -z-10 blur-3xl" />
             <div className="p-8 border rounded-2xl shadow-2xl bg-background-light dark:bg-slate-900 border-slate-200 dark:border-white/5">
               <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 rounded-lg shadow-sm bg-white dark:bg-slate-800">
+                <div className="p-3 rounded-lg shadow-xs bg-white dark:bg-slate-800">
                   <span className="material-symbols-outlined text-primary">
-                    science
+                    auto_awesome
                   </span>
                 </div>
                 <h4 className="text-xl italic font-black tracking-tight uppercase text-slate-900 dark:text-white">
-                  Lab Environment
+                  What's Inside
                 </h4>
               </div>
               <ul className="space-y-4">

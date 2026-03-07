@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { DocsPageLayout } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { UserList } from "@/features/examples/components/UserList";
@@ -53,7 +52,7 @@ function ZustandDemo() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm text-slate-500">Theme</span>
-            <span className="rounded bg-slate-100 dark:bg-[#1f2937] px-2 py-0.5 text-xs font-mono text-slate-700 dark:text-slate-300">
+            <span className="rounded-sm bg-slate-100 dark:bg-[#1f2937] px-2 py-0.5 text-xs font-mono text-slate-700 dark:text-slate-300">
               {theme}
             </span>
           </div>
@@ -75,14 +74,14 @@ function ZustandDemo() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search users..."
-            className="w-full rounded-lg border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#0d1117] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="w-full rounded-lg border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#0d1117] px-3 py-2 text-sm focus:outline-hidden focus:ring-2 focus:ring-primary/40"
           />
           <select
             value={role ?? ""}
             onChange={(e) =>
               setRole((e.target.value || null) as "admin" | "editor" | "viewer" | null)
             }
-            className="w-full rounded-lg border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#0d1117] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="w-full rounded-lg border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#0d1117] px-3 py-2 text-sm focus:outline-hidden focus:ring-2 focus:ring-primary/40"
           >
             <option value="">All roles</option>
             <option value="admin">Admin</option>
@@ -94,7 +93,7 @@ function ZustandDemo() {
             onChange={(e) =>
               setStatus((e.target.value || null) as "active" | "inactive" | null)
             }
-            className="w-full rounded-lg border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#0d1117] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+            className="w-full rounded-lg border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#0d1117] px-3 py-2 text-sm focus:outline-hidden focus:ring-2 focus:ring-primary/40"
           >
             <option value="">All statuses</option>
             <option value="active">Active</option>
@@ -123,7 +122,6 @@ function LiveDemo({ demoKey }: { demoKey: DemoKey }) {
 function DetailContent({ detail, framework }: { detail: RecipeDetail; framework: Framework }) {
   const [copied, setCopied] = useState(false);
   const { isSaved, toggleSaved } = useSavedStore();
-  const router = useRouter();
   const saved = isSaved(detail.slug);
 
   const activeImpl =
@@ -135,10 +133,6 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
-  };
-
-  const switchFramework = (fw: Framework) => {
-    router.push(`/${fw}/cookbook/${detail.slug}`);
   };
 
   return (
@@ -158,33 +152,6 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
         </div>
         <span className="shrink-0 text-xs text-slate-400">Updated {detail.lastUpdated}</span>
       </nav>
-
-      {/* Framework Switcher */}
-      <div className="flex items-center gap-2 mb-6">
-        <span className="text-xs font-medium text-slate-400 dark:text-slate-500">Viewing for:</span>
-        <div className="flex items-center gap-0.5 rounded-lg border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] p-1">
-          <button
-            onClick={() => switchFramework("nextjs")}
-            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-bold transition-all ${
-              framework === "nextjs"
-                ? "bg-white dark:bg-[#0d1117] text-primary shadow-sm"
-                : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
-            }`}
-          >
-            Next.js
-          </button>
-          <button
-            onClick={() => switchFramework("vitejs")}
-            className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-bold transition-all ${
-              framework === "vitejs"
-                ? "bg-white dark:bg-[#0d1117] text-primary shadow-sm"
-                : "text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
-            }`}
-          >
-            Vite
-          </button>
-        </div>
-      </div>
 
       {/* Page Header */}
       <div className="pb-10 mb-12 border-b border-slate-200 dark:border-[#1f2937]">
@@ -223,12 +190,12 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
       {/* 01 Principle */}
       <section className="mb-16" id="principle">
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+          <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
             <span className="text-sm font-bold">01</span>
           </div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Principle</h2>
         </div>
-        <div className="p-6 bg-white dark:bg-[#161b22] border border-slate-200 dark:border-[#1f2937] rounded-xl shadow-sm">
+        <div className="p-6 bg-white dark:bg-[#161b22] border border-slate-200 dark:border-[#1f2937] rounded-xl shadow-xs">
           <p className="leading-relaxed text-slate-700 dark:text-slate-300">
             {detail.principle.text}
           </p>
@@ -244,7 +211,7 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
       {/* 02 Rules */}
       <section className="mb-16" id="rules">
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+          <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
             <span className="text-sm font-bold">02</span>
           </div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Rules</h2>
@@ -272,7 +239,7 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
       {/* 03 Pattern */}
       <section className="mb-16" id="pattern">
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+          <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
             <span className="text-sm font-bold">03</span>
           </div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Pattern</h2>
@@ -285,7 +252,7 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
       {/* 04 Implementation */}
       <section className="mb-16" id="implementation">
         <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+          <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
             <span className="text-sm font-bold">04</span>
           </div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
@@ -299,7 +266,7 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
               Version Compatibility
             </p>
             <p className="text-xs text-amber-800 dark:text-amber-400">
-              Requires React 18+ and the latest stable versions of all dependencies shown.
+              Requires React 19+ and the latest stable versions of all dependencies shown.
             </p>
           </div>
         </div>
@@ -317,14 +284,14 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
       {detail.demoKey && (
         <section className="mb-16" id="demo">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-primary/10 text-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
               Live Demo
             </h2>
           </div>
-          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-sm">
+          <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-xs">
             <LiveDemo demoKey={detail.demoKey} />
           </div>
         </section>
@@ -339,7 +306,7 @@ function CookbookFooter() {
       <div className="flex flex-col justify-between gap-8 md:flex-row">
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <div className="flex h-6 w-6 items-center justify-center rounded bg-primary text-white">
+            <div className="flex h-6 w-6 items-center justify-center rounded-sm bg-primary text-white">
               <span className="material-symbols-outlined text-[16px]">menu_book</span>
             </div>
             <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-white">
