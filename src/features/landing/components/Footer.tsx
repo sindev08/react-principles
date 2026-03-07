@@ -3,10 +3,11 @@ import Link from "next/link";
 const RESOURCES = [
   { label: "Documentation", href: "/docs/introduction" },
   { label: "Cookbook", href: "/nextjs/cookbook" },
+  { label: "GitHub", href: "https://github.com/sindev08/react-principles" },
 ];
 
 const FRAMEWORKS = [
-  { label: "Next.js 15", href: "/nextjs/cookbook/server-state" },
+  { label: "Next.js 16", href: "/nextjs/cookbook/server-state" },
   { label: "Vite", href: "/vitejs/cookbook/client-state" },
 ];
 
@@ -36,12 +37,23 @@ export function Footer() {
             <ul className="space-y-3 text-sm text-slate-500">
               {RESOURCES.map((item) => (
                 <li key={item.label}>
-                  <Link
-                    href={item.href}
-                    className="transition-colors hover:text-primary"
-                  >
-                    {item.label}
-                  </Link>
+                  {item.href.startsWith("http") ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="transition-colors hover:text-primary"
+                    >
+                      {item.label}
+                    </a>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className="transition-colors hover:text-primary"
+                    >
+                      {item.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

@@ -1,179 +1,172 @@
 import { DocsPageLayout } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
 const TOC_ITEMS = [
-  { label: "Color Tokens", href: "#colors" },
+  { label: "Theme Tokens", href: "#tokens" },
   { label: "Dark Mode", href: "#dark-mode" },
   { label: "Typography", href: "#typography" },
-  { label: "Customizing", href: "#customizing" },
+  { label: "Customize", href: "#customize" },
 ];
 
-const TAILWIND_CONFIG = `// tailwind.config.js
-module.exports = {
-  darkMode: "class",
-  theme: {
-    extend: {
-      colors: {
-        primary: "#4628F1",
-        "background-light": "#f6f6f8",
-        "background-dark": "#020617",
-      },
-      fontFamily: {
-        display: ["Inter", "sans-serif"],
-      },
-    },
-  },
-};`;
+const THEME_TOKENS = `/* src/app/globals.css */
+@import "tailwindcss";
 
-const CUSTOM_COLOR = `// tailwind.config.js — change primary color
-module.exports = {
-  theme: {
-    extend: {
-      colors: {
-        primary: "#0ea5e9", // change to any hex value
-      },
-    },
-  },
-};`;
+@custom-variant dark (&:is(.dark *));
 
-const DARK_TOGGLE = `// Toggle dark mode by adding/removing the "dark" class on <html>
-document.documentElement.classList.add("dark");    // enable
-document.documentElement.classList.remove("dark"); // disable
-document.documentElement.classList.toggle("dark"); // toggle`;
-
-const DARK_USAGE = `// Using dark mode in components
-<div className="bg-white dark:bg-[#161b22]">
-  <p className="text-slate-900 dark:text-white">Hello</p>
-  <span className="text-slate-500 dark:text-slate-400">Subtitle</span>
-</div>`;
-
-const FONT_USAGE = `// Font is applied globally via CSS
-body {
-  font-family: "Inter", sans-serif;
+@theme {
+  --color-primary: #4628f1;
+  --color-background-light: #f6f6f8;
+  --color-background-dark: #020617;
+  --font-display: Inter, sans-serif;
 }
 
-// Use the display family in Tailwind
-<h1 className="font-display font-black">Heading</h1>`;
+:root {
+  --background: #f6f6f8;
+  --foreground: #0f172a;
+}
 
-// ─── Color swatch data ────────────────────────────────────────────────────────
+.dark {
+  --background: #020617;
+  --foreground: #e2e8f0;
+}`;
+
+const DARK_TOGGLE = `// Theme class on <html>
+document.documentElement.classList.add("dark");
+document.documentElement.classList.remove("dark");
+document.documentElement.classList.toggle("dark");`;
+
+const DARK_USAGE = `<div className="bg-white dark:bg-[#161b22] border border-slate-200 dark:border-[#1f2937]">
+  <h2 className="text-slate-900 dark:text-white">Panel title</h2>
+  <p className="text-slate-500 dark:text-slate-400">Muted text</p>
+</div>`;
+
+const FONT_USAGE = `/* src/app/globals.css */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap") layer(base);
+
+/* usage */
+<h1 className="font-display font-black tracking-tight">Heading</h1>`;
+
+const CUSTOMIZE_PRIMARY = `/* src/app/globals.css */
+@theme {
+  --color-primary: #0ea5e9; /* customize brand color */
+}`;
 
 const COLOR_TOKENS = [
   {
-    name: "primary",
-    value: "#4628F1",
-    light: "bg-[#4628F1]",
-    usage: "Buttons, active states, links, focus rings",
+    name: "--color-primary",
+    value: "#4628f1",
+    swatch: "bg-[#4628f1]",
+    usage: "Buttons, links, active tabs, focus rings",
   },
   {
-    name: "background-light",
+    name: "--color-background-light",
     value: "#f6f6f8",
-    light: "bg-[#f6f6f8] border border-slate-200",
-    usage: "App background in light mode",
+    swatch: "bg-background-light border border-slate-200",
+    usage: "Light page background",
   },
   {
-    name: "background-dark",
+    name: "--color-background-dark",
     value: "#020617",
-    light: "bg-[#020617]",
-    usage: "App background in dark mode",
+    swatch: "bg-background-dark",
+    usage: "Dark page background",
   },
 ];
 
-const SURFACE_COLORS = [
-  { label: "Panel light", hex: "#ffffff", cls: "bg-white border border-slate-200", desc: "Card / dialog surface" },
-  { label: "Panel dark", hex: "#161b22", cls: "bg-[#161b22]", desc: "Card / dialog surface" },
-  { label: "Subtle dark", hex: "#0d1117", cls: "bg-[#0d1117]", desc: "Inner panels, code blocks" },
-  { label: "Border dark", hex: "#1f2937", cls: "bg-[#1f2937]", desc: "Dividers, borders" },
+const SURFACES = [
+  { label: "Panel light", hex: "#ffffff", swatch: "bg-white border border-slate-200", desc: "Card/dialog surface" },
+  { label: "Panel dark", hex: "#161b22", swatch: "bg-[#161b22]", desc: "Card/dialog surface" },
+  { label: "Inner dark", hex: "#0d1117", swatch: "bg-[#0d1117]", desc: "Nested surface" },
+  { label: "Border dark", hex: "#1f2937", swatch: "bg-[#1f2937]", desc: "Dividers/borders" },
 ];
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ThemingPage() {
   return (
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-3xl">
-        {/* Breadcrumb */}
         <nav className="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
           <span className="hover:text-primary cursor-pointer transition-colors">Getting Started</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
           <span className="text-slate-900 dark:text-white">Theming</span>
         </nav>
 
-        {/* Header */}
         <div className="mb-12">
           <h1 className="mb-4 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">
             Theming
           </h1>
           <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-400">
-            All components are styled with Tailwind CSS. Colors, dark mode, and typography
-            are configured in <code className="font-mono text-sm text-primary">tailwind.config.js</code> — no CSS variables or runtime tokens.
+            The project uses Tailwind CSS v4. Theme tokens and custom variants live in
+            <code className="mx-1 font-mono text-sm text-primary">src/app/globals.css</code>
+            with a class-based dark mode strategy.
           </p>
         </div>
 
-        {/* 01 Color Tokens */}
-        <section id="colors" className="mb-14">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Color Tokens</h2>
+        <section id="tokens" className="mb-14">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Theme Tokens</h2>
           <p className="text-slate-600 dark:text-slate-400 mb-6 text-sm leading-relaxed">
-            Three custom colors are registered in the Tailwind theme. They are available as
-            utility classes anywhere in the project.
+            Core color and font tokens are defined through
+            <code className="mx-1 font-mono text-xs text-primary">@theme</code>.
+            Runtime page colors use
+            <code className="mx-1 font-mono text-xs text-primary">:root</code> and
+            <code className="mx-1 font-mono text-xs text-primary">.dark</code>
+            CSS variables for background/foreground.
           </p>
 
-          {/* Primary + backgrounds */}
           <div className="space-y-3 mb-8">
-            {COLOR_TOKENS.map((c) => (
-              <div key={c.name} className="flex items-center gap-4 rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-4">
-                <div className={`h-12 w-12 rounded-lg shrink-0 ${c.light}`} />
+            {COLOR_TOKENS.map((token) => (
+              <div
+                key={token.name}
+                className="flex items-center gap-4 rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-4"
+              >
+                <div className={`h-12 w-12 rounded-lg shrink-0 ${token.swatch}`} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline gap-2">
-                    <code className="text-sm font-mono font-semibold text-primary">{c.name}</code>
-                    <span className="text-xs text-slate-400 font-mono">{c.value}</span>
+                    <code className="text-sm font-mono font-semibold text-primary">{token.name}</code>
+                    <span className="text-xs text-slate-400 font-mono">{token.value}</span>
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{c.usage}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{token.usage}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Hardcoded surface colors note */}
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-            Component surfaces use <strong className="text-slate-700 dark:text-slate-300">hardcoded hex values</strong> directly in class names rather than named tokens. These are the de-facto surface palette used throughout:
+            Surface colors are intentionally explicit in component classes for predictable design output:
           </p>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {SURFACE_COLORS.map((s) => (
-              <div key={s.label} className="rounded-xl overflow-hidden border border-slate-200 dark:border-[#1f2937]">
-                <div className={`h-10 ${s.cls}`} />
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 mb-6">
+            {SURFACES.map((surface) => (
+              <div key={surface.label} className="rounded-xl overflow-hidden border border-slate-200 dark:border-[#1f2937]">
+                <div className={`h-10 ${surface.swatch}`} />
                 <div className="bg-white dark:bg-[#161b22] px-2.5 py-2">
-                  <p className="text-xs font-medium text-slate-700 dark:text-slate-300">{s.label}</p>
-                  <p className="text-[10px] font-mono text-slate-400">{s.hex}</p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">{s.desc}</p>
+                  <p className="text-xs font-medium text-slate-700 dark:text-slate-300">{surface.label}</p>
+                  <p className="text-[10px] font-mono text-slate-400">{surface.hex}</p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">{surface.desc}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-6">
-            <CodeBlock filename="tailwind.config.js" copyText={TAILWIND_CONFIG}>
-              {TAILWIND_CONFIG}
-            </CodeBlock>
-          </div>
+          <CodeBlock filename="src/app/globals.css" copyText={THEME_TOKENS}>
+            {THEME_TOKENS}
+          </CodeBlock>
         </section>
 
-        {/* 02 Dark Mode */}
         <section id="dark-mode" className="mb-14">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Dark Mode</h2>
           <p className="text-slate-600 dark:text-slate-400 mb-6 text-sm leading-relaxed">
-            Dark mode uses Tailwind's <strong className="text-slate-700 dark:text-slate-300">class strategy</strong>. When the
-            <code className="mx-1 font-mono text-xs text-primary">dark</code> class is present on
-            <code className="ml-1 font-mono text-xs text-primary">&lt;html&gt;</code>,
-            all <code className="font-mono text-xs text-primary">dark:</code> variants activate.
+            Dark mode is class-based. The
+            <code className="mx-1 font-mono text-xs text-primary">dark</code>
+            class on
+            <code className="mx-1 font-mono text-xs text-primary">&lt;html&gt;</code>
+            activates all
+            <code className="mx-1 font-mono text-xs text-primary">dark:</code>
+            variants.
           </p>
 
           <div className="space-y-4">
-            <CodeBlock filename="Toggle dark mode" copyText={DARK_TOGGLE}>
+            <CodeBlock filename="Theme class toggle" copyText={DARK_TOGGLE}>
               {DARK_TOGGLE}
             </CodeBlock>
-            <CodeBlock filename="Usage in components" copyText={DARK_USAGE}>
+            <CodeBlock filename="Component usage" copyText={DARK_USAGE}>
               {DARK_USAGE}
             </CodeBlock>
           </div>
@@ -184,16 +177,20 @@ export default function ThemingPage() {
               <path d="M8 5v4m0 2v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
             <p className="text-sm text-blue-800 dark:text-blue-300">
-              The theme toggle button in the top navbar adds/removes the <code className="font-mono text-xs">dark</code> class on <code className="font-mono text-xs">&lt;html&gt;</code> and persists the preference to <code className="font-mono text-xs">localStorage</code>.
+              The navbar theme toggle persists preference in
+              <code className="mx-1 font-mono text-xs">localStorage</code>
+              and toggles the
+              <code className="mx-1 font-mono text-xs">dark</code>
+              class before paint to avoid FOUC.
             </p>
           </div>
         </section>
 
-        {/* 03 Typography */}
         <section id="typography" className="mb-14">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Typography</h2>
           <p className="text-slate-600 dark:text-slate-400 mb-6 text-sm leading-relaxed">
-            <strong className="text-slate-700 dark:text-slate-300">Inter</strong> is the sole typeface, loaded from Google Fonts. It's registered as <code className="font-mono text-xs text-primary">font-display</code> in Tailwind.
+            Inter is the display and body font for this project. It is loaded in global CSS and registered as
+            <code className="mx-1 font-mono text-xs text-primary">font-display</code>.
           </p>
 
           <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 space-y-4 mb-4">
@@ -201,9 +198,9 @@ export default function ThemingPage() {
               { cls: "text-4xl font-black tracking-tight", label: "font-black text-4xl", sample: "Heading 1" },
               { cls: "text-2xl font-bold", label: "font-bold text-2xl", sample: "Heading 2" },
               { cls: "text-lg font-semibold", label: "font-semibold text-lg", sample: "Heading 3" },
-              { cls: "text-base", label: "text-base", sample: "Body text — used for content paragraphs." },
-              { cls: "text-sm text-slate-500 dark:text-slate-400", label: "text-sm text-slate-500", sample: "Secondary / muted text" },
-              { cls: "text-xs font-mono text-primary", label: "font-mono text-xs", sample: "code snippet inline" },
+              { cls: "text-base", label: "text-base", sample: "Body paragraph text" },
+              { cls: "text-sm text-slate-500 dark:text-slate-400", label: "text-sm text-slate-500", sample: "Muted helper text" },
+              { cls: "text-xs font-mono text-primary", label: "font-mono text-xs", sample: "inline code" },
             ].map(({ cls, label, sample }) => (
               <div key={label} className="flex items-baseline justify-between gap-4 border-b border-slate-100 dark:border-[#1f2937] pb-3 last:border-0 last:pb-0">
                 <span className={`${cls} text-slate-900 dark:text-white shrink-0`}>{sample}</span>
@@ -212,27 +209,30 @@ export default function ThemingPage() {
             ))}
           </div>
 
-          <CodeBlock filename="Font usage" copyText={FONT_USAGE}>
+          <CodeBlock filename="src/app/globals.css" copyText={FONT_USAGE}>
             {FONT_USAGE}
           </CodeBlock>
         </section>
 
-        {/* 04 Customizing */}
-        <section id="customizing" className="mb-14">
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Customizing</h2>
+        <section id="customize" className="mb-14">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Customize</h2>
           <p className="text-slate-600 dark:text-slate-400 mb-6 text-sm leading-relaxed">
-            To change the primary color across all components, update the single value in <code className="font-mono text-xs text-primary">tailwind.config.js</code>. No CSS variables to hunt down.
+            To change brand color globally, update
+            <code className="mx-1 font-mono text-xs text-primary">--color-primary</code>
+            in the
+            <code className="mx-1 font-mono text-xs text-primary">@theme</code>
+            block.
           </p>
 
-          <CodeBlock filename="tailwind.config.js" copyText={CUSTOM_COLOR}>
-            {CUSTOM_COLOR}
+          <CodeBlock filename="src/app/globals.css" copyText={CUSTOMIZE_PRIMARY}>
+            {CUSTOMIZE_PRIMARY}
           </CodeBlock>
 
           <div className="mt-6 space-y-3">
             {[
-              { label: "Scope", value: "Per-app — each app (nextjs/, vite/) has its own tailwind.config.js" },
-              { label: "Shared package", value: "packages/shared uses the consuming app's Tailwind config via content paths" },
-              { label: "No runtime theming", value: "Theme changes require a rebuild — this is not a CSS-variables-at-runtime system" },
+              { label: "Token source", value: "Single source in src/app/globals.css" },
+              { label: "Mode strategy", value: "Class-based dark mode using @custom-variant dark" },
+              { label: "Runtime behavior", value: "Theme preference persisted in localStorage" },
             ].map(({ label, value }) => (
               <div key={label} className="flex gap-3 rounded-xl border border-slate-100 dark:border-[#1f2937] bg-slate-50 dark:bg-[#0d1117] px-4 py-3">
                 <span className="text-xs font-semibold text-primary shrink-0 mt-0.5 w-28">{label}</span>

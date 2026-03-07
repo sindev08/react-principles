@@ -63,19 +63,19 @@ export function HeroSection() {
           <div className="h-3 w-3 rounded-full bg-red-400 dark:bg-red-500/50" />
           <div className="h-3 w-3 rounded-full bg-yellow-400 dark:bg-yellow-500/50" />
           <div className="h-3 w-3 rounded-full bg-green-400 dark:bg-green-500/50" />
-          <div className="ml-4 flex items-center gap-2 rounded border border-slate-200 bg-white px-3 py-1 font-mono text-[10px] text-slate-400 dark:border-white/5 dark:bg-slate-900 dark:text-slate-500">
+          <div className="ml-4 flex items-center gap-2 rounded-sm border border-slate-200 bg-white px-3 py-1 font-mono text-[10px] text-slate-400 dark:border-white/5 dark:bg-slate-900 dark:text-slate-500">
             <span className="material-symbols-outlined text-xs">lock</span>
-            react-principles.sindev.my.id/cookbook/server-state
+            {(process.env.NEXT_PUBLIC_SITE_URL ?? "localhost:3000").replace(/^https?:\/\//, "")}/nextjs/cookbook/server-state
           </div>
         </div>
         <div className="aspect-video bg-white p-8 dark:bg-slate-900">
           <div className="grid h-full grid-cols-12 gap-8">
             <div className="col-span-4 border-r border-slate-100 pr-8 dark:border-white/5">
-              <div className="mb-6 h-4 w-32 rounded bg-slate-100 dark:bg-slate-800" />
+              <div className="mb-6 h-4 w-32 rounded-sm bg-slate-100 dark:bg-slate-800" />
               <div className="space-y-3">
-                <div className="h-3 w-full rounded bg-slate-50 dark:bg-slate-800/50" />
-                <div className="h-3 w-5/6 rounded bg-slate-50 dark:bg-slate-800/50" />
-                <div className="h-3 w-4/6 rounded bg-slate-100 dark:bg-slate-800/50" />
+                <div className="h-3 w-full rounded-sm bg-slate-50 dark:bg-slate-800/50" />
+                <div className="h-3 w-5/6 rounded-sm bg-slate-50 dark:bg-slate-800/50" />
+                <div className="h-3 w-4/6 rounded-sm bg-slate-100 dark:bg-slate-800/50" />
               </div>
             </div>
             <div className="col-span-8 overflow-hidden rounded-lg bg-slate-50 p-6 font-mono text-sm text-slate-600 dark:border dark:border-white/5 dark:bg-slate-950/50 dark:text-slate-400">

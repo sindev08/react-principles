@@ -3,10 +3,10 @@ import { StepCard } from "@/features/cookbook/components/StepCard";
 
 const STEPS = [
   {
-    step: "01. Why",
-    title: "The Motivation",
+    step: "01. Principle",
+    title: "The Why",
     description:
-      "Understanding the problem first. We define exactly which architectural bottleneck this pattern solves.",
+      "The architectural reason this pattern exists — which problem it solves and what goes wrong without it.",
   },
   {
     step: "02. Rules",
@@ -18,13 +18,19 @@ const STEPS = [
     step: "03. Pattern",
     title: "The Core",
     description:
-      "The pure, abstract implementation of the pattern, decoupled from any specific feature.",
+      "The pure, abstract implementation — decoupled from any specific feature or framework.",
   },
   {
-    step: "04. Real World",
-    title: "Implementation",
+    step: "04. Implementation",
+    title: "Real World",
     description:
-      "Connecting the pattern to Next.js or Vite to see it working in a complex production environment.",
+      "The same pattern applied to Next.js App Router and Vite side by side. Switch frameworks with one click.",
+  },
+  {
+    step: "05. Live Demo",
+    title: "Try It",
+    description:
+      "An interactive sandbox embedded directly in the recipe — no setup, no context switching.",
   },
 ];
 
@@ -50,7 +56,7 @@ export function DocsSection() {
           </div>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-4">
+        <div className="grid gap-8 md:grid-cols-5">
           {STEPS.map((step) => (
             <StepCard
               key={step.step}

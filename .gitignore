@@ -6,3 +6,6 @@ build
 .env.local
 .DS_Store
 *.tsbuildinfo
+
+# Internal task tracking
+.tasks/

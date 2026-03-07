@@ -44,7 +44,7 @@ const ERROR_OVERRIDE =
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+const InputRoot = forwardRef<HTMLInputElement, InputProps>(function InputRoot(
   {
     label,
     description,
@@ -97,7 +97,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           id={inputId}
           disabled={disabled}
           className={cn(
-            "w-full bg-transparent outline-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500",
+            "w-full bg-transparent outline-hidden text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500",
             s.input,
             leadingIcon && (size === "sm" ? "pl-8" : size === "lg" ? "pl-10" : "pl-9"),
             trailingIcon && (size === "sm" ? "pr-8" : size === "lg" ? "pr-10" : "pr-9")
@@ -121,3 +121,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     </div>
   );
 });
+
+type InputCompoundComponent = typeof InputRoot & {
+  Root: typeof InputRoot;
+};
+
+export const Input = Object.assign(InputRoot, {
+  Root: InputRoot,
+}) as InputCompoundComponent;
