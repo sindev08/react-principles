@@ -1,8 +1,34 @@
 import { use } from "react";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { DocsPageLayout } from "@/features/docs/components";
 import { CookbookDetailPage } from "@/features/cookbook/components/CookbookDetailPage";
 import { getRecipeDetail } from "@/features/cookbook/data/detail-data";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const detail = getRecipeDetail(slug);
+
+  if (!detail) {
+    return {
+      title: "Recipe Not Found",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  return {
+    title: detail.title,
+    description: detail.description,
+    robots: { index: false, follow: false },
+    alternates: {
+      canonical: `/nextjs/cookbook/${slug}`,
+    },
+  };
+}
 
 export default function VitejsCookbookDetailPage({
   params,

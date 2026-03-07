@@ -65,7 +65,7 @@ export function HeroSection() {
           <div className="h-3 w-3 rounded-full bg-green-400 dark:bg-green-500/50" />
           <div className="ml-4 flex items-center gap-2 rounded-sm border border-slate-200 bg-white px-3 py-1 font-mono text-[10px] text-slate-400 dark:border-white/5 dark:bg-slate-900 dark:text-slate-500">
             <span className="material-symbols-outlined text-xs">lock</span>
-            react-principles.sindev.my.id/cookbook/server-state
+            {(process.env.NEXT_PUBLIC_SITE_URL ?? "localhost:3000").replace(/^https?:\/\//, "")}/nextjs/cookbook/server-state
           </div>
         </div>
         <div className="aspect-video bg-white p-8 dark:bg-slate-900">

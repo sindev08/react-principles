@@ -40,6 +40,8 @@ export function DocsSidebar() {
     el.scrollIntoView({ block: "center", behavior: "smooth" });
   }, [pathname]);
 
+  const isDocsActive = pathname.startsWith("/docs");
+
   return (
     <aside className="sidebar-scroll sticky top-14 hidden h-[calc(100vh-3.5rem)] w-64 shrink-0 overflow-y-auto border-r border-slate-200 dark:border-[#1f2937] py-8 pr-6 lg:block">
       <div ref={navRef} className="relative flex flex-col gap-8">
@@ -50,38 +52,72 @@ export function DocsSidebar() {
           style={{ top: pos.top, height: pos.height, opacity: pos.visible ? 1 : 0 }}
         />
 
-        {/* Docs nav groups (Getting Started, Components) */}
-        {DOCS_NAV.map((group) => (
-          <div key={group.title}>
+        {isDocsActive ? (
+          /* Docs nav: Getting Started + Components */
+          <>
+            {DOCS_NAV.map((group) => (
+              <div key={group.title}>
+                <h4 className="mb-4 text-xs font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">
+                  {group.title}
+                </h4>
+                <ul className="flex flex-col gap-1.5">
+                  {group.items.map((item) => {
+                    const isActive = pathname === item.href;
+
+                    if (item.soon) {
+                      return (
+                        <li key={item.label}>
+                          <span className="flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg cursor-not-allowed text-slate-300 dark:text-slate-600">
+                            {item.label}
+                            <span className="text-[9px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-[#1f2937] text-slate-400 dark:text-slate-500 px-1.5 py-0.5 rounded-sm">
+                              Soon
+                            </span>
+                          </span>
+                        </li>
+                      );
+                    }
+
+                    return (
+                      <li
+                        key={item.label}
+                        ref={(el) => { itemRefs.current[item.href] = el; }}
+                      >
+                        <Link
+                          href={item.href}
+                          className={cn(
+                            "relative z-10 flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                            isActive
+                              ? "text-primary font-semibold"
+                              : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white",
+                          )}
+                        >
+                          {item.label}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </>
+        ) : (
+          /* Cookbook nav */
+          <div>
             <h4 className="mb-4 text-xs font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">
-              {group.title}
+              Cookbook
             </h4>
             <ul className="flex flex-col gap-1.5">
-              {group.items.map((item) => {
-                const isActive = pathname === item.href;
-
-                if (item.soon) {
-                  return (
-                    <li key={item.label}>
-                      <span className="flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg cursor-not-allowed text-slate-300 dark:text-slate-600">
-                        {item.label}
-                        <span className="text-[9px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-[#1f2937] text-slate-400 dark:text-slate-500 px-1.5 py-0.5 rounded-sm">
-                          Soon
-                        </span>
-                      </span>
-                    </li>
-                  );
-                }
+              {COOKBOOK_ITEMS.map((item) => {
+                const href = cookbookHref(cookbookFramework, item.slug);
+                const isActive = pathname === href;
 
                 return (
                   <li
-                    key={item.label}
-                    ref={(el) => {
-                      itemRefs.current[item.href] = el;
-                    }}
+                    key={item.slug}
+                    ref={(el) => { itemRefs.current[href] = el; }}
                   >
                     <Link
-                      href={item.href}
+                      href={href}
                       className={cn(
                         "relative z-10 flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
                         isActive
@@ -96,44 +132,7 @@ export function DocsSidebar() {
               })}
             </ul>
           </div>
-        ))}
-
-        {/* Cookbook section */}
-        <div>
-          <div className="mb-4">
-            <h4 className="text-xs font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">
-              Cookbook
-            </h4>
-          </div>
-
-          <ul className="flex flex-col gap-1.5">
-            {COOKBOOK_ITEMS.map((item) => {
-              const href = cookbookHref(cookbookFramework, item.slug);
-              const isActive = pathname === href;
-
-              return (
-                <li
-                  key={item.slug}
-                  ref={(el) => {
-                    itemRefs.current[href] = el;
-                  }}
-                >
-                  <Link
-                    href={href}
-                    className={cn(
-                      "relative z-10 flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
-                      isActive
-                        ? "text-primary font-semibold"
-                        : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white",
-                    )}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+        )}
       </div>
     </aside>
   );

@@ -3,7 +3,7 @@ import { Providers } from "./providers";
 import "./globals.css";
 import "@material-symbols/font-400/outlined.css";
 
-const BASE_URL = "https://react-principles.dev";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 const TITLE = "React Principles";
 const DESCRIPTION =
   "A living cookbook of production-grade React patterns. Real implementations with Next.js 16, Vite, TanStack Query, Zustand, React Hook Form, and TypeScript.";
@@ -35,20 +35,11 @@ export const metadata: Metadata = {
     siteName: TITLE,
     title: TITLE,
     description: DESCRIPTION,
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "React Principles — A living cookbook of React patterns",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
-    images: ["/og-image.png"],
   },
   icons: {
     icon: [
