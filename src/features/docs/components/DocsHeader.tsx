@@ -138,7 +138,9 @@ export function DocsHeader() {
             </button>
             <ThemeToggle />
             <a
-              href="#"
+              href="https://github.com/sindev08/react-principles"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 rounded-lg bg-primary px-4 py-1.5 text-[11px] font-bold text-white transition-colors hover:bg-primary/90"
             >
               <GithubIcon />
