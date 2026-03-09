@@ -85,7 +85,9 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-(--background) text-(--foreground) antialiased">
-                <Script src="https://analytics.sindev.my.id/track.js" data-api-key="4744f6b200cecd79c9241430f5049e3e5c1f65478888e82542469a170d6c6e7c" />
+                {process.env.NODE_ENV === "production" && (
+          <Script src="https://analytics.sindev.my.id/track.js" data-api-key="4744f6b200cecd79c9241430f5049e3e5c1f65478888e82542469a170d6c6e7c" />
+        )}
         <Providers>{children}</Providers>
       </body>
     </html>
