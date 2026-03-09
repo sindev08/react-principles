@@ -1,22 +1,3 @@
-export interface CookbookNavItem {
-  label: string;
-  slug: string; // "" for "All Recipes"
-}
-
-export const COOKBOOK_ITEMS: CookbookNavItem[] = [
-  { label: "All Recipes", slug: "" },
-  { label: "Server State", slug: "server-state" },
-  { label: "Client State", slug: "client-state" },
-  { label: "Form Validation", slug: "form-validation" },
-  { label: "Data Tables", slug: "data-tables" },
-  { label: "E-commerce Dashboard", slug: "e-commerce-dashboard" },
-  { label: "SaaS Landing Page", slug: "saas-landing-page" },
-  { label: "Authentication Flow", slug: "authentication-flow" },
-  { label: "OAuth Flow", slug: "oauth-flow" },
-  { label: "Data Visualization", slug: "data-visualization" },
-  { label: "API Integration", slug: "api-integration" },
-];
-
 export interface NavItem {
   label: string;
   href: string;
