@@ -4,7 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/shared/utils/cn";
-import { DOCS_NAV, COOKBOOK_ITEMS } from "./docs-nav";
+import { DOCS_NAV } from "./docs-nav";
+import { RECIPES } from "@/features/cookbook/data/cookbook-data";
+
+const IS_DEV = process.env.NODE_ENV === "development";
+
+const SORTED_RECIPES = [...RECIPES].sort((a, b) => a.order - b.order);
 
 type Framework = "nextjs" | "vitejs";
 
@@ -15,7 +20,7 @@ interface IndicatorPos {
 }
 
 function cookbookHref(framework: Framework, slug: string) {
-  return slug ? `/${framework}/cookbook/${slug}` : `/${framework}/cookbook`;
+  return `/${framework}/cookbook/${slug}`;
 }
 
 export function DocsSidebar() {
@@ -107,25 +112,50 @@ export function DocsSidebar() {
               Cookbook
             </h4>
             <ul className="flex flex-col gap-1.5">
-              {COOKBOOK_ITEMS.map((item) => {
-                const href = cookbookHref(cookbookFramework, item.slug);
+              {/* All Recipes link */}
+              <li ref={(el) => { itemRefs.current[`/${cookbookFramework}/cookbook`] = el; }}>
+                <Link
+                  href={`/${cookbookFramework}/cookbook`}
+                  className={cn(
+                    "relative z-10 flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                    pathname === `/${cookbookFramework}/cookbook`
+                      ? "text-primary font-semibold"
+                      : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white",
+                  )}
+                >
+                  All Recipes
+                </Link>
+              </li>
+
+              {SORTED_RECIPES.map((recipe) => {
+                const isComingSoon = recipe.status === "coming-soon";
+
+                // In production, hide coming-soon items entirely
+                if (isComingSoon && !IS_DEV) return null;
+
+                const href = cookbookHref(cookbookFramework, recipe.slug);
                 const isActive = pathname === href;
 
                 return (
                   <li
-                    key={item.slug}
+                    key={recipe.slug}
                     ref={(el) => { itemRefs.current[href] = el; }}
                   >
                     <Link
                       href={href}
                       className={cn(
-                        "relative z-10 flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                        "relative z-10 flex items-center justify-between px-3 py-2 text-sm font-medium rounded-lg transition-colors",
                         isActive
                           ? "text-primary font-semibold"
                           : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white",
                       )}
                     >
-                      {item.label}
+                      {recipe.title}
+                      {isComingSoon && IS_DEV && (
+                        <span className="text-[9px] font-bold uppercase tracking-wider bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded-sm">
+                          Dev
+                        </span>
+                      )}
                     </Link>
                   </li>
                 );
