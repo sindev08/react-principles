@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Providers } from "./providers";
 import "./globals.css";
 import "@material-symbols/font-400/outlined.css";
+import Script from "next/script";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 const TITLE = "React Principles";
@@ -84,6 +85,9 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen bg-(--background) text-(--foreground) antialiased">
+                {process.env.NODE_ENV === "production" && (
+          <Script src="https://analytics.sindev.my.id/track.js" data-api-key="4744f6b200cecd79c9241430f5049e3e5c1f65478888e82542469a170d6c6e7c" />
+        )}
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -23,21 +23,21 @@ describe("formatCurrency", () => {
 
 describe("formatDate", () => {
   it("formats a Date object", () => {
-    const date = new Date("2025-01-15T00:00:00Z");
+    const date = new Date("2026-01-15T00:00:00Z");
     const result = formatDate(date, { year: "numeric", month: "short", day: "numeric" }, "en-US");
-    expect(result).toContain("2025");
+    expect(result).toContain("2026");
     expect(result).toContain("15");
   });
 
   it("formats an ISO string", () => {
-    const result = formatDate("2025-06-01T00:00:00Z", { year: "numeric", month: "short", day: "numeric" }, "en-US");
-    expect(result).toContain("2025");
+    const result = formatDate("2026-06-01T00:00:00Z", { year: "numeric", month: "short", day: "numeric" }, "en-US");
+    expect(result).toContain("2026");
   });
 
   it("formats a timestamp", () => {
-    const ts = new Date("2025-03-01T00:00:00Z").getTime();
+    const ts = new Date("2026-03-01T00:00:00Z").getTime();
     const result = formatDate(ts, { year: "numeric" }, "en-US");
-    expect(result).toBe("2025");
+    expect(result).toBe("2026");
   });
 });
 
