@@ -771,7 +771,7 @@ export function RevenueChart({ range }: { range: string }) {
     title: "Folder Structure",
     breadcrumbCategory: "Foundations",
     description: "A feature-based folder structure so you always know where a file goes — and why it belongs there.",
-    lastUpdated: "2025-03-01",
+    lastUpdated: "2026-03-01",
     principle: {
       text: "A good folder structure answers one question instantly: 'where does this file go?' Feature-based organization groups everything related to a feature together — its components, hooks, and data — so you spend time building, not searching. When a feature grows or gets deleted, everything moves together.",
       tip: "If you can't decide where a file goes in under 10 seconds, your structure is too abstract. Feature-based organization should make the answer obvious.",
@@ -860,7 +860,7 @@ export function RevenueChart({ range }: { range: string }) {
     title: "TypeScript for React",
     breadcrumbCategory: "Foundations",
     description: "How to type component props, event handlers, and hooks correctly. The contracts that prevent silent bugs.",
-    lastUpdated: "2025-03-01",
+    lastUpdated: "2026-03-01",
     principle: {
       text: "Bugs caught at compile time cost nothing to fix. Bugs caught in production cost everything. TypeScript for React is not about learning the full TypeScript language — it is about writing the right contracts between your components so that mistakes are caught before the code even runs.",
       tip: "Start by typing your component props. If you can describe what a component accepts and returns, the rest of the types follow naturally.",
@@ -968,7 +968,7 @@ function useUser(id: string): {
     title: "Component Anatomy",
     breadcrumbCategory: "Foundations",
     description: "The consistent internal structure every component follows — imports, types, constants, function, export.",
-    lastUpdated: "2025-03-01",
+    lastUpdated: "2026-03-01",
     principle: {
       text: "When every component follows the same structure, you stop thinking about where things go inside a file and start thinking about what the component actually does. Consistent anatomy means anyone on the team can open any file and immediately know where to look — props are always at the top, constants are always before the function, exports are always at the bottom.",
       tip: "The hardest part of component anatomy is constants vs. props. Rule of thumb: if it never changes based on what's passed in, it is a constant. If it could change from outside, it is a prop.",
@@ -1228,7 +1228,7 @@ app.get('/auth/callback/github', async (c) => {
     title: "useEffect & Render Cycle",
     breadcrumbCategory: "Foundations",
     description: "When effects run, why the dependency array exists, and how to clean up after yourself.",
-    lastUpdated: "2025-03-01",
+    lastUpdated: "2026-03-01",
     principle: {
       text: "useEffect is not a lifecycle method — it is a synchronization tool. It answers one question: 'what side effects need to stay in sync with this data?' Every time the dependency array changes, React re-runs the effect to keep things synchronized. When you understand this mental model, dependency arrays stop feeling like magic rules and start making sense.",
       tip: "If you find yourself writing useEffect to fetch data, stop. That is what React Query is for. useEffect is for synchronizing with things outside React — browser APIs, subscriptions, timers.",
@@ -1346,7 +1346,7 @@ export function useWindowSize() {
     title: "Component Composition",
     breadcrumbCategory: "Foundations",
     description: "How components combine and communicate — children props, slot patterns, and why composition beats deep prop drilling.",
-    lastUpdated: "2025-03-01",
+    lastUpdated: "2026-03-01",
     principle: {
       text: "Prop drilling happens when you pass data through multiple components that do not use it — just to get it to a component deep in the tree. Composition solves this differently: instead of passing data down, you pass components down. The parent controls what gets rendered, and children receive exactly what they need directly.",
       tip: "When you find yourself adding a prop to a component just to pass it further down, stop. That is the signal to use composition instead.",
@@ -1495,7 +1495,7 @@ export function RecipePage() {
     title: "Services Layer",
     breadcrumbCategory: "Foundations",
     description: "How to organize all backend communication in one place — so when an API changes, you fix it in one file, not twenty.",
-    lastUpdated: "2025-03-01",
+    lastUpdated: "2026-03-01",
     principle: {
       text: "When you fetch data directly inside a component, the component becomes responsible for knowing the URL, the HTTP method, the request format, and the error handling. That is four responsibilities too many. A services layer centralizes all backend communication — components just call a function and get data back. When the API changes, you fix it in one file, not twenty.",
       tip: "A service function should read like plain English: getUserById(id), createOrder(data), deletePost(id). If it needs more than one argument object, consider splitting it into two functions.",
@@ -1631,7 +1631,7 @@ export function useUsers() {
     title: "State Taxonomy",
     breadcrumbCategory: "Foundations",
     description: "Three categories of state — local, shared, and server — and exactly which tool handles each one.",
-    lastUpdated: "2025-03-01",
+    lastUpdated: "2026-03-01",
     principle: {
       text: "Not all state is the same. Before reaching for any state management library, ask one question: where does this data come from? Local state lives inside one component. Shared state is UI state needed by multiple components. Server state comes from an API and has its own lifecycle — loading, error, stale, and needs refreshing. Each category has a different tool, and mixing them up causes bugs that are hard to trace.",
       tip: "When you find yourself putting API data into Zustand, stop. Server state belongs in React Query. When you find yourself using React Query for a toggle or a modal, stop. UI state belongs in useState or Zustand.",
@@ -1763,7 +1763,7 @@ function Navbar() {
     title: "Custom Hooks",
     breadcrumbCategory: "Foundations",
     description: "The boundary between logic and rendering. When to extract a hook, what the rules are, and how to avoid the most common mistake.",
-    lastUpdated: "2025-03-01",
+    lastUpdated: "2026-03-01",
     principle: {
       text: "A custom hook is not just a function that starts with 'use' — it is a boundary between logic and rendering. The component handles what the user sees. The hook handles how data gets there. When you separate these two concerns, components become easier to read, logic becomes easier to test, and both become easier to change independently.",
       tip: "If you would write a unit test for the logic, it belongs in a hook. If you would write a component test for it, it belongs in the JSX.",
