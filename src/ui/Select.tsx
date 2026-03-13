@@ -24,7 +24,7 @@ const SIZE_CLASSES: Record<SelectSize, string> = {
   lg: "h-12 px-4 pr-11 text-base",
 };
 
-const SelectRoot = forwardRef<HTMLSelectElement, SelectProps>(function SelectRoot(
+export const Select = forwardRef<HTMLSelectElement, SelectProps>(function SelectRoot(
   { label, description, error, size = "md", options, placeholder, className, id, children, ...props },
   ref
 ) {
@@ -66,11 +66,3 @@ const SelectRoot = forwardRef<HTMLSelectElement, SelectProps>(function SelectRoo
     </div>
   );
 });
-
-type SelectCompoundComponent = typeof SelectRoot & {
-  Root: typeof SelectRoot;
-};
-
-export const Select = Object.assign(SelectRoot, {
-  Root: SelectRoot,
-}) as SelectCompoundComponent;

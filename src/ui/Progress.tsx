@@ -6,7 +6,7 @@ export interface ProgressProps extends HTMLAttributes<HTMLDivElement> {
   max?: number;
 }
 
-function ProgressRoot({ value, max = 100, className, ...props }: ProgressProps) {
+export function Progress({ value, max = 100, className, ...props }: ProgressProps) {
   const safeMax = max > 0 ? max : 100;
   const clamped = Math.min(Math.max(value, 0), safeMax);
   const percentage = (clamped / safeMax) * 100;
@@ -27,11 +27,3 @@ function ProgressRoot({ value, max = 100, className, ...props }: ProgressProps) 
     </div>
   );
 }
-
-type ProgressCompoundComponent = typeof ProgressRoot & {
-  Root: typeof ProgressRoot;
-};
-
-export const Progress = Object.assign(ProgressRoot, {
-  Root: ProgressRoot,
-}) as ProgressCompoundComponent;

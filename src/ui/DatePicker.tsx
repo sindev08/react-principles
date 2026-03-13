@@ -7,7 +7,7 @@ export interface DatePickerProps extends Omit<InputHTMLAttributes<HTMLInputEleme
   error?: string;
 }
 
-const DatePickerRoot = forwardRef<HTMLInputElement, DatePickerProps>(function DatePickerRoot(
+export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function DatePickerRoot(
   { label, description, error, className, id, ...props },
   ref
 ) {
@@ -37,11 +37,3 @@ const DatePickerRoot = forwardRef<HTMLInputElement, DatePickerProps>(function Da
     </div>
   );
 });
-
-type DatePickerCompoundComponent = typeof DatePickerRoot & {
-  Root: typeof DatePickerRoot;
-};
-
-export const DatePicker = Object.assign(DatePickerRoot, {
-  Root: DatePickerRoot,
-}) as DatePickerCompoundComponent;

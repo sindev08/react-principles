@@ -28,7 +28,7 @@ const [open, setOpen] = useState(false);
 
 <Button onClick={() => setOpen(true)}>Open drawer</Button>
 
-<Drawer.Root open={open} onClose={() => setOpen(false)} size="md" side="right">
+<Drawer open={open} onClose={() => setOpen(false)} size="md" side="right">
   <Drawer.Header>
     <Drawer.Title>Notification settings</Drawer.Title>
     <Drawer.Description>
@@ -42,7 +42,7 @@ const [open, setOpen] = useState(false);
     <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
     <Button variant="primary" onClick={() => setOpen(false)}>Save</Button>
   </Drawer.Footer>
-</Drawer.Root>
+</Drawer>
 
 // Sizes: "sm" | "md" | "lg" | "full"
 // Sides: "right" | "left"`;
@@ -274,11 +274,10 @@ function ThemedDrawerPreview({ theme }: { theme: "light" | "dark" }) {
                   <p className={`text-xs font-medium ${c.itemLabel}`}>{item.label}</p>
                   <p className={`text-[10px] ${c.itemMeta}`}>{item.meta}</p>
                 </div>
-                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                  item.badge === "Active"
+                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${item.badge === "Active"
                     ? "bg-green-100 text-green-700"
                     : "bg-slate-200 text-slate-500"
-                }`}>
+                  }`}>
                   {item.badge}
                 </span>
               </div>
@@ -400,11 +399,10 @@ export default function DrawerDocPage() {
                     <button
                       key={s}
                       onClick={() => setActiveSize(s)}
-                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                        activeSize === s
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${activeSize === s
                           ? "bg-primary text-white"
                           : "bg-slate-100 dark:bg-[#1f2937] text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-[#2d3748]"
-                      }`}
+                        }`}
                     >
                       {s}
                     </button>
@@ -418,11 +416,10 @@ export default function DrawerDocPage() {
                     <button
                       key={s}
                       onClick={() => setActiveSide(s)}
-                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                        activeSide === s
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${activeSide === s
                           ? "bg-primary text-white"
                           : "bg-slate-100 dark:bg-[#1f2937] text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-[#2d3748]"
-                      }`}
+                        }`}
                     >
                       {s}
                     </button>
@@ -446,7 +443,7 @@ export default function DrawerDocPage() {
           </div>
 
           {/* Notifications drawer */}
-          <Drawer.Root open={openDrawer === "notifications"} onClose={() => setOpenDrawer(null)} size={activeSize} side={activeSide}>
+          <Drawer open={openDrawer === "notifications"} onClose={() => setOpenDrawer(null)} size={activeSize} side={activeSide}>
             <Drawer.Header>
               <Drawer.Title>Notification settings</Drawer.Title>
               <Drawer.Description>Choose how and when you receive updates.</Drawer.Description>
@@ -461,9 +458,8 @@ export default function DrawerDocPage() {
                     </div>
                     <div
                       onClick={() => setActiveItems((prev) => ({ ...prev, [item.id]: !prev[item.id] }))}
-                      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
-                        activeItems[item.id] ? "bg-primary" : "bg-slate-200 dark:bg-[#1f2937]"
-                      }`}
+                      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${activeItems[item.id] ? "bg-primary" : "bg-slate-200 dark:bg-[#1f2937]"
+                        }`}
                     >
                       <span className={`pointer-events-none h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${activeItems[item.id] ? "translate-x-4" : "translate-x-0"}`} />
                     </div>
@@ -475,10 +471,10 @@ export default function DrawerDocPage() {
               <Button variant="ghost" onClick={() => setOpenDrawer(null)}>Cancel</Button>
               <Button variant="primary" onClick={() => setOpenDrawer(null)}>Save changes</Button>
             </Drawer.Footer>
-          </Drawer.Root>
+          </Drawer>
 
           {/* Filters drawer */}
-          <Drawer.Root open={openDrawer === "filters"} onClose={() => setOpenDrawer(null)} size={activeSize} side={activeSide}>
+          <Drawer open={openDrawer === "filters"} onClose={() => setOpenDrawer(null)} size={activeSize} side={activeSide}>
             <Drawer.Header>
               <Drawer.Title>Filter issues</Drawer.Title>
               <Drawer.Description>Select categories to include in your view.</Drawer.Description>
@@ -491,11 +487,10 @@ export default function DrawerDocPage() {
                     <button
                       key={item.id}
                       onClick={() => toggleFilter(item.id)}
-                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg border text-left transition-all ${
-                        active
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg border text-left transition-all ${active
                           ? "border-primary bg-primary/5 dark:bg-primary/10"
                           : "border-slate-100 dark:border-[#1f2937] hover:bg-slate-50 dark:hover:bg-[#1f2937]"
-                      }`}
+                        }`}
                     >
                       <span className={`text-sm font-medium ${active ? "text-primary" : "text-slate-700 dark:text-slate-300"}`}>
                         {item.label}
@@ -512,10 +507,10 @@ export default function DrawerDocPage() {
                 Apply ({selectedFilters.size})
               </Button>
             </Drawer.Footer>
-          </Drawer.Root>
+          </Drawer>
 
           {/* User profile drawer */}
-          <Drawer.Root open={openDrawer === "user"} onClose={() => setOpenDrawer(null)} size={activeSize} side={activeSide}>
+          <Drawer open={openDrawer === "user"} onClose={() => setOpenDrawer(null)} size={activeSize} side={activeSide}>
             <Drawer.Header>
               <Drawer.Title>User profile</Drawer.Title>
               <Drawer.Description>View and manage account details.</Drawer.Description>
@@ -553,7 +548,7 @@ export default function DrawerDocPage() {
               <Button variant="ghost" onClick={() => setOpenDrawer(null)}>Close</Button>
               <Button variant="primary" onClick={() => setOpenDrawer(null)}>Edit profile</Button>
             </Drawer.Footer>
-          </Drawer.Root>
+          </Drawer>
         </section>
 
         {/* 03 Code Snippet */}

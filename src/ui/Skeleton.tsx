@@ -9,7 +9,7 @@ export interface SkeletonProps {
   className?: string;
 }
 
-function SkeletonRoot({ variant = "line", width, height, className }: SkeletonProps) {
+export function Skeleton({ variant = "line", width, height, className }: SkeletonProps) {
   return (
     <span
       aria-hidden="true"
@@ -24,11 +24,3 @@ function SkeletonRoot({ variant = "line", width, height, className }: SkeletonPr
     />
   );
 }
-
-type SkeletonCompoundComponent = typeof SkeletonRoot & {
-  Root: typeof SkeletonRoot;
-};
-
-export const Skeleton = Object.assign(SkeletonRoot, {
-  Root: SkeletonRoot,
-}) as SkeletonCompoundComponent;

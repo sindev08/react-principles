@@ -47,7 +47,7 @@ function buildRange(page: number, totalPages: number, siblingCount: number): Pag
   return pages;
 }
 
-function PaginationRoot({ page, totalPages, onPageChange, siblingCount = 1, className }: PaginationProps) {
+export function Pagination({ page, totalPages, onPageChange, siblingCount = 1, className }: PaginationProps) {
   const clampedPage = Math.min(Math.max(page, 1), Math.max(totalPages, 1));
   const range = buildRange(clampedPage, totalPages, siblingCount);
 
@@ -96,11 +96,3 @@ function PaginationRoot({ page, totalPages, onPageChange, siblingCount = 1, clas
     </nav>
   );
 }
-
-type PaginationCompoundComponent = typeof PaginationRoot & {
-  Root: typeof PaginationRoot;
-};
-
-export const Pagination = Object.assign(PaginationRoot, {
-  Root: PaginationRoot,
-}) as PaginationCompoundComponent;

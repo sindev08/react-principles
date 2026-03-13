@@ -64,7 +64,7 @@ function useItem() {
 
 // ─── Components ───────────────────────────────────────────────────────────────
 
-function AccordionRoot({
+export function Accordion({
   type = "single",
   defaultValue,
   value: controlledValue,
@@ -115,7 +115,7 @@ function AccordionRoot({
   );
 }
 
-export function AccordionItem({ value, children, className, ...props }: AccordionItemProps) {
+Accordion.Item = function AccordionItem({ value, children, className, ...props }: AccordionItemProps) {
   const { isOpen } = useAccordion();
   const open = isOpen(value);
 
@@ -128,7 +128,7 @@ export function AccordionItem({ value, children, className, ...props }: Accordio
   );
 }
 
-export function AccordionTrigger({ children, className, ...props }: AccordionTriggerProps) {
+Accordion.Trigger = function AccordionTrigger({ children, className, ...props }: AccordionTriggerProps) {
   const { toggle } = useAccordion();
   const { value, open } = useItem();
 
@@ -158,7 +158,7 @@ export function AccordionTrigger({ children, className, ...props }: AccordionTri
   );
 }
 
-export function AccordionContent({ children, className, ...props }: AccordionContentProps) {
+Accordion.Content = function AccordionContent({ children, className, ...props }: AccordionContentProps) {
   const { open } = useItem();
 
   return (
@@ -180,17 +180,3 @@ export function AccordionContent({ children, className, ...props }: AccordionCon
     </div>
   );
 }
-
-type AccordionCompoundComponent = typeof AccordionRoot & {
-  Root: typeof AccordionRoot;
-  Item: typeof AccordionItem;
-  Trigger: typeof AccordionTrigger;
-  Content: typeof AccordionContent;
-};
-
-export const Accordion = Object.assign(AccordionRoot, {
-  Root: AccordionRoot,
-  Item: AccordionItem,
-  Trigger: AccordionTrigger,
-  Content: AccordionContent,
-}) as AccordionCompoundComponent;

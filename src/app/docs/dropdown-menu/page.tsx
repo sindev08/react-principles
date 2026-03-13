@@ -13,7 +13,7 @@ const TOC_ITEMS = [
 
 const CODE_SNIPPET = `import { DropdownMenu } from "@/ui/DropdownMenu";
 
-<DropdownMenu.Root>
+<DropdownMenu>
   <DropdownMenu.Trigger>Actions</DropdownMenu.Trigger>
   <DropdownMenu.Content>
     <DropdownMenu.Label>Profile</DropdownMenu.Label>
@@ -22,7 +22,7 @@ const CODE_SNIPPET = `import { DropdownMenu } from "@/ui/DropdownMenu";
     <DropdownMenu.Separator />
     <DropdownMenu.Item onSelect={() => console.log("Delete")}>Delete project</DropdownMenu.Item>
   </DropdownMenu.Content>
-</DropdownMenu.Root>`;
+</DropdownMenu>`;
 
 const COPY_PASTE_SNIPPET = `import { useState, type ReactNode } from "react";
 
@@ -50,12 +50,12 @@ export const DropdownMenu = Object.assign(DropdownMenuRoot, { Root: DropdownMenu
 function Example() {
   const [open, setOpen] = useState(false);
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu>
       <button onClick={() => setOpen((v) => !v)}>Open</button>
       <DropdownMenu.Content open={open}>
         <DropdownMenu.Item onClick={() => setOpen(false)}>Edit</DropdownMenu.Item>
       </DropdownMenu.Content>
-    </DropdownMenu.Root>
+    </DropdownMenu>
   );
 }`;
 
@@ -73,7 +73,7 @@ export default function DropdownMenuDocPage() {
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
           <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
-            <DropdownMenu.Root>
+            <DropdownMenu>
               <DropdownMenu.Trigger>Actions</DropdownMenu.Trigger>
               <DropdownMenu.Content>
                 <DropdownMenu.Label>Project</DropdownMenu.Label>
@@ -82,7 +82,7 @@ export default function DropdownMenuDocPage() {
                 <DropdownMenu.Separator />
                 <DropdownMenu.Item onSelect={() => setLastAction("Delete project")}>Delete project</DropdownMenu.Item>
               </DropdownMenu.Content>
-            </DropdownMenu.Root>
+            </DropdownMenu>
             <p className="text-xs text-slate-500 dark:text-slate-400">Last action: {lastAction}</p>
           </div>
         </section>
