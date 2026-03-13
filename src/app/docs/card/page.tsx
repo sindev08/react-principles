@@ -57,7 +57,7 @@ const FORCED = {
 const CODE_SNIPPET = `import { Card } from "@/ui/Card";
 import { Button } from "@/ui/Button";
 
-<Card.Root variant="elevated">
+<Card variant="elevated">
   <Card.Header>
     <Card.Title>Account Settings</Card.Title>
     <Card.Description>
@@ -73,7 +73,7 @@ import { Button } from "@/ui/Button";
     <Button size="sm">Save changes</Button>
     <Button variant="ghost" size="sm">Cancel</Button>
   </Card.Footer>
-</Card.Root>`;
+</Card>`;
 
 const COPY_PASTE_SNIPPET = `import type { HTMLAttributes } from "react";
 
@@ -139,8 +139,8 @@ export const Card = Object.assign(CardRoot, {
 }) as CardCompound;`;
 
 const PROPS_ROWS = [
-  { component: "Card.Root", prop: "variant", type: '"default" | "elevated" | "flat"', default: '"default"', description: "Visual style — border only, shadow, or flat background." },
-  { component: "Card.Root", prop: "className", type: "string", default: "—", description: "Additional CSS classes." },
+  { component: "Card", prop: "variant", type: '"default" | "elevated" | "flat"', default: '"default"', description: "Visual style — border only, shadow, or flat background." },
+  { component: "Card", prop: "className", type: "string", default: "—", description: "Additional CSS classes." },
   { component: "Card.Header", prop: "className", type: "string", default: "—", description: "Spacing wrapper for title + description." },
   { component: "Card.Title", prop: "className", type: "string", default: "—", description: "Renders as h3. Bold, dark text." },
   { component: "Card.Description", prop: "className", type: "string", default: "—", description: "Renders as p. Muted, secondary text." },
@@ -267,11 +267,10 @@ export default function CardDocPage() {
                   <button
                     key={v}
                     onClick={() => setActiveVariant(v)}
-                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all capitalize ${
-                      activeVariant === v
+                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all capitalize ${activeVariant === v
                         ? "bg-primary text-white"
                         : "bg-slate-100 dark:bg-[#1f2937] text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-[#2d3748]"
-                    }`}
+                      }`}
                   >
                     {v}
                   </button>
@@ -282,7 +281,7 @@ export default function CardDocPage() {
             {/* Cards grid */}
             <div className="grid gap-4 sm:grid-cols-3 bg-slate-50 dark:bg-[#0d1117] rounded-xl p-4">
               {/* Profile card */}
-              <Card.Root variant={activeVariant}>
+              <Card variant={activeVariant}>
                 <Card.Header>
                   <div className="flex items-center gap-3 mb-2">
                     <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
@@ -302,10 +301,10 @@ export default function CardDocPage() {
                   <Button size="sm" className="flex-1">Follow</Button>
                   <Button variant="outline" size="sm" className="flex-1">Message</Button>
                 </Card.Footer>
-              </Card.Root>
+              </Card>
 
               {/* Stats card */}
-              <Card.Root variant={activeVariant}>
+              <Card variant={activeVariant}>
                 <Card.Content className="pt-6">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30">
@@ -318,10 +317,10 @@ export default function CardDocPage() {
                   <p className="text-2xl font-black text-slate-900 dark:text-white">8,249</p>
                   <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Monthly visitors</p>
                 </Card.Content>
-              </Card.Root>
+              </Card>
 
               {/* Notification card */}
-              <Card.Root variant={activeVariant}>
+              <Card variant={activeVariant}>
                 <Card.Header>
                   <div className="flex items-start gap-3">
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
@@ -336,7 +335,7 @@ export default function CardDocPage() {
                 <Card.Footer className="pt-0">
                   <Button variant="ghost" size="sm" className="w-full text-xs">View thread</Button>
                 </Card.Footer>
-              </Card.Root>
+              </Card>
             </div>
           </div>
         </section>

@@ -15,7 +15,7 @@ const VARIANT_CLASSES: Record<AlertVariant, string> = {
   info: "border-blue-300 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/30",
 };
 
-function AlertRoot({ variant = "default", className, ...props }: AlertProps) {
+export function Alert({ variant = "default", className, ...props }: AlertProps) {
   return (
     <div
       role="alert"
@@ -25,7 +25,7 @@ function AlertRoot({ variant = "default", className, ...props }: AlertProps) {
   );
 }
 
-function AlertTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
+Alert.Title = function AlertTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h4
       className={cn("text-sm font-semibold text-slate-900 dark:text-white", className)}
@@ -34,7 +34,7 @@ function AlertTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>)
   );
 }
 
-function AlertDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
+Alert.Description = function AlertDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
       className={cn("mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400", className)}
@@ -43,7 +43,7 @@ function AlertDescription({ className, ...props }: HTMLAttributes<HTMLParagraphE
   );
 }
 
-function AlertFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+Alert.Footer = function AlertFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn("mt-3 flex items-center gap-2", className)}
@@ -52,7 +52,7 @@ function AlertFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   );
 }
 
-function AlertAction({ className, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
+Alert.Action = function AlertAction({ className, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       type="button"
@@ -64,21 +64,3 @@ function AlertAction({ className, ...props }: ButtonHTMLAttributes<HTMLButtonEle
     />
   );
 }
-
-type AlertCompoundComponent = typeof AlertRoot & {
-  Root: typeof AlertRoot;
-  Title: typeof AlertTitle;
-  Description: typeof AlertDescription;
-  Footer: typeof AlertFooter;
-  Action: typeof AlertAction;
-};
-
-export const Alert = Object.assign(AlertRoot, {
-  Root: AlertRoot,
-  Title: AlertTitle,
-  Description: AlertDescription,
-  Footer: AlertFooter,
-  Action: AlertAction,
-}) as AlertCompoundComponent;
-
-export { AlertTitle, AlertDescription, AlertFooter, AlertAction };

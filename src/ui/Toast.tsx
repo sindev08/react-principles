@@ -16,7 +16,7 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 
 function useToastContext() {
   const context = useContext(ToastContext);
-  if (!context) throw new Error("Toast sub-components must be used inside <Toast.Root>");
+  if (!context) throw new Error("Toast sub-components must be used inside <Toast>");
   return context;
 }
 
@@ -44,7 +44,7 @@ const POSITION_CLASSES: Record<ToastPosition, string> = {
   "bottom-left": "left-4 bottom-4",
 };
 
-function ToastRoot({
+export function Toast({
   open,
   onOpenChange,
   duration = 3000,
@@ -92,15 +92,15 @@ function ToastRoot({
   );
 }
 
-function ToastTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
+Toast.Title = function ToastTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
   return <h4 className={cn("text-sm font-semibold text-slate-900 dark:text-white", className)} {...props} />;
 }
 
-function ToastDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
+Toast.Description = function ToastDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
   return <p className={cn("mt-1 text-xs text-slate-600 dark:text-slate-400", className)} {...props} />;
 }
 
-function ToastAction({ className, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
+Toast.Action = function ToastAction({ className, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       type="button"
@@ -110,7 +110,7 @@ function ToastAction({ className, ...props }: ButtonHTMLAttributes<HTMLButtonEle
   );
 }
 
-function ToastClose({ className, onClick, children = "Dismiss", ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
+Toast.Close = function ToastClose({ className, onClick, children = "Dismiss", ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
   const { onClose } = useToastContext();
 
   return (
@@ -128,26 +128,6 @@ function ToastClose({ className, onClick, children = "Dismiss", ...props }: Butt
   );
 }
 
-function ToastFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+Toast.Footer = function ToastFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("mt-3 flex items-center justify-end gap-2", className)} {...props} />;
 }
-
-type ToastCompoundComponent = typeof ToastRoot & {
-  Root: typeof ToastRoot;
-  Title: typeof ToastTitle;
-  Description: typeof ToastDescription;
-  Action: typeof ToastAction;
-  Close: typeof ToastClose;
-  Footer: typeof ToastFooter;
-};
-
-export const Toast = Object.assign(ToastRoot, {
-  Root: ToastRoot,
-  Title: ToastTitle,
-  Description: ToastDescription,
-  Action: ToastAction,
-  Close: ToastClose,
-  Footer: ToastFooter,
-}) as ToastCompoundComponent;
-
-export { ToastTitle, ToastDescription, ToastAction, ToastClose, ToastFooter };

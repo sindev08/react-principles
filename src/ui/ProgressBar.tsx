@@ -15,7 +15,7 @@ export interface ProgressBarProps {
  * Thin top-of-page progress bar for navigation feedback.
  * Pair with `useProgressBar` hook.
  */
-function ProgressBarRoot({ progress, visible }: ProgressBarProps) {
+export function ProgressBar({ progress, visible }: ProgressBarProps) {
   return (
     <div
       role="progressbar"
@@ -38,11 +38,3 @@ function ProgressBarRoot({ progress, visible }: ProgressBarProps) {
     />
   );
 }
-
-type ProgressBarCompoundComponent = typeof ProgressBarRoot & {
-  Root: typeof ProgressBarRoot;
-};
-
-export const ProgressBar = Object.assign(ProgressBarRoot, {
-  Root: ProgressBarRoot,
-}) as ProgressBarCompoundComponent;

@@ -12,7 +12,7 @@ const TOC_ITEMS = [
 
 const CODE_SNIPPET = `import { Breadcrumb } from "@/ui/Breadcrumb";
 
-<Breadcrumb.Root>
+<Breadcrumb>
   <Breadcrumb.List>
     <Breadcrumb.Item><Breadcrumb.Link href="/">Home</Breadcrumb.Link></Breadcrumb.Item>
     <Breadcrumb.Separator />
@@ -20,7 +20,7 @@ const CODE_SNIPPET = `import { Breadcrumb } from "@/ui/Breadcrumb";
     <Breadcrumb.Separator />
     <Breadcrumb.Item><Breadcrumb.Page>Button</Breadcrumb.Page></Breadcrumb.Item>
   </Breadcrumb.List>
-</Breadcrumb.Root>`;
+</Breadcrumb>`;
 
 const COPY_PASTE_SNIPPET = `function BreadcrumbRoot({ children }: { children: React.ReactNode }) {
   return <nav aria-label="Breadcrumb">{children}</nav>;
@@ -39,7 +39,7 @@ export default function BreadcrumbDocPage() {
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
           <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
-            <Breadcrumb.Root>
+            <Breadcrumb>
               <Breadcrumb.List>
                 <Breadcrumb.Item>
                   <Breadcrumb.Link href="#">Dashboard</Breadcrumb.Link>
@@ -53,7 +53,7 @@ export default function BreadcrumbDocPage() {
                   <Breadcrumb.Page>React Principles</Breadcrumb.Page>
                 </Breadcrumb.Item>
               </Breadcrumb.List>
-            </Breadcrumb.Root>
+            </Breadcrumb>
           </div>
         </section>
 

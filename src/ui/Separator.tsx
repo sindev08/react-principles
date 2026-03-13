@@ -8,7 +8,7 @@ export interface SeparatorProps extends HTMLAttributes<HTMLDivElement> {
   decorative?: boolean;
 }
 
-function SeparatorRoot({
+export function Separator({
   orientation = "horizontal",
   decorative = true,
   className,
@@ -27,11 +27,3 @@ function SeparatorRoot({
     />
   );
 }
-
-type SeparatorCompoundComponent = typeof SeparatorRoot & {
-  Root: typeof SeparatorRoot;
-};
-
-export const Separator = Object.assign(SeparatorRoot, {
-  Root: SeparatorRoot,
-}) as SeparatorCompoundComponent;

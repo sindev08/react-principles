@@ -21,7 +21,7 @@ const TYPES: AccordionType[] = ["single", "multiple"];
 const CODE_SNIPPET = `import { Accordion } from "@/ui/Accordion";
 
 // Single — only one item open at a time
-<Accordion.Root type="single" defaultValue="item-1">
+<Accordion type="single" defaultValue="item-1">
   <Accordion.Item value="item-1">
     <Accordion.Trigger>Is it accessible?</Accordion.Trigger>
     <Accordion.Content>
@@ -34,22 +34,22 @@ const CODE_SNIPPET = `import { Accordion } from "@/ui/Accordion";
       Yes. Content expands with a CSS grid-template-rows transition.
     </Accordion.Content>
   </Accordion.Item>
-</Accordion.Root>
+</Accordion>
 
 // Multiple — any number of items open simultaneously
-<Accordion.Root type="multiple" defaultValue={["item-1", "item-3"]}>
+<Accordion type="multiple" defaultValue={["item-1", "item-3"]}>
   ...
-</Accordion.Root>
+</Accordion>
 
 // Controlled
-<Accordion.Root type="single" value={open} onChange={(v) => setOpen(v as string)}>
+<Accordion type="single" value={open} onChange={(v) => setOpen(v as string)}>
   ...
-</Accordion.Root>
+</Accordion>
 
 // Prevent collapse (collapsible=false)
-<Accordion.Root type="single" collapsible={false} defaultValue="item-1">
+<Accordion type="single" collapsible={false} defaultValue="item-1">
   ...
-</Accordion.Root>`;
+</Accordion>`;
 
 const COPY_PASTE_SNIPPET = `"use client";
 
@@ -97,7 +97,7 @@ const ItemContext = createContext<ItemContextValue | null>(null);
 
 function useAccordionContext() {
   const context = useContext(AccordionContext);
-  if (!context) throw new Error("Accordion sub-components must be used inside <Accordion.Root>");
+  if (!context) throw new Error("Accordion sub-components must be used inside <Accordion>");
   return context;
 }
 
@@ -214,11 +214,11 @@ export const Accordion = Object.assign(AccordionRoot, {
 }) as AccordionCompound;`;
 
 const PROPS_ROWS = [
-  { component: "Accordion.Root", prop: "type", type: '"single" | "multiple"', default: '"single"', description: "Whether one or multiple items can be open at a time." },
-  { component: "Accordion.Root", prop: "defaultValue", type: "string | string[]", default: "—", description: "Initially open item(s) — uncontrolled." },
-  { component: "Accordion.Root", prop: "value", type: "string | string[]", default: "—", description: "Controlled open item(s)." },
-  { component: "Accordion.Root", prop: "onChange", type: "(value: string | string[]) => void", default: "—", description: "Callback when open items change." },
-  { component: "Accordion.Root", prop: "collapsible", type: "boolean", default: "true", description: "When type=single, allow closing the open item by clicking it." },
+  { component: "Accordion", prop: "type", type: '"single" | "multiple"', default: '"single"', description: "Whether one or multiple items can be open at a time." },
+  { component: "Accordion", prop: "defaultValue", type: "string | string[]", default: "—", description: "Initially open item(s) — uncontrolled." },
+  { component: "Accordion", prop: "value", type: "string | string[]", default: "—", description: "Controlled open item(s)." },
+  { component: "Accordion", prop: "onChange", type: "(value: string | string[]) => void", default: "—", description: "Callback when open items change." },
+  { component: "Accordion", prop: "collapsible", type: "boolean", default: "true", description: "When type=single, allow closing the open item by clicking it." },
   { component: "Accordion.Item", prop: "value", type: "string", default: "—", description: "Unique identifier for this item." },
   { component: "Accordion.Trigger", prop: "—", type: "ButtonHTMLAttributes", default: "—", description: "Extends all native button attributes." },
   { component: "Accordion.Content", prop: "—", type: "HTMLAttributes<div>", default: "—", description: "Animated content panel." },
@@ -412,11 +412,10 @@ export default function AccordionDocPage() {
                   <button
                     key={t}
                     onClick={() => setActiveType(t)}
-                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                      activeType === t
+                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${activeType === t
                         ? "bg-primary text-white"
                         : "bg-slate-100 dark:bg-[#1f2937] text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-[#2d3748]"
-                    }`}
+                      }`}
                   >
                     {t}
                   </button>
@@ -429,7 +428,7 @@ export default function AccordionDocPage() {
               <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">
                 {activeType === "single" ? "Only one item open at a time." : "Multiple items can be open simultaneously."}
               </p>
-              <Accordion.Root
+              <Accordion
                 key={activeType}
                 type={activeType}
                 defaultValue={activeType === "multiple" ? ["accessible", "animated"] : "accessible"}
@@ -440,7 +439,7 @@ export default function AccordionDocPage() {
                     <Accordion.Content>{item.a}</Accordion.Content>
                   </Accordion.Item>
                 ))}
-              </Accordion.Root>
+              </Accordion>
             </div>
 
             {/* Second accordion — non-collapsible single */}
@@ -448,14 +447,14 @@ export default function AccordionDocPage() {
               <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">
                 <code className="font-mono">collapsible=&#123;false&#125;</code> — active item cannot be collapsed.
               </p>
-              <Accordion.Root type="single" collapsible={false} defaultValue="react">
+              <Accordion type="single" collapsible={false} defaultValue="react">
                 {INSTALL_ITEMS.map((item) => (
                   <Accordion.Item key={item.value} value={item.value}>
                     <Accordion.Trigger>{item.q}</Accordion.Trigger>
                     <Accordion.Content>{item.a}</Accordion.Content>
                   </Accordion.Item>
                 ))}
-              </Accordion.Root>
+              </Accordion>
             </div>
           </div>
         </section>

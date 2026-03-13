@@ -21,7 +21,7 @@ const AvatarContext = createContext<AvatarContextValue | null>(null);
 
 function useAvatarContext() {
   const context = useContext(AvatarContext);
-  if (!context) throw new Error("Avatar sub-components must be used inside <Avatar.Root>");
+  if (!context) throw new Error("Avatar sub-components must be used inside <Avatar>");
   return context;
 }
 
@@ -32,7 +32,7 @@ const SIZE_CLASSES: Record<AvatarSize, string> = {
   xl: "h-20 w-20 text-lg",
 };
 
-function AvatarRoot({ size = "md", className, children }: AvatarProps) {
+export function Avatar({ size = "md", className, children }: AvatarProps) {
   const [hasImageError, setHasImageError] = useState(false);
 
   return (
@@ -50,7 +50,7 @@ function AvatarRoot({ size = "md", className, children }: AvatarProps) {
   );
 }
 
-function AvatarImage({ className, onError, alt, ...props }: ImgHTMLAttributes<HTMLImageElement>) {
+Avatar.Image = function AvatarImage({ className, onError, alt, ...props }: ImgHTMLAttributes<HTMLImageElement>) {
   const { hasImageError, setHasImageError } = useAvatarContext();
 
   if (hasImageError) return null;
@@ -68,23 +68,10 @@ function AvatarImage({ className, onError, alt, ...props }: ImgHTMLAttributes<HT
   );
 }
 
-function AvatarFallback({ className, children }: { className?: string; children: ReactNode }) {
+Avatar.Fallback = function AvatarFallback({ className, children }: { className?: string; children: ReactNode }) {
   const { hasImageError } = useAvatarContext();
   if (!hasImageError) return null;
 
   return <span className={cn("font-semibold uppercase", className)}>{children}</span>;
 }
 
-type AvatarCompoundComponent = typeof AvatarRoot & {
-  Root: typeof AvatarRoot;
-  Image: typeof AvatarImage;
-  Fallback: typeof AvatarFallback;
-};
-
-export const Avatar = Object.assign(AvatarRoot, {
-  Root: AvatarRoot,
-  Image: AvatarImage,
-  Fallback: AvatarFallback,
-}) as AvatarCompoundComponent;
-
-export { AvatarImage, AvatarFallback };

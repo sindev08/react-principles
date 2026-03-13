@@ -13,7 +13,7 @@ const CARD_VARIANT_CLASSES: Record<CardVariant, string> = {
   flat: "bg-slate-50 dark:bg-[#0d1117] border border-transparent",
 };
 
-function CardRoot({ variant = "default", className, children, ...props }: CardProps) {
+export function Card({ variant = "default", className, children, ...props }: CardProps) {
   return (
     <div className={cn("rounded-xl", CARD_VARIANT_CLASSES[variant], className)} {...props}>
       {children}
@@ -21,7 +21,7 @@ function CardRoot({ variant = "default", className, children, ...props }: CardPr
   );
 }
 
-export function CardHeader({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
+Card.Header = function CardHeader({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div className={cn("p-6 pb-4", className)} {...props}>
       {children}
@@ -29,7 +29,7 @@ export function CardHeader({ className, children, ...props }: HTMLAttributes<HTM
   );
 }
 
-export function CardTitle({ className, children, ...props }: HTMLAttributes<HTMLHeadingElement>) {
+Card.Title = function CardTitle({ className, children, ...props }: HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h3 className={cn("text-base font-bold text-slate-900 dark:text-white leading-snug", className)} {...props}>
       {children}
@@ -37,7 +37,7 @@ export function CardTitle({ className, children, ...props }: HTMLAttributes<HTML
   );
 }
 
-export function CardDescription({ className, children, ...props }: HTMLAttributes<HTMLParagraphElement>) {
+Card.Description = function CardDescription({ className, children, ...props }: HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p className={cn("mt-1 text-sm text-slate-500 dark:text-slate-400 leading-relaxed", className)} {...props}>
       {children}
@@ -45,7 +45,7 @@ export function CardDescription({ className, children, ...props }: HTMLAttribute
   );
 }
 
-export function CardContent({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
+Card.Content = function CardContent({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div className={cn("px-6 pb-4", className)} {...props}>
       {children}
@@ -53,28 +53,10 @@ export function CardContent({ className, children, ...props }: HTMLAttributes<HT
   );
 }
 
-export function CardFooter({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
+Card.Footer = function CardFooter({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div className={cn("px-6 pb-6 flex items-center gap-3", className)} {...props}>
       {children}
     </div>
   );
 }
-
-type CardCompoundComponent = typeof CardRoot & {
-  Root: typeof CardRoot;
-  Header: typeof CardHeader;
-  Title: typeof CardTitle;
-  Description: typeof CardDescription;
-  Content: typeof CardContent;
-  Footer: typeof CardFooter;
-};
-
-export const Card = Object.assign(CardRoot, {
-  Root: CardRoot,
-  Header: CardHeader,
-  Title: CardTitle,
-  Description: CardDescription,
-  Content: CardContent,
-  Footer: CardFooter,
-}) as CardCompoundComponent;

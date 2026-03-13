@@ -13,7 +13,7 @@ const TOC_ITEMS = [
 
 const CODE_SNIPPET = `import { Command } from "@/ui/Command";
 
-<Command.Root>
+<Command>
   <Command.Input placeholder="Type a command..." />
   <Command.List>
     <Command.Group>
@@ -22,7 +22,7 @@ const CODE_SNIPPET = `import { Command } from "@/ui/Command";
       <Command.Item value="Open settings">Open settings</Command.Item>
     </Command.Group>
   </Command.List>
-</Command.Root>`;
+</Command>`;
 
 const COPY_PASTE_SNIPPET = `function CommandRoot({ children }: { children: React.ReactNode }) {
   return <div className="rounded-xl border border-slate-200 bg-white">{children}</div>;
@@ -43,7 +43,7 @@ export default function CommandDocPage() {
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
           <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
-            <Command.Root>
+            <Command>
               <Command.Input placeholder="Type a command..." />
               <Command.List>
                 <Command.Group>
@@ -59,7 +59,7 @@ export default function CommandDocPage() {
                 </Command.Group>
                 <Command.Empty>No commands found</Command.Empty>
               </Command.List>
-            </Command.Root>
+            </Command>
             <p className="text-xs text-slate-500 dark:text-slate-400">Last command: {lastCommand}</p>
           </div>
         </section>

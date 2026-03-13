@@ -27,12 +27,12 @@ const RadioGroupContext = createContext<RadioGroupContextValue | null>(null);
 function useRadioGroupContext() {
   const context = useContext(RadioGroupContext);
   if (!context) {
-    throw new Error("RadioGroup sub-components must be used inside <RadioGroup.Root>");
+    throw new Error("RadioGroup sub-components must be used inside <RadioGroup>");
   }
   return context;
 }
 
-function RadioGroupRoot({
+export function RadioGroup({
   value,
   defaultValue = "",
   onValueChange,
@@ -60,7 +60,7 @@ function RadioGroupRoot({
   );
 }
 
-function RadioGroupItem({
+RadioGroup.Item = function RadioGroupItem({
   value,
   disabled = false,
   label,
@@ -106,15 +106,3 @@ function RadioGroupItem({
     </button>
   );
 }
-
-type RadioGroupCompoundComponent = typeof RadioGroupRoot & {
-  Root: typeof RadioGroupRoot;
-  Item: typeof RadioGroupItem;
-};
-
-export const RadioGroup = Object.assign(RadioGroupRoot, {
-  Root: RadioGroupRoot,
-  Item: RadioGroupItem,
-}) as RadioGroupCompoundComponent;
-
-export { RadioGroupItem };

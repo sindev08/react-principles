@@ -13,7 +13,7 @@ export interface SliderProps {
   className?: string;
 }
 
-function SliderRoot({
+export function Slider({
   value,
   defaultValue = 50,
   min = 0,
@@ -53,11 +53,3 @@ function SliderRoot({
     </div>
   );
 }
-
-type SliderCompoundComponent = typeof SliderRoot & {
-  Root: typeof SliderRoot;
-};
-
-export const Slider = Object.assign(SliderRoot, {
-  Root: SliderRoot,
-}) as SliderCompoundComponent;
