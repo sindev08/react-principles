@@ -13,11 +13,11 @@ const TOC_ITEMS = [
 
 const CODE_SNIPPET = `import { RadioGroup } from "@/ui/RadioGroup";
 
-<RadioGroup.Root value={plan} onValueChange={setPlan}>
+<RadioGroup value={plan} onValueChange={setPlan}>
   <RadioGroup.Item value="starter" label="Starter" description="Best for side projects" />
   <RadioGroup.Item value="pro" label="Pro" description="For production apps" />
   <RadioGroup.Item value="enterprise" label="Enterprise" description="Advanced controls" />
-</RadioGroup.Root>`;
+</RadioGroup>`;
 
 const COPY_PASTE_SNIPPET = `import { createContext, useContext, useState, type ReactNode } from "react";
 
@@ -26,7 +26,7 @@ const Ctx = createContext<Ctx | null>(null);
 
 function useRadio() {
   const context = useContext(Ctx);
-  if (!context) throw new Error("Use inside RadioGroup.Root");
+  if (!context) throw new Error("Use inside RadioGroup");
   return context;
 }
 
@@ -71,11 +71,11 @@ export default function RadioGroupDocPage() {
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
           <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
-            <RadioGroup.Root value={plan} onValueChange={setPlan}>
+            <RadioGroup value={plan} onValueChange={setPlan}>
               <RadioGroup.Item value="starter" label="Starter" description="Best for side projects" />
               <RadioGroup.Item value="pro" label="Pro" description="For production apps" />
               <RadioGroup.Item value="enterprise" label="Enterprise" description="Advanced controls" />
-            </RadioGroup.Root>
+            </RadioGroup>
           </div>
         </section>
 

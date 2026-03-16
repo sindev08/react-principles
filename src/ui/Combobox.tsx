@@ -20,7 +20,7 @@ export interface ComboboxProps {
   className?: string;
 }
 
-function ComboboxRoot({
+export function Combobox({
   options,
   value,
   defaultValue,
@@ -173,11 +173,3 @@ function ComboboxRoot({
     </div>
   );
 }
-
-type ComboboxCompoundComponent = typeof ComboboxRoot & {
-  Root: typeof ComboboxRoot;
-};
-
-export const Combobox = Object.assign(ComboboxRoot, {
-  Root: ComboboxRoot,
-}) as ComboboxCompoundComponent;

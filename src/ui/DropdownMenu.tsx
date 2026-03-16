@@ -10,7 +10,7 @@ const DropdownMenuContext = createContext<DropdownMenuContextValue | null>(null)
 
 function useDropdownMenuContext() {
   const context = useContext(DropdownMenuContext);
-  if (!context) throw new Error("DropdownMenu sub-components must be used inside <DropdownMenu.Root>");
+  if (!context) throw new Error("DropdownMenu sub-components must be used inside <DropdownMenu>");
   return context;
 }
 
@@ -35,7 +35,7 @@ export interface DropdownMenuItemProps extends ButtonHTMLAttributes<HTMLButtonEl
   onSelect?: () => void;
 }
 
-function DropdownMenuRoot({ open, defaultOpen = false, onOpenChange, children, className }: DropdownMenuProps) {
+export function DropdownMenu({ open, defaultOpen = false, onOpenChange, children, className }: DropdownMenuProps) {
   const [internalOpen, setInternalOpen] = useState(defaultOpen);
   const containerRef = useRef<HTMLDivElement>(null);
   const isControlled = open !== undefined;
@@ -77,7 +77,7 @@ function DropdownMenuRoot({ open, defaultOpen = false, onOpenChange, children, c
   );
 }
 
-function DropdownMenuTrigger({ children, className, onClick, ...props }: DropdownMenuTriggerProps) {
+DropdownMenu.Trigger = function DropdownMenuTrigger({ children, className, onClick, ...props }: DropdownMenuTriggerProps) {
   const { open, setOpen } = useDropdownMenuContext();
 
   return (
@@ -99,7 +99,7 @@ function DropdownMenuTrigger({ children, className, onClick, ...props }: Dropdow
   );
 }
 
-function DropdownMenuContent({ children, className, ...props }: DropdownMenuContentProps) {
+DropdownMenu.Content = function DropdownMenuContent({ children, className, ...props }: DropdownMenuContentProps) {
   const { open } = useDropdownMenuContext();
   if (!open) return null;
 
@@ -117,7 +117,7 @@ function DropdownMenuContent({ children, className, ...props }: DropdownMenuCont
   );
 }
 
-function DropdownMenuLabel({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+DropdownMenu.Label = function DropdownMenuLabel({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn("px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400", className)}
@@ -126,11 +126,11 @@ function DropdownMenuLabel({ className, ...props }: HTMLAttributes<HTMLDivElemen
   );
 }
 
-function DropdownMenuSeparator({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+DropdownMenu.Separator = function DropdownMenuSeparator({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("my-1 h-px bg-slate-200 dark:bg-[#1f2937]", className)} {...props} />;
 }
 
-function DropdownMenuItem({ inset = false, onSelect, onClick, className, disabled, ...props }: DropdownMenuItemProps) {
+DropdownMenu.Item = function DropdownMenuItem({ inset = false, onSelect, onClick, className, disabled, ...props }: DropdownMenuItemProps) {
   const { setOpen } = useDropdownMenuContext();
 
   return (
@@ -154,23 +154,3 @@ function DropdownMenuItem({ inset = false, onSelect, onClick, className, disable
     />
   );
 }
-
-type DropdownMenuCompoundComponent = typeof DropdownMenuRoot & {
-  Root: typeof DropdownMenuRoot;
-  Trigger: typeof DropdownMenuTrigger;
-  Content: typeof DropdownMenuContent;
-  Label: typeof DropdownMenuLabel;
-  Item: typeof DropdownMenuItem;
-  Separator: typeof DropdownMenuSeparator;
-};
-
-export const DropdownMenu = Object.assign(DropdownMenuRoot, {
-  Root: DropdownMenuRoot,
-  Trigger: DropdownMenuTrigger,
-  Content: DropdownMenuContent,
-  Label: DropdownMenuLabel,
-  Item: DropdownMenuItem,
-  Separator: DropdownMenuSeparator,
-}) as DropdownMenuCompoundComponent;
-
-export { DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuItem, DropdownMenuSeparator };
