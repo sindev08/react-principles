@@ -24,7 +24,7 @@ const [open, setOpen] = useState(false);
 
 <Button onClick={() => setOpen(true)}>Delete item</Button>
 
-<Dialog.Root open={open} onClose={() => setOpen(false)} size="sm">
+<Dialog open={open} onClose={() => setOpen(false)} size="sm">
   <Dialog.Header>
     <Dialog.Title>Delete item?</Dialog.Title>
     <Dialog.Description>
@@ -35,12 +35,12 @@ const [open, setOpen] = useState(false);
     <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
     <Button variant="destructive" onClick={() => setOpen(false)}>Delete</Button>
   </Dialog.Footer>
-</Dialog.Root>
+</Dialog>
 
 // Sizes: "sm" | "md" | "lg" | "xl"
-<Dialog.Root open={open} onClose={() => setOpen(false)} size="lg">
+<Dialog open={open} onClose={() => setOpen(false)} size="lg">
   ...
-</Dialog.Root>`;
+</Dialog>`;
 
 const COPY_PASTE_SNIPPET = `"use client";
 
@@ -344,7 +344,7 @@ export default function DialogDocPage() {
           </div>
 
           {/* Confirm Delete — sm */}
-          <Dialog.Root open={openDialog === "confirm"} onClose={() => setOpenDialog(null)} size="sm">
+          <Dialog open={openDialog === "confirm"} onClose={() => setOpenDialog(null)} size="sm">
             <Dialog.Header>
               <Dialog.Title>Delete item?</Dialog.Title>
               <Dialog.Description>
@@ -355,10 +355,10 @@ export default function DialogDocPage() {
               <Button variant="ghost" onClick={() => setOpenDialog(null)}>Cancel</Button>
               <Button variant="destructive" onClick={() => setOpenDialog(null)}>Delete</Button>
             </Dialog.Footer>
-          </Dialog.Root>
+          </Dialog>
 
           {/* Edit Profile — md */}
-          <Dialog.Root open={openDialog === "edit"} onClose={() => setOpenDialog(null)} size="md">
+          <Dialog open={openDialog === "edit"} onClose={() => setOpenDialog(null)} size="md">
             <Dialog.Header>
               <Dialog.Title>Edit Profile</Dialog.Title>
               <Dialog.Description>
@@ -393,10 +393,10 @@ export default function DialogDocPage() {
               <Button variant="ghost" onClick={() => setOpenDialog(null)}>Cancel</Button>
               <Button variant="primary" onClick={() => setOpenDialog(null)}>Save changes</Button>
             </Dialog.Footer>
-          </Dialog.Root>
+          </Dialog>
 
           {/* View Details — lg */}
-          <Dialog.Root open={openDialog === "details"} onClose={() => setOpenDialog(null)} size="lg">
+          <Dialog open={openDialog === "details"} onClose={() => setOpenDialog(null)} size="lg">
             <Dialog.Header>
               <Dialog.Title>Package details</Dialog.Title>
               <Dialog.Description>
@@ -422,7 +422,7 @@ export default function DialogDocPage() {
             <Dialog.Footer>
               <Button variant="primary" onClick={() => setOpenDialog(null)}>Got it</Button>
             </Dialog.Footer>
-          </Dialog.Root>
+          </Dialog>
         </section>
 
         {/* 03 Code Snippet */}

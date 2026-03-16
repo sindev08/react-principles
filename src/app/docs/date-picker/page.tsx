@@ -13,7 +13,7 @@ const TOC_ITEMS = [
 
 const CODE_SNIPPET = `import { DatePicker } from "@/ui/DatePicker";
 
-<DatePicker.Root
+<DatePicker
   label="Due date"
   value={dueDate}
   onChange={(event) => setDueDate(event.target.value)}
@@ -38,7 +38,7 @@ export default function DatePickerDocPage() {
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
           <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
-            <DatePicker.Root
+            <DatePicker
               label="Due date"
               value={dueDate}
               description="Set your milestone deadline"

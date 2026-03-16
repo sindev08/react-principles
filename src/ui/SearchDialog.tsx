@@ -19,7 +19,7 @@ interface SearchDialogProps {
   savedSlugs?: string[];
 }
 
-function SearchDialogRoot({ open, items, onClose, onNavigate, savedSlugs = [] }: SearchDialogProps) {
+export function SearchDialog({ open, items, onClose, onNavigate, savedSlugs = [] }: SearchDialogProps) {
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -27,10 +27,10 @@ function SearchDialogRoot({ open, items, onClose, onNavigate, savedSlugs = [] }:
 
   const results = query.trim()
     ? items.filter(
-        (item) =>
-          item.title.toLowerCase().includes(query.toLowerCase()) ||
-          item.description?.toLowerCase().includes(query.toLowerCase()),
-      )
+      (item) =>
+        item.title.toLowerCase().includes(query.toLowerCase()) ||
+        item.description?.toLowerCase().includes(query.toLowerCase()),
+    )
     : items.slice(0, 8);
 
   const docsResults = results.filter((r) => r.group === "Docs");
@@ -194,14 +194,6 @@ function SearchDialogRoot({ open, items, onClose, onNavigate, savedSlugs = [] }:
     </div>
   );
 }
-
-type SearchDialogCompoundComponent = typeof SearchDialogRoot & {
-  Root: typeof SearchDialogRoot;
-};
-
-export const SearchDialog = Object.assign(SearchDialogRoot, {
-  Root: SearchDialogRoot,
-}) as SearchDialogCompoundComponent;
 
 // --- helpers ---
 

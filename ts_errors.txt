@@ -1,0 +1,130 @@
+src/app/docs/accordion/page.tsx(432,26): error TS2339: Property 'Root' does not exist on type 'typeof Accordion'.
+src/app/docs/accordion/page.tsx(443,27): error TS2339: Property 'Root' does not exist on type 'typeof Accordion'.
+src/app/docs/accordion/page.tsx(451,26): error TS2339: Property 'Root' does not exist on type 'typeof Accordion'.
+src/app/docs/accordion/page.tsx(458,27): error TS2339: Property 'Root' does not exist on type 'typeof Accordion'.
+src/app/docs/alert-dialog/page.tsx(403,26): error TS2339: Property 'Root' does not exist on type '({ open, onClose, onConfirm, title, description, cancelLabel, confirmLabel, variant, isLoading, }: AlertDialogProps) => ReactPortal | null'.
+src/app/docs/alert/page.tsx(40,20): error TS2339: Property 'Root' does not exist on type 'typeof Alert'.
+src/app/docs/alert/page.tsx(43,21): error TS2339: Property 'Root' does not exist on type 'typeof Alert'.
+src/app/docs/alert/page.tsx(44,20): error TS2339: Property 'Root' does not exist on type 'typeof Alert'.
+src/app/docs/alert/page.tsx(50,21): error TS2339: Property 'Root' does not exist on type 'typeof Alert'.
+src/app/docs/avatar/page.tsx(37,21): error TS2339: Property 'Root' does not exist on type 'typeof Avatar'.
+src/app/docs/avatar/page.tsx(40,22): error TS2339: Property 'Root' does not exist on type 'typeof Avatar'.
+src/app/docs/avatar/page.tsx(41,21): error TS2339: Property 'Root' does not exist on type 'typeof Avatar'.
+src/app/docs/avatar/page.tsx(44,22): error TS2339: Property 'Root' does not exist on type 'typeof Avatar'.
+src/app/docs/avatar/page.tsx(45,21): error TS2339: Property 'Root' does not exist on type 'typeof Avatar'.
+src/app/docs/avatar/page.tsx(48,22): error TS2339: Property 'Root' does not exist on type 'typeof Avatar'.
+src/app/docs/avatar/page.tsx(49,21): error TS2339: Property 'Root' does not exist on type 'typeof Avatar'.
+src/app/docs/avatar/page.tsx(52,22): error TS2339: Property 'Root' does not exist on type 'typeof Avatar'.
+src/app/docs/badge/page.tsx(236,26): error TS2339: Property 'Root' does not exist on type '({ variant, size, children, className }: BadgeProps) => Element'.
+src/app/docs/badge/page.tsx(238,27): error TS2339: Property 'Root' does not exist on type '({ variant, size, children, className }: BadgeProps) => Element'.
+src/app/docs/breadcrumb/page.tsx(42,25): error TS2339: Property 'Root' does not exist on type 'typeof Breadcrumb'.
+src/app/docs/breadcrumb/page.tsx(56,26): error TS2339: Property 'Root' does not exist on type 'typeof Breadcrumb'.
+src/app/docs/button/page.tsx(299,23): error TS2339: Property 'Root' does not exist on type '({ variant, size, isLoading, disabled, children, className, ...props }: ButtonProps) => Element'.
+src/app/docs/button/page.tsx(305,24): error TS2339: Property 'Root' does not exist on type '({ variant, size, isLoading, disabled, children, className, ...props }: ButtonProps) => Element'.
+src/app/docs/button/page.tsx(306,23): error TS2339: Property 'Root' does not exist on type '({ variant, size, isLoading, disabled, children, className, ...props }: ButtonProps) => Element'.
+src/app/docs/button/page.tsx(313,24): error TS2339: Property 'Root' does not exist on type '({ variant, size, isLoading, disabled, children, className, ...props }: ButtonProps) => Element'.
+src/app/docs/card/page.tsx(285,21): error TS2339: Property 'Root' does not exist on type 'typeof Card'.
+src/app/docs/card/page.tsx(305,22): error TS2339: Property 'Root' does not exist on type 'typeof Card'.
+src/app/docs/card/page.tsx(308,21): error TS2339: Property 'Root' does not exist on type 'typeof Card'.
+src/app/docs/card/page.tsx(321,22): error TS2339: Property 'Root' does not exist on type 'typeof Card'.
+src/app/docs/card/page.tsx(324,21): error TS2339: Property 'Root' does not exist on type 'typeof Card'.
+src/app/docs/card/page.tsx(339,22): error TS2339: Property 'Root' does not exist on type 'typeof Card'.
+src/app/docs/checkbox/page.tsx(289,27): error TS2339: Property 'Root' does not exist on type '({ checked, defaultChecked, indeterminate, disabled, size, label, description, id, name, onChange, className, }: CheckboxProps) => Element'.
+src/app/docs/checkbox/page.tsx(300,29): error TS2339: Property 'Root' does not exist on type '({ checked, defaultChecked, indeterminate, disabled, size, label, description, id, name, onChange, className, }: CheckboxProps) => Element'.
+src/app/docs/checkbox/page.tsx(304,32): error TS7006: Parameter 'val' implicitly has an 'any' type.
+src/app/docs/checkbox/page.tsx(314,25): error TS2339: Property 'Root' does not exist on type '({ checked, defaultChecked, indeterminate, disabled, size, label, description, id, name, onChange, className, }: CheckboxProps) => Element'.
+src/app/docs/checkbox/page.tsx(315,25): error TS2339: Property 'Root' does not exist on type '({ checked, defaultChecked, indeterminate, disabled, size, label, description, id, name, onChange, className, }: CheckboxProps) => Element'.
+src/app/docs/combobox/page.tsx(75,23): error TS2339: Property 'Root' does not exist on type '({ options, value, defaultValue, onValueChange, placeholder, emptyText, label, description, className, }: ComboboxProps) => Element'.
+src/app/docs/command/page.tsx(46,22): error TS2339: Property 'Root' does not exist on type 'typeof Command'.
+src/app/docs/command/page.tsx(62,23): error TS2339: Property 'Root' does not exist on type 'typeof Command'.
+src/app/docs/date-picker/page.tsx(41,25): error TS2339: Property 'Root' does not exist on type 'ForwardRefExoticComponent<DatePickerProps & RefAttributes<HTMLInputElement>>'.
+src/app/docs/date-picker/page.tsx(45,26): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/app/docs/dialog/page.tsx(347,19): error TS2339: Property 'Root' does not exist on type 'typeof Dialog'.
+src/app/docs/dialog/page.tsx(358,20): error TS2339: Property 'Root' does not exist on type 'typeof Dialog'.
+src/app/docs/dialog/page.tsx(361,19): error TS2339: Property 'Root' does not exist on type 'typeof Dialog'.
+src/app/docs/dialog/page.tsx(396,20): error TS2339: Property 'Root' does not exist on type 'typeof Dialog'.
+src/app/docs/dialog/page.tsx(399,19): error TS2339: Property 'Root' does not exist on type 'typeof Dialog'.
+src/app/docs/dialog/page.tsx(425,20): error TS2339: Property 'Root' does not exist on type 'typeof Dialog'.
+src/app/docs/drawer/page.tsx(449,19): error TS2339: Property 'Root' does not exist on type 'typeof Drawer'.
+src/app/docs/drawer/page.tsx(478,20): error TS2339: Property 'Root' does not exist on type 'typeof Drawer'.
+src/app/docs/drawer/page.tsx(481,19): error TS2339: Property 'Root' does not exist on type 'typeof Drawer'.
+src/app/docs/drawer/page.tsx(515,20): error TS2339: Property 'Root' does not exist on type 'typeof Drawer'.
+src/app/docs/drawer/page.tsx(518,19): error TS2339: Property 'Root' does not exist on type 'typeof Drawer'.
+src/app/docs/drawer/page.tsx(556,20): error TS2339: Property 'Root' does not exist on type 'typeof Drawer'.
+src/app/docs/dropdown-menu/page.tsx(76,27): error TS2339: Property 'Root' does not exist on type 'typeof DropdownMenu'.
+src/app/docs/dropdown-menu/page.tsx(85,28): error TS2339: Property 'Root' does not exist on type 'typeof DropdownMenu'.
+src/app/docs/forms/page.tsx(240,5): error TS2322: Type '<TFieldValues extends FieldValues, TContext>(values: TFieldValues, context: TContext | undefined, options: ResolverOptions<TFieldValues>) => Promise<...>' is not assignable to type 'Resolver<{ email: string; password: string; rememberMe?: boolean | undefined; }, unknown, { email: string; password: string; rememberMe: boolean; }>'.
+  Type 'Promise<ResolverResult<{ email: string; password: string; rememberMe?: boolean | undefined; }>>' is not assignable to type 'ResolverResult<{ email: string; password: string; rememberMe?: boolean | undefined; }, { email: string; password: string; rememberMe: boolean; }> | Promise<ResolverResult<{ email: string; password: string; rememberMe?: boolean | undefined; }, { ...; }>>'.
+    Type 'Promise<ResolverResult<{ email: string; password: string; rememberMe?: boolean | undefined; }>>' is not assignable to type 'Promise<ResolverResult<{ email: string; password: string; rememberMe?: boolean | undefined; }, { email: string; password: string; rememberMe: boolean; }>>'.
+      Type 'ResolverResult<{ email: string; password: string; rememberMe?: boolean | undefined; }>' is not assignable to type 'ResolverResult<{ email: string; password: string; rememberMe?: boolean | undefined; }, { email: string; password: string; rememberMe: boolean; }>'.
+        Type 'ResolverSuccess<{ email: string; password: string; rememberMe?: boolean | undefined; }>' is not assignable to type 'ResolverResult<{ email: string; password: string; rememberMe?: boolean | undefined; }, { email: string; password: string; rememberMe: boolean; }>'.
+          Type 'ResolverSuccess<{ email: string; password: string; rememberMe?: boolean | undefined; }>' is not assignable to type 'ResolverSuccess<{ email: string; password: string; rememberMe: boolean; }>'.
+            Type '{ email: string; password: string; rememberMe?: boolean | undefined; }' is not assignable to type '{ email: string; password: string; rememberMe: boolean; }'.
+              Types of property 'rememberMe' are incompatible.
+                Type 'boolean | undefined' is not assignable to type 'boolean'.
+                  Type 'undefined' is not assignable to type 'boolean'.
+src/app/docs/forms/page.tsx(312,5): error TS2322: Type '<TFieldValues extends FieldValues, TContext>(values: TFieldValues, context: TContext | undefined, options: ResolverOptions<TFieldValues>) => Promise<...>' is not assignable to type 'Resolver<{ firstName: string; lastName: string; bio?: string | undefined; emailUpdates?: boolean | undefined; pushNotifications?: boolean | undefined; }, unknown, { firstName: string; lastName: string; emailUpdates: boolean; pushNotifications: boolean; bio?: string | undefined; }>'.
+  Type 'Promise<ResolverResult<{ firstName: string; lastName: string; bio?: string | undefined; emailUpdates?: boolean | undefined; pushNotifications?: boolean | undefined; }>>' is not assignable to type 'ResolverResult<{ firstName: string; lastName: string; bio?: string | undefined; emailUpdates?: boolean | undefined; pushNotifications?: boolean | undefined; }, { firstName: string; lastName: string; emailUpdates: boolean; pushNotifications: boolean; bio?: string | undefined; }> | Promise<...>'.
+    Type 'Promise<ResolverResult<{ firstName: string; lastName: string; bio?: string | undefined; emailUpdates?: boolean | undefined; pushNotifications?: boolean | undefined; }>>' is not assignable to type 'Promise<ResolverResult<{ firstName: string; lastName: string; bio?: string | undefined; emailUpdates?: boolean | undefined; pushNotifications?: boolean | undefined; }, { firstName: string; lastName: string; emailUpdates: boolean; pushNotifications: boolean; bio?: string | undefined; }>>'.
+      Type 'ResolverResult<{ firstName: string; lastName: string; bio?: string | undefined; emailUpdates?: boolean | undefined; pushNotifications?: boolean | undefined; }>' is not assignable to type 'ResolverResult<{ firstName: string; lastName: string; bio?: string | undefined; emailUpdates?: boolean | undefined; pushNotifications?: boolean | undefined; }, { firstName: string; lastName: string; emailUpdates: boolean; pushNotifications: boolean; bio?: string | undefined; }>'.
+        Type 'ResolverSuccess<{ firstName: string; lastName: string; bio?: string | undefined; emailUpdates?: boolean | undefined; pushNotifications?: boolean | undefined; }>' is not assignable to type 'ResolverResult<{ firstName: string; lastName: string; bio?: string | undefined; emailUpdates?: boolean | undefined; pushNotifications?: boolean | undefined; }, { firstName: string; lastName: string; emailUpdates: boolean; pushNotifications: boolean; bio?: string | undefined; }>'.
+          Type 'ResolverSuccess<{ firstName: string; lastName: string; bio?: string | undefined; emailUpdates?: boolean | undefined; pushNotifications?: boolean | undefined; }>' is not assignable to type 'ResolverSuccess<{ firstName: string; lastName: string; emailUpdates: boolean; pushNotifications: boolean; bio?: string | undefined; }>'.
+            Type '{ firstName: string; lastName: string; bio?: string | undefined; emailUpdates?: boolean | undefined; pushNotifications?: boolean | undefined; }' is not assignable to type '{ firstName: string; lastName: string; emailUpdates: boolean; pushNotifications: boolean; bio?: string | undefined; }'.
+              Types of property 'emailUpdates' are incompatible.
+                Type 'boolean | undefined' is not assignable to type 'boolean'.
+                  Type 'undefined' is not assignable to type 'boolean'.
+src/app/docs/input/page.tsx(374,22): error TS2339: Property 'Root' does not exist on type 'ForwardRefExoticComponent<InputProps & RefAttributes<HTMLInputElement>>'.
+src/app/docs/input/page.tsx(381,28): error TS7006: Parameter 'e' implicitly has an 'any' type.
+src/app/docs/input/page.tsx(383,22): error TS2339: Property 'Root' does not exist on type 'ForwardRefExoticComponent<InputProps & RefAttributes<HTMLInputElement>>'.
+src/app/docs/input/page.tsx(392,22): error TS2339: Property 'Root' does not exist on type 'ForwardRefExoticComponent<InputProps & RefAttributes<HTMLInputElement>>'.
+src/app/docs/input/page.tsx(401,22): error TS2339: Property 'Root' does not exist on type 'ForwardRefExoticComponent<InputProps & RefAttributes<HTMLInputElement>>'.
+src/app/docs/pagination/page.tsx(53,25): error TS2339: Property 'Root' does not exist on type '({ page, totalPages, onPageChange, siblingCount, className }: PaginationProps) => Element'.
+src/app/docs/popover/page.tsx(72,22): error TS2339: Property 'Root' does not exist on type 'typeof Popover'.
+src/app/docs/popover/page.tsx(83,23): error TS2339: Property 'Root' does not exist on type 'typeof Popover'.
+src/app/docs/progress/page.tsx(43,23): error TS2339: Property 'Root' does not exist on type '({ value, max, className, ...props }: ProgressProps) => Element'.
+src/app/docs/progress/page.tsx(45,23): error TS2339: Property 'Root' does not exist on type '({ variant, size, isLoading, disabled, children, className, ...props }: ButtonProps) => Element'.
+src/app/docs/progress/page.tsx(45,103): error TS2339: Property 'Root' does not exist on type '({ variant, size, isLoading, disabled, children, className, ...props }: ButtonProps) => Element'.
+src/app/docs/progress/page.tsx(46,23): error TS2339: Property 'Root' does not exist on type '({ variant, size, isLoading, disabled, children, className, ...props }: ButtonProps) => Element'.
+src/app/docs/progress/page.tsx(46,105): error TS2339: Property 'Root' does not exist on type '({ variant, size, isLoading, disabled, children, className, ...props }: ButtonProps) => Element'.
+src/app/docs/radio-group/page.tsx(74,25): error TS2339: Property 'Root' does not exist on type 'typeof RadioGroup'.
+src/app/docs/radio-group/page.tsx(78,26): error TS2339: Property 'Root' does not exist on type 'typeof RadioGroup'.
+src/app/docs/select/page.tsx(75,21): error TS2339: Property 'Root' does not exist on type 'ForwardRefExoticComponent<SelectProps & RefAttributes<HTMLSelectElement>>'.
+src/app/docs/select/page.tsx(78,26): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/app/docs/separator/page.tsx(39,24): error TS2339: Property 'Root' does not exist on type '({ orientation, decorative, className, ...props }: SeparatorProps) => Element'.
+src/app/docs/separator/page.tsx(43,26): error TS2339: Property 'Root' does not exist on type '({ orientation, decorative, className, ...props }: SeparatorProps) => Element'.
+src/app/docs/skeleton/page.tsx(61,25): error TS2339: Property 'Root' does not exist on type '({ variant, width, height, className }: SkeletonProps) => Element'.
+src/app/docs/skeleton/page.tsx(63,27): error TS2339: Property 'Root' does not exist on type '({ variant, width, height, className }: SkeletonProps) => Element'.
+src/app/docs/skeleton/page.tsx(64,27): error TS2339: Property 'Root' does not exist on type '({ variant, width, height, className }: SkeletonProps) => Element'.
+src/app/docs/skeleton/page.tsx(67,23): error TS2339: Property 'Root' does not exist on type '({ variant, width, height, className }: SkeletonProps) => Element'.
+src/app/docs/slider/page.tsx(44,21): error TS2339: Property 'Root' does not exist on type '({ value, defaultValue, min, max, step, onValueChange, label, showValue, className, }: SliderProps) => Element'.
+src/app/docs/switch/page.tsx(82,21): error TS2339: Property 'Root' does not exist on type '({ checked, defaultChecked, onChange, disabled, size, label, description, className, }: SwitchProps) => Element'.
+src/app/docs/switch/page.tsx(88,21): error TS2339: Property 'Root' does not exist on type '({ checked, defaultChecked, onChange, disabled, size, label, description, className, }: SwitchProps) => Element'.
+src/app/docs/tabs/page.tsx(404,19): error TS2339: Property 'Root' does not exist on type 'typeof Tabs'.
+src/app/docs/tabs/page.tsx(453,23): error TS2339: Property 'Root' does not exist on type 'typeof Tabs'.
+src/app/docs/tabs/page.tsx(501,24): error TS2339: Property 'Root' does not exist on type 'typeof Tabs'.
+src/app/docs/tabs/page.tsx(503,20): error TS2339: Property 'Root' does not exist on type 'typeof Tabs'.
+src/app/docs/textarea/page.tsx(72,23): error TS2339: Property 'Root' does not exist on type 'ForwardRefExoticComponent<TextareaProps & RefAttributes<HTMLTextAreaElement>>'.
+src/app/docs/textarea/page.tsx(77,26): error TS7006: Parameter 'event' implicitly has an 'any' type.
+src/app/docs/toast/page.tsx(60,21): error TS2339: Property 'Root' does not exist on type '({ variant, size, isLoading, disabled, children, className, ...props }: ButtonProps) => Element'.
+src/app/docs/toast/page.tsx(60,83): error TS2339: Property 'Root' does not exist on type '({ variant, size, isLoading, disabled, children, className, ...props }: ButtonProps) => Element'.
+src/app/docs/toast/page.tsx(61,20): error TS2339: Property 'Root' does not exist on type 'typeof Toast'.
+src/app/docs/toast/page.tsx(67,21): error TS2339: Property 'Root' does not exist on type 'typeof Toast'.
+src/app/docs/tooltip/page.tsx(58,22): error TS2339: Property 'Root' does not exist on type 'typeof Tooltip'.
+src/app/docs/tooltip/page.tsx(63,23): error TS2339: Property 'Root' does not exist on type 'typeof Tooltip'.
+src/shared/hooks/useDebounce.test.ts(1,33): error TS2307: Cannot find module '@testing-library/react' or its corresponding type declarations.
+src/shared/hooks/useDebounce.test.ts(2,65): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
+src/shared/hooks/useDebounce.test.ts(20,48): error TS7031: Binding element 'value' implicitly has an 'any' type.
+src/shared/hooks/useDebounce.test.ts(29,48): error TS7031: Binding element 'value' implicitly has an 'any' type.
+src/shared/hooks/useDebounce.test.ts(39,48): error TS7031: Binding element 'value' implicitly has an 'any' type.
+src/shared/hooks/useLocalStorage.test.ts(1,33): error TS2307: Cannot find module '@testing-library/react' or its corresponding type declarations.
+src/shared/hooks/useLocalStorage.test.ts(2,49): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
+src/shared/hooks/useLocalStorage.test.ts(27,36): error TS7006: Parameter 'prev' implicitly has an 'any' type.
+src/shared/stores/useAppStore.test.ts(1,50): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
+src/shared/stores/useFilterStore.test.ts(1,28): error TS2307: Cannot find module '@testing-library/react' or its corresponding type declarations.
+src/shared/stores/useFilterStore.test.ts(2,50): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
+src/shared/stores/useSearchStore.test.ts(1,50): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
+src/shared/utils/cn.test.ts(1,38): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
+src/shared/utils/formatters.test.ts(1,38): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
+src/shared/utils/validators.test.ts(1,38): error TS2307: Cannot find module 'vitest' or its corresponding type declarations.
+vitest.config.ts(1,30): error TS2307: Cannot find module 'vitest/config' or its corresponding type declarations.
+vitest.config.ts(2,19): error TS2307: Cannot find module '@vitejs/plugin-react' or its corresponding type declarations.

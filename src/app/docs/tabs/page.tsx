@@ -22,7 +22,7 @@ const VARIANTS: TabsVariant[] = ["underline", "pills"];
 const CODE_SNIPPET = `import { Tabs } from "@/ui/Tabs";
 
 // Uncontrolled
-<Tabs.Root defaultValue="overview">
+<Tabs defaultValue="overview">
   <Tabs.List>
     <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
     <Tabs.Trigger value="activity">Activity</Tabs.Trigger>
@@ -32,17 +32,17 @@ const CODE_SNIPPET = `import { Tabs } from "@/ui/Tabs";
   <Tabs.Content value="overview">Overview content</Tabs.Content>
   <Tabs.Content value="activity">Activity content</Tabs.Content>
   <Tabs.Content value="settings">Settings content</Tabs.Content>
-</Tabs.Root>
+</Tabs>
 
 // Controlled
-<Tabs.Root value={activeTab} onChange={setActiveTab}>
+<Tabs value={activeTab} onChange={setActiveTab}>
   ...
-</Tabs.Root>
+</Tabs>
 
 // Variants: "underline" (default) | "pills"
-<Tabs.Root defaultValue="tab1" variant="pills">
+<Tabs defaultValue="tab1" variant="pills">
   ...
-</Tabs.Root>`;
+</Tabs>`;
 
 const COPY_PASTE_SNIPPET = `"use client";
 
@@ -79,7 +79,7 @@ const TabsContext = createContext<TabsContextValue | null>(null);
 
 function useTabsContext() {
   const context = useContext(TabsContext);
-  if (!context) throw new Error("Tabs sub-components must be used inside <Tabs.Root>");
+  if (!context) throw new Error("Tabs sub-components must be used inside <Tabs>");
   return context;
 }
 
@@ -192,10 +192,10 @@ export const Tabs = Object.assign(TabsRoot, {
 }) as TabsCompound;`;
 
 const PROPS_ROWS = [
-  { component: "Tabs.Root", prop: "defaultValue", type: "string", default: '""', description: "Initially active tab (uncontrolled)." },
-  { component: "Tabs.Root", prop: "value", type: "string", default: "—", description: "Controlled active tab value." },
-  { component: "Tabs.Root", prop: "onChange", type: "(value: string) => void", default: "—", description: "Callback fired when the active tab changes." },
-  { component: "Tabs.Root", prop: "variant", type: '"underline" | "pills"', default: '"underline"', description: "Visual style for the tab list." },
+  { component: "Tabs", prop: "defaultValue", type: "string", default: '""', description: "Initially active tab (uncontrolled)." },
+  { component: "Tabs", prop: "value", type: "string", default: "—", description: "Controlled active tab value." },
+  { component: "Tabs", prop: "onChange", type: "(value: string) => void", default: "—", description: "Callback fired when the active tab changes." },
+  { component: "Tabs", prop: "variant", type: '"underline" | "pills"', default: '"underline"', description: "Visual style for the tab list." },
   { component: "Tabs.Trigger", prop: "value", type: "string", default: "—", description: "Unique identifier for this tab." },
   { component: "Tabs.Trigger", prop: "disabled", type: "boolean", default: "false", description: "Prevents selection and reduces opacity." },
   { component: "Tabs.Content", prop: "value", type: "string", default: "—", description: "Renders only when this matches the active tab." },
@@ -388,11 +388,10 @@ export default function TabsDocPage() {
                   <button
                     key={v}
                     onClick={() => setActiveVariant(v)}
-                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                      activeVariant === v
+                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${activeVariant === v
                         ? "bg-primary text-white"
                         : "bg-slate-100 dark:bg-[#1f2937] text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-[#2d3748]"
-                    }`}
+                      }`}
                   >
                     {v}
                   </button>
@@ -401,7 +400,7 @@ export default function TabsDocPage() {
             </div>
 
             {/* Repository tabs */}
-            <Tabs.Root defaultValue="overview" variant={activeVariant}>
+            <Tabs defaultValue="overview" variant={activeVariant}>
               <Tabs.List>
                 <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
                 <Tabs.Trigger value="activity">
@@ -450,7 +449,7 @@ export default function TabsDocPage() {
 
               <Tabs.Content value="settings">
                 {/* Nested controlled tabs */}
-                <Tabs.Root value={settingsTab} onChange={setSettingsTab} variant="pills">
+                <Tabs value={settingsTab} onChange={setSettingsTab} variant="pills">
                   <Tabs.List>
                     <Tabs.Trigger value="profile">Profile</Tabs.Trigger>
                     <Tabs.Trigger value="security">Security</Tabs.Trigger>
@@ -498,9 +497,9 @@ export default function TabsDocPage() {
                       ))}
                     </div>
                   </Tabs.Content>
-                </Tabs.Root>
+                </Tabs>
               </Tabs.Content>
-            </Tabs.Root>
+            </Tabs>
           </div>
         </section>
 

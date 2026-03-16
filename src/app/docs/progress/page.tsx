@@ -14,7 +14,7 @@ const TOC_ITEMS = [
 
 const CODE_SNIPPET = `import { Progress } from "@/ui/Progress";
 
-<Progress.Root value={72} max={100} />`;
+<Progress value={72} max={100} />`;
 
 const COPY_PASTE_SNIPPET = `function ProgressRoot({ value, max = 100 }: { value: number; max?: number }) {
   const pct = Math.min(Math.max(value, 0), max) / max * 100;
@@ -40,10 +40,10 @@ export default function ProgressDocPage() {
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
           <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
-            <Progress.Root value={value} />
+            <Progress value={value} />
             <div className="flex items-center gap-2">
-              <Button.Root size="sm" onClick={() => setValue((v) => Math.max(v - 10, 0))}>-10</Button.Root>
-              <Button.Root size="sm" onClick={() => setValue((v) => Math.min(v + 10, 100))}>+10</Button.Root>
+              <Button size="sm" onClick={() => setValue((v) => Math.max(v - 10, 0))}>-10</Button>
+              <Button size="sm" onClick={() => setValue((v) => Math.min(v + 10, 100))}>+10</Button>
               <span className="text-xs text-slate-500 dark:text-slate-400">{value}%</span>
             </div>
           </div>

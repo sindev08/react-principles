@@ -35,7 +35,7 @@ const handleConfirm = async () => {
   Delete project
 </Button>
 
-<AlertDialog.Root
+<AlertDialog
   open={open}
   onClose={() => setOpen(false)}
   onConfirm={handleConfirm}
@@ -374,11 +374,10 @@ export default function AlertDialogDocPage() {
                   <button
                     key={v}
                     onClick={() => setActiveVariant(v)}
-                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                      activeVariant === v
+                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${activeVariant === v
                         ? "bg-primary text-white"
                         : "bg-slate-100 dark:bg-[#1f2937] text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-[#2d3748]"
-                    }`}
+                      }`}
                   >
                     {v}
                   </button>
@@ -400,7 +399,7 @@ export default function AlertDialogDocPage() {
 
           {/* Alert dialogs for each variant */}
           {VARIANTS.map((v) => (
-            <AlertDialog.Root
+            <AlertDialog
               key={v}
               open={openVariant === v}
               onClose={() => { if (!isLoading) setOpenVariant(null); }}
@@ -428,7 +427,7 @@ export default function AlertDialogDocPage() {
           </CodeBlock>
           <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
             Bentuk lama <code>&lt;AlertDialog /&gt;</code> tetap jalan. Bentuk baru
-            namespaced yang direkomendasikan adalah <code>&lt;AlertDialog.Root /&gt;</code>.
+            namespaced yang direkomendasikan adalah <code>&lt;AlertDialog /&gt;</code>.
           </p>
         </section>
 

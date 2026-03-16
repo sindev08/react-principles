@@ -10,11 +10,11 @@ const CommandContext = createContext<CommandContextValue | null>(null);
 
 function useCommandContext() {
   const context = useContext(CommandContext);
-  if (!context) throw new Error("Command sub-components must be used inside <Command.Root>");
+  if (!context) throw new Error("Command sub-components must be used inside <Command>");
   return context;
 }
 
-function CommandRoot({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+export function Command({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const [query, setQuery] = useState("");
 
   return (
@@ -30,7 +30,7 @@ function CommandRoot({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   );
 }
 
-function CommandInput({ className, ...props }: InputHTMLAttributes<HTMLInputElement>) {
+Command.Input = function CommandInput({ className, ...props }: InputHTMLAttributes<HTMLInputElement>) {
   const { query, setQuery } = useCommandContext();
 
   return (
@@ -49,7 +49,7 @@ function CommandInput({ className, ...props }: InputHTMLAttributes<HTMLInputElem
   );
 }
 
-function CommandList({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+Command.List = function CommandList({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("max-h-64 overflow-y-auto p-1", className)} {...props} />;
 }
 
@@ -59,7 +59,7 @@ interface CommandItemProps extends HTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
 }
 
-function CommandItem({ value, keywords, className, children, ...props }: CommandItemProps) {
+Command.Item = function CommandItem({ value, keywords, className, children, ...props }: CommandItemProps) {
   const { query } = useCommandContext();
 
   const visible = useMemo(() => {
@@ -85,17 +85,17 @@ function CommandItem({ value, keywords, className, children, ...props }: Command
   );
 }
 
-function CommandEmpty({ className, children = "No results" }: { className?: string; children?: ReactNode }) {
+Command.Empty = function CommandEmpty({ className, children = "No results" }: { className?: string; children?: ReactNode }) {
   const { query } = useCommandContext();
   if (!query.trim()) return null;
   return <p className={cn("px-3 py-5 text-center text-xs text-slate-500 dark:text-slate-400", className)}>{children}</p>;
 }
 
-function CommandGroup({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+Command.Group = function CommandGroup({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("space-y-1", className)} {...props} />;
 }
 
-function CommandLabel({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
+Command.Label = function CommandLabel({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
       className={cn("px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400", className)}
@@ -104,30 +104,6 @@ function CommandLabel({ className, ...props }: HTMLAttributes<HTMLParagraphEleme
   );
 }
 
-function CommandSeparator({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+Command.Separator = function CommandSeparator({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("my-1 h-px bg-slate-200 dark:bg-[#1f2937]", className)} {...props} />;
 }
-
-type CommandCompoundComponent = typeof CommandRoot & {
-  Root: typeof CommandRoot;
-  Input: typeof CommandInput;
-  List: typeof CommandList;
-  Item: typeof CommandItem;
-  Empty: typeof CommandEmpty;
-  Group: typeof CommandGroup;
-  Label: typeof CommandLabel;
-  Separator: typeof CommandSeparator;
-};
-
-export const Command = Object.assign(CommandRoot, {
-  Root: CommandRoot,
-  Input: CommandInput,
-  List: CommandList,
-  Item: CommandItem,
-  Empty: CommandEmpty,
-  Group: CommandGroup,
-  Label: CommandLabel,
-  Separator: CommandSeparator,
-}) as CommandCompoundComponent;
-
-export { CommandInput, CommandList, CommandItem, CommandEmpty, CommandGroup, CommandLabel, CommandSeparator };
