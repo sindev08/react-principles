@@ -15,7 +15,7 @@ const PopoverContext = createContext<PopoverContextValue | null>(null);
 
 function usePopoverContext() {
   const context = useContext(PopoverContext);
-  if (!context) throw new Error("Popover sub-components must be used inside <Popover.Root>");
+  if (!context) throw new Error("Popover sub-components must be used inside <Popover>");
   return context;
 }
 
@@ -41,7 +41,7 @@ export interface PopoverCloseProps extends ButtonHTMLAttributes<HTMLButtonElemen
   children?: ReactNode;
 }
 
-function PopoverRoot({
+export function Popover({
   open,
   defaultOpen = false,
   onOpenChange,
@@ -91,7 +91,7 @@ function PopoverRoot({
   );
 }
 
-function PopoverTrigger({ children, className, onClick, ...props }: PopoverTriggerProps) {
+Popover.Trigger = function PopoverTrigger({ children, className, onClick, ...props }: PopoverTriggerProps) {
   const { open, setOpen } = usePopoverContext();
 
   return (
@@ -124,7 +124,7 @@ const ALIGN_CLASS: Record<PopoverAlign, string> = {
   end: "right-0",
 };
 
-function PopoverContent({ children, className, ...props }: PopoverContentProps) {
+Popover.Content = function PopoverContent({ children, className, ...props }: PopoverContentProps) {
   const { open, side, align } = usePopoverContext();
 
   if (!open) return null;
@@ -144,7 +144,7 @@ function PopoverContent({ children, className, ...props }: PopoverContentProps) 
   );
 }
 
-function PopoverClose({ children = "Close", className, onClick, ...props }: PopoverCloseProps) {
+Popover.Close = function PopoverClose({ children = "Close", className, onClick, ...props }: PopoverCloseProps) {
   const { setOpen } = usePopoverContext();
 
   return (
@@ -161,19 +161,3 @@ function PopoverClose({ children = "Close", className, onClick, ...props }: Popo
     </button>
   );
 }
-
-type PopoverCompoundComponent = typeof PopoverRoot & {
-  Root: typeof PopoverRoot;
-  Trigger: typeof PopoverTrigger;
-  Content: typeof PopoverContent;
-  Close: typeof PopoverClose;
-};
-
-export const Popover = Object.assign(PopoverRoot, {
-  Root: PopoverRoot,
-  Trigger: PopoverTrigger,
-  Content: PopoverContent,
-  Close: PopoverClose,
-}) as PopoverCompoundComponent;
-
-export { PopoverTrigger, PopoverContent, PopoverClose };

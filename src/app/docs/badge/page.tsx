@@ -48,17 +48,17 @@ const SIZES: BadgeSize[] = ["sm", "md", "lg"];
 const CODE_SNIPPET = `import { Badge } from "@/ui/Badge";
 
 // Variants
-<Badge.Root variant="default">Default</Badge.Root>
-<Badge.Root variant="success">Active</Badge.Root>
-<Badge.Root variant="warning">Pending</Badge.Root>
-<Badge.Root variant="error">Inactive</Badge.Root>
-<Badge.Root variant="info">Review</Badge.Root>
-<Badge.Root variant="outline">Draft</Badge.Root>
+<Badge variant="default">Default</Badge>
+<Badge variant="success">Active</Badge>
+<Badge variant="warning">Pending</Badge>
+<Badge variant="error">Inactive</Badge>
+<Badge variant="info">Review</Badge>
+<Badge variant="outline">Draft</Badge>
 
 // Sizes
-<Badge.Root size="sm" variant="success">Small</Badge.Root>
-<Badge.Root size="md" variant="info">Medium</Badge.Root>
-<Badge.Root size="lg" variant="default">Large</Badge.Root>`;
+<Badge size="sm" variant="success">Small</Badge>
+<Badge size="md" variant="info">Medium</Badge>
+<Badge size="lg" variant="default">Large</Badge>`;
 
 const COPY_PASTE_SNIPPET = `import type { ReactNode } from "react";
 
@@ -219,11 +219,10 @@ export default function BadgeDocPage() {
                   <button
                     key={s}
                     onClick={() => setActiveSize(s)}
-                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                      activeSize === s
+                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${activeSize === s
                         ? "bg-primary text-white"
                         : "bg-slate-100 dark:bg-[#1f2937] text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-[#2d3748]"
-                    }`}
+                      }`}
                   >
                     {s}
                   </button>
@@ -231,14 +230,14 @@ export default function BadgeDocPage() {
               </div>
             </div>
             {/* All variants */}
-              <div className="flex flex-wrap items-center gap-3">
-                {VARIANTS.map(({ variant, label }) => (
-                  <Badge.Root key={variant} variant={variant} size={activeSize}>
-                    {label}
-                  </Badge.Root>
-                ))}
-              </div>
+            <div className="flex flex-wrap items-center gap-3">
+              {VARIANTS.map(({ variant, label }) => (
+                <Badge key={variant} variant={variant} size={activeSize}>
+                  {label}
+                </Badge>
+              ))}
             </div>
+          </div>
         </section>
 
         {/* 03 Code Snippet */}
@@ -254,7 +253,7 @@ export default function BadgeDocPage() {
           </CodeBlock>
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
             Backward compatible: API lama <code className="font-mono">{"<Badge />"}</code> tetap didukung, canonical style pakai
-            <code className="font-mono"> {"<Badge.Root />"}</code>.
+            <code className="font-mono"> {"<Badge />"}</code>.
           </p>
         </section>
 

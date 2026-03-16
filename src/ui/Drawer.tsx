@@ -55,7 +55,7 @@ const SIDE_CLASSES: Record<DrawerSide, { panel: string; hidden: string }> = {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-export function DrawerHeader({ children, className, ...props }: DrawerHeaderProps) {
+Drawer.Header = function DrawerHeader({ children, className, ...props }: DrawerHeaderProps) {
   return (
     <div className={cn("px-6 pt-6 pb-4 border-b border-slate-100 dark:border-[#1f2937]", className)} {...props}>
       {children}
@@ -63,7 +63,7 @@ export function DrawerHeader({ children, className, ...props }: DrawerHeaderProp
   );
 }
 
-export function DrawerTitle({ children, className, ...props }: DrawerTitleProps) {
+Drawer.Title = function DrawerTitle({ children, className, ...props }: DrawerTitleProps) {
   return (
     <h2 className={cn("text-lg font-semibold text-slate-900 dark:text-white pr-8", className)} {...props}>
       {children}
@@ -71,7 +71,7 @@ export function DrawerTitle({ children, className, ...props }: DrawerTitleProps)
   );
 }
 
-export function DrawerDescription({ children, className, ...props }: DrawerDescriptionProps) {
+Drawer.Description = function DrawerDescription({ children, className, ...props }: DrawerDescriptionProps) {
   return (
     <p className={cn("mt-1 text-sm text-slate-500 dark:text-slate-400 leading-relaxed", className)} {...props}>
       {children}
@@ -79,7 +79,7 @@ export function DrawerDescription({ children, className, ...props }: DrawerDescr
   );
 }
 
-export function DrawerContent({ children, className, ...props }: DrawerContentProps) {
+Drawer.Content = function DrawerContent({ children, className, ...props }: DrawerContentProps) {
   return (
     <div className={cn("flex-1 overflow-y-auto px-6 py-4", className)} {...props}>
       {children}
@@ -87,7 +87,7 @@ export function DrawerContent({ children, className, ...props }: DrawerContentPr
   );
 }
 
-export function DrawerFooter({ children, className, ...props }: DrawerFooterProps) {
+Drawer.Footer = function DrawerFooter({ children, className, ...props }: DrawerFooterProps) {
   return (
     <div className={cn("px-6 py-4 border-t border-slate-100 dark:border-[#1f2937] flex items-center justify-end gap-3 shrink-0", className)} {...props}>
       {children}
@@ -97,7 +97,7 @@ export function DrawerFooter({ children, className, ...props }: DrawerFooterProp
 
 // ─── Drawer ───────────────────────────────────────────────────────────────────
 
-function DrawerRoot({ open, onClose, side = "right", size = "md", children, className }: DrawerProps) {
+export function Drawer({ open, onClose, side = "right", size = "md", children, className }: DrawerProps) {
   const backdropRef = useRef<HTMLDivElement>(null);
   const { mounted, visible } = useAnimatedMount(open, 300);
 
@@ -171,21 +171,3 @@ function DrawerRoot({ open, onClose, side = "right", size = "md", children, clas
 
   return createPortal(drawer, document.body);
 }
-
-type DrawerCompoundComponent = typeof DrawerRoot & {
-  Root: typeof DrawerRoot;
-  Header: typeof DrawerHeader;
-  Title: typeof DrawerTitle;
-  Description: typeof DrawerDescription;
-  Content: typeof DrawerContent;
-  Footer: typeof DrawerFooter;
-};
-
-export const Drawer = Object.assign(DrawerRoot, {
-  Root: DrawerRoot,
-  Header: DrawerHeader,
-  Title: DrawerTitle,
-  Description: DrawerDescription,
-  Content: DrawerContent,
-  Footer: DrawerFooter,
-}) as DrawerCompoundComponent;

@@ -13,7 +13,7 @@ const TooltipContext = createContext<TooltipContextValue | null>(null);
 
 function useTooltipContext() {
   const context = useContext(TooltipContext);
-  if (!context) throw new Error("Tooltip sub-components must be used inside <Tooltip.Root>");
+  if (!context) throw new Error("Tooltip sub-components must be used inside <Tooltip>");
   return context;
 }
 
@@ -32,7 +32,7 @@ export interface TooltipContentProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
 }
 
-function TooltipRoot({ defaultOpen = false, side = "top", children, className }: TooltipProps) {
+export function Tooltip({ defaultOpen = false, side = "top", children, className }: TooltipProps) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (
@@ -42,7 +42,7 @@ function TooltipRoot({ defaultOpen = false, side = "top", children, className }:
   );
 }
 
-function TooltipTrigger({ children, className, ...props }: TooltipTriggerProps) {
+Tooltip.Trigger = function TooltipTrigger({ children, className, ...props }: TooltipTriggerProps) {
   const { setOpen } = useTooltipContext();
 
   return (
@@ -66,7 +66,7 @@ const SIDE_CLASSES: Record<TooltipSide, string> = {
   right: "left-[calc(100%+8px)] top-1/2 -translate-y-1/2",
 };
 
-function TooltipContent({ children, className, ...props }: TooltipContentProps) {
+Tooltip.Content = function TooltipContent({ children, className, ...props }: TooltipContentProps) {
   const { open, side } = useTooltipContext();
 
   return (
@@ -84,17 +84,3 @@ function TooltipContent({ children, className, ...props }: TooltipContentProps) 
     </div>
   );
 }
-
-type TooltipCompoundComponent = typeof TooltipRoot & {
-  Root: typeof TooltipRoot;
-  Trigger: typeof TooltipTrigger;
-  Content: typeof TooltipContent;
-};
-
-export const Tooltip = Object.assign(TooltipRoot, {
-  Root: TooltipRoot,
-  Trigger: TooltipTrigger,
-  Content: TooltipContent,
-}) as TooltipCompoundComponent;
-
-export { TooltipTrigger, TooltipContent };

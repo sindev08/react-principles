@@ -26,7 +26,7 @@ const THUMB_SIZES: Record<SwitchSize, string> = {
   lg: "h-6 w-6 data-[checked=true]:translate-x-7",
 };
 
-function SwitchRoot({
+export function Switch({
   checked,
   defaultChecked = false,
   onChange,
@@ -89,11 +89,3 @@ function SwitchRoot({
     </div>
   );
 }
-
-type SwitchCompoundComponent = typeof SwitchRoot & {
-  Root: typeof SwitchRoot;
-};
-
-export const Switch = Object.assign(SwitchRoot, {
-  Root: SwitchRoot,
-}) as SwitchCompoundComponent;

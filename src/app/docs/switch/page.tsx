@@ -13,7 +13,7 @@ const TOC_ITEMS = [
 
 const CODE_SNIPPET = `import { Switch } from "@/ui/Switch";
 
-<Switch.Root
+<Switch
   checked={enabled}
   onChange={setEnabled}
   label="Enable analytics"
@@ -79,13 +79,13 @@ export default function SwitchDocPage() {
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
           <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
-            <Switch.Root
+            <Switch
               checked={enabled}
               onChange={setEnabled}
               label="Enable analytics"
               description={enabled ? "Analytics is active" : "Analytics is disabled"}
             />
-            <Switch.Root defaultChecked={false} label="Email alerts" description="Receive weekly summary emails." />
+            <Switch defaultChecked={false} label="Email alerts" description="Receive weekly summary emails." />
           </div>
         </section>
 

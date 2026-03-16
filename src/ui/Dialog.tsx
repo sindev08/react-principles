@@ -48,7 +48,7 @@ const SIZE_CLASSES: Record<DialogSize, string> = {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-export function DialogHeader({ children, className, ...props }: DialogHeaderProps) {
+Dialog.Header = function DialogHeader({ children, className, ...props }: DialogHeaderProps) {
   return (
     <div className={cn("px-6 pt-6 pb-4", className)} {...props}>
       {children}
@@ -56,7 +56,7 @@ export function DialogHeader({ children, className, ...props }: DialogHeaderProp
   );
 }
 
-export function DialogTitle({ children, className, ...props }: DialogTitleProps) {
+Dialog.Title = function DialogTitle({ children, className, ...props }: DialogTitleProps) {
   return (
     <h2 className={cn("text-lg font-semibold text-slate-900 dark:text-white pr-8", className)} {...props}>
       {children}
@@ -64,7 +64,7 @@ export function DialogTitle({ children, className, ...props }: DialogTitleProps)
   );
 }
 
-export function DialogDescription({ children, className, ...props }: DialogDescriptionProps) {
+Dialog.Description = function DialogDescription({ children, className, ...props }: DialogDescriptionProps) {
   return (
     <p className={cn("mt-1.5 text-sm text-slate-500 dark:text-slate-400 leading-relaxed", className)} {...props}>
       {children}
@@ -72,7 +72,7 @@ export function DialogDescription({ children, className, ...props }: DialogDescr
   );
 }
 
-export function DialogContent({ children, className, ...props }: DialogContentProps) {
+Dialog.Content = function DialogContent({ children, className, ...props }: DialogContentProps) {
   return (
     <div className={cn("px-6 py-2", className)} {...props}>
       {children}
@@ -80,7 +80,7 @@ export function DialogContent({ children, className, ...props }: DialogContentPr
   );
 }
 
-export function DialogFooter({ children, className, ...props }: DialogFooterProps) {
+Dialog.Footer = function DialogFooter({ children, className, ...props }: DialogFooterProps) {
   return (
     <div className={cn("px-6 py-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-[#1f2937]", className)} {...props}>
       {children}
@@ -90,7 +90,7 @@ export function DialogFooter({ children, className, ...props }: DialogFooterProp
 
 // ─── Dialog ───────────────────────────────────────────────────────────────────
 
-function DialogRoot({ open, onClose, size = "md", children, className }: DialogProps) {
+export function Dialog({ open, onClose, size = "md", children, className }: DialogProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const { mounted, visible } = useAnimatedMount(open, 200);
 
@@ -159,21 +159,3 @@ function DialogRoot({ open, onClose, size = "md", children, className }: DialogP
 
   return createPortal(panel, document.body);
 }
-
-type DialogCompoundComponent = typeof DialogRoot & {
-  Root: typeof DialogRoot;
-  Header: typeof DialogHeader;
-  Title: typeof DialogTitle;
-  Description: typeof DialogDescription;
-  Content: typeof DialogContent;
-  Footer: typeof DialogFooter;
-};
-
-export const Dialog = Object.assign(DialogRoot, {
-  Root: DialogRoot,
-  Header: DialogHeader,
-  Title: DialogTitle,
-  Description: DialogDescription,
-  Content: DialogContent,
-  Footer: DialogFooter,
-}) as DialogCompoundComponent;

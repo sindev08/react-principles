@@ -47,13 +47,13 @@ const TabsContext = createContext<TabsContextValue | null>(null);
 
 function useTabsContext() {
   const ctx = useContext(TabsContext);
-  if (!ctx) throw new Error("Tabs sub-components must be used inside <Tabs> or <Tabs.Root>");
+  if (!ctx) throw new Error("Tabs sub-components must be used inside <Tabs> or <Tabs>");
   return ctx;
 }
 
 // ─── Components ───────────────────────────────────────────────────────────────
 
-function TabsRoot({
+export function Tabs({
   value,
   defaultValue = "",
   onChange,
@@ -77,7 +77,7 @@ function TabsRoot({
   );
 }
 
-export function TabsList({ children, className, ...props }: TabsListProps) {
+Tabs.List = function TabsList({ children, className, ...props }: TabsListProps) {
   const { variant } = useTabsContext();
 
   return (
@@ -96,7 +96,7 @@ export function TabsList({ children, className, ...props }: TabsListProps) {
   );
 }
 
-export function TabsTrigger({ value, children, disabled, className, ...props }: TabsTriggerProps) {
+Tabs.Trigger = function TabsTrigger({ value, children, disabled, className, ...props }: TabsTriggerProps) {
   const { active, setActive, variant } = useTabsContext();
   const isActive = active === value;
 
@@ -135,7 +135,7 @@ export function TabsTrigger({ value, children, disabled, className, ...props }: 
   );
 }
 
-export function TabsContent({ value, children, className, ...props }: TabsContentProps) {
+Tabs.Content = function TabsContent({ value, children, className, ...props }: TabsContentProps) {
   const { active } = useTabsContext();
 
   if (active !== value) return null;
@@ -150,17 +150,3 @@ export function TabsContent({ value, children, className, ...props }: TabsConten
     </div>
   );
 }
-
-type TabsCompoundComponent = typeof TabsRoot & {
-  Root: typeof TabsRoot;
-  List: typeof TabsList;
-  Trigger: typeof TabsTrigger;
-  Content: typeof TabsContent;
-};
-
-export const Tabs = Object.assign(TabsRoot, {
-  Root: TabsRoot,
-  List: TabsList,
-  Trigger: TabsTrigger,
-  Content: TabsContent,
-}) as TabsCompoundComponent;

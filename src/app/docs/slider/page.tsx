@@ -13,7 +13,7 @@ const TOC_ITEMS = [
 
 const CODE_SNIPPET = `import { Slider } from "@/ui/Slider";
 
-<Slider.Root
+<Slider
   label="Volume"
   value={volume}
   min={0}
@@ -41,7 +41,7 @@ export default function SliderDocPage() {
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
           <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
-            <Slider.Root label="Volume" value={volume} onValueChange={setVolume} />
+            <Slider label="Volume" value={volume} onValueChange={setVolume} />
             <p className="text-xs text-slate-500 dark:text-slate-400">Current value: {volume}</p>
           </div>
         </section>
