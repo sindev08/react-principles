@@ -13,9 +13,9 @@ const TOC_ITEMS = [
 const CODE_SNIPPET = `import { Skeleton } from "@/ui/Skeleton";
 
 <div className="space-y-3">
-  <Skeleton.Root variant="line" width="70%" />
-  <Skeleton.Root variant="line" width="45%" />
-  <Skeleton.Root variant="rect" className="h-24" />
+  <Skeleton variant="line" width="70%" />
+  <Skeleton variant="line" width="45%" />
+  <Skeleton variant="rect" className="h-24" />
 </div>`;
 
 const COPY_PASTE_SNIPPET = `type SkeletonProps = {
@@ -58,13 +58,13 @@ export default function SkeletonDocPage() {
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
           <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
             <div className="flex items-center gap-3">
-              <Skeleton.Root variant="circle" />
+              <Skeleton variant="circle" />
               <div className="flex-1 space-y-2">
-                <Skeleton.Root variant="line" width="50%" />
-                <Skeleton.Root variant="line" width="35%" />
+                <Skeleton variant="line" width="50%" />
+                <Skeleton variant="line" width="35%" />
               </div>
             </div>
-            <Skeleton.Root variant="rect" className="h-24" />
+            <Skeleton variant="rect" className="h-24" />
           </div>
         </section>
 

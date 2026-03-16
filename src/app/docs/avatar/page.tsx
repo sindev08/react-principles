@@ -12,10 +12,10 @@ const TOC_ITEMS = [
 
 const CODE_SNIPPET = `import { Avatar } from "@/ui/Avatar";
 
-<Avatar.Root size="lg">
+<Avatar size="lg">
   <Avatar.Image src="https://i.pravatar.cc/120" alt="Profile" />
   <Avatar.Fallback>JD</Avatar.Fallback>
-</Avatar.Root>`;
+</Avatar>`;
 
 const COPY_PASTE_SNIPPET = `function AvatarRoot({ children }: { children: React.ReactNode }) {
   return <span className="inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-slate-100">{children}</span>;
@@ -34,22 +34,22 @@ export default function AvatarDocPage() {
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
           <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
-            <Avatar.Root size="sm">
+            <Avatar size="sm">
               <Avatar.Image src="https://i.pravatar.cc/40?img=15" alt="User" />
               <Avatar.Fallback>AL</Avatar.Fallback>
-            </Avatar.Root>
-            <Avatar.Root size="md">
+            </Avatar>
+            <Avatar size="md">
               <Avatar.Image src="https://i.pravatar.cc/60?img=32" alt="User" />
               <Avatar.Fallback>BR</Avatar.Fallback>
-            </Avatar.Root>
-            <Avatar.Root size="lg">
+            </Avatar>
+            <Avatar size="lg">
               <Avatar.Image src="https://i.pravatar.cc/100?img=12" alt="User" />
               <Avatar.Fallback>CK</Avatar.Fallback>
-            </Avatar.Root>
-            <Avatar.Root size="xl">
+            </Avatar>
+            <Avatar size="xl">
               <Avatar.Image src="https://invalid.example.com/avatar.png" alt="Fallback" />
               <Avatar.Fallback>DD</Avatar.Fallback>
-            </Avatar.Root>
+            </Avatar>
           </div>
         </section>
 

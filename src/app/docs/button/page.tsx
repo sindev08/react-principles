@@ -48,20 +48,20 @@ const BASE_BTN = "inline-flex items-center justify-center font-semibold rounded-
 const CODE_SNIPPET = `import { Button } from "@/ui/Button";
 
 // Variants
-<Button.Root variant="primary">Save changes</Button.Root>
-<Button.Root variant="secondary">Cancel</Button.Root>
-<Button.Root variant="ghost">Learn more</Button.Root>
-<Button.Root variant="destructive">Delete account</Button.Root>
-<Button.Root variant="outline">View details</Button.Root>
+<Button variant="primary">Save changes</Button>
+<Button variant="secondary">Cancel</Button>
+<Button variant="ghost">Learn more</Button>
+<Button variant="destructive">Delete account</Button>
+<Button variant="outline">View details</Button>
 
 // Sizes
-<Button.Root size="sm">Small</Button.Root>
-<Button.Root size="md">Medium</Button.Root>
-<Button.Root size="lg">Large</Button.Root>
+<Button size="sm">Small</Button>
+<Button size="md">Medium</Button>
+<Button size="lg">Large</Button>
 
 // States
-<Button.Root isLoading>Saving...</Button.Root>
-<Button.Root disabled>Unavailable</Button.Root>`;
+<Button isLoading>Saving...</Button>
+<Button disabled>Unavailable</Button>`;
 
 const COPY_PASTE_SNIPPET = `import type { ButtonHTMLAttributes, ReactNode } from "react";
 
@@ -250,11 +250,10 @@ export default function ButtonDocPage() {
                     <button
                       key={variant}
                       onClick={() => setActiveVariant(variant)}
-                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                        activeVariant === variant
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${activeVariant === variant
                           ? "bg-primary text-white"
                           : "bg-slate-100 dark:bg-[#1f2937] text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-[#2d3748]"
-                      }`}
+                        }`}
                     >
                       {label}
                     </button>
@@ -268,11 +267,10 @@ export default function ButtonDocPage() {
                     <button
                       key={s}
                       onClick={() => setActiveSize(s)}
-                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                        activeSize === s
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${activeSize === s
                           ? "bg-primary text-white"
                           : "bg-slate-100 dark:bg-[#1f2937] text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-[#2d3748]"
-                      }`}
+                        }`}
                     >
                       {s}
                     </button>
@@ -296,21 +294,21 @@ export default function ButtonDocPage() {
 
             {/* Preview */}
             <div className="flex flex-wrap items-center gap-4 py-6 border-t border-slate-100 dark:border-[#1f2937]">
-              <Button.Root
+              <Button
                 variant={activeVariant}
                 size={activeSize}
                 disabled={isDisabled}
               >
                 Click me
-              </Button.Root>
-              <Button.Root
+              </Button>
+              <Button
                 variant={activeVariant}
                 size={activeSize}
                 isLoading={isLoading}
                 onClick={handleLoadingDemo}
               >
                 {isLoading ? "Loading..." : "Try loading"}
-              </Button.Root>
+              </Button>
             </div>
           </div>
         </section>
@@ -328,7 +326,7 @@ export default function ButtonDocPage() {
           </CodeBlock>
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
             Backward compatible: API lama <code className="font-mono">{"<Button />"}</code> tetap didukung, tapi style utama sekarang
-            <code className="font-mono"> {"<Button.Root />"}</code>.
+            <code className="font-mono"> {"<Button />"}</code>.
           </p>
         </section>
 

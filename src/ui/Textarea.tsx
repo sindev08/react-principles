@@ -31,7 +31,7 @@ const VARIANT_CLASSES: Record<TextareaVariant, string> = {
 const ERROR_CLASSES =
   "border-red-400 dark:border-red-500 focus-within:border-red-400 dark:focus-within:border-red-500 focus-within:ring-red-400/20";
 
-const TextareaRoot = forwardRef<HTMLTextAreaElement, TextareaProps>(function TextareaRoot(
+export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function TextareaRoot(
   {
     label,
     description,
@@ -84,11 +84,3 @@ const TextareaRoot = forwardRef<HTMLTextAreaElement, TextareaProps>(function Tex
     </div>
   );
 });
-
-type TextareaCompoundComponent = typeof TextareaRoot & {
-  Root: typeof TextareaRoot;
-};
-
-export const Textarea = Object.assign(TextareaRoot, {
-  Root: TextareaRoot,
-}) as TextareaCompoundComponent;

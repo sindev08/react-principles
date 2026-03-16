@@ -26,10 +26,10 @@ const NOTIFICATION_ITEMS = [
 const CODE_SNIPPET = `import { Checkbox } from "@/ui/Checkbox";
 
 // Basic
-<Checkbox.Root label="Accept terms and conditions" />
+<Checkbox label="Accept terms and conditions" />
 
 // Controlled
-<Checkbox.Root
+<Checkbox
   checked={isChecked}
   onChange={setIsChecked}
   label="Email notifications"
@@ -37,7 +37,7 @@ const CODE_SNIPPET = `import { Checkbox } from "@/ui/Checkbox";
 />
 
 // Indeterminate (select-all pattern)
-<Checkbox.Root
+<Checkbox
   checked={allSelected}
   indeterminate={someSelected && !allSelected}
   onChange={handleSelectAll}
@@ -45,15 +45,15 @@ const CODE_SNIPPET = `import { Checkbox } from "@/ui/Checkbox";
 />
 
 // States
-<Checkbox.Root checked label="Checked" />
-<Checkbox.Root indeterminate label="Indeterminate" />
-<Checkbox.Root disabled label="Disabled" />
-<Checkbox.Root checked disabled label="Checked + disabled" />
+<Checkbox checked label="Checked" />
+<Checkbox indeterminate label="Indeterminate" />
+<Checkbox disabled label="Disabled" />
+<Checkbox checked disabled label="Checked + disabled" />
 
 // Sizes
-<Checkbox.Root size="sm" label="Small" />
-<Checkbox.Root size="md" label="Medium" />
-<Checkbox.Root size="lg" label="Large" />`;
+<Checkbox size="sm" label="Small" />
+<Checkbox size="md" label="Medium" />
+<Checkbox size="lg" label="Large" />`;
 
 const COPY_PASTE_SNIPPET = `import { useEffect, useRef } from "react";
 
@@ -271,11 +271,10 @@ export default function CheckboxDocPage() {
                   <button
                     key={s}
                     onClick={() => setActiveSize(s)}
-                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                      activeSize === s
+                    className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${activeSize === s
                         ? "bg-primary text-white"
                         : "bg-slate-100 dark:bg-[#1f2937] text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-[#2d3748]"
-                    }`}
+                      }`}
                   >
                     {s}
                   </button>
@@ -286,7 +285,7 @@ export default function CheckboxDocPage() {
             {/* Select all group */}
             <div className="space-y-1">
               <div className="pb-3 border-b border-slate-100 dark:border-[#1f2937]">
-                <Checkbox.Root
+                <Checkbox
                   size={activeSize}
                   checked={allChecked}
                   indeterminate={someChecked}
@@ -297,7 +296,7 @@ export default function CheckboxDocPage() {
               </div>
               <div className="pt-2 space-y-3 pl-2">
                 {NOTIFICATION_ITEMS.map((item) => (
-                  <Checkbox.Root
+                  <Checkbox
                     key={item.id}
                     size={activeSize}
                     checked={checked[item.id]}
@@ -311,8 +310,8 @@ export default function CheckboxDocPage() {
 
             {/* Disabled states */}
             <div className="pt-4 border-t border-slate-100 dark:border-[#1f2937] flex flex-wrap gap-6">
-              <Checkbox.Root size={activeSize} disabled label="Disabled unchecked" />
-              <Checkbox.Root size={activeSize} disabled checked label="Disabled checked" />
+              <Checkbox size={activeSize} disabled label="Disabled unchecked" />
+              <Checkbox size={activeSize} disabled checked label="Disabled checked" />
             </div>
           </div>
         </section>
@@ -330,7 +329,7 @@ export default function CheckboxDocPage() {
           </CodeBlock>
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
             Backward compatible: API lama <code className="font-mono">{"<Checkbox />"}</code> masih didukung, tapi docs sekarang pakai
-            <code className="font-mono"> {"<Checkbox.Root />"}</code>.
+            <code className="font-mono"> {"<Checkbox />"}</code>.
           </p>
         </section>
 

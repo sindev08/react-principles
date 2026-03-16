@@ -22,10 +22,10 @@ const VARIANTS: InputVariant[] = ["default", "filled", "ghost"];
 const CODE_SNIPPET = `import { Input } from "@/ui/Input";
 
 // Basic
-<Input.Root placeholder="Enter your email" />
+<Input placeholder="Enter your email" />
 
 // With label + description
-<Input.Root
+<Input
   label="Email address"
   description="We'll never share your email."
   placeholder="you@example.com"
@@ -33,14 +33,14 @@ const CODE_SNIPPET = `import { Input } from "@/ui/Input";
 />
 
 // Error state
-<Input.Root
+<Input
   label="Username"
   error="Username is already taken."
   defaultValue="johndoe"
 />
 
 // With icons
-<Input.Root
+<Input
   label="Search"
   leadingIcon={<SearchIcon />}
   trailingIcon={<ClearIcon />}
@@ -49,7 +49,7 @@ const CODE_SNIPPET = `import { Input } from "@/ui/Input";
 
 // Sizes: "sm" | "md" | "lg"
 // Variants: "default" | "filled" | "ghost"
-<Input.Root size="lg" variant="filled" label="Display name" />`;
+<Input size="lg" variant="filled" label="Display name" />`;
 
 const COPY_PASTE_SNIPPET = `import { forwardRef, type InputHTMLAttributes, type ReactNode } from "react";
 
@@ -338,11 +338,10 @@ export default function InputDocPage() {
                     <button
                       key={s}
                       onClick={() => setActiveSize(s)}
-                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                        activeSize === s
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${activeSize === s
                           ? "bg-primary text-white"
                           : "bg-slate-100 dark:bg-[#1f2937] text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-[#2d3748]"
-                      }`}
+                        }`}
                     >
                       {s}
                     </button>
@@ -356,11 +355,10 @@ export default function InputDocPage() {
                     <button
                       key={v}
                       onClick={() => setActiveVariant(v)}
-                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
-                        activeVariant === v
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${activeVariant === v
                           ? "bg-primary text-white"
                           : "bg-slate-100 dark:bg-[#1f2937] text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-[#2d3748]"
-                      }`}
+                        }`}
                     >
                       {v}
                     </button>
@@ -371,7 +369,7 @@ export default function InputDocPage() {
 
             {/* Inputs */}
             <div className="grid gap-4 sm:grid-cols-2">
-              <Input.Root
+              <Input
                 size={activeSize}
                 variant={activeVariant}
                 label="Search"
@@ -380,7 +378,7 @@ export default function InputDocPage() {
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
               />
-              <Input.Root
+              <Input
                 size={activeSize}
                 variant={activeVariant}
                 label="Email address"
@@ -389,7 +387,7 @@ export default function InputDocPage() {
                 leadingIcon={<MailIcon />}
                 description="We'll never share your email."
               />
-              <Input.Root
+              <Input
                 size={activeSize}
                 variant={activeVariant}
                 label="Username"
@@ -398,7 +396,7 @@ export default function InputDocPage() {
                 error="Username is already taken."
                 defaultValue="johndoe"
               />
-              <Input.Root
+              <Input
                 size={activeSize}
                 variant={activeVariant}
                 label="Password"
@@ -424,7 +422,7 @@ export default function InputDocPage() {
           </CodeBlock>
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
             Backward compatible: API lama <code className="font-mono">{"<Input />"}</code> tetap jalan, canonical style pakai
-            <code className="font-mono"> {"<Input.Root />"}</code>.
+            <code className="font-mono"> {"<Input />"}</code>.
           </p>
         </section>
 

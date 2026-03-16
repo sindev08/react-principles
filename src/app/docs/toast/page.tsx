@@ -14,13 +14,13 @@ const TOC_ITEMS = [
 
 const CODE_SNIPPET = `import { Toast } from "@/ui/Toast";
 
-<Toast.Root open={open} onOpenChange={setOpen} variant="success">
+<Toast open={open} onOpenChange={setOpen} variant="success">
   <Toast.Title>Saved successfully</Toast.Title>
   <Toast.Description>Your profile changes are now live.</Toast.Description>
   <Toast.Footer>
     <Toast.Close>Dismiss</Toast.Close>
   </Toast.Footer>
-</Toast.Root>`;
+</Toast>`;
 
 const COPY_PASTE_SNIPPET = `import { useEffect, useState, type ReactNode } from "react";
 
@@ -57,14 +57,14 @@ export default function ToastDocPage() {
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
           <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
-            <Button.Root onClick={() => setOpen(true)}>Show success toast</Button.Root>
-            <Toast.Root open={open} onOpenChange={setOpen} variant="success">
+            <Button onClick={() => setOpen(true)}>Show success toast</Button>
+            <Toast open={open} onOpenChange={setOpen} variant="success">
               <Toast.Title>Saved successfully</Toast.Title>
               <Toast.Description>Your profile changes are now live.</Toast.Description>
               <Toast.Footer>
                 <Toast.Close>Dismiss</Toast.Close>
               </Toast.Footer>
-            </Toast.Root>
+            </Toast>
           </div>
         </section>
 
