@@ -11,301 +11,99 @@ export interface ImplTab {
 
 export type DemoKey = "react-query" | "zustand" | "forms" | "table";
 
+export type ContentType = "recipe" | "reference" | "concept";
+
+export interface SeeAlsoItem {
+  slug: string;
+  label: string;
+}
+
+export interface LeadsTo {
+  slug: string;
+  teaser: string;
+}
+
+// ─── Recipe-specific fields ─────────────────────────────────────
+
+export interface RecipeProblem {
+  scenario: string;
+  mistake: string;
+}
+
+export interface CommonMistake {
+  title: string;
+  wrong: string;
+  right: string;
+  explanation: string;
+}
+
+// ─── Reference-specific fields ──────────────────────────────────
+
+export interface Alternative {
+  approach: string;
+  tradeoff: string;
+}
+
+// ─── Concept-specific fields ────────────────────────────────────
+
+export interface DecisionTreeItem {
+  condition: string;
+  answer: string;
+}
+
+export interface ConceptExample {
+  scenario: string;
+  decision: string;
+  why: string;
+}
+
+export interface CommonTrap {
+  trap: string;
+  fix: string;
+}
+
+// ─── Unified RecipeDetail ───────────────────────────────────────
+
 export interface RecipeDetail {
   slug: string;
   title: string;
+  contentType: ContentType;
   breadcrumbCategory: string;
   description: string;
   lastUpdated: string;
-  principle: { text: string; tip: string };
   rules: RuleItem[];
   pattern: { filename: string; code: string };
   implementation: { nextjs: ImplTab; vite: ImplTab };
   contributor: { name: string; role: string };
   demoKey?: DemoKey;
+
+  // Shared new fields
+  seeAlso?: SeeAlsoItem[];
+  leadsTo?: LeadsTo | null;
+
+  // Recipe-type fields
+  principle?: { text: string; tip: string };
+  problem?: RecipeProblem;
+  commonMistakes?: CommonMistake[];
+  checkpoint?: string[];
+
+  // Reference-type fields
+  context?: string;
+  convention?: { text: string; tip: string };
+  reasoning?: string;
+  alternatives?: Alternative[];
+
+  // Concept-type fields
+  mentalModel?: { text: string; tip: string };
+  decisionTree?: DecisionTreeItem[];
+  examples?: ConceptExample[];
+  commonTraps?: CommonTrap[];
 }
 
 export const RECIPE_DETAILS: Record<string, RecipeDetail> = {
-  "e-commerce-dashboard": {
-    slug: "e-commerce-dashboard",
-    title: "E-commerce Dashboard",
-    breadcrumbCategory: "Dashboards",
-    description:
-      "A full-featured admin panel using TanStack Query for server state and TanStack Table for data rendering with real-time updates.",
-    principle: {
-      text: "Dashboard architecture separates data fetching from UI rendering. TanStack Query manages all server state — metrics, orders, inventory — while TanStack Table handles display logic. This eliminates the need for manual caching and pagination state.",
-      tip: "Centralize all query keys in a factory file. This prevents key collisions and makes invalidation predictable across your entire dashboard.",
-    },
-    rules: [
-      { title: "Query Key Factory", description: "Use hierarchical array keys: [\"orders\", \"list\", filters] for precise cache control." },
-      { title: "Separate Data Layers", description: "Keep fetch functions outside components. Services folder → custom hooks → UI." },
-      { title: "Prefetch on Hover", description: "Prefetch linked records on hover to make navigation feel instant." },
-      { title: "Optimistic UI", description: "Apply mutations optimistically and roll back on error for a snappy user experience." },
-    ],
-    pattern: {
-      filename: "hooks/queries/useDashboardMetrics.ts",
-      code: `import { useQuery } from '@tanstack/react-query';
-import { dashboardKeys } from '@/lib/query-keys';
-
-export const useDashboardMetrics = (range: DateRange) => {
-  return useQuery({
-    queryKey: dashboardKeys.metrics(range),
-    queryFn: () => fetchMetrics(range),
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    placeholderData: (prev) => prev,
-  });
-};`,
-    },
-    implementation: {
-      nextjs: {
-        description:
-          "In Next.js App Router, prefetch dashboard data in the server component and pass it to the client via HydrationBoundary for instant initial render.",
-        filename: "app/dashboard/page.tsx",
-        code: `import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
-import { getQueryClient } from '@/lib/get-query-client';
-
-export default async function DashboardPage() {
-  const qc = getQueryClient();
-  await qc.prefetchQuery({
-    queryKey: dashboardKeys.metrics('7d'),
-    queryFn: () => fetchMetrics('7d'),
-  });
-  return (
-    <HydrationBoundary state={dehydrate(qc)}>
-      <DashboardClient />
-    </HydrationBoundary>
-  );
-}`,
-      },
-      vite: {
-        description:
-          "In Vite, wrap your app in QueryClientProvider and use the custom hook directly in client components. Queries run on mount.",
-        filename: "pages/DashboardPage.tsx",
-        code: `import { useDashboardMetrics } from '@/hooks/queries/useDashboardMetrics';
-
-export function DashboardPage() {
-  const { data, isLoading, isError } = useDashboardMetrics('7d');
-
-  if (isLoading) return <MetricsSkeleton />;
-  if (isError) return <ErrorAlert />;
-
-  return <MetricsGrid data={data} />;
-}`,
-      },
-    },
-    lastUpdated: "Feb 26, 2026",
-    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
-  },
-
-  "saas-landing-page": {
-    slug: "saas-landing-page",
-    title: "SaaS Landing Page",
-    breadcrumbCategory: "Landing Pages",
-    description:
-      "Optimized conversion funnels with component composition, SSG/ISR, and accessible form layouts built for maximum performance.",
-    principle: {
-      text: "Landing pages must be statically generated for SEO and performance. Use a section-based component architecture where each section is an independent, lazily-loaded unit. Avoid client-side data fetching for above-the-fold content.",
-      tip: "Use ISR (Incremental Static Regeneration) for pricing and content sections that update occasionally without requiring a full rebuild.",
-    },
-    rules: [
-      { title: "Atomic Section Components", description: "Each section (Hero, Features, Pricing) is a standalone component with no shared state." },
-      { title: "Mobile-First CSS", description: "Design for 375px first. Scale up with sm:, md:, lg: breakpoints." },
-      { title: "Static Generation", description: "Use generateStaticParams or SSG — never getServerSideProps — for landing pages." },
-      { title: "Lazy Load Below Fold", description: "Dynamically import sections below the fold to reduce initial bundle size." },
-    ],
-    pattern: {
-      filename: "components/landing/SectionFactory.tsx",
-      code: `import dynamic from 'next/dynamic';
-
-const SECTIONS = {
-  hero: dynamic(() => import('./HeroSection')),
-  features: dynamic(() => import('./FeaturesSection')),
-  pricing: dynamic(() => import('./PricingSection')),
-} as const;
-
-export function SectionFactory({ type, props }: SectionProps) {
-  const Section = SECTIONS[type];
-  return <Section {...props} />;
-}`,
-    },
-    implementation: {
-      nextjs: {
-        description: "Use Next.js static generation with revalidation for dynamic pricing data while keeping the page fast.",
-        filename: "app/page.tsx",
-        code: `export const revalidate = 3600; // ISR: revalidate hourly
-
-export default async function LandingPage() {
-  const pricing = await fetchPricingPlans();
-  return (
-    <>
-      <HeroSection />
-      <FeaturesSection />
-      <PricingSection plans={pricing} />
-      <CTASection />
-    </>
-  );
-}`,
-      },
-      vite: {
-        description: "In Vite, use React.lazy and Suspense boundaries to lazy-load sections and reduce initial bundle.",
-        filename: "pages/LandingPage.tsx",
-        code: `const PricingSection = lazy(() => import('./sections/PricingSection'));
-
-export function LandingPage() {
-  return (
-    <>
-      <HeroSection />
-      <FeaturesSection />
-      <Suspense fallback={<PricingSkeleton />}>
-        <PricingSection />
-      </Suspense>
-    </>
-  );
-}`,
-      },
-    },
-    lastUpdated: "Feb 26, 2026",
-    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
-  },
-
-  "authentication-flow": {
-    slug: "authentication-flow",
-    title: "Authentication Flow",
-    breadcrumbCategory: "Auth Flows",
-    description:
-      "Secure login, signup, and token refresh patterns. Auth state lives in Zustand — never in React Query — with JWT and protected route handling.",
-    principle: {
-      text: "Authentication state is client state, not server state. It belongs in Zustand or Context, not React Query. The auth store manages tokens, user profile, and session status. API interceptors handle token refresh transparently.",
-      tip: "Store only the minimum necessary in auth state. Token expiry, user ID, and roles. Fetch full user profile via React Query when needed.",
-    },
-    rules: [
-      { title: "Never Store Sensitive Data in State", description: "Tokens live in httpOnly cookies or secure storage — never in React state or localStorage." },
-      { title: "Centralize Interceptors", description: "One Axios/fetch interceptor handles 401 responses and token refresh for all API calls." },
-      { title: "Separate Auth from UI", description: "AuthProvider wraps the app. UI components only call useAuth() — never touch tokens directly." },
-      { title: "Route Protection at Layout", description: "Protect routes at the layout level, not inside individual pages." },
-    ],
-    pattern: {
-      filename: "stores/useAuthStore.ts",
-      code: `import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      user: null,
-      isAuthenticated: false,
-      login: (user) => set({ user, isAuthenticated: true }),
-      logout: () => set({ user: null, isAuthenticated: false }),
-    }),
-    { name: 'auth-storage' },
-  ),
-);`,
-    },
-    implementation: {
-      nextjs: {
-        description: "Use Next.js Middleware to protect routes server-side before the page renders. Check the auth cookie on every request.",
-        filename: "middleware.ts",
-        code: `import { NextRequest, NextResponse } from 'next/server';
-
-export function middleware(req: NextRequest) {
-  const token = req.cookies.get('auth-token');
-  const isProtected = req.nextUrl.pathname.startsWith('/dashboard');
-
-  if (isProtected && !token) {
-    return NextResponse.redirect(new URL('/login', req.url));
-  }
-  return NextResponse.next();
-}`,
-      },
-      vite: {
-        description: "Wrap protected routes in a PrivateRoute component that checks Zustand auth state and redirects unauthenticated users.",
-        filename: "components/PrivateRoute.tsx",
-        code: `import { Navigate, Outlet } from 'react-router-dom';
-import { useAuthStore } from '@/stores/useAuthStore';
-
-export function PrivateRoute() {
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return <Outlet />;
-}`,
-      },
-    },
-    lastUpdated: "Feb 26, 2026",
-    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
-  },
-
-  "api-integration": {
-    slug: "api-integration",
-    title: "API Integration",
-    breadcrumbCategory: "API Integration",
-    description:
-      "Typed REST and GraphQL clients with interceptors, retry logic, and centralized error handling using React Query.",
-    principle: {
-      text: "All API calls flow through a single typed client layer. React Query wraps the client for caching and synchronization. Components never call fetch() directly — they use custom hooks that compose the query client and API client together.",
-      tip: "Use Zod to validate API responses at the boundary. This catches backend contract violations early and ensures your types are always accurate.",
-    },
-    rules: [
-      { title: "Single API Client Instance", description: "One Axios/fetch instance with all interceptors. Import it everywhere via a singleton." },
-      { title: "Type All Responses", description: "Define TypeScript interfaces for every endpoint. Use Zod for runtime validation." },
-      { title: "Centralized Error Handling", description: "Map API error codes to user-friendly messages in one place — not scattered in components." },
-      { title: "Retry Transient Failures", description: "Configure React Query retry logic for 5xx errors. Never retry 4xx client errors." },
-    ],
-    pattern: {
-      filename: "lib/api-client.ts",
-      code: `import axios from 'axios';
-import { z } from 'zod';
-
-const apiClient = axios.create({ baseURL: process.env.NEXT_PUBLIC_API_URL });
-
-export async function fetchTyped<T>(
-  url: string,
-  schema: z.ZodType<T>,
-): Promise<T> {
-  const { data } = await apiClient.get(url);
-  return schema.parse(data);
-}`,
-    },
-    implementation: {
-      nextjs: {
-        description: "In Next.js, use Route Handlers as a BFF (Backend for Frontend) layer to proxy external APIs and add auth headers server-side.",
-        filename: "app/api/posts/route.ts",
-        code: `import { NextResponse } from 'next/server';
-import { postListSchema } from '@/lib/schemas';
-
-export async function GET() {
-  const res = await fetch(process.env.EXTERNAL_API + '/posts', {
-    headers: { Authorization: \`Bearer \${process.env.API_SECRET}\` },
-    next: { revalidate: 60 },
-  });
-  const data = postListSchema.parse(await res.json());
-  return NextResponse.json(data);
-}`,
-      },
-      vite: {
-        description: "In Vite, call external APIs directly from custom hooks using the typed API client. Use environment variables for base URLs.",
-        filename: "hooks/queries/usePosts.ts",
-        code: `import { useQuery } from '@tanstack/react-query';
-import { fetchTyped } from '@/lib/api-client';
-import { postListSchema } from '@/lib/schemas';
-
-export const usePosts = () =>
-  useQuery({
-    queryKey: ['posts', 'list'],
-    queryFn: () => fetchTyped('/posts', postListSchema),
-    staleTime: 1000 * 60,
-  });`,
-      },
-    },
-    lastUpdated: "Feb 26, 2026",
-    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
-  },
-
   "server-state": {
     slug: "server-state",
+    contentType: "recipe",
     title: "Server State with React Query",
     breadcrumbCategory: "Patterns",
     description:
@@ -378,10 +176,17 @@ export function UsersPage() {
     lastUpdated: "Feb 26, 2026",
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
     demoKey: "react-query",
+    seeAlso: [
+      { slug: "services-layer", label: "API Integration flow: Services Layer" },
+      { slug: "typescript-for-react", label: "API Integration flow: Response Types" },
+      { slug: "state-taxonomy", label: "When to use React Query vs Zustand" },
+    ],
+    leadsTo: null,
   },
 
   "client-state": {
     slug: "client-state",
+    contentType: "recipe",
     title: "Client State with Zustand",
     breadcrumbCategory: "Patterns",
     description:
@@ -478,10 +283,16 @@ export function UserFilters() {
     lastUpdated: "Feb 26, 2026",
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
     demoKey: "zustand",
+    seeAlso: [
+      { slug: "state-taxonomy", label: "When to use Zustand vs React Query" },
+      { slug: "server-state", label: "Server state belongs in React Query" },
+    ],
+    leadsTo: null,
   },
 
   "form-validation": {
     slug: "form-validation",
+    contentType: "recipe",
     title: "Form Validation with Zod",
     breadcrumbCategory: "Patterns",
     description:
@@ -563,10 +374,15 @@ export function useCreateUser() {
     lastUpdated: "Feb 26, 2026",
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
     demoKey: "forms",
+    seeAlso: [
+      { slug: "typescript-for-react", label: "TypeScript patterns for type-safe forms" },
+    ],
+    leadsTo: null,
   },
 
   "data-tables": {
     slug: "data-tables",
+    contentType: "recipe",
     title: "Data Tables with TanStack Table",
     breadcrumbCategory: "Patterns",
     description:
@@ -648,131 +464,20 @@ export function UsersPage() {
     lastUpdated: "Feb 26, 2026",
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
     demoKey: "table",
-  },
-
-  "data-visualization": {
-    slug: "data-visualization",
-    title: "Data Visualization",
-    breadcrumbCategory: "Data Viz",
-    description:
-      "Composable chart components using Recharts with responsive containers, custom tooltips, and clean data transformation patterns.",
-    principle: {
-      text: "Charts are pure functions of data. Keep transformation logic outside components — map raw API responses to the exact shape your chart library expects before they reach the JSX. This keeps components declarative and makes the data pipeline independently testable.",
-      tip: "Always wrap charts in a ResponsiveContainer from Recharts. Hard-coded pixel widths break on resize and cause layout shifts on mobile.",
-    },
-    rules: [
-      { title: "Transform Before Render", description: "Derive chart-ready data with useMemo. Never transform inside JSX or inside the chart component itself." },
-      { title: "ResponsiveContainer Always", description: "Every chart must be wrapped in <ResponsiveContainer width='100%' height={300}>. Never pass fixed pixel widths." },
-      { title: "Custom Tooltip Component", description: "Build a typed CustomTooltip component instead of using Recharts' default. Gives full styling control and type safety." },
-      { title: "Skeleton on Loading", description: "Show a pulse skeleton at the same dimensions as the chart. Avoid layout shift when data loads." },
+    seeAlso: [
+      { slug: "server-state", label: "Data fetching with React Query" },
     ],
-    pattern: {
-      filename: "hooks/useChartData.ts",
-      code: `import { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-
-type ChartPoint = { month: string; revenue: number; orders: number };
-
-export function useRevenueChart(range: string) {
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['metrics', 'revenue', range],
-    queryFn: () => fetchRevenue(range),
-    staleTime: 1000 * 60 * 5,
-  });
-
-  const chartData = useMemo<ChartPoint[]>(() => {
-    if (!data) return [];
-    return data.map((d) => ({
-      month: formatMonth(d.date),
-      revenue: d.total_revenue,
-      orders: d.order_count,
-    }));
-  }, [data]);
-
-  return { chartData, isLoading, isError };
-}`,
-    },
-    implementation: {
-      nextjs: {
-        description:
-          "In Next.js App Router, import Recharts components only inside Client Components. Use dynamic import with ssr: false to prevent hydration mismatches from window-dependent chart code.",
-        filename: "components/charts/RevenueChart.tsx",
-        code: `'use client';
-
-import {
-  ResponsiveContainer, LineChart, Line,
-  XAxis, YAxis, CartesianGrid, Tooltip,
-} from 'recharts';
-import { useRevenueChart } from '@/hooks/useChartData';
-
-function CustomTooltip({ active, payload, label }: TooltipProps<number, string>) {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="rounded-lg border bg-white p-3 shadow-lg text-sm">
-      <p className="font-semibold text-slate-900">{label}</p>
-      <p className="text-primary">\${payload[0]?.value?.toLocaleString()}</p>
-    </div>
-  );
-}
-
-export function RevenueChart({ range }: { range: string }) {
-  const { chartData, isLoading } = useRevenueChart(range);
-
-  if (isLoading) return <div className="h-[300px] animate-pulse rounded-xl bg-slate-100" />;
-
-  return (
-    <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={chartData}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-        <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-        <YAxis tick={{ fontSize: 12 }} />
-        <Tooltip content={<CustomTooltip />} />
-        <Line type="monotone" dataKey="revenue" stroke="#4628F1" strokeWidth={2} dot={false} />
-      </LineChart>
-    </ResponsiveContainer>
-  );
-}`,
-      },
-      vite: {
-        description:
-          "In Vite, Recharts works out of the box with no SSR concerns. The same pattern applies — transform data with useMemo, wrap in ResponsiveContainer.",
-        filename: "components/charts/RevenueChart.tsx",
-        code: `import {
-  ResponsiveContainer, LineChart, Line,
-  XAxis, YAxis, CartesianGrid, Tooltip,
-} from 'recharts';
-import { useRevenueChart } from '@/hooks/useChartData';
-
-export function RevenueChart({ range }: { range: string }) {
-  const { chartData, isLoading } = useRevenueChart(range);
-
-  if (isLoading) return <div className="h-[300px] animate-pulse rounded-xl bg-slate-100" />;
-
-  return (
-    <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={chartData}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-        <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-        <YAxis tick={{ fontSize: 12 }} />
-        <Tooltip />
-        <Line type="monotone" dataKey="revenue" stroke="#4628F1" strokeWidth={2} dot={false} />
-      </LineChart>
-    </ResponsiveContainer>
-  );
-}`,
-      },
-    },
-    lastUpdated: "Feb 26, 2026",
-    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+    leadsTo: null,
   },
 
   "folder-structure": {
     slug: "folder-structure",
+    contentType: "reference",
     title: "Folder Structure",
     breadcrumbCategory: "Foundations",
     description: "A feature-based folder structure so you always know where a file goes — and why it belongs there.",
-    lastUpdated: "2026-03-01",
-    principle: {
+    lastUpdated: "Mar 17, 2026",
+    convention: {
       text: "A good folder structure answers one question instantly: 'where does this file go?' Feature-based organization groups everything related to a feature together — its components, hooks, and data — so you spend time building, not searching. When a feature grows or gets deleted, everything moves together.",
       tip: "If you can't decide where a file goes in under 10 seconds, your structure is too abstract. Feature-based organization should make the answer obvious.",
     },
@@ -853,15 +558,20 @@ export function RevenueChart({ range }: { range: string }) {
       },
     },
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+    leadsTo: {
+      slug: "component-anatomy",
+      teaser: "Udah tau dimana file-nya. Tapi isi file-nya berantakan?",
+    },
   },
 
   "typescript-for-react": {
     slug: "typescript-for-react",
+    contentType: "reference",
     title: "TypeScript for React",
     breadcrumbCategory: "Foundations",
     description: "How to type component props, event handlers, and hooks correctly. The contracts that prevent silent bugs.",
-    lastUpdated: "2026-03-01",
-    principle: {
+    lastUpdated: "Mar 17, 2026",
+    convention: {
       text: "Bugs caught at compile time cost nothing to fix. Bugs caught in production cost everything. TypeScript for React is not about learning the full TypeScript language — it is about writing the right contracts between your components so that mistakes are caught before the code even runs.",
       tip: "Start by typing your component props. If you can describe what a component accepts and returns, the rest of the types follow naturally.",
     },
@@ -961,15 +671,24 @@ function useUser(id: string): {
       },
     },
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+    seeAlso: [
+      { slug: "services-layer", label: "API Integration flow: Response Types" },
+      { slug: "server-state", label: "API Integration flow: Typed Query Hooks" },
+    ],
+    leadsTo: {
+      slug: "useeffect-render-cycle",
+      teaser: "Types udah aman. Tapi kok useEffect jalan terus? Infinite loop!",
+    },
   },
 
   "component-anatomy": {
     slug: "component-anatomy",
+    contentType: "reference",
     title: "Component Anatomy",
     breadcrumbCategory: "Foundations",
     description: "The consistent internal structure every component follows — imports, types, constants, function, export.",
-    lastUpdated: "2026-03-01",
-    principle: {
+    lastUpdated: "Mar 17, 2026",
+    convention: {
       text: "When every component follows the same structure, you stop thinking about where things go inside a file and start thinking about what the component actually does. Consistent anatomy means anyone on the team can open any file and immediately know where to look — props are always at the top, constants are always before the function, exports are always at the bottom.",
       tip: "The hardest part of component anatomy is constants vs. props. Rule of thumb: if it never changes based on what's passed in, it is a constant. If it could change from outside, it is a prop.",
     },
@@ -1099,136 +818,19 @@ export function RecipeCard({ slug, title }: RecipeCardProps) {
       },
     },
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
-  },
-
-  "oauth-flow": {
-    slug: "oauth-flow",
-    title: "OAuth Flow",
-    breadcrumbCategory: "Auth Flows",
-    description:
-      "Social login with Next-Auth v5 covering the full OAuth 2.0 cycle: provider setup, callback handling, session management, and protected routes.",
-    principle: {
-      text: "OAuth delegates authentication to a trusted provider — you never handle passwords. The key is understanding the two-step flow: (1) redirect user to provider, (2) exchange the authorization code for tokens on your server. Never exchange codes on the client.",
-      tip: "Store the minimal session payload on the JWT — just userId and role. Fetch full user data from your DB on demand. Bloated JWTs slow down every request.",
+    leadsTo: {
+      slug: "typescript-for-react",
+      teaser: "File udah rapi. Tapi props bisa apa aja? Error di runtime?",
     },
-    rules: [
-      { title: "Server-Side Code Exchange", description: "The OAuth code-for-token exchange must happen on the server. Never expose your client_secret to the browser." },
-      { title: "Minimal JWT Payload", description: "Only store userId and role in the JWT. Everything else (name, avatar, permissions) should be fetched from your DB when needed." },
-      { title: "Protect Routes at Middleware Level", description: "Use Next.js middleware to check session before the page renders. Avoids flash of unauthenticated content." },
-      { title: "Handle Token Refresh", description: "Implement silent refresh: detect expiry in the JWT callback and call the provider's token endpoint to get a new access token." },
-    ],
-    pattern: {
-      filename: "auth.ts",
-      code: `import NextAuth from 'next-auth';
-import GitHub from 'next-auth/providers/github';
-import Google from 'next-auth/providers/google';
-
-export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers: [
-    GitHub({
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    }),
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-  ],
-  callbacks: {
-    jwt({ token, account, profile }) {
-      // Persist minimal data to JWT on first sign-in
-      if (account) {
-        token.userId = profile?.sub;
-        token.provider = account.provider;
-      }
-      return token;
-    },
-    session({ session, token }) {
-      session.user.id = token.userId as string;
-      return session;
-    },
-  },
-});`,
-    },
-    implementation: {
-      nextjs: {
-        description:
-          "Next-Auth v5 integrates natively with App Router. Expose the handlers at a catch-all route, use the auth() helper in Server Components, and protect pages via middleware.",
-        filename: "middleware.ts",
-        code: `import { auth } from '@/auth';
-import { NextResponse } from 'next/server';
-
-export default auth((req) => {
-  const isAuthenticated = !!req.auth;
-  const isProtected = req.nextUrl.pathname.startsWith('/dashboard');
-
-  if (isProtected && !isAuthenticated) {
-    return NextResponse.redirect(new URL('/login', req.url));
-  }
-});
-
-export const config = {
-  matcher: ['/dashboard/:path*', '/settings/:path*'],
-};
-
-// app/api/auth/[...nextauth]/route.ts
-import { handlers } from '@/auth';
-export const { GET, POST } = handlers;
-
-// app/dashboard/page.tsx (Server Component)
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
-
-export default async function DashboardPage() {
-  const session = await auth();
-  if (!session) redirect('/login');
-  return <Dashboard user={session.user} />;
-}`,
-      },
-      vite: {
-        description:
-          "In a Vite SPA, OAuth requires a backend callback endpoint. Use a lightweight Express/Hono server to handle the code exchange, then redirect back to the frontend with a session cookie.",
-        filename: "server/auth.ts",
-        code: `// Hono backend — handles OAuth callback
-import { Hono } from 'hono';
-import { setCookie } from 'hono/cookie';
-
-const app = new Hono();
-
-app.get('/auth/callback/github', async (c) => {
-  const code = c.req.query('code');
-  if (!code) return c.redirect('/login?error=missing_code');
-
-  // Exchange code for access token (server-side only)
-  const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({
-      client_id: process.env.GITHUB_CLIENT_ID,
-      client_secret: process.env.GITHUB_CLIENT_SECRET,
-      code,
-    }),
-  });
-  const { access_token } = await tokenRes.json();
-
-  // Create session and set cookie
-  const sessionToken = await createSession(access_token);
-  setCookie(c, 'session', sessionToken, { httpOnly: true, sameSite: 'Lax' });
-
-  return c.redirect('/dashboard');
-});`,
-      },
-    },
-    lastUpdated: "Feb 26, 2026",
-    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
   },
 
   "useeffect-render-cycle": {
     slug: "useeffect-render-cycle",
+    contentType: "recipe",
     title: "useEffect & Render Cycle",
     breadcrumbCategory: "Foundations",
     description: "When effects run, why the dependency array exists, and how to clean up after yourself.",
-    lastUpdated: "2026-03-01",
+    lastUpdated: "Mar 17, 2026",
     principle: {
       text: "useEffect is not a lifecycle method — it is a synchronization tool. It answers one question: 'what side effects need to stay in sync with this data?' Every time the dependency array changes, React re-runs the effect to keep things synchronized. When you understand this mental model, dependency arrays stop feeling like magic rules and start making sense.",
       tip: "If you find yourself writing useEffect to fetch data, stop. That is what React Query is for. useEffect is for synchronizing with things outside React — browser APIs, subscriptions, timers.",
@@ -1339,14 +941,19 @@ export function useWindowSize() {
       },
     },
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+    leadsTo: {
+      slug: "component-composition",
+      teaser: "Component udah jalan. Tapi prop drilling 5 level ke bawah?",
+    },
   },
 
   "component-composition": {
     slug: "component-composition",
+    contentType: "recipe",
     title: "Component Composition",
     breadcrumbCategory: "Foundations",
     description: "How components combine and communicate — children props, slot patterns, and why composition beats deep prop drilling.",
-    lastUpdated: "2026-03-01",
+    lastUpdated: "Mar 17, 2026",
     principle: {
       text: "Prop drilling happens when you pass data through multiple components that do not use it — just to get it to a component deep in the tree. Composition solves this differently: instead of passing data down, you pass components down. The parent controls what gets rendered, and children receive exactly what they need directly.",
       tip: "When you find yourself adding a prop to a component just to pass it further down, stop. That is the signal to use composition instead.",
@@ -1488,14 +1095,19 @@ export function RecipePage() {
       },
     },
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+    leadsTo: {
+      slug: "custom-hooks",
+      teaser: "useEffect + useState logic-nya sama di 3 component. Copy-paste?",
+    },
   },
 
   "services-layer": {
     slug: "services-layer",
+    contentType: "recipe",
     title: "Services Layer",
     breadcrumbCategory: "Foundations",
     description: "How to organize all backend communication in one place — so when an API changes, you fix it in one file, not twenty.",
-    lastUpdated: "2026-03-01",
+    lastUpdated: "Mar 17, 2026",
     principle: {
       text: "When you fetch data directly inside a component, the component becomes responsible for knowing the URL, the HTTP method, the request format, and the error handling. That is four responsibilities too many. A services layer centralizes all backend communication — components just call a function and get data back. When the API changes, you fix it in one file, not twenty.",
       tip: "A service function should read like plain English: getUserById(id), createOrder(data), deletePost(id). If it needs more than one argument object, consider splitting it into two functions.",
@@ -1624,15 +1236,24 @@ export function useUsers() {
       },
     },
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+    seeAlso: [
+      { slug: "typescript-for-react", label: "API Integration flow: Response Types" },
+      { slug: "server-state", label: "API Integration flow: Query Hooks" },
+    ],
+    leadsTo: {
+      slug: "state-taxonomy",
+      teaser: "Services layer done. Tapi kapan pakai useState, Zustand, atau React Query?",
+    },
   },
 
   "state-taxonomy": {
     slug: "state-taxonomy",
+    contentType: "concept",
     title: "State Taxonomy",
     breadcrumbCategory: "Foundations",
     description: "Three categories of state — local, shared, and server — and exactly which tool handles each one.",
-    lastUpdated: "2026-03-01",
-    principle: {
+    lastUpdated: "Mar 17, 2026",
+    mentalModel: {
       text: "Not all state is the same. Before reaching for any state management library, ask one question: where does this data come from? Local state lives inside one component. Shared state is UI state needed by multiple components. Server state comes from an API and has its own lifecycle — loading, error, stale, and needs refreshing. Each category has a different tool, and mixing them up causes bugs that are hard to trace.",
       tip: "When you find yourself putting API data into Zustand, stop. Server state belongs in React Query. When you find yourself using React Query for a toggle or a modal, stop. UI state belongs in useState or Zustand.",
     },
@@ -1756,14 +1377,23 @@ function Navbar() {
       },
     },
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+    seeAlso: [
+      { slug: "server-state", label: "Server state → React Query" },
+      { slug: "client-state", label: "Shared UI state → Zustand" },
+    ],
+    leadsTo: {
+      slug: "why-react-query",
+      teaser: "Tau kapan pakai apa. Sekarang kenapa React Query, bukan useEffect + fetch?",
+    },
   },
 
   "custom-hooks": {
     slug: "custom-hooks",
+    contentType: "recipe",
     title: "Custom Hooks",
     breadcrumbCategory: "Foundations",
     description: "The boundary between logic and rendering. When to extract a hook, what the rules are, and how to avoid the most common mistake.",
-    lastUpdated: "2026-03-01",
+    lastUpdated: "Mar 17, 2026",
     principle: {
       text: "A custom hook is not just a function that starts with 'use' — it is a boundary between logic and rendering. The component handles what the user sees. The hook handles how data gets there. When you separate these two concerns, components become easier to read, logic becomes easier to test, and both become easier to change independently.",
       tip: "If you would write a unit test for the logic, it belongs in a hook. If you would write a component test for it, it belongs in the JSX.",
@@ -1905,6 +1535,125 @@ export function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
       },
     },
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+    leadsTo: {
+      slug: "component-splitting",
+      teaser: "Hooks extracted. Tapi component masih 400 baris?",
+    },
+  },
+
+  "component-splitting": {
+    slug: "component-splitting",
+    contentType: "recipe",
+    title: "Component Splitting",
+    breadcrumbCategory: "Foundations",
+    lastUpdated: "Mar 2026",
+    description:
+      "How to break a 400-line component into focused pieces — using composition and custom hooks together to split UI and logic the right way.",
+    principle: {
+      text: "A component should do one thing. When a file grows past 200 lines, it's doing too much — mixing layout, state logic, and side effects in one place. Split by extracting custom hooks for logic and child components for UI sections. The parent becomes a thin orchestrator.",
+      tip: "Don't split too early. Wait until the component has clear seams — distinct state groups, independent UI sections, or reusable logic. Premature splitting creates unnecessary indirection.",
+    },
+    rules: [
+      { title: "Split by responsibility", description: "Each child component handles one visual section. Each custom hook handles one piece of logic." },
+      { title: "Parent orchestrates", description: "After splitting, the parent component connects hooks to child components via props. It should read like a table of contents." },
+      { title: "200-line signal", description: "If a component file exceeds 200 lines, look for split opportunities. Not a hard rule — but a reliable signal." },
+      { title: "Co-locate splits", description: "Keep extracted components and hooks in the same feature folder. Don't scatter them across the project." },
+    ],
+    pattern: {
+      filename: "features/users/components/UserDashboard.tsx",
+      code: `// BEFORE: 400-line monolith
+// function UserDashboard() {
+//   const [users, setUsers] = useState([]);
+//   const [search, setSearch] = useState('');
+//   const [page, setPage] = useState(1);
+//   useEffect(() => { fetch... }, [search, page]);
+//   // ... 350 more lines of mixed logic and JSX
+// }
+
+// AFTER: Split into hooks + components
+
+// 1. Extract logic → custom hooks
+// hooks/useUserSearch.ts
+// hooks/useUserPagination.ts
+
+// 2. Extract UI → child components
+// components/UserSearchBar.tsx
+// components/UserTable.tsx
+// components/UserPagination.tsx
+
+// 3. Parent orchestrates
+export function UserDashboard() {
+  const { users, isLoading } = useUserSearch();
+  const { page, setPage, totalPages } = useUserPagination();
+
+  return (
+    <div>
+      <UserSearchBar />
+      <UserTable users={users} isLoading={isLoading} />
+      <UserPagination
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+      />
+    </div>
+  );
+}`,
+    },
+    implementation: {
+      nextjs: {
+        description:
+          "In Next.js, splitting also lets you mark leaf components as Server Components when they don't need interactivity, reducing client bundle size.",
+        filename: "features/users/components/UserDashboard.tsx",
+        code: `"use client";
+
+import { UserSearchBar } from "./UserSearchBar";
+import { UserTable } from "./UserTable";
+import { UserPagination } from "./UserPagination";
+import { useUserSearch } from "../hooks/useUserSearch";
+
+export function UserDashboard() {
+  const { users, isLoading, error } = useUserSearch();
+
+  if (error) return <ErrorState error={error} />;
+
+  return (
+    <section className="space-y-6">
+      <UserSearchBar />
+      <UserTable users={users} isLoading={isLoading} />
+      <UserPagination />
+    </section>
+  );
+}`,
+      },
+      vite: {
+        description:
+          "Same splitting pattern in Vite — extract hooks for logic, child components for UI sections, parent orchestrates.",
+        filename: "features/users/components/UserDashboard.tsx",
+        code: `import { UserSearchBar } from "./UserSearchBar";
+import { UserTable } from "./UserTable";
+import { UserPagination } from "./UserPagination";
+import { useUserSearch } from "../hooks/useUserSearch";
+
+export function UserDashboard() {
+  const { users, isLoading, error } = useUserSearch();
+
+  if (error) return <ErrorState error={error} />;
+
+  return (
+    <section className="space-y-6">
+      <UserSearchBar />
+      <UserTable users={users} isLoading={isLoading} />
+      <UserPagination />
+    </section>
+  );
+}`,
+      },
+    },
+    contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+    leadsTo: {
+      slug: "services-layer",
+      teaser: "fetch() ada di 12 component. API berubah? Fix 12 tempat.",
+    },
   },
 };
 
