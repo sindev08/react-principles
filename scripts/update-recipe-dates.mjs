@@ -41,7 +41,7 @@ for (const line of diff.split("\n")) {
 }
 
 if (changedSlugs.size === 0) {
-  console.log("No recipe content changes detected — skipping date update.");
+  console.warn("No recipe content changes detected — skipping date update.");
   process.exit(0);
 }
 
@@ -59,9 +59,9 @@ for (const slug of changedSlugs) {
     `("${escapedSlug}":[\\s\\S]{0,3000}?lastUpdated:\\s*")[^"]*(")`
   );
   content = content.replace(pattern, `$1${today}$2`);
-  console.log(`  ↳ Updated "${slug}" → ${today}`);
+  console.warn(`  ↳ Updated "${slug}" → ${today}`);
 }
 
 writeFileSync(filePath, content);
 execSync(`git add ${FILE}`);
-console.log("✓ Recipe dates updated and re-staged.");
+console.warn("✓ Recipe dates updated and re-staged.");

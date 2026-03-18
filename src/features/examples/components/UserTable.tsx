@@ -18,7 +18,7 @@ export function UserTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const columns = useMemo<ColumnDef<User>[]>(
+  const columns = useMemo<Array<ColumnDef<User>>>(
     () => [
       {
         accessorKey: "name",

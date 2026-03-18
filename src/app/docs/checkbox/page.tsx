@@ -134,13 +134,13 @@ const FORCED_STATES = {
     { boxCls: "border-2 border-[#4628F1] bg-[#4628F1] text-white", label: "Email notifications", stateLabel: "Checked", showCheck: true },
     { boxCls: "border-2 border-[#4628F1] bg-[#4628F1] text-white", label: "All categories", stateLabel: "Indeterminate", showMinus: true },
     { boxCls: "border-2 border-slate-200 bg-slate-100 opacity-50", label: "Archived items", stateLabel: "Disabled" },
-  ] as (ForcedState & { showCheck?: boolean; showMinus?: boolean })[],
+  ] as Array<ForcedState & { showCheck?: boolean; showMinus?: boolean }>,
   dark: [
     { boxCls: "border-2 border-slate-600 bg-[#0d1117]", label: "Accept terms", stateLabel: "Unchecked" },
     { boxCls: "border-2 border-[#4628F1] bg-[#4628F1] text-white", label: "Email notifications", stateLabel: "Checked", showCheck: true },
     { boxCls: "border-2 border-[#4628F1] bg-[#4628F1] text-white", label: "All categories", stateLabel: "Indeterminate", showMinus: true },
     { boxCls: "border-2 border-[#1f2937] bg-[#1f2937] opacity-50", label: "Archived items", stateLabel: "Disabled" },
-  ] as (ForcedState & { showCheck?: boolean; showMinus?: boolean })[],
+  ] as Array<ForcedState & { showCheck?: boolean; showMinus?: boolean }>,
 };
 
 function ThemedCheckboxPreview({ theme }: { theme: "light" | "dark" }) {

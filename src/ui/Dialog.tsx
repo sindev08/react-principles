@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, HTMLAttributes, ReactNode } from "react";
+import { useEffect, useRef, type HTMLAttributes, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/shared/utils/cn";
 import { useAnimatedMount } from "@/shared/hooks/useAnimatedMount";
