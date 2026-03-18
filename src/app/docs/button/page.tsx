@@ -64,25 +64,29 @@ const CODE_SNIPPET = `import { Button } from "@/ui/Button";
 <Button disabled>Unavailable</Button>`;
 
 const COPY_PASTE_SNIPPET = `import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { cn } from "@/shared/utils/cn";
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive" | "outline";
-type ButtonSize = "sm" | "md" | "lg";
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive" | "outline";
+export type ButtonSize = "sm" | "md" | "lg";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   isLoading?: boolean;
   children: ReactNode;
 }
 
-const cn = (...classes: Array<string | undefined | false>) => classes.filter(Boolean).join(" ");
-
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
-  primary: "bg-primary text-white hover:bg-primary/90",
-  secondary: "bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700",
-  ghost: "text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800",
-  destructive: "bg-red-600 text-white hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600",
-  outline: "border border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800/50",
+  primary:
+    "bg-primary text-white hover:bg-primary/90 focus-visible:ring-primary/40",
+  secondary:
+    "bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700 focus-visible:ring-slate-400/40",
+  ghost:
+    "text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 focus-visible:ring-slate-400/40",
+  destructive:
+    "bg-red-600 text-white hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600 focus-visible:ring-red-500/40",
+  outline:
+    "border border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800/50 focus-visible:ring-slate-400/40",
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
@@ -92,18 +96,31 @@ const SIZE_CLASSES: Record<ButtonSize, string> = {
 };
 
 function Spinner() {
-  return <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />;
+  return (
+    <svg className="animate-spin h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    </svg>
+  );
 }
 
-function ButtonRoot({ variant = "primary", size = "md", isLoading = false, disabled, children, className, ...props }: ButtonProps) {
+export function Button({
+  variant = "primary",
+  size = "md",
+  isLoading = false,
+  disabled,
+  children,
+  className,
+  ...props
+}: ButtonProps) {
   return (
     <button
       {...props}
       disabled={disabled || isLoading}
       className={cn(
-        "inline-flex items-center justify-center rounded-lg font-semibold transition-all",
-        "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40",
-        "disabled:cursor-not-allowed disabled:opacity-50",
+        "inline-flex items-center justify-center font-semibold rounded-lg transition-all",
+        "focus-visible:outline-hidden focus-visible:ring-2",
+        "disabled:opacity-50 disabled:cursor-not-allowed",
         VARIANT_CLASSES[variant],
         SIZE_CLASSES[size],
         className,
@@ -113,10 +130,7 @@ function ButtonRoot({ variant = "primary", size = "md", isLoading = false, disab
       {children}
     </button>
   );
-}
-
-type ButtonCompound = typeof ButtonRoot & { Root: typeof ButtonRoot; Spinner: typeof Spinner };
-export const Button = Object.assign(ButtonRoot, { Root: ButtonRoot, Spinner }) as ButtonCompound;`;
+}`;
 
 const PROPS_ROWS = [
   { prop: "variant", type: '"primary" | "secondary" | "ghost" | "destructive" | "outline"', default: '"primary"', description: "Visual style of the button." },

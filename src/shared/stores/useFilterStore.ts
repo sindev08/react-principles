@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { UserRole, UserStatus } from "@/shared/types/common";
+import type { UserRole, UserStatus } from "../types/common";
 
 interface FilterState {
   search: string;
