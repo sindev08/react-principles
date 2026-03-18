@@ -69,7 +69,7 @@ function tokenizeCode(code: string): Token[] {
     for (const rule of TOKEN_RULES) {
       rule.regex.lastIndex = cursor;
       const match = rule.regex.exec(code);
-      if (match && match.index === cursor) {
+      if (match?.index === cursor) {
         tokens.push({ kind: rule.kind, value: match[0] });
         cursor += match[0].length;
         matched = true;
@@ -78,7 +78,7 @@ function tokenizeCode(code: string): Token[] {
     }
 
     if (!matched) {
-      tokens.push({ kind: "plain", value: code[cursor]! });
+      tokens.push({ kind: "plain", value: code[cursor] ?? "" });
       cursor += 1;
     }
   }
