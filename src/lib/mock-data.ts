@@ -108,7 +108,9 @@ export async function updateUser(
   if (index === -1) {
     throw new Error(`User with id "${id}" not found`);
   }
-  const updated = { ...mockUsers[index]!, ...data };
+  const existing = mockUsers[index];
+  if (!existing) throw new Error(`User with id "${id}" not found`);
+  const updated = { ...existing, ...data };
   mockUsers[index] = updated;
   return updated;
 }

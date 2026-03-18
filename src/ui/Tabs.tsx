@@ -2,9 +2,9 @@ import {
   createContext,
   useContext,
   useState,
-  ButtonHTMLAttributes,
-  HTMLAttributes,
-  ReactNode,
+  type ButtonHTMLAttributes,
+  type HTMLAttributes,
+  type ReactNode,
 } from "react";
 import { cn } from "@/shared/utils/cn";
 
