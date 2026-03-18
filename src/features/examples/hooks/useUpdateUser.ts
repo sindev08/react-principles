@@ -9,7 +9,7 @@ export function useUpdateUser(id: string) {
   return useMutation({
     mutationFn: (data: UpdateUserInput) => updateUser(id, data),
     onSuccess: (updatedUser) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
       queryClient.setQueryData(queryKeys.users.detail(id), updatedUser);
     },
   });
