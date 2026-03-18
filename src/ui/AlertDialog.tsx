@@ -1,4 +1,4 @@
-import { useEffect, ReactNode } from "react";
+import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/shared/utils/cn";
 import { useAnimatedMount } from "@/shared/hooks/useAnimatedMount";

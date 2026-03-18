@@ -44,19 +44,17 @@ const CODE_SNIPPET = `import { Tabs } from "@/ui/Tabs";
   ...
 </Tabs>`;
 
-const COPY_PASTE_SNIPPET = `"use client";
-
-import {
+const COPY_PASTE_SNIPPET = `import {
   createContext,
   useContext,
   useState,
-  type ButtonHTMLAttributes,
-  type HTMLAttributes,
-  type ReactNode,
+  ButtonHTMLAttributes,
+  HTMLAttributes,
+  ReactNode,
 } from "react";
+import { cn } from "@/shared/utils/cn";
 
-type ClassValue = string | false | null | undefined;
-const cn = (...classes: ClassValue[]) => classes.filter(Boolean).join(" ");
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 export type TabsVariant = "underline" | "pills";
 
@@ -69,6 +67,22 @@ export interface TabsProps {
   className?: string;
 }
 
+export interface TabsListProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+
+export interface TabsTriggerProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "value"> {
+  value: string;
+  children: ReactNode;
+}
+
+export interface TabsContentProps extends HTMLAttributes<HTMLDivElement> {
+  value: string;
+  children: ReactNode;
+}
+
+// ─── Context ──────────────────────────────────────────────────────────────────
+
 interface TabsContextValue {
   active: string;
   setActive: (value: string) => void;
@@ -78,12 +92,14 @@ interface TabsContextValue {
 const TabsContext = createContext<TabsContextValue | null>(null);
 
 function useTabsContext() {
-  const context = useContext(TabsContext);
-  if (!context) throw new Error("Tabs sub-components must be used inside <Tabs>");
-  return context;
+  const ctx = useContext(TabsContext);
+  if (!ctx) throw new Error("Tabs sub-components must be used inside <Tabs> or <Tabs>");
+  return ctx;
 }
 
-function TabsRoot({
+// ─── Components ───────────────────────────────────────────────────────────────
+
+export function Tabs({
   value,
   defaultValue = "",
   onChange,
@@ -107,15 +123,16 @@ function TabsRoot({
   );
 }
 
-function TabsList({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
+Tabs.List = function TabsList({ children, className, ...props }: TabsListProps) {
   const { variant } = useTabsContext();
+
   return (
     <div
       role="tablist"
       className={cn(
         "flex",
-        variant === "underline" && "gap-0 border-b border-slate-200",
-        variant === "pills" && "w-fit gap-1 rounded-xl bg-slate-100 p-1",
+        variant === "underline" && "border-b border-slate-200 dark:border-[#1f2937] gap-0",
+        variant === "pills" && "gap-1 p-1 rounded-xl bg-slate-100 dark:bg-[#161b22] w-fit",
         className
       )}
       {...props}
@@ -125,13 +142,7 @@ function TabsList({ className, children, ...props }: HTMLAttributes<HTMLDivEleme
   );
 }
 
-function TabsTrigger({
-  value,
-  className,
-  children,
-  disabled,
-  ...props
-}: Omit<ButtonHTMLAttributes<HTMLButtonElement>, "value"> & { value: string }) {
+Tabs.Trigger = function TabsTrigger({ value, children, disabled, className, ...props }: TabsTriggerProps) {
   const { active, setActive, variant } = useTabsContext();
   const isActive = active === value;
 
@@ -142,16 +153,25 @@ function TabsTrigger({
       disabled={disabled}
       onClick={() => setActive(value)}
       className={cn(
-        "rounded-sm text-sm font-medium transition-all outline-hidden focus-visible:ring-2 focus-visible:ring-blue-500/40",
-        disabled && "pointer-events-none cursor-not-allowed opacity-40",
+        "text-sm font-medium transition-all outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40 rounded-sm",
+        disabled && "opacity-40 cursor-not-allowed pointer-events-none",
+
+        // underline variant
         variant === "underline" && [
-          "-mb-px border-b-2 px-4 py-2.5",
-          isActive ? "border-blue-600 text-blue-600" : "border-transparent text-slate-500 hover:text-slate-800",
+          "px-4 py-2.5 -mb-px border-b-2",
+          isActive
+            ? "border-primary text-primary"
+            : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-600",
         ],
+
+        // pills variant
         variant === "pills" && [
-          "rounded-lg px-4 py-1.5",
-          isActive ? "bg-white text-slate-900 shadow-xs" : "text-slate-500 hover:text-slate-700",
+          "px-4 py-1.5 rounded-lg",
+          isActive
+            ? "bg-white dark:bg-[#0d1117] text-slate-900 dark:text-white shadow-xs"
+            : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200",
         ],
+
         className
       )}
       {...props}
@@ -161,35 +181,21 @@ function TabsTrigger({
   );
 }
 
-function TabsContent({
-  value,
-  className,
-  children,
-  ...props
-}: HTMLAttributes<HTMLDivElement> & { value: string }) {
+Tabs.Content = function TabsContent({ value, children, className, ...props }: TabsContentProps) {
   const { active } = useTabsContext();
+
   if (active !== value) return null;
 
   return (
-    <div role="tabpanel" className={cn("mt-4", className)} {...props}>
+    <div
+      role="tabpanel"
+      className={cn("mt-4 animate-fade-in", className)}
+      {...props}
+    >
       {children}
     </div>
   );
-}
-
-type TabsCompound = typeof TabsRoot & {
-  Root: typeof TabsRoot;
-  List: typeof TabsList;
-  Trigger: typeof TabsTrigger;
-  Content: typeof TabsContent;
-};
-
-export const Tabs = Object.assign(TabsRoot, {
-  Root: TabsRoot,
-  List: TabsList,
-  Trigger: TabsTrigger,
-  Content: TabsContent,
-}) as TabsCompound;`;
+}`;
 
 const PROPS_ROWS = [
   { component: "Tabs", prop: "defaultValue", type: "string", default: '""', description: "Initially active tab (uncontrolled)." },

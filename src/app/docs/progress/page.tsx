@@ -16,17 +16,35 @@ const CODE_SNIPPET = `import { Progress } from "@/ui/Progress";
 
 <Progress value={72} max={100} />`;
 
-const COPY_PASTE_SNIPPET = `function ProgressRoot({ value, max = 100 }: { value: number; max?: number }) {
-  const pct = Math.min(Math.max(value, 0), max) / max * 100;
-  return (
-    <div role="progressbar" className="h-2 w-full rounded-full bg-slate-200">
-      <div className="h-full rounded-full bg-primary" style={{ width: pct + "%" }} />
-    </div>
-  );
+const COPY_PASTE_SNIPPET = `import type { HTMLAttributes } from "react";
+import { cn } from "@/shared/utils/cn";
+
+export interface ProgressProps extends HTMLAttributes<HTMLDivElement> {
+  value: number;
+  max?: number;
 }
 
-type ProgressCompound = typeof ProgressRoot & { Root: typeof ProgressRoot };
-export const Progress = Object.assign(ProgressRoot, { Root: ProgressRoot }) as ProgressCompound;`;
+export function Progress({ value, max = 100, className, ...props }: ProgressProps) {
+  const safeMax = max > 0 ? max : 100;
+  const clamped = Math.min(Math.max(value, 0), safeMax);
+  const percentage = (clamped / safeMax) * 100;
+
+  return (
+    <div
+      role="progressbar"
+      aria-valuemin={0}
+      aria-valuemax={safeMax}
+      aria-valuenow={Math.round(clamped)}
+      className={cn("h-2 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-[#1f2937]", className)}
+      {...props}
+    >
+      <div
+        className="h-full rounded-full bg-primary transition-all duration-300"
+        style={{ width: \`\${percentage}%\` }}
+      />
+    </div>
+  );
+}`;
 
 export default function ProgressDocPage() {
   const [value, setValue] = useState(35);

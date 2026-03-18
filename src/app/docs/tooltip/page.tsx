@@ -19,29 +19,92 @@ const CODE_SNIPPET = `import { Tooltip } from "@/ui/Tooltip";
   <Tooltip.Content>Helpful context for this action</Tooltip.Content>
 </Tooltip>`;
 
-const COPY_PASTE_SNIPPET = `import { createContext, useContext, useState, type ReactNode } from "react";
+const COPY_PASTE_SNIPPET = `import { createContext, useContext, useState, type HTMLAttributes, type ReactNode } from "react";
+import { cn } from "@/shared/utils/cn";
 
-const Ctx = createContext<{ open: boolean; setOpen: (open: boolean) => void } | null>(null);
+type TooltipSide = "top" | "bottom" | "left" | "right";
 
-function TooltipRoot({ children }: { children: ReactNode }) {
-  const [open, setOpen] = useState(false);
-  return <Ctx.Provider value={{ open, setOpen }}><span className="relative inline-flex">{children}</span></Ctx.Provider>;
+interface TooltipContextValue {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  side: TooltipSide;
 }
 
-function TooltipTrigger({ children }: { children: ReactNode }) {
-  const ctx = useContext(Ctx);
-  if (!ctx) throw new Error("Use inside Tooltip");
-  return <span onMouseEnter={() => ctx.setOpen(true)} onMouseLeave={() => ctx.setOpen(false)}>{children}</span>;
+const TooltipContext = createContext<TooltipContextValue | null>(null);
+
+function useTooltipContext() {
+  const context = useContext(TooltipContext);
+  if (!context) throw new Error("Tooltip sub-components must be used inside <Tooltip>");
+  return context;
 }
 
-function TooltipContent({ children }: { children: ReactNode }) {
-  const ctx = useContext(Ctx);
-  if (!ctx || !ctx.open) return null;
-  return <div className="absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 rounded-md bg-slate-900 px-2.5 py-1.5 text-xs text-white">{children}</div>;
+export interface TooltipProps {
+  defaultOpen?: boolean;
+  side?: TooltipSide;
+  children: ReactNode;
+  className?: string;
 }
 
-type TooltipCompound = typeof TooltipRoot & { Root: typeof TooltipRoot; Trigger: typeof TooltipTrigger; Content: typeof TooltipContent };
-export const Tooltip = Object.assign(TooltipRoot, { Root: TooltipRoot, Trigger: TooltipTrigger, Content: TooltipContent }) as TooltipCompound;`;
+export interface TooltipTriggerProps extends HTMLAttributes<HTMLSpanElement> {
+  children: ReactNode;
+}
+
+export interface TooltipContentProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+
+export function Tooltip({ defaultOpen = false, side = "top", children, className }: TooltipProps) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  return (
+    <TooltipContext.Provider value={{ open, setOpen, side }}>
+      <span className={cn("relative inline-flex", className)}>{children}</span>
+    </TooltipContext.Provider>
+  );
+}
+
+Tooltip.Trigger = function TooltipTrigger({ children, className, ...props }: TooltipTriggerProps) {
+  const { setOpen } = useTooltipContext();
+
+  return (
+    <span
+      className={cn("inline-flex", className)}
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onFocus={() => setOpen(true)}
+      onBlur={() => setOpen(false)}
+      {...props}
+    >
+      {children}
+    </span>
+  );
+}
+
+const SIDE_CLASSES: Record<TooltipSide, string> = {
+  top: "bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2",
+  bottom: "top-[calc(100%+8px)] left-1/2 -translate-x-1/2",
+  left: "right-[calc(100%+8px)] top-1/2 -translate-y-1/2",
+  right: "left-[calc(100%+8px)] top-1/2 -translate-y-1/2",
+};
+
+Tooltip.Content = function TooltipContent({ children, className, ...props }: TooltipContentProps) {
+  const { open, side } = useTooltipContext();
+
+  return (
+    <div
+      role="tooltip"
+      className={cn(
+        "pointer-events-none absolute z-50 rounded-md bg-slate-900 px-2.5 py-1.5 text-xs text-white shadow-lg transition-all",
+        SIDE_CLASSES[side],
+        open ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}`;
 
 export default function TooltipDocPage() {
   return (
