@@ -18,32 +18,32 @@ const CODE_SNIPPET = `import { Skeleton } from "@/ui/Skeleton";
   <Skeleton variant="rect" className="h-24" />
 </div>`;
 
-const COPY_PASTE_SNIPPET = `type SkeletonProps = {
-  variant?: "line" | "rect" | "circle";
+const COPY_PASTE_SNIPPET = `import { cn } from "@/shared/utils/cn";
+
+export type SkeletonVariant = "line" | "rect" | "circle";
+
+export interface SkeletonProps {
+  variant?: SkeletonVariant;
   width?: number | string;
   height?: number | string;
   className?: string;
-};
+}
 
-function SkeletonRoot({ variant = "line", width, height, className }: SkeletonProps) {
-  const base = "inline-block animate-pulse bg-slate-200 dark:bg-[#1f2937]";
-  const shape =
-    variant === "line"
-      ? "h-4 w-40 rounded-md"
-      : variant === "circle"
-        ? "h-10 w-10 rounded-full"
-        : "h-24 w-full rounded-xl";
+export function Skeleton({ variant = "line", width, height, className }: SkeletonProps) {
   return (
     <span
       aria-hidden="true"
-      className={base + " " + shape + " " + (className ?? "")}
+      className={cn(
+        "inline-block animate-pulse bg-slate-200 dark:bg-[#1f2937]",
+        variant === "line" && "h-4 w-40 rounded-md",
+        variant === "rect" && "h-24 w-full rounded-xl",
+        variant === "circle" && "h-10 w-10 rounded-full",
+        className
+      )}
       style={{ width, height }}
     />
   );
-}
-
-type SkeletonCompound = typeof SkeletonRoot & { Root: typeof SkeletonRoot };
-export const Skeleton = Object.assign(SkeletonRoot, { Root: SkeletonRoot }) as SkeletonCompound;`;
+}`;
 
 export default function SkeletonDocPage() {
   return (

@@ -51,23 +51,21 @@ const CODE_SNIPPET = `import { Accordion } from "@/ui/Accordion";
   ...
 </Accordion>`;
 
-const COPY_PASTE_SNIPPET = `"use client";
-
-import {
+const COPY_PASTE_SNIPPET = `import {
   createContext,
   useContext,
   useState,
-  type ButtonHTMLAttributes,
-  type HTMLAttributes,
-  type ReactNode,
+  HTMLAttributes,
+  ButtonHTMLAttributes,
+  ReactNode,
 } from "react";
+import { cn } from "@/shared/utils/cn";
 
-type ClassValue = string | false | null | undefined;
-const cn = (...classes: ClassValue[]) => classes.filter(Boolean).join(" ");
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-type AccordionType = "single" | "multiple";
+export type AccordionType = "single" | "multiple";
 
-interface AccordionProps {
+export interface AccordionProps {
   type?: AccordionType;
   defaultValue?: string | string[];
   value?: string | string[];
@@ -77,37 +75,49 @@ interface AccordionProps {
   className?: string;
 }
 
-interface AccordionItemProps extends HTMLAttributes<HTMLDivElement> {
+export interface AccordionItemProps extends HTMLAttributes<HTMLDivElement> {
   value: string;
   children: ReactNode;
 }
 
-interface AccordionContextValue {
+export interface AccordionTriggerProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+}
+
+export interface AccordionContentProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+
+// ─── Context ──────────────────────────────────────────────────────────────────
+
+interface AccordionCtx {
   isOpen: (value: string) => boolean;
   toggle: (value: string) => void;
 }
 
-interface ItemContextValue {
+interface ItemCtx {
   value: string;
   open: boolean;
 }
 
-const AccordionContext = createContext<AccordionContextValue | null>(null);
-const ItemContext = createContext<ItemContextValue | null>(null);
+const AccordionContext = createContext<AccordionCtx | null>(null);
+const ItemContext = createContext<ItemCtx | null>(null);
 
-function useAccordionContext() {
-  const context = useContext(AccordionContext);
-  if (!context) throw new Error("Accordion sub-components must be used inside <Accordion>");
-  return context;
+function useAccordion() {
+  const ctx = useContext(AccordionContext);
+  if (!ctx) throw new Error("AccordionTrigger/Content must be inside <AccordionItem>");
+  return ctx;
 }
 
-function useAccordionItem() {
-  const context = useContext(ItemContext);
-  if (!context) throw new Error("Accordion sub-components must be used inside <Accordion.Item>");
-  return context;
+function useItem() {
+  const ctx = useContext(ItemContext);
+  if (!ctx) throw new Error("AccordionTrigger/Content must be inside <AccordionItem>");
+  return ctx;
 }
 
-function AccordionRoot({
+// ─── Components ───────────────────────────────────────────────────────────────
+
+export function Accordion({
   type = "single",
   defaultValue,
   value: controlledValue,
@@ -116,102 +126,113 @@ function AccordionRoot({
   children,
   className,
 }: AccordionProps) {
-  const toSet = (next?: string | string[]) => {
-    if (!next) return new Set<string>();
-    return new Set(Array.isArray(next) ? next : [next]);
+  const toSet = (v?: string | string[]): Set<string> => {
+    if (!v) return new Set();
+    return new Set(Array.isArray(v) ? v : [v]);
   };
 
   const [internal, setInternal] = useState<Set<string>>(() => toSet(defaultValue));
   const isControlled = controlledValue !== undefined;
   const active = isControlled ? toSet(controlledValue) : internal;
 
-  const toggle = (nextValue: string) => {
+  const toggle = (val: string) => {
     let next: Set<string>;
 
     if (type === "single") {
-      if (active.has(nextValue)) {
-        next = collapsible ? new Set() : new Set([nextValue]);
+      if (active.has(val)) {
+        next = collapsible ? new Set() : new Set([val]);
       } else {
-        next = new Set([nextValue]);
+        next = new Set([val]);
       }
     } else {
       next = new Set(active);
-      if (next.has(nextValue)) next.delete(nextValue);
-      else next.add(nextValue);
+      if (next.has(val)) { next.delete(val); } else { next.add(val); }
     }
 
     if (!isControlled) setInternal(next);
+
     if (onChange) {
-      const values = [...next];
-      onChange(type === "single" ? (values[0] ?? "") : values);
+      const arr = [...next];
+      onChange(type === "single" ? (arr[0] ?? "") : arr);
     }
   };
 
+  const isOpen = (val: string) => active.has(val);
+
   return (
-    <AccordionContext.Provider value={{ isOpen: (v) => active.has(v), toggle }}>
-      <div className={cn("w-full overflow-hidden rounded-xl border border-slate-200", className)}>{children}</div>
+    <AccordionContext.Provider value={{ isOpen, toggle }}>
+      <div className={cn("w-full divide-y divide-slate-200 dark:divide-[#1f2937] rounded-xl border border-slate-200 dark:border-[#1f2937] overflow-hidden", className)}>
+        {children}
+      </div>
     </AccordionContext.Provider>
   );
 }
 
-function AccordionItem({ value, className, children, ...props }: AccordionItemProps) {
-  const { isOpen } = useAccordionContext();
+Accordion.Item = function AccordionItem({ value, children, className, ...props }: AccordionItemProps) {
+  const { isOpen } = useAccordion();
   const open = isOpen(value);
 
   return (
     <ItemContext.Provider value={{ value, open }}>
-      <div className={cn("border-b border-slate-200 bg-white last:border-b-0", className)} {...props}>
+      <div className={cn("bg-white dark:bg-[#161b22]", className)} {...props}>
         {children}
       </div>
     </ItemContext.Provider>
   );
 }
 
-function AccordionTrigger({ children, className, ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
-  const { toggle } = useAccordionContext();
-  const { value, open } = useAccordionItem();
+Accordion.Trigger = function AccordionTrigger({ children, className, ...props }: AccordionTriggerProps) {
+  const { toggle } = useAccordion();
+  const { value, open } = useItem();
 
   return (
     <button
       type="button"
       aria-expanded={open}
       onClick={() => toggle(value)}
-      className={cn("flex w-full items-center justify-between px-5 py-4 text-left text-sm font-medium", className)}
+      className={cn(
+        "flex w-full items-center justify-between px-5 py-4 text-left text-sm font-medium",
+        "text-slate-900 dark:text-white",
+        "hover:bg-slate-50 dark:hover:bg-[#1f2937] transition-colors",
+        "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40",
+        className
+      )}
       {...props}
     >
       <span>{children}</span>
-      <span className={cn("transition-transform", open && "rotate-180")}>⌄</span>
+      <svg
+        className={cn("h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200", open && "rotate-180")}
+        viewBox="0 0 16 16"
+        fill="none"
+      >
+        <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
     </button>
   );
 }
 
-function AccordionContent({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  const { open } = useAccordionItem();
+Accordion.Content = function AccordionContent({ children, className, ...props }: AccordionContentProps) {
+  const { open } = useItem();
 
   return (
-    <div style={{ display: "grid", gridTemplateRows: open ? "1fr" : "0fr", transition: "grid-template-rows .2s ease" }}>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateRows: open ? "1fr" : "0fr",
+        transition: "grid-template-rows 0.2s ease",
+      }}
+    >
       <div style={{ overflow: "hidden" }}>
-        <div className={cn("px-5 pb-4 text-sm text-slate-600", className)} {...props}>
+        <div
+          className={cn("px-5 pb-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed", className)}
+          {...props}
+        >
           {children}
         </div>
       </div>
     </div>
   );
-}
-
-type AccordionCompound = typeof AccordionRoot & {
-  Root: typeof AccordionRoot;
-  Item: typeof AccordionItem;
-  Trigger: typeof AccordionTrigger;
-  Content: typeof AccordionContent;
-};
-
-export const Accordion = Object.assign(AccordionRoot, {
-  Root: AccordionRoot,
-  Item: AccordionItem,
-  Trigger: AccordionTrigger,
-  Content: AccordionContent,
-}) as AccordionCompound;`;
+}`;
 
 const PROPS_ROWS = [
   { component: "Accordion", prop: "type", type: '"single" | "multiple"', default: '"single"', description: "Whether one or multiple items can be open at a time." },

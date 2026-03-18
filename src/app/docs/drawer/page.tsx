@@ -49,16 +49,17 @@ const [open, setOpen] = useState(false);
 
 const COPY_PASTE_SNIPPET = `"use client";
 
-import { useEffect, useRef, useState, type HTMLAttributes, type ReactNode } from "react";
+import { useEffect, useRef, HTMLAttributes, ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { cn } from "@/shared/utils/cn";
+import { useAnimatedMount } from "@/shared/hooks/useAnimatedMount";
 
-type ClassValue = string | false | null | undefined;
-const cn = (...classes: ClassValue[]) => classes.filter(Boolean).join(" ");
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-type DrawerSide = "right" | "left";
-type DrawerSize = "sm" | "md" | "lg" | "full";
+export type DrawerSide = "right" | "left";
+export type DrawerSize = "sm" | "md" | "lg" | "full";
 
-interface DrawerProps {
+export interface DrawerProps {
   open: boolean;
   onClose: () => void;
   side?: DrawerSide;
@@ -66,6 +67,28 @@ interface DrawerProps {
   children: ReactNode;
   className?: string;
 }
+
+export interface DrawerHeaderProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+
+export interface DrawerTitleProps extends HTMLAttributes<HTMLHeadingElement> {
+  children: ReactNode;
+}
+
+export interface DrawerDescriptionProps extends HTMLAttributes<HTMLParagraphElement> {
+  children: ReactNode;
+}
+
+export interface DrawerContentProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+
+export interface DrawerFooterProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
 
 const SIZE_CLASSES: Record<DrawerSize, string> = {
   sm: "w-80",
@@ -79,102 +102,124 @@ const SIDE_CLASSES: Record<DrawerSide, { panel: string; hidden: string }> = {
   left: { panel: "left-0 inset-y-0", hidden: "-translate-x-full" },
 };
 
-function useAnimatedMount(open: boolean, durationMs = 300) {
-  const [mounted, setMounted] = useState(open);
-  const [visible, setVisible] = useState(open);
+// ─── Sub-components ───────────────────────────────────────────────────────────
 
-  useEffect(() => {
-    if (open) {
-      setMounted(true);
-      requestAnimationFrame(() => setVisible(true));
-      return;
-    }
-    setVisible(false);
-    const timer = window.setTimeout(() => setMounted(false), durationMs);
-    return () => window.clearTimeout(timer);
-  }, [open, durationMs]);
-
-  return { mounted, visible };
+Drawer.Header = function DrawerHeader({ children, className, ...props }: DrawerHeaderProps) {
+  return (
+    <div className={cn("px-6 pt-6 pb-4 border-b border-slate-100 dark:border-[#1f2937]", className)} {...props}>
+      {children}
+    </div>
+  );
 }
 
-function DrawerHeader({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("border-b border-slate-200 px-6 pt-6 pb-4", className)} {...props}>{children}</div>;
-}
-function DrawerTitle({ className, children, ...props }: HTMLAttributes<HTMLHeadingElement>) {
-  return <h2 className={cn("pr-8 text-lg font-semibold text-slate-900", className)} {...props}>{children}</h2>;
-}
-function DrawerDescription({ className, children, ...props }: HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn("mt-1 text-sm text-slate-500", className)} {...props}>{children}</p>;
-}
-function DrawerContent({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("flex-1 overflow-y-auto px-6 py-4", className)} {...props}>{children}</div>;
-}
-function DrawerFooter({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("flex items-center justify-end gap-3 border-t border-slate-200 px-6 py-4", className)} {...props}>{children}</div>;
+Drawer.Title = function DrawerTitle({ children, className, ...props }: DrawerTitleProps) {
+  return (
+    <h2 className={cn("text-lg font-semibold text-slate-900 dark:text-white pr-8", className)} {...props}>
+      {children}
+    </h2>
+  );
 }
 
-function DrawerRoot({ open, onClose, side = "right", size = "md", children, className }: DrawerProps) {
+Drawer.Description = function DrawerDescription({ children, className, ...props }: DrawerDescriptionProps) {
+  return (
+    <p className={cn("mt-1 text-sm text-slate-500 dark:text-slate-400 leading-relaxed", className)} {...props}>
+      {children}
+    </p>
+  );
+}
+
+Drawer.Content = function DrawerContent({ children, className, ...props }: DrawerContentProps) {
+  return (
+    <div className={cn("flex-1 overflow-y-auto px-6 py-4", className)} {...props}>
+      {children}
+    </div>
+  );
+}
+
+Drawer.Footer = function DrawerFooter({ children, className, ...props }: DrawerFooterProps) {
+  return (
+    <div className={cn("px-6 py-4 border-t border-slate-100 dark:border-[#1f2937] flex items-center justify-end gap-3 shrink-0", className)} {...props}>
+      {children}
+    </div>
+  );
+}
+
+// ─── Drawer ───────────────────────────────────────────────────────────────────
+
+export function Drawer({ open, onClose, side = "right", size = "md", children, className }: DrawerProps) {
   const backdropRef = useRef<HTMLDivElement>(null);
   const { mounted, visible } = useAnimatedMount(open, 300);
 
   useEffect(() => {
     if (!open) return;
-    const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
-    document.addEventListener("keydown", onKeyDown);
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    document.addEventListener("keydown", handleKey);
     document.body.style.overflow = "hidden";
+
     return () => {
-      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("keydown", handleKey);
       document.body.style.overflow = "";
     };
   }, [open, onClose]);
 
   if (!mounted) return null;
+
   const { panel, hidden } = SIDE_CLASSES[side];
 
-  return createPortal(
+  const drawer = (
     <div
       ref={backdropRef}
       className="fixed inset-0 z-50 flex"
-      onClick={(event) => { if (event.target === backdropRef.current) onClose(); }}
+      onClick={(e) => {
+        if (e.target === backdropRef.current) onClose();
+      }}
     >
-      <div className={cn("absolute inset-0 bg-black/50 transition-opacity duration-300", visible ? "opacity-100" : "opacity-0")} />
+      {/* Backdrop */}
+      <div
+        className={cn(
+          "absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300",
+          visible ? "opacity-100" : "opacity-0"
+        )}
+      />
+
+      {/* Panel */}
       <div
         role="dialog"
         aria-modal="true"
         className={cn(
-          "absolute flex h-full flex-col border-slate-200 bg-white shadow-2xl shadow-black/20 transition-transform duration-300",
+          "absolute flex flex-col h-full bg-white dark:bg-[#161b22]",
+          "border-slate-200 dark:border-[#1f2937]",
           side === "right" ? "border-l" : "border-r",
+          "shadow-2xl shadow-black/20",
+          "transition-transform duration-300 ease-in-out",
           visible ? "translate-x-0" : hidden,
           SIZE_CLASSES[size],
           panel,
           className
         )}
       >
-        <button onClick={onClose} className="absolute right-4 top-4 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100" aria-label="Close drawer">×</button>
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute right-4 top-4 z-10 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1f2937] hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+          aria-label="Close drawer"
+        >
+          <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none">
+            <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        </button>
+
         {children}
       </div>
-    </div>,
-    document.body
+    </div>
   );
-}
 
-type DrawerCompound = typeof DrawerRoot & {
-  Root: typeof DrawerRoot;
-  Header: typeof DrawerHeader;
-  Title: typeof DrawerTitle;
-  Description: typeof DrawerDescription;
-  Content: typeof DrawerContent;
-  Footer: typeof DrawerFooter;
-};
-
-export const Drawer = Object.assign(DrawerRoot, {
-  Root: DrawerRoot,
-  Header: DrawerHeader,
-  Title: DrawerTitle,
-  Description: DrawerDescription,
-  Content: DrawerContent,
-  Footer: DrawerFooter,
-}) as DrawerCompound;`;
+  return createPortal(drawer, document.body);
+}`;
 
 const PROPS_ROWS = [
   { prop: "open", type: "boolean", default: "—", description: "Controls drawer visibility." },
