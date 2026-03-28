@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { DocsPageLayout } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 
@@ -84,7 +85,9 @@ export default function ThemingPage() {
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-3xl">
         <nav className="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
-          <span className="hover:text-primary cursor-pointer transition-colors">Getting Started</span>
+          <Link href="/docs/installation" className="cursor-pointer transition-colors hover:text-primary">
+            Installation
+          </Link>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
           <span className="text-slate-900 dark:text-white">Theming</span>
         </nav>
