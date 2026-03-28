@@ -196,6 +196,8 @@ export default function PopoverDocPage() {
           Click-triggered floating panel for contextual actions and details.
         </p>
 
+        <CliInstallBlock name="popover" />
+
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
           <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">

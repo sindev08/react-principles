@@ -101,6 +101,8 @@ export default function AvatarDocPage() {
         <h1 className="mb-3 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">Avatar</h1>
         <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">User identity visual with image fallback initials.</p>
 
+        <CliInstallBlock name="avatar" />
+
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
           <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">

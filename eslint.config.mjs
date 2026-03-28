@@ -10,6 +10,8 @@ export default defineConfig([
     "out/**",
     "build/**",
     "dist/**",
+    "**/dist/**",
+    "packages/cli/tsup.config.ts",
     "next-env.d.ts",
   ]),
 

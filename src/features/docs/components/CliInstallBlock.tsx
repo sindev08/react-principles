@@ -13,7 +13,7 @@ export function CliInstallBlock({ name }: CliInstallBlockProps) {
   const command = `npx react-principles-cli add ${name}`;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(command);
+    void navigator.clipboard.writeText(command);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

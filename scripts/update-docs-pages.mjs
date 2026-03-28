@@ -46,7 +46,6 @@ function replaceInsideTemplateConst(source, constName, pattern, replacement) {
 
 function updatePage(componentName, filePath) {
   let source = readFileSync(filePath, "utf8");
-  const original = source;
   let changed = false;
 
   // ── 1 & 2: Fix COPY_PASTE_SNIPPET import paths ───────────────────────────
@@ -103,21 +102,25 @@ function updatePage(componentName, filePath) {
   // ── 5: Insert <CliInstallBlock name="..." /> after header section ─────────
   // The header section ends with </div> then a blank line then {/* 01 Theme Preview */}
   if (!source.includes("<CliInstallBlock")) {
-    // Match the closing </div> of the header and the following section comment
-    const insertPattern = new RegExp(
-      "(\\s*<\\/div>\\n\\n)(\\s*\\{/\\* 0[1-9])"
-    );
-    if (insertPattern.test(source)) {
-      source = source.replace(
-        insertPattern,
-        (match, endDiv, sectionComment) => {
-          return (
-            endDiv +
-            `        <CliInstallBlock name="${componentName}" />\n\n` +
-            sectionComment
-          );
-        }
-      );
+    // Pattern A: pages with {/* 01 ... */} style section comments after header </div>
+    const patternA = new RegExp("(\\s*<\\/div>\\n\\n)(\\s*\\{/\\* 0[1-9])");
+    // Pattern B: pages with <section id="..."> directly after description </p>
+    // Works for both inline </p> and block-closing </p> on its own line
+    const patternB = /(<\/p>\n\n)(        <section)/;
+
+    if (patternA.test(source)) {
+      source = source.replace(patternA, (match, endDiv, sectionComment) => {
+        return (
+          endDiv +
+          `        <CliInstallBlock name="${componentName}" />\n\n` +
+          sectionComment
+        );
+      });
+      changed = true;
+    } else if (patternB.test(source)) {
+      source = source.replace(patternB, (match, endP, section) => {
+        return endP + `        <CliInstallBlock name="${componentName}" />\n\n` + section;
+      });
       changed = true;
     }
   }
