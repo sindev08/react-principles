@@ -61,18 +61,17 @@ const CODE_SNIPPET = `import { Badge } from "@/ui/Badge";
 <Badge size="lg" variant="default">Large</Badge>`;
 
 const COPY_PASTE_SNIPPET = `import type { ReactNode } from "react";
+import { cn } from "@/shared/utils/cn";
 
-type BadgeVariant = "default" | "success" | "warning" | "error" | "info" | "outline";
-type BadgeSize = "sm" | "md" | "lg";
+export type BadgeVariant = "default" | "success" | "warning" | "error" | "info" | "outline";
+export type BadgeSize = "sm" | "md" | "lg";
 
-interface BadgeProps {
+export interface BadgeProps {
   variant?: BadgeVariant;
   size?: BadgeSize;
   children: ReactNode;
   className?: string;
 }
-
-const cn = (...classes: Array<string | undefined | false>) => classes.filter(Boolean).join(" ");
 
 const VARIANT_CLASSES: Record<BadgeVariant, string> = {
   default: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
@@ -89,16 +88,20 @@ const SIZE_CLASSES: Record<BadgeSize, string> = {
   lg: "text-sm px-3 py-1",
 };
 
-function BadgeRoot({ variant = "default", size = "md", children, className }: BadgeProps) {
+export function Badge({ variant = "default", size = "md", children, className }: BadgeProps) {
   return (
-    <span className={cn("inline-flex items-center rounded-full font-medium", VARIANT_CLASSES[variant], SIZE_CLASSES[size], className)}>
+    <span
+      className={cn(
+        "inline-flex items-center font-medium rounded-full",
+        VARIANT_CLASSES[variant],
+        SIZE_CLASSES[size],
+        className,
+      )}
+    >
       {children}
     </span>
   );
-}
-
-type BadgeCompound = typeof BadgeRoot & { Root: typeof BadgeRoot };
-export const Badge = Object.assign(BadgeRoot, { Root: BadgeRoot }) as BadgeCompound;`;
+}`;
 
 const PROPS_ROWS = [
   { prop: "variant", type: '"default" | "success" | "warning" | "error" | "info" | "outline"', required: false, default: '"default"', description: "Controls the color scheme of the badge." },
