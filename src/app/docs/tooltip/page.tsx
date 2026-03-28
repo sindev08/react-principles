@@ -1,6 +1,6 @@
 "use client";
 
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Tooltip } from "@/ui/Tooltip";
 
@@ -10,7 +10,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Tooltip } from "@/ui/Tooltip";
+const CODE_SNIPPET = `import { Tooltip } from "@/components/ui/Tooltip";
 
 <Tooltip side="top">
   <Tooltip.Trigger>
@@ -20,7 +20,7 @@ const CODE_SNIPPET = `import { Tooltip } from "@/ui/Tooltip";
 </Tooltip>`;
 
 const COPY_PASTE_SNIPPET = `import { createContext, useContext, useState, type HTMLAttributes, type ReactNode } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 type TooltipSide = "top" | "bottom" | "left" | "right";
 

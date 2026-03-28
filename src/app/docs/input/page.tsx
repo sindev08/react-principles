@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Input } from "@/ui/Input";
 import type { InputSize, InputVariant } from "@/ui/Input";
@@ -19,7 +19,7 @@ const TOC_ITEMS = [
 const SIZES: InputSize[] = ["sm", "md", "lg"];
 const VARIANTS: InputVariant[] = ["default", "filled", "ghost"];
 
-const CODE_SNIPPET = `import { Input } from "@/ui/Input";
+const CODE_SNIPPET = `import { Input } from "@/components/ui/Input";
 
 // Basic
 <Input placeholder="Enter your email" />
@@ -52,7 +52,7 @@ const CODE_SNIPPET = `import { Input } from "@/ui/Input";
 <Input size="lg" variant="filled" label="Display name" />`;
 
 const COPY_PASTE_SNIPPET = `import { forwardRef, InputHTMLAttributes, ReactNode } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -368,6 +368,8 @@ export default function InputDocPage() {
             ))}
           </div>
         </div>
+
+        <CliInstallBlock name="input" />
 
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">

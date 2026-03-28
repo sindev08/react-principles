@@ -1,6 +1,6 @@
 "use client";
 
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Avatar } from "@/ui/Avatar";
 
@@ -10,7 +10,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Avatar } from "@/ui/Avatar";
+const CODE_SNIPPET = `import { Avatar } from "@/components/ui/Avatar";
 
 <Avatar size="lg">
   <Avatar.Image src="https://i.pravatar.cc/120" alt="Profile" />
@@ -21,7 +21,7 @@ const COPY_PASTE_SNIPPET = `"use client";
 /* eslint-disable @next/next/no-img-element */
 
 import { createContext, useContext, useState, type ImgHTMLAttributes, type ReactNode } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export type AvatarSize = "sm" | "md" | "lg" | "xl";
 

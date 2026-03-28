@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { DropdownMenu } from "@/ui/DropdownMenu";
 
@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { DropdownMenu } from "@/ui/DropdownMenu";
+const CODE_SNIPPET = `import { DropdownMenu } from "@/components/ui/DropdownMenu";
 
 <DropdownMenu>
   <DropdownMenu.Trigger>Actions</DropdownMenu.Trigger>
@@ -25,7 +25,7 @@ const CODE_SNIPPET = `import { DropdownMenu } from "@/ui/DropdownMenu";
 </DropdownMenu>`;
 
 const COPY_PASTE_SNIPPET = `import { createContext, useCallback, useContext, useEffect, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 interface DropdownMenuContextValue {
   open: boolean;

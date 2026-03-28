@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Slider } from "@/ui/Slider";
 
@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Slider } from "@/ui/Slider";
+const CODE_SNIPPET = `import { Slider } from "@/components/ui/Slider";
 
 <Slider
   label="Volume"
@@ -23,7 +23,7 @@ const CODE_SNIPPET = `import { Slider } from "@/ui/Slider";
 />`;
 
 const COPY_PASTE_SNIPPET = `import { useState } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export interface SliderProps {
   value?: number;

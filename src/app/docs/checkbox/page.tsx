@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Checkbox } from "@/ui/Checkbox";
 import type { CheckboxSize } from "@/ui/Checkbox";
@@ -23,7 +23,7 @@ const NOTIFICATION_ITEMS = [
   { id: "digest", label: "Weekly digest", description: "A summary every Monday." },
 ];
 
-const CODE_SNIPPET = `import { Checkbox } from "@/ui/Checkbox";
+const CODE_SNIPPET = `import { Checkbox } from "@/components/ui/Checkbox";
 
 // Basic
 <Checkbox label="Accept terms and conditions" />
@@ -56,7 +56,7 @@ const CODE_SNIPPET = `import { Checkbox } from "@/ui/Checkbox";
 <Checkbox size="lg" label="Large" />`;
 
 const COPY_PASTE_SNIPPET = `import { useRef, useEffect } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export type CheckboxSize = "sm" | "md" | "lg";
 
@@ -296,6 +296,8 @@ export default function CheckboxDocPage() {
             ))}
           </div>
         </div>
+
+        <CliInstallBlock name="checkbox" />
 
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">

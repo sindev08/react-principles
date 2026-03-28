@@ -1,25 +1,18 @@
-import { useCallback, useEffect, useState } from "react";
+"use client";
+
+import { useEffect, useState } from "react";
 
 /**
  * Tracks whether a CSS media query matches the current viewport.
  * Uses the `matchMedia` API and listens for changes.
- * Returns `false` during SSR.
+ * Returns `false` during SSR and on the initial render to avoid hydration mismatch.
  */
 export function useMediaQuery(query: string): boolean {
-  const getMatches = useCallback((q: string): boolean => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-    return window.matchMedia(q).matches;
-  }, []);
 
-  const [matches, setMatches] = useState<boolean>(() => getMatches(query));
+  // Always init false so SSR and client hydration match, then sync in useEffect
+  const [matches, setMatches] = useState<boolean>(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
     const mediaQueryList = window.matchMedia(query);
 
     const handleChange = (event: MediaQueryListEvent) => {

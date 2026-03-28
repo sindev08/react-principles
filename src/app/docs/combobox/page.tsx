@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Combobox } from "@/ui/Combobox";
 
@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Combobox } from "@/ui/Combobox";
+const CODE_SNIPPET = `import { Combobox } from "@/components/ui/Combobox";
 
 <Combobox
   value={value}
@@ -25,7 +25,7 @@ const CODE_SNIPPET = `import { Combobox } from "@/ui/Combobox";
 />`;
 
 const COPY_PASTE_SNIPPET = `import { useEffect, useMemo, useRef, useState } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export interface ComboboxOption {
   label: string;

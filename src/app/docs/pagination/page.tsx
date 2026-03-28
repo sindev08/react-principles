@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Pagination } from "@/ui/Pagination";
 
@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Pagination } from "@/ui/Pagination";
+const CODE_SNIPPET = `import { Pagination } from "@/components/ui/Pagination";
 
 <Pagination
   page={page}
@@ -20,7 +20,7 @@ const CODE_SNIPPET = `import { Pagination } from "@/ui/Pagination";
   siblingCount={1}
 />`;
 
-const COPY_PASTE_SNIPPET = `import { cn } from "@/shared/utils/cn";
+const COPY_PASTE_SNIPPET = `import { cn } from "@/lib/utils";
 
 type PaginationToken = number | "ellipsis";
 

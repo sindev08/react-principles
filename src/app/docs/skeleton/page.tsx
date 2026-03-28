@@ -1,6 +1,6 @@
 "use client";
 
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Skeleton } from "@/ui/Skeleton";
 
@@ -10,7 +10,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Skeleton } from "@/ui/Skeleton";
+const CODE_SNIPPET = `import { Skeleton } from "@/components/ui/Skeleton";
 
 <div className="space-y-3">
   <Skeleton variant="line" width="70%" />
@@ -18,7 +18,7 @@ const CODE_SNIPPET = `import { Skeleton } from "@/ui/Skeleton";
   <Skeleton variant="rect" className="h-24" />
 </div>`;
 
-const COPY_PASTE_SNIPPET = `import { cn } from "@/shared/utils/cn";
+const COPY_PASTE_SNIPPET = `import { cn } from "@/lib/utils";
 
 export type SkeletonVariant = "line" | "rect" | "circle";
 

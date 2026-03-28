@@ -1,6 +1,6 @@
 "use client";
 
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Separator } from "@/ui/Separator";
 
@@ -10,7 +10,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Separator } from "@/ui/Separator";
+const CODE_SNIPPET = `import { Separator } from "@/components/ui/Separator";
 
 <div className="space-y-4">
   <p>Account</p>
@@ -19,7 +19,7 @@ const CODE_SNIPPET = `import { Separator } from "@/ui/Separator";
 </div>`;
 
 const COPY_PASTE_SNIPPET = `import type { HTMLAttributes } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export type SeparatorOrientation = "horizontal" | "vertical";
 

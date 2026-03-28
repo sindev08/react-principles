@@ -1,6 +1,6 @@
 "use client";
 
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Breadcrumb } from "@/ui/Breadcrumb";
 
@@ -10,7 +10,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Breadcrumb } from "@/ui/Breadcrumb";
+const CODE_SNIPPET = `import { Breadcrumb } from "@/components/ui/Breadcrumb";
 
 <Breadcrumb>
   <Breadcrumb.List>
@@ -23,7 +23,7 @@ const CODE_SNIPPET = `import { Breadcrumb } from "@/ui/Breadcrumb";
 </Breadcrumb>`;
 
 const COPY_PASTE_SNIPPET = `import type { AnchorHTMLAttributes, HTMLAttributes, ReactNode } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export function Breadcrumb({ className, ...props }: HTMLAttributes<HTMLElement>) {
   return <nav aria-label="Breadcrumb" className={cn("w-full", className)} {...props} />;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Button } from "@/ui/Button";
 import { Toast } from "@/ui/Toast";
@@ -12,7 +12,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Toast } from "@/ui/Toast";
+const CODE_SNIPPET = `import { Toast } from "@/components/ui/Toast";
 
 <Toast open={open} onOpenChange={setOpen} variant="success">
   <Toast.Title>Saved successfully</Toast.Title>
@@ -26,8 +26,8 @@ const COPY_PASTE_SNIPPET = `"use client";
 
 import { createContext, useContext, useEffect, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { useAnimatedMount } from "@/shared/hooks/useAnimatedMount";
-import { cn } from "@/shared/utils/cn";
+import { useAnimatedMount } from "@/hooks/use-animated-mount";
+import { cn } from "@/lib/utils";
 
 export type ToastVariant = "default" | "success" | "warning" | "error";
 export type ToastPosition = "top-right" | "bottom-right" | "top-left" | "bottom-left";

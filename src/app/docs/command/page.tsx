@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Command } from "@/ui/Command";
 
@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Command } from "@/ui/Command";
+const CODE_SNIPPET = `import { Command } from "@/components/ui/Command";
 
 <Command>
   <Command.Input placeholder="Type a command..." />
@@ -25,7 +25,7 @@ const CODE_SNIPPET = `import { Command } from "@/ui/Command";
 </Command>`;
 
 const COPY_PASTE_SNIPPET = `import { createContext, useContext, useMemo, useState, type HTMLAttributes, type InputHTMLAttributes, type ReactNode } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 interface CommandContextValue {
   query: string;

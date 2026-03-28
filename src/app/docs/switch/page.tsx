@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Switch } from "@/ui/Switch";
 
@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Switch } from "@/ui/Switch";
+const CODE_SNIPPET = `import { Switch } from "@/components/ui/Switch";
 
 <Switch
   checked={enabled}
@@ -21,7 +21,7 @@ const CODE_SNIPPET = `import { Switch } from "@/ui/Switch";
 />`;
 
 const COPY_PASTE_SNIPPET = `import { useMemo, useState } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export type SwitchSize = "sm" | "md" | "lg";
 

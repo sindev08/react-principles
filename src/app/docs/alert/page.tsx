@@ -1,6 +1,6 @@
 "use client";
 
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Alert } from "@/ui/Alert";
 
@@ -10,7 +10,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Alert } from "@/ui/Alert";
+const CODE_SNIPPET = `import { Alert } from "@/components/ui/Alert";
 
 <Alert variant="warning">
   <Alert.Title>Unsaved changes</Alert.Title>
@@ -21,7 +21,7 @@ const CODE_SNIPPET = `import { Alert } from "@/ui/Alert";
 </Alert>`;
 
 const COPY_PASTE_SNIPPET = `import type { ButtonHTMLAttributes, HTMLAttributes } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export type AlertVariant = "default" | "success" | "warning" | "error" | "info";
 

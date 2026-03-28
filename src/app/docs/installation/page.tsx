@@ -1,25 +1,33 @@
 import Link from "next/link";
 import { DocsPageLayout } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
+import { Alert } from "@/ui/Alert";
+import { Card } from "@/ui/Card";
 
 const TOC_ITEMS = [
   { label: "Requirements", href: "#requirements" },
   { label: "Install Package", href: "#install-package" },
   { label: "Import APIs", href: "#import-apis" },
-  { label: "Next Steps", href: "#next-steps" },
 ];
 
 const INSTALL_PACKAGE = `pnpm add react-principles
 
-# required peers
-pnpm add zod zustand clsx tailwind-merge`;
+# optional — only install what you use
+pnpm add zustand          # for react-principles/stores
+pnpm add zod              # for react-principles/utils validators
+pnpm add clsx tailwind-merge  # for cn()`;
 
 const NPM_INSTALL = `npm install react-principles
 
-# required peers
-npm install zod zustand clsx tailwind-merge`;
+# optional — only install what you use
+npm install zustand          # for react-principles/stores
+npm install zod              # for react-principles/utils validators
+npm install clsx tailwind-merge  # for cn()`;
 
-const YARN_INSTALL = `yarn add react-principles zod zustand clsx tailwind-merge`;
+const YARN_INSTALL = `yarn add react-principles
+
+# optional — only install what you use
+yarn add zustand zod clsx tailwind-merge`;
 
 const IMPORT_EXAMPLE = `import { cn, useLocalStorage, useFilterStore, EmptyState } from "react-principles";
 
@@ -51,17 +59,22 @@ import { ErrorBoundary } from "react-principles/components";
 import { createApiClient } from "react-principles/lib";`;
 
 const REQUIREMENTS = [
-  "React 18+ atau React 19",
+  "React 18+ or React 19",
   "react-dom 18+",
-  "TypeScript 5+ untuk pengalaman typing terbaik",
-  "Tailwind CSS jika ingin memakai utilitas styling yang sama seperti docs ini",
+  "TypeScript 5+ for the best typing experience",
+  "Tailwind CSS if you want to use the same styling utilities as in these docs",
 ];
 
-const PEERS = [
-  { name: "zod", note: "schema validation helpers" },
-  { name: "zustand", note: "state store exports" },
-  { name: "clsx", note: "class composition utility" },
-  { name: "tailwind-merge", note: "Tailwind class merging for cn()" },
+const REQUIRED_PEERS = [
+  { name: "react", note: ">=18 required" },
+  { name: "react-dom", note: ">=18 required" },
+];
+
+const OPTIONAL_PEERS = [
+  { name: "zustand", note: "react-principles/stores" },
+  { name: "zod", note: "react-principles/utils validators" },
+  { name: "clsx", note: "cn() utility" },
+  { name: "tailwind-merge", note: "cn() utility" },
 ];
 
 export default function InstallationPage() {
@@ -81,45 +94,42 @@ export default function InstallationPage() {
             Installation
           </h1>
           <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-400">
-            Tambahkan package
+            Add the
             <code className="mx-1 font-mono text-sm text-primary">react-principles</code>
-            ke project Anda untuk memakai hooks, stores, utils, types, shared components,
-            dan helper API client yang diekspor dari library ini.
+            package to your project to use hooks, stores, utils, types, shared components,
+            and the API client helper exported from this library.
           </p>
         </div>
 
         <section id="requirements" className="mb-14">
           <h2 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">Requirements</h2>
           <p className="mb-6 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-            Library ini dibangun untuk ekosistem React modern. Jika Anda memakai Next.js App Router,
-            Vite, atau setup React standar lain, langkah instalasinya tetap sama.
+            This library is built for the modern React ecosystem. Whether you use Next.js App Router,
+            Vite, or any other standard React setup, the installation steps are the same.
           </p>
 
           <div className="mb-6 grid gap-3">
             {REQUIREMENTS.map((item) => (
-              <div
-                key={item}
-                className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 dark:border-[#1f2937] dark:bg-[#161b22]"
-              >
+              <Card key={item} className="flex items-start gap-3 p-4">
                 <span className="material-symbols-outlined mt-0.5 text-[18px] text-primary">check_circle</span>
                 <p className="text-sm text-slate-600 dark:text-slate-400">{item}</p>
-              </div>
+              </Card>
             ))}
           </div>
 
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/40 dark:bg-amber-900/10">
-            <p className="text-sm leading-relaxed text-amber-900 dark:text-amber-200">
-              Beberapa API dari package ini mengandalkan peer dependency opsional. Install package
-              yang Anda pakai agar bundler dan type checker tidak mengeluh saat import.
-            </p>
-          </div>
+          <Alert variant="warning">
+            <Alert.Description>
+              Some APIs in this package rely on optional peer dependencies. Install the packages
+              you use so your bundler and type checker do not complain on import.
+            </Alert.Description>
+          </Alert>
         </section>
 
         <section id="install-package" className="mb-14">
           <h2 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">Install Package</h2>
           <p className="mb-6 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-            Gunakan package manager favorit Anda. Contoh di bawah juga menginstall peer dependency
-            yang paling umum dipakai bersama library ini.
+            Use your preferred package manager. The examples below also install the most commonly
+            used peer dependencies alongside this library.
           </p>
 
           <div className="space-y-4">
@@ -134,27 +144,37 @@ export default function InstallationPage() {
             </CodeBlock>
           </div>
 
-          <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
-            <h3 className="mb-4 text-lg font-semibold text-slate-900 dark:text-white">Peer dependencies</h3>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {PEERS.map((peer) => (
-                <div
-                  key={peer.name}
-                  className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-[#30363d] dark:bg-[#0d1117]"
-                >
-                  <code className="text-sm font-semibold text-primary">{peer.name}</code>
-                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{peer.note}</p>
-                </div>
-              ))}
+          <Card className="mt-6 p-6 space-y-5">
+            <div>
+              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Required</h3>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {REQUIRED_PEERS.map((peer) => (
+                  <Card key={peer.name} variant="flat" className="p-4">
+                    <code className="text-sm font-semibold text-primary">{peer.name}</code>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{peer.note}</p>
+                  </Card>
+                ))}
+              </div>
             </div>
-          </div>
+            <div>
+              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Optional</h3>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {OPTIONAL_PEERS.map((peer) => (
+                  <Card key={peer.name} variant="flat" className="p-4">
+                    <code className="text-sm font-semibold text-primary">{peer.name}</code>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{peer.note}</p>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </Card>
         </section>
 
         <section id="import-apis" className="mb-14">
           <h2 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">Import APIs</h2>
           <p className="mb-6 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-            Setelah terpasang, Anda bisa import langsung dari root package atau memakai subpath
-            exports agar lebih eksplisit sesuai kebutuhan modul Anda.
+            Once installed, you can import directly from the root package or use subpath
+            exports to be more explicit about the module you need.
           </p>
 
           <div className="space-y-4">
@@ -164,38 +184,6 @@ export default function InstallationPage() {
             <CodeBlock filename="subpath-imports.ts" copyText={SUBPATH_IMPORTS}>
               {SUBPATH_IMPORTS}
             </CodeBlock>
-          </div>
-        </section>
-
-        <section id="next-steps" className="mb-14">
-          <h2 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">Next Steps</h2>
-          <p className="mb-6 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-            Setelah instalasi selesai, lanjutkan ke halaman berikut agar setup visual dan tema project
-            Anda konsisten dengan contoh-contoh yang ada di docs ini.
-          </p>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Link
-              href="/docs/theming"
-              className="rounded-2xl border border-slate-200 bg-white p-5 transition-colors hover:border-primary/40 dark:border-[#1f2937] dark:bg-[#161b22]"
-            >
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Continue</p>
-              <h3 className="mt-2 text-lg font-semibold text-slate-900 dark:text-white">Theming</h3>
-              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                Pelajari token warna, dark mode, dan cara menyesuaikan styling global.
-              </p>
-            </Link>
-
-            <Link
-              href="/docs/introduction"
-              className="rounded-2xl border border-slate-200 bg-white p-5 transition-colors hover:border-primary/40 dark:border-[#1f2937] dark:bg-[#161b22]"
-            >
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Back</p>
-              <h3 className="mt-2 text-lg font-semibold text-slate-900 dark:text-white">Introduction</h3>
-              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-                Kembali ke overview library dan gambaran umum komponen yang tersedia.
-              </p>
-            </Link>
           </div>
         </section>
 

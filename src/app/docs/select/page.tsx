@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Select } from "@/ui/Select";
 
@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Select } from "@/ui/Select";
+const CODE_SNIPPET = `import { Select } from "@/components/ui/Select";
 
 <Select
   label="Framework"
@@ -25,7 +25,7 @@ const CODE_SNIPPET = `import { Select } from "@/ui/Select";
 />`;
 
 const COPY_PASTE_SNIPPET = `import { forwardRef, type SelectHTMLAttributes } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export type SelectSize = "sm" | "md" | "lg";
 

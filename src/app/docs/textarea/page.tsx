@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Textarea } from "@/ui/Textarea";
 
@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Textarea } from "@/ui/Textarea";
+const CODE_SNIPPET = `import { Textarea } from "@/components/ui/Textarea";
 
 <Textarea
   label="Project notes"
@@ -21,7 +21,7 @@ const CODE_SNIPPET = `import { Textarea } from "@/ui/Textarea";
 />`;
 
 const COPY_PASTE_SNIPPET = `import { forwardRef, type ReactNode, type TextareaHTMLAttributes } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export type TextareaSize = "sm" | "md" | "lg";
 export type TextareaVariant = "default" | "filled" | "ghost";

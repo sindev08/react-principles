@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { RadioGroup } from "@/ui/RadioGroup";
 
@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { RadioGroup } from "@/ui/RadioGroup";
+const CODE_SNIPPET = `import { RadioGroup } from "@/components/ui/RadioGroup";
 
 <RadioGroup value={plan} onValueChange={setPlan}>
   <RadioGroup.Item value="starter" label="Starter" description="Best for side projects" />
@@ -20,7 +20,7 @@ const CODE_SNIPPET = `import { RadioGroup } from "@/ui/RadioGroup";
 </RadioGroup>`;
 
 const COPY_PASTE_SNIPPET = `import { createContext, useContext, useId, useState, type HTMLAttributes, type ReactNode } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export interface RadioGroupProps extends HTMLAttributes<HTMLDivElement> {
   value?: string;
