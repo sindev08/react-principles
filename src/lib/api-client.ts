@@ -1,4 +1,4 @@
-import type { ApiError } from "@/shared/types/api";
+import type { ApiError } from "../shared/types/api";
 
 /**
  * Configuration for the API client.
