@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { DocsPageLayout } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 
@@ -102,18 +103,18 @@ export default function IntroductionPage() {
 
         {/* Page nav */}
         <div className="flex items-center justify-between border-t border-slate-200 dark:border-[#1f2937] pt-8">
-          <a href="#" className="flex flex-col gap-1 transition-colors group">
+          <Link href="/docs" className="flex flex-col gap-1 transition-colors group">
             <span className="text-xs text-slate-400">Previous</span>
             <span className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary">
               Getting Started
             </span>
-          </a>
-          <a href="#" className="flex flex-col items-end gap-1 transition-colors group">
+          </Link>
+          <Link href="/docs/installation" className="flex flex-col items-end gap-1 transition-colors group">
             <span className="text-xs text-slate-400">Next</span>
             <span className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary">
               Installation
             </span>
-          </a>
+          </Link>
         </div>
       </div>
     </DocsPageLayout>

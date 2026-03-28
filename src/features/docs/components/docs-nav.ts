@@ -14,7 +14,7 @@ export const DOCS_NAV: NavGroup[] = [
     title: "Getting Started",
     items: [
       { label: "Introduction", href: "/docs/introduction" },
-      { label: "Installation", href: "#", soon: true },
+      { label: "Installation", href: "/docs/installation" },
       { label: "Theming", href: "/docs/theming" },
       { label: "Dark Mode", href: "/docs/dark-mode" },
     ],
