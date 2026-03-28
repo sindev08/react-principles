@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Button } from "@/ui/Button";
 import type { ButtonVariant, ButtonSize } from "@/ui/Button";
@@ -45,7 +45,7 @@ const FORCED_DARK: Record<ButtonVariant, string> = {
 
 const BASE_BTN = "inline-flex items-center justify-center font-semibold rounded-lg text-sm px-4 py-2 h-9 transition-all";
 
-const CODE_SNIPPET = `import { Button } from "@/ui/Button";
+const CODE_SNIPPET = `import { Button } from "@/components/ui/Button";
 
 // Variants
 <Button variant="primary">Save changes</Button>
@@ -64,7 +64,7 @@ const CODE_SNIPPET = `import { Button } from "@/ui/Button";
 <Button disabled>Unavailable</Button>`;
 
 const COPY_PASTE_SNIPPET = `import type { ButtonHTMLAttributes, ReactNode } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive" | "outline";
 export type ButtonSize = "sm" | "md" | "lg";
@@ -215,6 +215,8 @@ export default function ButtonDocPage() {
             ))}
           </div>
         </div>
+
+        <CliInstallBlock name="button" />
 
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">

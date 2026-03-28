@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Command } from "@/ui/Command";
 
@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Command } from "@/ui/Command";
+const CODE_SNIPPET = `import { Command } from "@/components/ui/Command";
 
 <Command>
   <Command.Input placeholder="Type a command..." />
@@ -25,7 +25,7 @@ const CODE_SNIPPET = `import { Command } from "@/ui/Command";
 </Command>`;
 
 const COPY_PASTE_SNIPPET = `import { createContext, useContext, useMemo, useState, type HTMLAttributes, type InputHTMLAttributes, type ReactNode } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 interface CommandContextValue {
   query: string;
@@ -142,6 +142,8 @@ export default function CommandDocPage() {
       <div className="max-w-4xl">
         <h1 className="mb-3 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">Command</h1>
         <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">Quick-action list with search filtering for power users.</p>
+
+        <CliInstallBlock name="command" />
 
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
