@@ -9,7 +9,7 @@ export function useCreateUser() {
   return useMutation({
     mutationFn: (data: CreateUserInput) => createUser(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.users.all });
     },
   });
 }

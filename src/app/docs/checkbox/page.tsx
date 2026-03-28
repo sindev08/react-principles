@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Checkbox } from "@/ui/Checkbox";
 import type { CheckboxSize } from "@/ui/Checkbox";
@@ -23,7 +23,7 @@ const NOTIFICATION_ITEMS = [
   { id: "digest", label: "Weekly digest", description: "A summary every Monday." },
 ];
 
-const CODE_SNIPPET = `import { Checkbox } from "@/ui/Checkbox";
+const CODE_SNIPPET = `import { Checkbox } from "@/components/ui/Checkbox";
 
 // Basic
 <Checkbox label="Accept terms and conditions" />
@@ -56,7 +56,7 @@ const CODE_SNIPPET = `import { Checkbox } from "@/ui/Checkbox";
 <Checkbox size="lg" label="Large" />`;
 
 const COPY_PASTE_SNIPPET = `import { useRef, useEffect } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export type CheckboxSize = "sm" | "md" | "lg";
 
@@ -207,13 +207,13 @@ const FORCED_STATES = {
     { boxCls: "border-2 border-[#4628F1] bg-[#4628F1] text-white", label: "Email notifications", stateLabel: "Checked", showCheck: true },
     { boxCls: "border-2 border-[#4628F1] bg-[#4628F1] text-white", label: "All categories", stateLabel: "Indeterminate", showMinus: true },
     { boxCls: "border-2 border-slate-200 bg-slate-100 opacity-50", label: "Archived items", stateLabel: "Disabled" },
-  ] as (ForcedState & { showCheck?: boolean; showMinus?: boolean })[],
+  ] as Array<ForcedState & { showCheck?: boolean; showMinus?: boolean }>,
   dark: [
     { boxCls: "border-2 border-slate-600 bg-[#0d1117]", label: "Accept terms", stateLabel: "Unchecked" },
     { boxCls: "border-2 border-[#4628F1] bg-[#4628F1] text-white", label: "Email notifications", stateLabel: "Checked", showCheck: true },
     { boxCls: "border-2 border-[#4628F1] bg-[#4628F1] text-white", label: "All categories", stateLabel: "Indeterminate", showMinus: true },
     { boxCls: "border-2 border-[#1f2937] bg-[#1f2937] opacity-50", label: "Archived items", stateLabel: "Disabled" },
-  ] as (ForcedState & { showCheck?: boolean; showMinus?: boolean })[],
+  ] as Array<ForcedState & { showCheck?: boolean; showMinus?: boolean }>,
 };
 
 function ThemedCheckboxPreview({ theme }: { theme: "light" | "dark" }) {
@@ -296,6 +296,8 @@ export default function CheckboxDocPage() {
             ))}
           </div>
         </div>
+
+        <CliInstallBlock name="checkbox" />
 
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">

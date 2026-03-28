@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { AlertDialog } from "@/ui/AlertDialog";
 import { Button } from "@/ui/Button";
@@ -19,7 +19,7 @@ const TOC_ITEMS = [
 
 const VARIANTS: AlertDialogVariant[] = ["destructive", "warning", "default"];
 
-const CODE_SNIPPET = `import { AlertDialog } from "@/ui/AlertDialog";
+const CODE_SNIPPET = `import { AlertDialog } from "@/components/ui/AlertDialog";
 
 const [open, setOpen] = useState(false);
 const [loading, setLoading] = useState(false);
@@ -51,8 +51,8 @@ const handleConfirm = async () => {
 
 const COPY_PASTE_SNIPPET = `import { useEffect } from "react";
 import { createPortal } from "react-dom";
-import { cn } from "@/shared/utils/cn";
-import { useAnimatedMount } from "@/shared/hooks/useAnimatedMount";
+import { cn } from "@/lib/utils";
+import { useAnimatedMount } from "@/hooks/use-animated-mount";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -411,6 +411,8 @@ export default function AlertDialogDocPage() {
             <strong>Key difference from Dialog:</strong> No backdrop click dismiss, no Escape key dismiss, no × close button. Use this only for actions that require deliberate acknowledgement.
           </p>
         </div>
+
+        <CliInstallBlock name="alert-dialog" />
 
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">
