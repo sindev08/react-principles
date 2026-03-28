@@ -6,75 +6,31 @@ import { Card } from "@/ui/Card";
 
 const TOC_ITEMS = [
   { label: "Requirements", href: "#requirements" },
-  { label: "Install Package", href: "#install-package" },
-  { label: "Import APIs", href: "#import-apis" },
+  { label: "UI Components", href: "#ui-components" },
 ];
 
-const INSTALL_PACKAGE = `pnpm add react-principles
+const CLI_INIT_FRAMEWORK = `# auto-detect framework
+npx react-principles-cli@latest init
 
-# optional — only install what you use
-pnpm add zustand          # for react-principles/stores
-pnpm add zod              # for react-principles/utils validators
-pnpm add clsx tailwind-merge  # for cn()`;
+# or specify explicitly
+npx react-principles-cli@latest init -t next
+npx react-principles-cli@latest init -t vite
+npx react-principles-cli@latest init -t remix`;
 
-const NPM_INSTALL = `npm install react-principles
+const CLI_ADD = `# see all available components
+npx react-principles-cli@latest list
 
-# optional — only install what you use
-npm install zustand          # for react-principles/stores
-npm install zod              # for react-principles/utils validators
-npm install clsx tailwind-merge  # for cn()`;
+# add a single component
+npx react-principles-cli@latest add button
 
-const YARN_INSTALL = `yarn add react-principles
-
-# optional — only install what you use
-yarn add zustand zod clsx tailwind-merge`;
-
-const IMPORT_EXAMPLE = `import { cn, useLocalStorage, useFilterStore, EmptyState } from "react-principles";
-
-export function ExamplePanel() {
-  const [theme, setTheme] = useLocalStorage("theme", "light");
-  const filters = useFilterStore((state) => state.filters);
-
-  return (
-    <section className={cn("rounded-xl border p-4", theme === "dark" && "bg-slate-950 text-white")}>
-      {filters.length === 0 ? (
-        <EmptyState
-          title="No filters applied"
-          description="Start selecting filters to narrow your data."
-        />
-      ) : null}
-
-      <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
-        Toggle theme
-      </button>
-    </section>
-  );
-}`;
-
-const SUBPATH_IMPORTS = `import { useDebounce } from "react-principles/hooks";
-import { cn } from "react-principles/utils";
-import type { User } from "react-principles/types";
-import { useSearchStore } from "react-principles/stores";
-import { ErrorBoundary } from "react-principles/components";
-import { createApiClient } from "react-principles/lib";`;
+# add multiple at once
+npx react-principles-cli@latest add button badge card input dialog`;
 
 const REQUIREMENTS = [
   "React 18+ or React 19",
   "react-dom 18+",
   "TypeScript 5+ for the best typing experience",
-  "Tailwind CSS if you want to use the same styling utilities as in these docs",
-];
-
-const REQUIRED_PEERS = [
-  { name: "react", note: ">=18 required" },
-  { name: "react-dom", note: ">=18 required" },
-];
-
-const OPTIONAL_PEERS = [
-  { name: "zustand", note: "react-principles/stores" },
-  { name: "zod", note: "react-principles/utils validators" },
-  { name: "clsx", note: "cn() utility" },
-  { name: "tailwind-merge", note: "cn() utility" },
+  "Tailwind CSS v4",
 ];
 
 export default function InstallationPage() {
@@ -94,21 +50,19 @@ export default function InstallationPage() {
             Installation
           </h1>
           <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-400">
-            Add the
-            <code className="mx-1 font-mono text-sm text-primary">react-principles</code>
-            package to your project to use hooks, stores, utils, types, shared components,
-            and the API client helper exported from this library.
+            UI components are installed directly into your project via the CLI — similar to how
+            shadcn/ui works. You own the source, so you can customize freely.
           </p>
         </div>
 
+        {/* Requirements */}
         <section id="requirements" className="mb-14">
           <h2 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">Requirements</h2>
           <p className="mb-6 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-            This library is built for the modern React ecosystem. Whether you use Next.js App Router,
-            Vite, or any other standard React setup, the installation steps are the same.
+            Make sure your project meets the following requirements before running the CLI.
           </p>
 
-          <div className="mb-6 grid gap-3">
+          <div className="grid gap-3">
             {REQUIREMENTS.map((item) => (
               <Card key={item} className="flex items-start gap-3 p-4">
                 <span className="material-symbols-outlined mt-0.5 text-[18px] text-primary">check_circle</span>
@@ -116,75 +70,50 @@ export default function InstallationPage() {
               </Card>
             ))}
           </div>
+        </section>
 
-          <Alert variant="warning">
+        {/* UI Components via CLI */}
+        <section id="ui-components" className="mb-14">
+          <h2 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">UI Components</h2>
+          <p className="mb-6 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+            Components are copied directly into your codebase with all dependencies resolved automatically.
+          </p>
+
+          <div className="space-y-6">
+            <div>
+              <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                1. Initialize your project
+              </p>
+              <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
+                Creates <code className="font-mono">components.json</code> and installs the{" "}
+                <code className="font-mono">cn()</code> utility. Auto-detects your framework
+                and tsconfig path aliases.
+              </p>
+              <CodeBlock filename="terminal" copyText={CLI_INIT_FRAMEWORK}>
+                {CLI_INIT_FRAMEWORK}
+              </CodeBlock>
+            </div>
+
+            <div>
+              <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                2. Add components
+              </p>
+              <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
+                Components are written to <code className="font-mono">src/components/ui/</code> by default,
+                configurable via <code className="font-mono">components.json</code>.
+              </p>
+              <CodeBlock filename="terminal" copyText={CLI_ADD}>
+                {CLI_ADD}
+              </CodeBlock>
+            </div>
+          </div>
+
+          <Alert variant="warning" className="mt-6">
             <Alert.Description>
-              Some APIs in this package rely on optional peer dependencies. Install the packages
-              you use so your bundler and type checker do not complain on import.
+              UI components require Tailwind CSS v4. Make sure your project has Tailwind configured
+              before running the CLI.
             </Alert.Description>
           </Alert>
-        </section>
-
-        <section id="install-package" className="mb-14">
-          <h2 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">Install Package</h2>
-          <p className="mb-6 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-            Use your preferred package manager. The examples below also install the most commonly
-            used peer dependencies alongside this library.
-          </p>
-
-          <div className="space-y-4">
-            <CodeBlock filename="pnpm" copyText={INSTALL_PACKAGE}>
-              {INSTALL_PACKAGE}
-            </CodeBlock>
-            <CodeBlock filename="npm" copyText={NPM_INSTALL}>
-              {NPM_INSTALL}
-            </CodeBlock>
-            <CodeBlock filename="yarn" copyText={YARN_INSTALL}>
-              {YARN_INSTALL}
-            </CodeBlock>
-          </div>
-
-          <Card className="mt-6 p-6 space-y-5">
-            <div>
-              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Required</h3>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {REQUIRED_PEERS.map((peer) => (
-                  <Card key={peer.name} variant="flat" className="p-4">
-                    <code className="text-sm font-semibold text-primary">{peer.name}</code>
-                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{peer.note}</p>
-                  </Card>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Optional</h3>
-              <div className="grid gap-3 sm:grid-cols-2">
-                {OPTIONAL_PEERS.map((peer) => (
-                  <Card key={peer.name} variant="flat" className="p-4">
-                    <code className="text-sm font-semibold text-primary">{peer.name}</code>
-                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{peer.note}</p>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </Card>
-        </section>
-
-        <section id="import-apis" className="mb-14">
-          <h2 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">Import APIs</h2>
-          <p className="mb-6 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-            Once installed, you can import directly from the root package or use subpath
-            exports to be more explicit about the module you need.
-          </p>
-
-          <div className="space-y-4">
-            <CodeBlock filename="example.tsx" copyText={IMPORT_EXAMPLE}>
-              {IMPORT_EXAMPLE}
-            </CodeBlock>
-            <CodeBlock filename="subpath-imports.ts" copyText={SUBPATH_IMPORTS}>
-              {SUBPATH_IMPORTS}
-            </CodeBlock>
-          </div>
         </section>
 
         <div className="flex items-center justify-between border-t border-slate-200 pt-8 dark:border-[#1f2937]">
