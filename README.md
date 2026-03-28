@@ -72,6 +72,7 @@ All patterns are documented in [`docs/`](./docs/README.md):
 - [Forms](./docs/forms.md) — React Hook Form + Zod
 - [Services](./docs/services.md) — API service layer
 - [Styling](./docs/styling.md) — Tailwind conventions
+- [Publishing Package](./docs/publishing-package.md) — npm package build and release flow
 
 ## Example Routes
 

@@ -28,6 +28,7 @@ Pattern and convention documentation used in this monorepo. Each doc explains **
 | 7 | [Forms](./forms.md) | Schema-first with Zod, React Hook Form integration, validation patterns. |
 | 8 | [Services](./services.md) | API client, fetch wrapper, type-safe endpoints, error handling. |
 | 9 | [Styling](./styling.md) | Tailwind-only, cn() utility, dark mode, component variants, responsive. |
+| 10 | [Publishing Package](./publishing-package.md) | Build and publish the reusable npm package from this repo. |
 
 ## Project Structure
 
