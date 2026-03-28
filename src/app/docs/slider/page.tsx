@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Slider } from "@/ui/Slider";
 
@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Slider } from "@/ui/Slider";
+const CODE_SNIPPET = `import { Slider } from "@/components/ui/Slider";
 
 <Slider
   label="Volume"
@@ -23,7 +23,7 @@ const CODE_SNIPPET = `import { Slider } from "@/ui/Slider";
 />`;
 
 const COPY_PASTE_SNIPPET = `import { useState } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export interface SliderProps {
   value?: number;
@@ -86,6 +86,8 @@ export default function SliderDocPage() {
       <div className="max-w-4xl">
         <h1 className="mb-3 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">Slider</h1>
         <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">Range input for numeric value adjustment with immediate feedback.</p>
+
+        <CliInstallBlock name="slider" />
 
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>

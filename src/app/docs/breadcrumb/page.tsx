@@ -1,6 +1,6 @@
 "use client";
 
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Breadcrumb } from "@/ui/Breadcrumb";
 
@@ -10,7 +10,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Breadcrumb } from "@/ui/Breadcrumb";
+const CODE_SNIPPET = `import { Breadcrumb } from "@/components/ui/Breadcrumb";
 
 <Breadcrumb>
   <Breadcrumb.List>
@@ -23,7 +23,7 @@ const CODE_SNIPPET = `import { Breadcrumb } from "@/ui/Breadcrumb";
 </Breadcrumb>`;
 
 const COPY_PASTE_SNIPPET = `import type { AnchorHTMLAttributes, HTMLAttributes, ReactNode } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export function Breadcrumb({ className, ...props }: HTMLAttributes<HTMLElement>) {
   return <nav aria-label="Breadcrumb" className={cn("w-full", className)} {...props} />;
@@ -63,6 +63,8 @@ export default function BreadcrumbDocPage() {
       <div className="max-w-4xl">
         <h1 className="mb-3 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">Breadcrumb</h1>
         <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">Hierarchical navigation path for nested pages.</p>
+
+        <CliInstallBlock name="breadcrumb" />
 
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>

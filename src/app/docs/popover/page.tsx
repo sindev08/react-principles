@@ -1,6 +1,6 @@
 "use client";
 
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Popover } from "@/ui/Popover";
 
@@ -10,7 +10,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Popover } from "@/ui/Popover";
+const CODE_SNIPPET = `import { Popover } from "@/components/ui/Popover";
 
 <Popover>
   <Popover.Trigger>Open profile card</Popover.Trigger>
@@ -24,7 +24,7 @@ const CODE_SNIPPET = `import { Popover } from "@/ui/Popover";
 </Popover>`;
 
 const COPY_PASTE_SNIPPET = `import { createContext, useCallback, useContext, useEffect, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 type PopoverSide = "top" | "bottom";
 type PopoverAlign = "start" | "center" | "end";
@@ -195,6 +195,8 @@ export default function PopoverDocPage() {
         <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">
           Click-triggered floating panel for contextual actions and details.
         </p>
+
+        <CliInstallBlock name="popover" />
 
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Select } from "@/ui/Select";
 
@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Select } from "@/ui/Select";
+const CODE_SNIPPET = `import { Select } from "@/components/ui/Select";
 
 <Select
   label="Framework"
@@ -25,7 +25,7 @@ const CODE_SNIPPET = `import { Select } from "@/ui/Select";
 />`;
 
 const COPY_PASTE_SNIPPET = `import { forwardRef, type SelectHTMLAttributes } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export type SelectSize = "sm" | "md" | "lg";
 
@@ -103,6 +103,8 @@ export default function SelectDocPage() {
         <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">
           Styled native select for predictable keyboard behavior and minimal setup.
         </p>
+
+        <CliInstallBlock name="select" />
 
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>

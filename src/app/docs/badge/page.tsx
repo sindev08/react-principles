@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Badge } from "@/ui/Badge";
 import type { BadgeVariant, BadgeSize } from "@/ui/Badge";
@@ -45,7 +45,7 @@ const FORCED_DARK: Record<BadgeVariant, string> = {
 
 const SIZES: BadgeSize[] = ["sm", "md", "lg"];
 
-const CODE_SNIPPET = `import { Badge } from "@/ui/Badge";
+const CODE_SNIPPET = `import { Badge } from "@/components/ui/Badge";
 
 // Variants
 <Badge variant="default">Default</Badge>
@@ -61,7 +61,7 @@ const CODE_SNIPPET = `import { Badge } from "@/ui/Badge";
 <Badge size="lg" variant="default">Large</Badge>`;
 
 const COPY_PASTE_SNIPPET = `import type { ReactNode } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export type BadgeVariant = "default" | "success" | "warning" | "error" | "info" | "outline";
 export type BadgeSize = "sm" | "md" | "lg";
@@ -174,6 +174,8 @@ export default function BadgeDocPage() {
             ))}
           </div>
         </div>
+
+        <CliInstallBlock name="badge" />
 
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">

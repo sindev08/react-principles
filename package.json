@@ -2,6 +2,25 @@
   "name": "react-principles",
   "version": "0.0.1",
   "description": "React patterns & principles — reusable hooks, utilities, types, stores, and components",
+  "author": "Singgih Budi Purnadi",
+  "license": "MIT",
+  "keywords": [
+    "react",
+    "hooks",
+    "zustand",
+    "typescript",
+    "nextjs",
+    "patterns",
+    "utilities"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sindev08/react-principles.git"
+  },
+  "homepage": "https://github.com/sindev08/react-principles#readme",
+  "bugs": {
+    "url": "https://github.com/sindev08/react-principles/issues"
+  },
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -50,6 +69,7 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "build:pkg": "tsup",
+    "build:cli": "pnpm --filter react-principles-cli build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
@@ -58,39 +78,38 @@
     "prepare": "husky",
     "prepublishOnly": "pnpm build:pkg"
   },
-  "dependencies": {
+  "devDependencies": {
+    "@changesets/cli": "^2.30.0",
     "@hookform/resolvers": "^5.2.2",
     "@material-symbols/font-400": "^0.40.2",
+    "@tailwindcss/postcss": "^4.2.1",
     "@tanstack/react-query": "^5.59.0",
     "@tanstack/react-query-devtools": "^5.59.0",
     "@tanstack/react-table": "^8.20.0",
-    "@types/three": "^0.183.1",
-    "axios": "^1.13.6",
-    "next": "^16.1.6",
-    "react-hook-form": "^7.53.0",
-    "three": "^0.183.2"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4.2.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.0.1",
     "@testing-library/user-event": "^14.5.2",
     "@types/node": "^25.3.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.183.1",
     "@typescript-eslint/eslint-plugin": "8.56.1",
     "@typescript-eslint/parser": "8.56.1",
     "@vitejs/plugin-react": "^4.3.4",
+    "axios": "^1.13.6",
     "clsx": "^2.1.1",
     "eslint": "9.39.1",
     "eslint-config-next": "^16.1.6",
     "husky": "^9.1.7",
     "jsdom": "^25.0.1",
+    "next": "^16.1.6",
     "postcss": "^8.4.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-hook-form": "^7.53.0",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.1",
+    "three": "^0.183.2",
     "tsup": "^8.5.1",
     "typescript": "^5.6.0",
     "vitest": "^2.1.8",
@@ -98,12 +117,12 @@
     "zustand": "^5.0.0"
   },
   "peerDependencies": {
+    "clsx": ">=2",
     "react": ">=18",
     "react-dom": ">=18",
+    "tailwind-merge": ">=2",
     "zod": ">=4",
-    "zustand": ">=4",
-    "clsx": ">=2",
-    "tailwind-merge": ">=2"
+    "zustand": ">=4"
   },
   "peerDependenciesMeta": {
     "zod": {
