@@ -76,7 +76,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "prepare": "husky",
-    "prepublishOnly": "pnpm build:pkg"
+    "prepublishOnly": "pnpm build:pkg",
+    "release": "pnpm changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.30.0",
