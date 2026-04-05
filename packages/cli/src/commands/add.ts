@@ -7,7 +7,7 @@ export async function add(names: string[], cwd: string): Promise<void> {
   const config = readConfig(cwd);
 
   if (!config) {
-    console.log(pc.red("No components.json found. Run `npx react-principles-cli init` first."));
+    console.log(pc.red("No components.json found. Run `npx react-principles init` first."));
     process.exit(1);
   }
 

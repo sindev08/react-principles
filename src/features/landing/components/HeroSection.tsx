@@ -55,6 +55,11 @@ export function HeroSection() {
             Read the Docs
           </Link>
         </div>
+
+        <div className="mt-6 inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white/80 px-5 py-2.5 font-mono text-sm text-slate-500 backdrop-blur-sm dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-400">
+          <span className="text-primary">$</span>
+          npx react-principles init
+        </div>
       </div>
 
       {/* Browser Mockup */}
