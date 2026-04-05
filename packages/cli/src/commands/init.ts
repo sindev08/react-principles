@@ -132,6 +132,6 @@ export async function init(cwd: string, frameworkFlag?: string): Promise<void> {
   console.log(
     pc.bold(pc.green("\nDone!")) +
     ` Framework: ${FRAMEWORK_LABELS[framework]} | RSC: ${rsc ? "yes" : "no"}\n` +
-    `Run ${pc.cyan("npx react-principles-cli add <component>")} to add components.\n`
+    `Run ${pc.cyan("npx react-principles add <component>")} to add components.\n`
   );
 }
