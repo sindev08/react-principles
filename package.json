@@ -69,7 +69,7 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "build:pkg": "tsup",
-    "build:cli": "pnpm --filter react-principles-cli build",
+    "build:cli": "pnpm --filter react-principles build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",

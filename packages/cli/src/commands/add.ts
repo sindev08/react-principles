@@ -19,7 +19,7 @@ export async function add(names: string[], cwd: string): Promise<void> {
   const unknown = targets.filter((n) => !getEntry(n));
   if (unknown.length > 0) {
     console.log(pc.red(`Unknown component(s): ${unknown.join(", ")}`));
-    console.log(pc.gray("Run `npx react-principles-cli list` to see available components."));
+    console.log(pc.gray("Run `npx react-principles list` to see available components."));
     process.exit(1);
   }
 

@@ -144,7 +144,7 @@ export default function DarkModePage() {
             {CUSTOM_VARIANT}
           </CodeBlock>
           <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
-            If you ran <code className="font-mono">npx react-principles-cli@latest init</code>,
+            If you ran <code className="font-mono">npx react-principles@latest init</code>,
             this line is already added to your globals.css.
           </p>
         </section>
