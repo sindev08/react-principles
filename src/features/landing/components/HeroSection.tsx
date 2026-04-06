@@ -15,7 +15,7 @@ const FloatingLines = dynamic(
 
 type Tab = "hook" | "component";
 
-const TABS: { id: Tab; label: string; icon: string }[] = [
+const TABS: Array<{ id: Tab; label: string; icon: string }> = [
   { id: "hook", label: "Hook", icon: "javascript" },
   { id: "component", label: "Component", icon: "deployed_code" },
 ];
