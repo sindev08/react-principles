@@ -42,12 +42,12 @@ export default function IntroductionPage() {
             your apps. Accessible. Customizable. Open Source.
           </p>
           <div className="flex flex-wrap gap-4 mt-8">
-            <button className="flex items-center gap-2 rounded-lg bg-slate-900 dark:bg-primary px-6 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90">
+            <Link href="/docs/installation" className="flex items-center gap-2 rounded-lg bg-slate-900 dark:bg-primary px-6 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90">
               Get Started
-            </button>
-            <button className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-[#1f2937] px-6 py-2.5 text-sm font-bold text-slate-900 dark:text-white transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
+            </Link>
+            <Link href="https://github.com/sindev08/react-principles" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-[#1f2937] px-6 py-2.5 text-sm font-bold text-slate-900 dark:text-white transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
               GitHub
-            </button>
+            </Link>
           </div>
         </div>
 

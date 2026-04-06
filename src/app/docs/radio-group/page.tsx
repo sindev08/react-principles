@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { RadioGroup } from "@/components/ui/RadioGroup";
+const CODE_SNIPPET = `import { RadioGroup } from "@/ui/RadioGroup";
 
 <RadioGroup value={plan} onValueChange={setPlan}>
   <RadioGroup.Item value="starter" label="Starter" description="Best for side projects" />

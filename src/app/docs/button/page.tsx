@@ -45,7 +45,7 @@ const FORCED_DARK: Record<ButtonVariant, string> = {
 
 const BASE_BTN = "inline-flex items-center justify-center font-semibold rounded-lg text-sm px-4 py-2 h-9 transition-all";
 
-const CODE_SNIPPET = `import { Button } from "@/components/ui/Button";
+const CODE_SNIPPET = `import { Button } from "@/ui/Button";
 
 // Variants
 <Button variant="primary">Save changes</Button>

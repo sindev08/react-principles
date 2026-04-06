@@ -21,8 +21,8 @@ const TOC_ITEMS = [
 const SIZES: DrawerSize[] = ["sm", "md", "lg", "full"];
 const SIDES: DrawerSide[] = ["right", "left"];
 
-const CODE_SNIPPET = `import { Drawer } from "@/components/ui/Drawer";
-import { Button } from "@/components/ui/Button";
+const CODE_SNIPPET = `import { Drawer } from "@/ui/Drawer";
+import { Button } from "@/ui/Button";
 
 const [open, setOpen] = useState(false);
 

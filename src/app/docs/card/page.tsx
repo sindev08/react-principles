@@ -54,8 +54,8 @@ const FORCED = {
   },
 };
 
-const CODE_SNIPPET = `import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
+const CODE_SNIPPET = `import { Card } from "@/ui/Card";
+import { Button } from "@/ui/Button";
 
 <Card variant="elevated">
   <Card.Header>

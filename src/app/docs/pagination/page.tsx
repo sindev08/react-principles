@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Pagination } from "@/components/ui/Pagination";
+const CODE_SNIPPET = `import { Pagination } from "@/ui/Pagination";
 
 <Pagination
   page={page}

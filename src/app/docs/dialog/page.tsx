@@ -16,8 +16,8 @@ const TOC_ITEMS = [
   { label: "Props", href: "#props" },
 ];
 
-const CODE_SNIPPET = `import { Dialog } from "@/components/ui/Dialog";
-import { Button } from "@/components/ui/Button";
+const CODE_SNIPPET = `import { Dialog } from "@/ui/Dialog";
+import { Button } from "@/ui/Button";
 
 // Confirm dialog
 const [open, setOpen] = useState(false);

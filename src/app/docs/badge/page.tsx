@@ -45,7 +45,7 @@ const FORCED_DARK: Record<BadgeVariant, string> = {
 
 const SIZES: BadgeSize[] = ["sm", "md", "lg"];
 
-const CODE_SNIPPET = `import { Badge } from "@/components/ui/Badge";
+const CODE_SNIPPET = `import { Badge } from "@/ui/Badge";
 
 // Variants
 <Badge variant="default">Default</Badge>

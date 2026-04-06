@@ -10,7 +10,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Popover } from "@/components/ui/Popover";
+const CODE_SNIPPET = `import { Popover } from "@/ui/Popover";
 
 <Popover>
   <Popover.Trigger>Open profile card</Popover.Trigger>

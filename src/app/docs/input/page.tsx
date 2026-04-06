@@ -19,7 +19,7 @@ const TOC_ITEMS = [
 const SIZES: InputSize[] = ["sm", "md", "lg"];
 const VARIANTS: InputVariant[] = ["default", "filled", "ghost"];
 
-const CODE_SNIPPET = `import { Input } from "@/components/ui/Input";
+const CODE_SNIPPET = `import { Input } from "@/ui/Input";
 
 // Basic
 <Input placeholder="Enter your email" />

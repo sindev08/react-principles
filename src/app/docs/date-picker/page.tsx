@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { DatePicker } from "@/components/ui/DatePicker";
+const CODE_SNIPPET = `import { DatePicker } from "@/ui/DatePicker";
 
 <DatePicker
   label="Due date"

@@ -12,7 +12,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Progress } from "@/components/ui/Progress";
+const CODE_SNIPPET = `import { Progress } from "@/ui/Progress";
 
 <Progress value={72} max={100} />`;
 

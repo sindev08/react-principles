@@ -10,7 +10,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Alert } from "@/components/ui/Alert";
+const CODE_SNIPPET = `import { Alert } from "@/ui/Alert";
 
 <Alert variant="warning">
   <Alert.Title>Unsaved changes</Alert.Title>
