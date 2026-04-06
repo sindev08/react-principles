@@ -89,3 +89,4 @@ src/
 - Use `console.log` in production code
 - Put server state in Zustand
 - Create files > 300 lines
+- Add `Co-Authored-By` trailer to commits
