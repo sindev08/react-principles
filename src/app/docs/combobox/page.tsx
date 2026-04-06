@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Combobox } from "@/components/ui/Combobox";
+const CODE_SNIPPET = `import { Combobox } from "@/ui/Combobox";
 
 <Combobox
   value={value}

@@ -10,7 +10,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Breadcrumb } from "@/components/ui/Breadcrumb";
+const CODE_SNIPPET = `import { Breadcrumb } from "@/ui/Breadcrumb";
 
 <Breadcrumb>
   <Breadcrumb.List>

@@ -19,7 +19,7 @@ const TOC_ITEMS = [
 
 const VARIANTS: TabsVariant[] = ["underline", "pills"];
 
-const CODE_SNIPPET = `import { Tabs } from "@/components/ui/Tabs";
+const CODE_SNIPPET = `import { Tabs } from "@/ui/Tabs";
 
 // Uncontrolled
 <Tabs defaultValue="overview">

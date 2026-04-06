@@ -10,7 +10,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Avatar } from "@/components/ui/Avatar";
+const CODE_SNIPPET = `import { Avatar } from "@/ui/Avatar";
 
 <Avatar size="lg">
   <Avatar.Image src="https://i.pravatar.cc/120" alt="Profile" />

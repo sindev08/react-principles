@@ -12,7 +12,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Toast } from "@/components/ui/Toast";
+const CODE_SNIPPET = `import { Toast } from "@/ui/Toast";
 
 <Toast open={open} onOpenChange={setOpen} variant="success">
   <Toast.Title>Saved successfully</Toast.Title>

@@ -10,7 +10,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Tooltip } from "@/components/ui/Tooltip";
+const CODE_SNIPPET = `import { Tooltip } from "@/ui/Tooltip";
 
 <Tooltip side="top">
   <Tooltip.Trigger>

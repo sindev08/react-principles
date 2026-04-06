@@ -10,7 +10,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Skeleton } from "@/components/ui/Skeleton";
+const CODE_SNIPPET = `import { Skeleton } from "@/ui/Skeleton";
 
 <div className="space-y-3">
   <Skeleton variant="line" width="70%" />

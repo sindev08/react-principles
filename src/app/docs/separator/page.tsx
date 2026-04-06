@@ -10,7 +10,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Separator } from "@/components/ui/Separator";
+const CODE_SNIPPET = `import { Separator } from "@/ui/Separator";
 
 <div className="space-y-4">
   <p>Account</p>

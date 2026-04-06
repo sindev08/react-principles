@@ -23,7 +23,7 @@ const NOTIFICATION_ITEMS = [
   { id: "digest", label: "Weekly digest", description: "A summary every Monday." },
 ];
 
-const CODE_SNIPPET = `import { Checkbox } from "@/components/ui/Checkbox";
+const CODE_SNIPPET = `import { Checkbox } from "@/ui/Checkbox";
 
 // Basic
 <Checkbox label="Accept terms and conditions" />
