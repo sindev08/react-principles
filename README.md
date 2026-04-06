@@ -49,31 +49,31 @@ UI components are installed directly into your project via the CLI — similar t
 ### Setup
 
 ```bash
-npx react-principles-cli init
+npx react-principles init
 ```
 
 This creates `components.json` and installs the `cn()` utility. Supports Next.js, Vite, Remix, and other React frameworks.
 
 ```bash
 # With auto-detected framework
-npx react-principles-cli init
+npx react-principles init
 
 # Or specify explicitly
-npx react-principles-cli init -t next
-npx react-principles-cli init -t vite
+npx react-principles init -t next
+npx react-principles init -t vite
 ```
 
 ### Add Components
 
 ```bash
 # Add one component
-npx react-principles-cli add button
+npx react-principles add button
 
 # Add multiple at once
-npx react-principles-cli add button dialog badge card input
+npx react-principles add button dialog badge card input
 
 # See all available components
-npx react-principles-cli list
+npx react-principles list
 ```
 
 Components are written to `src/components/ui/` (configurable in `components.json`). Dependencies are resolved and installed automatically.
@@ -240,7 +240,7 @@ node scripts/sync-registry.mjs
 react-principles/
 ├── docs/                    # Pattern documentation
 ├── packages/
-│   └── cli/                 # react-principles-cli — component installer
+│   └── cli/                 # react-principles — component installer
 │       └── src/
 │           ├── commands/    # init, add
 │           ├── registry/    # component registry + templates
