@@ -21,10 +21,11 @@ program
   });
 
 program
-  .command("add <components...>")
+  .command("add [components...]")
   .description("Add one or more components to your project")
-  .action(async (components: string[]) => {
-    await add(components, process.cwd());
+  .option("--all", "Install all available components")
+  .action(async (components: string[], opts: { all?: boolean }) => {
+    await add(opts.all ? ["--all"] : components, process.cwd());
   });
 
 program
