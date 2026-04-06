@@ -141,7 +141,7 @@ export function HeroSection() {
           <span className="material-symbols-outlined text-sm">
             auto_awesome
           </span>
-          v1.0 is now live
+          Early access
         </Badge>
 
         <h1 className="mb-8 text-5xl font-black leading-[1.1] tracking-tight text-slate-900 md:text-7xl dark:text-white">
