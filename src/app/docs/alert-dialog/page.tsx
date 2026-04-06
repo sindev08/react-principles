@@ -19,7 +19,7 @@ const TOC_ITEMS = [
 
 const VARIANTS: AlertDialogVariant[] = ["destructive", "warning", "default"];
 
-const CODE_SNIPPET = `import { AlertDialog } from "@/components/ui/AlertDialog";
+const CODE_SNIPPET = `import { AlertDialog } from "@/ui/AlertDialog";
 
 const [open, setOpen] = useState(false);
 const [loading, setLoading] = useState(false);

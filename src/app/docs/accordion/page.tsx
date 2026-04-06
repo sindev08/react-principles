@@ -18,7 +18,7 @@ const TOC_ITEMS = [
 
 const TYPES: AccordionType[] = ["single", "multiple"];
 
-const CODE_SNIPPET = `import { Accordion } from "@/components/ui/Accordion";
+const CODE_SNIPPET = `import { Accordion } from "@/ui/Accordion";
 
 // Single — only one item open at a time
 <Accordion type="single" defaultValue="item-1">

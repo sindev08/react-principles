@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Select } from "@/components/ui/Select";
+const CODE_SNIPPET = `import { Select } from "@/ui/Select";
 
 <Select
   label="Framework"

@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Slider } from "@/components/ui/Slider";
+const CODE_SNIPPET = `import { Slider } from "@/ui/Slider";
 
 <Slider
   label="Volume"

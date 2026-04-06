@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Textarea } from "@/components/ui/Textarea";
+const CODE_SNIPPET = `import { Textarea } from "@/ui/Textarea";
 
 <Textarea
   label="Project notes"

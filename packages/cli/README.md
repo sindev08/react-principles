@@ -89,7 +89,7 @@ npx react-principles add --all
 
 | Argument | Description |
 |----------|-------------|
-| `<components...>` | One or more component names (space-separated) |
+| `[components...]` | One or more component names (space-separated) |
 | `--all` | Install all available components at once |
 
 **What it does**

@@ -10,7 +10,7 @@ interface CliInstallBlockProps {
 export function CliInstallBlock({ name }: CliInstallBlockProps) {
   const [copied, setCopied] = useState(false);
 
-  const command = `npx react-principles-cli add ${name}`;
+  const command = `npx react-principles add ${name}`;
 
   const handleCopy = () => {
     void navigator.clipboard.writeText(command);

@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Command } from "@/components/ui/Command";
+const CODE_SNIPPET = `import { Command } from "@/ui/Command";
 
 <Command>
   <Command.Input placeholder="Type a command..." />

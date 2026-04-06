@@ -10,21 +10,21 @@ const TOC_ITEMS = [
 ];
 
 const CLI_INIT_FRAMEWORK = `# auto-detect framework
-npx react-principles-cli@latest init
+npx react-principles@latest init
 
 # or specify explicitly
-npx react-principles-cli@latest init -t next
-npx react-principles-cli@latest init -t vite
-npx react-principles-cli@latest init -t remix`;
+npx react-principles@latest init -t next
+npx react-principles@latest init -t vite
+npx react-principles@latest init -t remix`;
 
 const CLI_ADD = `# see all available components
-npx react-principles-cli@latest list
+npx react-principles@latest list
 
 # add a single component
-npx react-principles-cli@latest add button
+npx react-principles@latest add button
 
 # add multiple at once
-npx react-principles-cli@latest add button badge card input dialog`;
+npx react-principles@latest add button badge card input dialog`;
 
 const REQUIREMENTS = [
   "React 18+ or React 19",

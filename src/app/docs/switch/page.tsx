@@ -11,7 +11,7 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
 ];
 
-const CODE_SNIPPET = `import { Switch } from "@/components/ui/Switch";
+const CODE_SNIPPET = `import { Switch } from "@/ui/Switch";
 
 <Switch
   checked={enabled}
