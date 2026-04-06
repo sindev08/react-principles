@@ -1,86 +1,30 @@
 {
   "name": "react-principles",
   "version": "0.0.1",
-  "description": "React patterns & principles — reusable hooks, utilities, types, stores, and components",
+  "private": true,
+  "description": "A living cookbook and UI kit for modern React development",
   "author": "Singgih Budi Purnadi",
   "license": "MIT",
-  "keywords": [
-    "react",
-    "hooks",
-    "zustand",
-    "typescript",
-    "nextjs",
-    "patterns",
-    "utilities"
-  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/sindev08/react-principles.git"
   },
-  "homepage": "https://github.com/sindev08/react-principles#readme",
+  "homepage": "https://reactprinciples.dev",
   "bugs": {
     "url": "https://github.com/sindev08/react-principles/issues"
-  },
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "sideEffects": false,
-  "files": [
-    "dist"
-  ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    },
-    "./hooks": {
-      "types": "./dist/hooks.d.ts",
-      "import": "./dist/hooks.mjs",
-      "require": "./dist/hooks.js"
-    },
-    "./utils": {
-      "types": "./dist/utils.d.ts",
-      "import": "./dist/utils.mjs",
-      "require": "./dist/utils.js"
-    },
-    "./types": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/types.mjs",
-      "require": "./dist/types.js"
-    },
-    "./stores": {
-      "types": "./dist/stores.d.ts",
-      "import": "./dist/stores.mjs",
-      "require": "./dist/stores.js"
-    },
-    "./components": {
-      "types": "./dist/components.d.ts",
-      "import": "./dist/components.mjs",
-      "require": "./dist/components.js"
-    },
-    "./lib": {
-      "types": "./dist/lib.d.ts",
-      "import": "./dist/lib.mjs",
-      "require": "./dist/lib.js"
-    }
   },
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",
-    "build:pkg": "tsup",
     "build:cli": "pnpm --filter react-principles build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prepare": "husky",
-    "prepublishOnly": "pnpm build:pkg",
-    "release": "pnpm changeset publish"
+    "prepare": "husky"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.30.0",
     "@hookform/resolvers": "^5.2.2",
     "@material-symbols/font-400": "^0.40.2",
     "@tailwindcss/postcss": "^4.2.1",
@@ -116,27 +60,5 @@
     "vitest": "^2.1.8",
     "zod": "^4.3.6",
     "zustand": "^5.0.0"
-  },
-  "peerDependencies": {
-    "clsx": ">=2",
-    "react": ">=18",
-    "react-dom": ">=18",
-    "tailwind-merge": ">=2",
-    "zod": ">=4",
-    "zustand": ">=4"
-  },
-  "peerDependenciesMeta": {
-    "zod": {
-      "optional": true
-    },
-    "zustand": {
-      "optional": true
-    },
-    "clsx": {
-      "optional": true
-    },
-    "tailwind-merge": {
-      "optional": true
-    }
   }
 }
