@@ -82,7 +82,6 @@ Add one or more components to your project.
 ```bash
 npx react-principles add button
 npx react-principles add button input card
-npx react-principles add --all
 ```
 
 **Arguments**
@@ -90,7 +89,6 @@ npx react-principles add --all
 | Argument | Description |
 |----------|-------------|
 | `<components...>` | One or more component names (space-separated) |
-| `--all` | Install all available components at once |
 
 **What it does**
 
