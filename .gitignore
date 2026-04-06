@@ -10,3 +10,6 @@ build
 
 # Internal task tracking
 .tasks/
+
+# Claude Code context
+CLAUDE.md
