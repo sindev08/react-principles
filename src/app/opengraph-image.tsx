@@ -16,71 +16,122 @@ export default function RootOgImage() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #0b0e14 0%, #13111f 100%)",
+          background: "linear-gradient(135deg, #090b1a 0%, #12162b 100%)",
           fontFamily: "sans-serif",
           position: "relative",
         }}
       >
-        {/* Background accent */}
         <div
           style={{
             position: "absolute",
-            width: 600,
-            height: 600,
+            width: 640,
+            height: 640,
             borderRadius: "50%",
             background: "radial-gradient(circle, rgba(70,40,241,0.18) 0%, transparent 70%)",
-            top: -100,
-            left: -100,
+            top: -160,
+            left: -120,
             display: "flex",
           }}
         />
-
-        {/* Logo mark */}
         <div
           style={{
             display: "flex",
-            alignItems: "center",
+            flexDirection: "column",
+            alignItems: "flex-start",
             justifyContent: "center",
-            width: 72,
-            height: 72,
-            borderRadius: 18,
-            background: "#4628f1",
-            marginBottom: 32,
+            width: "100%",
+            padding: "0 96px",
+            gap: 28,
           }}
         >
-          <span style={{ fontSize: 36, color: "white" }}>⚛</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+            <div
+              style={{
+                width: 86,
+                height: 86,
+                borderRadius: 26,
+                background: "#F3F0FF",
+                border: "2px solid #DDD6FE",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  top: 18,
+                  left: 24,
+                  width: 38,
+                  height: 16,
+                  borderRadius: 999,
+                  background: "#A77BFF",
+                  display: "flex",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  top: 39,
+                  left: 16,
+                  width: 18,
+                  height: 16,
+                  borderRadius: 999,
+                  background: "#7C4DFF",
+                  display: "flex",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  top: 39,
+                  left: 38,
+                  width: 32,
+                  height: 16,
+                  borderRadius: 999,
+                  background: "#6D3EF4",
+                  display: "flex",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  top: 60,
+                  left: 16,
+                  width: 54,
+                  height: 16,
+                  borderRadius: 999,
+                  background: "#5B34E6",
+                  display: "flex",
+                }}
+              />
+            </div>
+            <div
+              style={{
+                fontSize: 62,
+                fontWeight: 900,
+                color: "white",
+                letterSpacing: "-2px",
+                display: "flex",
+              }}
+            >
+              react-principles
+            </div>
+          </div>
+          <div
+            style={{
+              fontSize: 28,
+              fontWeight: 400,
+              color: "rgba(255,255,255,0.68)",
+              maxWidth: 820,
+              lineHeight: 1.4,
+              display: "flex",
+            }}
+          >
+            Structured thinking for frontend developers. Production-grade React patterns, recipes, and reference architecture.
+          </div>
         </div>
-
-        {/* Brand */}
-        <div
-          style={{
-            fontSize: 56,
-            fontWeight: 900,
-            color: "white",
-            letterSpacing: "-2px",
-            marginBottom: 16,
-            display: "flex",
-          }}
-        >
-          react-principles
-        </div>
-
-        {/* Tagline */}
-        <div
-          style={{
-            fontSize: 24,
-            fontWeight: 400,
-            color: "rgba(255,255,255,0.5)",
-            textAlign: "center",
-            maxWidth: 720,
-            lineHeight: 1.5,
-            display: "flex",
-          }}
-        >
-          A living cookbook of production-grade React patterns
-        </div>
-
-        {/* Bottom accent line */}
         <div
           style={{
             position: "absolute",

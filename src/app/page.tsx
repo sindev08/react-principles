@@ -13,6 +13,30 @@ export const metadata: Metadata = {
   title: "React Principles — A Living Cookbook of React Patterns",
   description:
     "Production-grade React patterns with real implementations using Next.js, Vite, TanStack Query, Zustand, React Hook Form, and TypeScript.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "React Principles — A Living Cookbook of React Patterns",
+    description:
+      "Production-grade React patterns with real implementations using Next.js, Vite, TanStack Query, Zustand, React Hook Form, and TypeScript.",
+    url: "/",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "React Principles",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "React Principles — A Living Cookbook of React Patterns",
+    description:
+      "Production-grade React patterns with real implementations using Next.js, Vite, TanStack Query, Zustand, React Hook Form, and TypeScript.",
+    images: ["/opengraph-image"],
+  },
 };
 
 export default function LandingPage() {
