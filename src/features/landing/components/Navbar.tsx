@@ -2,12 +2,27 @@
 
 import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
+import Image from "next/image";
 
 export function Navbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background-light/80 dark:bg-background-dark/80 border-primary/10 dark:border-white/5 backdrop-blur-md">
       <div className="flex items-center justify-between h-16 px-6 mx-auto max-w-7xl">
         <div className="flex items-center gap-2">
+          <Image
+            src="/logo-icon.svg"
+            alt="React Principles logo"
+            width={32}
+            height={32}
+            className="block dark:hidden"
+          />
+          <Image
+            src="/logo-icon-dark.svg"
+            alt="React Principles logo"
+            width={32}
+            height={32}
+            className="hidden dark:block"
+          />
           <span className="text-lg font-extrabold tracking-tight text-primary">
             react-principles
           </span>

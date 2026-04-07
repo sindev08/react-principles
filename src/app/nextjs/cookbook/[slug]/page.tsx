@@ -27,11 +27,21 @@ export async function generateMetadata({
       title: detail.title,
       description: detail.description,
       type: "article",
+      url: `/nextjs/cookbook/${slug}`,
+      images: [
+        {
+          url: `/nextjs/cookbook/${slug}/opengraph-image`,
+          width: 1200,
+          height: 630,
+          alt: detail.title,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
       title: detail.title,
       description: detail.description,
+      images: [`/nextjs/cookbook/${slug}/opengraph-image`],
     },
     alternates: {
       canonical: `/nextjs/cookbook/${slug}`,

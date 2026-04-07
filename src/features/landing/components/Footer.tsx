@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const RESOURCES = [
@@ -19,6 +20,20 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2 mb-6">
+              <Image
+                src="/logo-icon.svg"
+                alt="React Principles logo"
+                width={32}
+                height={32}
+                className="block dark:hidden"
+              />
+              <Image
+                src="/logo-icon-dark.svg"
+                alt="React Principles logo"
+                width={32}
+                height={32}
+                className="hidden dark:block"
+              />
               <span className="text-lg font-extrabold tracking-tight text-primary">
                 react-principles
               </span>
@@ -82,7 +97,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col items-center justify-between gap-4 pt-8 border-t border-slate-100 dark:border-white/5 md:flex-row">
           <p className="text-xs text-slate-400">
-            © 2026 react-principles. Built for the React community.
+            © {new Date().getFullYear()} react-principles. Built for the React community.
           </p>
         </div>
       </div>
