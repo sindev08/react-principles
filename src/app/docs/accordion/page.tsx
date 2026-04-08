@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Accordion } from "@/ui/Accordion";
 import type { AccordionType } from "@/ui/Accordion";
@@ -59,7 +59,7 @@ const COPY_PASTE_SNIPPET = `import {
   ButtonHTMLAttributes,
   ReactNode,
 } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -278,7 +278,7 @@ const FAQ_ITEMS = [
 const INSTALL_ITEMS = [
   { value: "react", q: "React", a: "This component requires React 19+ and uses createContext, useState, and useContext from the standard React package." },
   { value: "tailwind", q: "Tailwind CSS", a: "Styling is fully Tailwind-based with Tailwind v4. Theme tokens and variants are configured in src/app/globals.css." },
-  { value: "cn", q: "cn() utility", a: "Uses cn() from @/shared/utils/cn (clsx + tailwind-merge) for conditional class merging." },
+  { value: "cn", q: "cn() utility", a: "Uses cn() from @/lib/utils (clsx + tailwind-merge) for conditional class merging." },
 ];
 
 // ─── Forced-theme preview ─────────────────────────────────────────────────────
@@ -397,6 +397,8 @@ export default function AccordionDocPage() {
             ))}
           </div>
         </div>
+
+        <CliInstallBlock name="accordion" />
 
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">

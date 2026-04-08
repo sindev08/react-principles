@@ -1,88 +1,87 @@
 # react-principles
 
-Reference project for React patterns and principles with real examples in a Next.js App Router app.
+A living cookbook and UI kit for modern React development — available at [reactprinciples.dev](https://reactprinciples.dev).
 
-## What This Is
+## What's inside
 
-- **Living cookbook** for production React patterns, with WHY and HOW
-- **Reference implementation** for data fetching, state management, forms, and UI composition
-- **Content source** for docs and social/technical writeups
+### Cookbook
+A reference app with real-world React patterns organized by topic — server state, client state, forms, data tables, auth flows, and more. Each recipe is a runnable example with explanation.
 
-This project is not a marketing showcase. It is a practical pattern library with runnable pages and detailed docs.
+### UI Kit
+33 copy-paste UI components installable via CLI. No dependency lock-in — you own the source.
+
+```bash
+npx react-principles init
+npx react-principles add button card input dialog
+```
+
+See [packages/cli/README.md](./packages/cli/README.md) for full CLI documentation.
+
+---
 
 ## Tech Stack
 
 | Category | Tool |
 |----------|------|
 | Framework | Next.js 16 (App Router) |
-| Runtime UI | React 19 |
 | Server State | TanStack Query v5 |
 | Client State | Zustand v5 |
 | Tables | TanStack Table v8 |
 | Forms | React Hook Form v7 + Zod v4 |
-| UI | Tailwind CSS + custom `src/ui` primitives (shadcn-style) |
-| Linting | ESLint + Prettier |
+| UI | Tailwind CSS v4 + custom `src/ui` primitives |
+| Testing | Vitest + Testing Library |
 | Type Safety | TypeScript strict mode |
 
-## Getting Started
+---
+
+## Running Locally
 
 ```bash
-# Install dependencies
 pnpm install
-
-# Run app (http://localhost:3001)
-pnpm dev
-
-# Lint
+pnpm dev        # http://localhost:3001
 pnpm lint
-
-# Type check
 pnpm typecheck
-
-# Production build
+pnpm test
 pnpm build
 ```
 
-## Project Structure
+### Building the CLI
 
-```text
-react-principles/
-├── docs/                    # Pattern documentation
-├── public/                  # Static assets
-├── src/
-│   ├── app/                 # Next.js App Router routes
-│   ├── features/            # Feature modules (landing, docs, cookbook, examples)
-│   ├── shared/              # Shared hooks, stores, types, utils, components
-│   ├── ui/                  # Design system primitives
-│   └── lib/                 # Data/client utilities and mock API layer
-├── CLAUDE.md                # AI instruction file
-└── README.md
+```bash
+pnpm build:cli
 ```
 
-## Pattern Documentation
+---
 
-All patterns are documented in [`docs/`](./docs/README.md):
+## Project Structure
 
-- [Component Patterns](./docs/component-patterns.md) — anatomy, composition, splitting
-- [Hooks](./docs/hooks.md) — custom hook conventions
-- [TypeScript](./docs/typescript.md) — strict mode patterns
-- [React Query](./docs/react-query.md) — query keys, mutations, caching
-- [TanStack Table](./docs/tanstack-table.md) — columns, sorting, filtering
-- [Zustand](./docs/zustand.md) — store patterns, slices
-- [Forms](./docs/forms.md) — React Hook Form + Zod
-- [Services](./docs/services.md) — API service layer
-- [Styling](./docs/styling.md) — Tailwind conventions
-- [Publishing Package](./docs/publishing-package.md) — npm package build and release flow
+```
+react-principles/
+├── packages/
+│   └── cli/              # react-principles npm package — component installer
+├── src/
+│   ├── app/              # Next.js App Router routes
+│   ├── features/         # Feature modules (landing, docs, cookbook, examples)
+│   ├── shared/           # Shared hooks, stores, types, utils, components
+│   ├── ui/               # 33 UI component primitives (CLI source)
+│   └── lib/              # Mock API, query client, data utilities
+├── scripts/              # Build helpers (sync-registry)
+└── docs/                 # Internal pattern documentation
+```
 
-## Example Routes
+---
 
-| Route | What It Shows |
-|-------|---------------|
-| `/` | Landing page and project entry |
-| `/react-query` | React Query data fetching patterns |
-| `/table` | TanStack Table patterns |
-| `/forms` | React Hook Form + Zod validation |
-| `/state` | Zustand store patterns |
-| `/docs/*` | Component and pattern documentation |
-| `/nextjs/cookbook/*` | Cookbook examples for Next.js context |
-| `/vitejs/cookbook/*` | Cookbook examples for Vite context |
+## Key Routes
+
+| Route | Description |
+|-------|-------------|
+| `/` | Landing page |
+| `/nextjs/cookbook` | Cookbook recipes (Next.js context) |
+| `/vitejs/cookbook` | Cookbook recipes (Vite context) |
+| `/docs` | UI component documentation |
+
+---
+
+## License
+
+MIT © [Singgih Budi Purnadi](https://github.com/sindev08)

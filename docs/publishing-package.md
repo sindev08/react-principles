@@ -1,19 +1,21 @@
 # Publishing Package
 
-Guide for building and publishing the reusable `react-principles` package to npm from this repository.
+Guide for building and publishing the `react-principles` package to npm.
 
-## Goal
+---
+
+## Overview
 
 This repo serves two purposes:
 
-1. A Next.js app for examples and documentation
-2. A publishable npm package built from the shared/exportable modules
+1. A Next.js reference app for examples and documentation
+2. A publishable npm package built from shared/exportable modules
 
-The package output is generated into `dist/` using `tsup`, while the app continues to use the source files directly from `src/`.
+Publishing is **automated via Changesets + GitHub Actions** — no manual `npm publish` needed.
+
+---
 
 ## What Gets Published
-
-The published package exposes these entry points:
 
 | Entry Point | Source |
 |---|---|
@@ -25,171 +27,166 @@ The published package exposes these entry points:
 | `react-principles/components` | `src/shared/components/index.ts` |
 | `react-principles/lib` | `src/lib/exportable/index.ts` |
 
-Only the built output inside `dist/` is included in the npm tarball.
+Only the built output inside `dist/` is included in the tarball. The Next.js app, `src/ui/`, and cookbook code are **not published**.
 
-## Current Publish Setup
+---
 
-The package is configured through:
+## Release Workflow
 
-- `package.json`
-- `tsup.config.ts`
-- `tsconfig.build.json`
+### How it works
 
-Important details:
+Every push to `main` triggers the release workflow (`.github/workflows/release.yml`):
 
-- `pnpm build:pkg` builds the npm package
-- `prepublishOnly` runs `pnpm build:pkg` automatically before publish
-- ESM output uses `.mjs`
-- CommonJS output uses `.js`
-- Type declarations are emitted as `.d.ts`
-- External peer dependencies are not bundled
+1. CI runs: lint + typecheck + test
+2. Changesets bot checks for pending changesets
+3. **If changesets exist** → bot opens a "Version PR" that bumps version + updates CHANGELOG
+4. **Merge the Version PR** → bot automatically builds + publishes to npm
 
-## Publish Flow
-
-### 1. Install dependencies
-
-```bash
-pnpm install
+```
+Make changes
+    ↓
+pnpm changeset   ← document what changed
+    ↓
+Open PR → merge to main
+    ↓
+GitHub Actions: Version PR opened automatically
+    ↓
+Merge Version PR
+    ↓
+GitHub Actions: build:pkg + npm publish (automatic)
 ```
 
-### 2. Make sure you are logged in to npm
+**No manual `npm publish` needed.**
+
+---
+
+## Day-to-day: How to Release a Change
+
+### Step 1 — Make your changes
+
+Work on any branch as normal.
+
+### Step 2 — Add a changeset
 
 ```bash
-npm whoami
+pnpm changeset
 ```
 
-If that fails, log in first:
+Follow the prompts:
+- Select `react-principles`
+- Choose bump type: `patch` (bug fix), `minor` (new feature), `major` (breaking change)
+- Write a short description of what changed
+
+This creates a file in `.changeset/`. Commit it with your changes.
+
+### Step 3 — Open a PR and merge to main
+
+CI will run lint + typecheck + test automatically.
+
+### Step 4 — Merge the Version PR
+
+After your PR merges, the Changesets bot opens a PR titled **"chore: release package"** that:
+- Bumps the version in `package.json`
+- Updates `CHANGELOG.md`
+
+Merge that PR when ready to publish. The bot publishes to npm automatically.
+
+---
+
+## What Requires a Changeset?
+
+| Change | Needs changeset? |
+|--------|-----------------|
+| `src/shared/` (hooks, utils, types, stores, components) | Yes |
+| `src/lib/` (api client) | Yes |
+| `src/index.ts` | Yes |
+| `src/ui/` (UI components) | No — copy-paste only, not published via npm |
+| `packages/cli/` (CLI component installer) | Yes — it's a separate published package |
+| `src/app/` (Next.js pages, cookbook) | No |
+| `src/features/` (feature modules) | No |
+| `docs/` | No |
+| CI/tooling changes | No |
+
+**Rule of thumb:** if it changes what consumers get from `import ... from "react-principles"` or the `react-principles-cli` binary, it needs a changeset.
+
+---
+
+## CLI Package (`react-principles-cli`)
+
+The CLI lives in `packages/cli/` and is published as a separate package: `react-principles-cli`.
+
+### Adding a new UI component to the CLI
+
+1. Add the component source to `src/ui/ComponentName.tsx`
+2. Run `node scripts/sync-registry.mjs` to regenerate `packages/cli/src/registry/templates.ts`
+3. Add an entry to `packages/cli/src/registry/index.ts`
+4. Run `pnpm build:cli` to verify the build
+
+### Releasing the CLI
+
+Same Changesets workflow — just run `pnpm changeset` and select `react-principles-cli` when prompted.
 
 ```bash
-npm login
+pnpm changeset     # select react-principles-cli, choose bump, write description
 ```
 
-### 3. Update the package version
+Both packages can be released independently or together in the same changeset cycle.
 
-Check the current version in `package.json`, then bump it as needed:
+---
+
+## One-time Setup (GitHub Repository)
+
+Before automated publishing works, set the `NPM_TOKEN` secret:
+
+1. Generate a token at [npmjs.com](https://www.npmjs.com) → Access Tokens → Generate New Token → **Automation**
+2. Go to GitHub repo → Settings → Secrets and variables → Actions
+3. Add secret: `NPM_TOKEN` = the token from step 1
+
+GitHub Actions uses `GITHUB_TOKEN` automatically — no setup needed for that.
+
+---
+
+## Build Locally (for verification)
 
 ```bash
-npm version patch
+pnpm build:pkg          # build the package
+pnpm pack --dry-run     # preview what gets published
 ```
 
-Other common options:
+Verify `dist/` contains:
+- `*.js` (CJS)
+- `*.mjs` (ESM)
+- `*.d.ts` (types)
 
-```bash
-npm version minor
-npm version major
-```
+---
 
-### 4. Build the package
+## CHANGELOG
 
-```bash
-pnpm build:pkg
-```
+Changesets automatically maintains `CHANGELOG.md` at the repo root. Every release PR updates it with the changeset descriptions.
 
-This generates the publishable files in `dist/`.
-
-### 5. Verify the tarball contents
-
-```bash
-pnpm pack --dry-run
-```
-
-Confirm that the package includes:
-
-- `dist/`
-- `package.json`
-- `README.md`
-- `LICENSE`
-
-### 6. Run quality checks
-
-Recommended checks before publish:
-
-```bash
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
-```
-
-Minimum safe path:
-
-```bash
-pnpm build:pkg
-pnpm pack --dry-run
-```
-
-### 7. Publish to npm
-
-For a public package:
-
-```bash
-npm publish --access public
-```
-
-For later releases, the same command is usually enough:
-
-```bash
-npm publish
-```
-
-## Release Checklist
-
-Before publishing, confirm:
-
-- package name is correct in `package.json`
-- version has been bumped
-- `pnpm build:pkg` succeeds
-- `pnpm pack --dry-run` looks correct
-- README reflects the package usage
-- no accidental breaking changes are being released
-- you are logged in to the correct npm account
+---
 
 ## Troubleshooting
 
-### `npm whoami` returns auth error
+### Version PR not appearing after merge
 
-You are not logged in on this machine yet.
+Check that a `.changeset/*.md` file (not the README) was included in the merged commit. If the changeset file is missing, no Version PR will be opened.
 
-```bash
-npm login
-```
+### npm publish fails in CI
 
-### `npm publish` fails because the version already exists
+Verify `NPM_TOKEN` is set in GitHub secrets and has **Automation** scope (bypasses 2FA).
 
-Every published npm version is immutable. Bump the version and publish again.
+### `pnpm build:pkg` fails locally
 
 ```bash
-npm version patch
-npm publish
+pnpm typecheck   # check for type errors first
+pnpm build:pkg   # then build
 ```
 
-### Build succeeds but imports fail for consumers
-
-Check the `exports` field in `package.json` and verify the generated files in `dist/` match the configured paths.
-
-Current convention in this repo:
-
-- `import` points to `*.mjs`
-- `require` points to `*.js`
-- `types` points to `*.d.ts`
-
-### Wrong files are included in the package
-
-Run:
+### Wrong files in the tarball
 
 ```bash
 pnpm pack --dry-run
 ```
 
-Then confirm the `files` field in `package.json` still only targets `dist`.
-
-## Quick Command Reference
-
-```bash
-pnpm install
-npm whoami
-npm version patch
-pnpm build:pkg
-pnpm pack --dry-run
-npm publish --access public
-```
+Confirm `files` in `package.json` only targets `dist`.

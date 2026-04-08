@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Card } from "@/ui/Card";
 import { Button } from "@/ui/Button";
@@ -76,7 +76,7 @@ import { Button } from "@/ui/Button";
 </Card>`;
 
 const COPY_PASTE_SNIPPET = `import type { HTMLAttributes } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export type CardVariant = "default" | "elevated" | "flat";
 
@@ -219,6 +219,8 @@ export default function CardDocPage() {
             ))}
           </div>
         </div>
+
+        <CliInstallBlock name="card" />
 
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">

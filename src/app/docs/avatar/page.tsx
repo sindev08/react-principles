@@ -1,6 +1,6 @@
 "use client";
 
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Avatar } from "@/ui/Avatar";
 
@@ -21,7 +21,7 @@ const COPY_PASTE_SNIPPET = `"use client";
 /* eslint-disable @next/next/no-img-element */
 
 import { createContext, useContext, useState, type ImgHTMLAttributes, type ReactNode } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export type AvatarSize = "sm" | "md" | "lg" | "xl";
 
@@ -100,6 +100,8 @@ export default function AvatarDocPage() {
       <div className="max-w-4xl">
         <h1 className="mb-3 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">Avatar</h1>
         <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">User identity visual with image fallback initials.</p>
+
+        <CliInstallBlock name="avatar" />
 
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>

@@ -1,6 +1,6 @@
 "use client";
 
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Skeleton } from "@/ui/Skeleton";
 
@@ -18,7 +18,7 @@ const CODE_SNIPPET = `import { Skeleton } from "@/ui/Skeleton";
   <Skeleton variant="rect" className="h-24" />
 </div>`;
 
-const COPY_PASTE_SNIPPET = `import { cn } from "@/shared/utils/cn";
+const COPY_PASTE_SNIPPET = `import { cn } from "@/lib/utils";
 
 export type SkeletonVariant = "line" | "rect" | "circle";
 
@@ -53,6 +53,8 @@ export default function SkeletonDocPage() {
         <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">
           Loading placeholder to maintain layout stability while data is being fetched.
         </p>
+
+        <CliInstallBlock name="skeleton" />
 
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>

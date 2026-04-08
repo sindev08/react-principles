@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { RadioGroup } from "@/ui/RadioGroup";
 
@@ -20,7 +20,7 @@ const CODE_SNIPPET = `import { RadioGroup } from "@/ui/RadioGroup";
 </RadioGroup>`;
 
 const COPY_PASTE_SNIPPET = `import { createContext, useContext, useId, useState, type HTMLAttributes, type ReactNode } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export interface RadioGroupProps extends HTMLAttributes<HTMLDivElement> {
   value?: string;
@@ -138,6 +138,8 @@ export default function RadioGroupDocPage() {
         <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">
           Mutually exclusive options with clear active state and descriptive labels.
         </p>
+
+        <CliInstallBlock name="radio-group" />
 
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>

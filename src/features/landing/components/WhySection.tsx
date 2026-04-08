@@ -16,6 +16,22 @@ const FEATURES = [
     description:
       "Battle-tested solutions for state management, data fetching, and forms.",
   },
+  {
+    icon: (
+      <span className="material-symbols-outlined text-primary">widgets</span>
+    ),
+    title: "UI Components",
+    description:
+      "35 accessible, zero-dependency components built with pure Tailwind CSS.",
+  },
+  {
+    icon: (
+      <span className="material-symbols-outlined text-primary">terminal</span>
+    ),
+    title: "CLI Ready",
+    description:
+      "Add any component to your project instantly with a single command.",
+  },
 ];
 
 const LAB_ITEMS = [

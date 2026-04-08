@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { DropdownMenu } from "@/ui/DropdownMenu";
 
@@ -25,7 +25,7 @@ const CODE_SNIPPET = `import { DropdownMenu } from "@/ui/DropdownMenu";
 </DropdownMenu>`;
 
 const COPY_PASTE_SNIPPET = `import { createContext, useCallback, useContext, useEffect, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 interface DropdownMenuContextValue {
   open: boolean;
@@ -191,6 +191,8 @@ export default function DropdownMenuDocPage() {
         <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">
           Compact action menu for contextual operations.
         </p>
+
+        <CliInstallBlock name="dropdown-menu" />
 
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
