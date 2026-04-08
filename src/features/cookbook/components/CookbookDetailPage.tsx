@@ -379,11 +379,12 @@ function CookbookFooter() {
               Resources
             </h6>
             <ul className="space-y-2 text-sm text-slate-500">
-              {["GitHub", "Discord", "NPM Package"].map((item) => (
-                <li key={item}>
-                  <a href="#" className="hover:text-primary transition-colors">{item}</a>
-                </li>
-              ))}
+              <li>
+                <a href="https://github.com/sindev08/react-principles" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">GitHub</a>
+              </li>
+              <li>
+                <a href="https://www.npmjs.com/package/react-principles" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">NPM Package</a>
+              </li>
             </ul>
           </div>
           <div>
@@ -391,11 +392,9 @@ function CookbookFooter() {
               Legal
             </h6>
             <ul className="space-y-2 text-sm text-slate-500">
-              {["Privacy", "License"].map((item) => (
-                <li key={item}>
-                  <a href="#" className="hover:text-primary transition-colors">{item}</a>
-                </li>
-              ))}
+              <li>
+                <a href="https://github.com/sindev08/react-principles/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">License (MIT)</a>
+              </li>
             </ul>
           </div>
         </div>
