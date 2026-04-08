@@ -1036,38 +1036,41 @@ export function RecipeCard({ slug, title, description, category }: RecipeCardPro
     },
     implementation: {
       nextjs: {
-        description: "In Next.js, mark client components explicitly with 'use client' — it goes above all imports as the very first line.",
-        filename: "features/cookbook/components/RecipeCard.tsx",
+        description: "In Next.js, mark client components explicitly with 'use client' — it goes above all imports as the very first line. See the annotated Button component in the starter template: github.com/sindev08/react-principles-nextjs → src/ui/Button.tsx",
+        filename: "ui/Button.tsx — from react-principles-nextjs starter",
         code: `// 'use client' goes ABOVE imports if the component is a Client Component
-'use client';
+// (Button doesn't need it — no hooks or browser APIs)
 
-// 1. IMPORTS
-import { useState } from 'react';
-import Link from 'next/link';
-import { cn } from '@/shared/utils/cn';
+// 1. IMPORTS — React → external → internal (@/) → relative (./)
+import { type ButtonHTMLAttributes } from 'react';
+import { cn } from '@/shared/utils';
 
-// 2. TYPES
-interface RecipeCardProps {
-  slug: string;
-  title: string;
-  framework: 'nextjs' | 'vitejs';
+// 2. TYPES — props interface first, then supporting types
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
 }
+type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+type ButtonSize = 'sm' | 'md' | 'lg';
 
-// 3. CONSTANTS
-const HREF_MAP = {
-  nextjs: '/nextjs/cookbook',
-  vitejs: '/vitejs/cookbook',
-} as const;
+// 3. CONSTANTS — static, never changes based on props
+const VARIANT_CLASSES: Record<ButtonVariant, string> = {
+  primary: 'bg-zinc-900 text-white hover:bg-zinc-800 ...',
+  secondary: 'bg-zinc-100 text-zinc-900 hover:bg-zinc-200 ...',
+  // ...
+};
+const SIZE_CLASSES: Record<ButtonSize, string> = {
+  sm: 'h-8 px-3 text-xs',
+  md: 'h-10 px-4 text-sm',
+  lg: 'h-12 px-6 text-base',
+};
 
-// 4. COMPONENT
-export function RecipeCard({ slug, title, framework }: RecipeCardProps) {
-  const [saved, setSaved] = useState(false);
-  const href = \`\${HREF_MAP[framework]}/\${slug}\`;
-
+// 4. COMPONENT — named export, never default
+export function Button({ variant = 'primary', size = 'md', className, children, ...props }: ButtonProps) {
   return (
-    <Link href={href}>
-      <span>{title}</span>
-    </Link>
+    <button className={cn(BASE_CLASSES, VARIANT_CLASSES[variant], SIZE_CLASSES[size], className)} {...props}>
+      {children}
+    </button>
   );
 }`,
       },
@@ -1291,30 +1294,35 @@ export function useWindowSize(): WindowSize {
     },
     implementation: {
       nextjs: {
-        description: "In Next.js, window is not available on the server. Guard all browser API access with a typeof window check or use 'use client'.",
-        filename: "shared/hooks/useWindowSize.ts",
-        code: `'use client'; // Required — window only exists in browser
+        description: "In Next.js, window is not available on the server. Use 'use client' and guard browser API access. See all three hooks in the starter template: github.com/sindev08/react-principles-nextjs → src/shared/hooks/",
+        filename: "shared/hooks/useDebounce.ts — from react-principles-nextjs starter",
+        code: `'use client';
 
 import { useEffect, useState } from 'react';
 
-export function useWindowSize() {
-  // ✅ Safe initial state — no window access during SSR
-  const [size, setSize] = useState({ width: 0, height: 0 });
+// Effect pattern: setTimeout with cleanup
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
 
   useEffect(() => {
-    // ✅ Now safe — this only runs in the browser
-    function handleResize() {
-      setSize({ width: window.innerWidth, height: window.innerHeight });
-    }
+    // Set a timer to update after the delay
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
 
-    handleResize(); // Set initial size
-    window.addEventListener('resize', handleResize);
+    // Cleanup: clear the timer if value changes before it fires
+    // This is what makes it a "debounce" — rapid changes reset the timer
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [value, delay]); // ✅ Honest dependencies
 
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  return debouncedValue;
+}
 
-  return size;
-}`,
+// Also in the starter:
+// useMediaQuery — useSyncExternalStore with matchMedia (event listener pattern)
+// useLocalStorage — cross-tab sync via storage event (cleanup pattern)`,
       },
       vite: {
         description: "In Vite, all code runs in the browser — no SSR concerns. The pattern is straightforward.",
