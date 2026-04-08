@@ -1559,73 +1559,70 @@ export const usersService = {
     },
     implementation: {
       nextjs: {
-        description: "In Next.js App Router, service functions can be called directly in Server Components. For Client Components, wrap them in React Query hooks.",
-        filename: "lib/services/users.ts + hooks usage",
-        code: `// lib/api-client.ts — axios instance
-import axios from 'axios';
-
-export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-  headers: { 'Content-Type': 'application/json' },
+        description: "In Next.js App Router, service functions can be called directly in Server Components. For Client Components, wrap them in React Query hooks. See the full chain in the starter: github.com/sindev08/react-principles-nextjs → src/lib/",
+        filename: "lib/services/users.ts — from react-principles-nextjs starter",
+        code: `// lib/api-client.ts — fetch-based factory (NOT axios)
+import { createApiClient } from './api-client';
+export const api = createApiClient({
+  baseUrl: process.env.NEXT_PUBLIC_API_URL ?? 'https://dummyjson.com',
 });
 
-// lib/services/users.ts — service layer
-import { apiClient } from '@/lib/api-client';
-import type { User } from '@/shared/types/user';
+// lib/services/users.ts — pure API communication
+import { api } from '@/lib/api';
+import { ENDPOINTS } from '@/lib/endpoints';
+import type { User, UsersResponse } from '@/shared/types/user';
 
 export const usersService = {
-  getAll: async (): Promise<User[]> => {
-    const { data } = await apiClient.get('/users');
-    return data;
-  },
-  getById: async (id: string): Promise<User> => {
-    const { data } = await apiClient.get(\`/users/\${id}\`);
-    return data;
-  },
+  getAll: (params?: { limit?: number; skip?: number }): Promise<UsersResponse> =>
+    api.get<UsersResponse>(ENDPOINTS.users.list, { params }),
+  getById: (id: number): Promise<User> =>
+    api.get<User>(ENDPOINTS.users.detail(id)),
+  search: (q: string): Promise<UsersResponse> =>
+    api.get<UsersResponse>(ENDPOINTS.users.search, { params: { q } }),
 };
 
-// features/examples/hooks/useUsers.ts — hook wraps service
+// features/users/hooks/useUsers.ts — hook wraps service with React Query
+'use client';
 import { useQuery } from '@tanstack/react-query';
-import { usersService } from '@/lib/services/users';
+import { queryKeys } from '@/lib/query-keys';
 
-export function useUsers() {
+export function useUsers(params?: { limit?: number; skip?: number }) {
   return useQuery({
-    queryKey: ['users', 'list'],
-    queryFn: usersService.getAll,
+    queryKey: queryKeys.users.list(params ?? {}),
+    queryFn: () => usersService.getAll(params),
   });
 }`,
       },
       vite: {
-        description: "In Vite, the pattern is identical. The services layer is framework-agnostic — the same service files work in both Next.js and Vite projects.",
+        description: "In Vite, the pattern is identical. The services layer is framework-agnostic — the same createApiClient factory works in both Next.js and Vite projects.",
         filename: "lib/services/users.ts + hooks usage",
-        code: `// lib/api-client.ts
-import axios from 'axios';
-
-export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  headers: { 'Content-Type': 'application/json' },
+        code: `// lib/api.ts — same createApiClient factory, different env var
+import { createApiClient } from './api-client';
+export const api = createApiClient({
+  baseUrl: import.meta.env.VITE_API_URL ?? 'https://dummyjson.com',
 });
 
-// lib/services/users.ts — same as Next.js version
-import { apiClient } from '@/lib/api-client';
-import type { User } from '@/shared/types/user';
+// lib/services/users.ts — identical to Next.js version
+import { api } from '@/lib/api';
+import { ENDPOINTS } from '@/lib/endpoints';
+import type { User, UsersResponse } from '@/shared/types/user';
 
 export const usersService = {
-  getAll: async (): Promise<User[]> => {
-    const { data } = await apiClient.get('/users');
-    return data;
-  },
+  getAll: (params?: { limit?: number; skip?: number }): Promise<UsersResponse> =>
+    api.get<UsersResponse>(ENDPOINTS.users.list, { params }),
+  getById: (id: number): Promise<User> =>
+    api.get<User>(ENDPOINTS.users.detail(id)),
 };
 
-// features/examples/hooks/useUsers.ts
+// features/users/hooks/useUsers.ts — hook wraps service
 import { useQuery } from '@tanstack/react-query';
-import { usersService } from '@/lib/services/users';
+import { queryKeys } from '@/lib/query-keys';
 
-export function useUsers() {
+export function useUsers(params?: { limit?: number; skip?: number }) {
   return useQuery({
-    queryKey: ['users', 'list'],
-    queryFn: usersService.getAll,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    queryKey: queryKeys.users.list(params ?? {}),
+    queryFn: () => usersService.getAll(params),
+    staleTime: 5 * 60 * 1000,
   });
 }`,
       },
@@ -1696,39 +1693,32 @@ const { activeFilter } = useFilterStore();      // Zustand`,
     },
     implementation: {
       nextjs: {
-        description: "In Next.js App Router, Server Components fetch server state directly — no React Query or Zustand needed. React Query is for Client Components that fetch after mount.",
-        filename: "Taxonomy in Next.js App Router",
-        code: `// ─── SERVER STATE in Server Components ───────────────────────
-// fetch() directly — no React Query, no Zustand
-export default async function UsersPage() {
-  const users = await usersService.getAll(); // Direct async call
-  return <UserList users={users} />;
-}
-
-// ─── SERVER STATE in Client Components ───────────────────────
-// Need to fetch after interaction? Use React Query
+        description: "In Next.js App Router, all three state categories are demonstrated in the starter template. See: github.com/sindev08/react-principles-nextjs → src/shared/stores/ and src/features/users/hooks/",
+        filename: "State taxonomy — from react-principles-nextjs starter",
+        code: `// ─── SHARED STATE (Zustand) — src/shared/stores/ ─────────────
+// useAppStore: theme + sidebar (app-wide UI)
 'use client';
-export function UserSearch() {
-  const [query, setQuery] = useState('');
-  const { data: users } = useQuery({
-    queryKey: ['users', 'search', query],
-    queryFn: () => usersService.search(query),
-    enabled: query.length > 2,
+export const useAppStore = create<AppState>((set) => ({
+  theme: 'light',
+  sidebarOpen: true,
+  toggleTheme: () => set((s) => ({ theme: s.theme === 'light' ? 'dark' : 'light' })),
+  toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
+}));
+
+// useFilterStore: search + role + status filters with reset
+// useSearchStore: search dialog open/closed
+
+// ─── SERVER STATE (React Query) — src/features/users/hooks/ ──
+// useUsers: paginated user list from DummyJSON
+'use client';
+export function useUsers(params?: { limit?: number; skip?: number }) {
+  return useQuery({
+    queryKey: queryKeys.users.list(params ?? {}),
+    queryFn: () => api.get<UsersResponse>(ENDPOINTS.users.list, { params }),
   });
-  // ...
 }
-
-// ─── SHARED STATE ─────────────────────────────────────────────
-// UI state only — no API data
-'use client';
-export function Sidebar() {
-  const { sidebarOpen, toggleSidebar } = useAppStore();
-  return (
-    <aside className={sidebarOpen ? 'w-64' : 'w-0'}>
-      <button onClick={toggleSidebar}>Toggle</button>
-    </aside>
-  );
-}`,
+// useUser(id): single user detail
+// useCreateUser: mutation with cache invalidation`,
       },
       vite: {
         description: "In Vite, all rendering is client-side. Server state always goes through React Query, shared state through Zustand, and local state through useState.",
