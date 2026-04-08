@@ -1,6 +1,6 @@
 "use client";
 
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Alert } from "@/ui/Alert";
 
@@ -21,7 +21,7 @@ const CODE_SNIPPET = `import { Alert } from "@/ui/Alert";
 </Alert>`;
 
 const COPY_PASTE_SNIPPET = `import type { ButtonHTMLAttributes, HTMLAttributes } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export type AlertVariant = "default" | "success" | "warning" | "error" | "info";
 
@@ -93,6 +93,8 @@ export default function AlertDocPage() {
       <div className="max-w-4xl">
         <h1 className="mb-3 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">Alert</h1>
         <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">Callout banner for important contextual messages.</p>
+
+        <CliInstallBlock name="alert" />
 
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>

@@ -14,7 +14,7 @@ const FRAMEWORKS = [
 
 export function Footer() {
   return (
-    <footer className="px-6 py-16 bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-white/5">
+    <footer className="px-6 py-16 bg-white border-t dark:bg-slate-950 border-slate-200 dark:border-white/5">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-12 mb-12 md:grid-cols-4">
           {/* Brand */}
@@ -96,8 +96,8 @@ export function Footer() {
 
         {/* Bottom bar */}
         <div className="flex flex-col items-center justify-between gap-4 pt-8 border-t border-slate-100 dark:border-white/5 md:flex-row">
-          <p className="text-xs text-slate-400">
-            © {new Date().getFullYear()} react-principles. Built for the React community.
+          <p className="text-sm text-slate-400">
+            © 2026 react-principles · Early access · npm: react-principles@0.0.3
           </p>
         </div>
       </div>

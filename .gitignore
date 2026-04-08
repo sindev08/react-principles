@@ -6,6 +6,10 @@ build
 .env.local
 .DS_Store
 *.tsbuildinfo
+*.tgz
 
 # Internal task tracking
 .tasks/
+
+# Claude Code context
+CLAUDE.md

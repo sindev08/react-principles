@@ -1,55 +1,22 @@
 {
   "name": "react-principles",
   "version": "0.0.1",
-  "description": "React patterns & principles — reusable hooks, utilities, types, stores, and components",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "sideEffects": false,
-  "files": [
-    "dist"
-  ],
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    },
-    "./hooks": {
-      "types": "./dist/hooks.d.ts",
-      "import": "./dist/hooks.mjs",
-      "require": "./dist/hooks.js"
-    },
-    "./utils": {
-      "types": "./dist/utils.d.ts",
-      "import": "./dist/utils.mjs",
-      "require": "./dist/utils.js"
-    },
-    "./types": {
-      "types": "./dist/types.d.ts",
-      "import": "./dist/types.mjs",
-      "require": "./dist/types.js"
-    },
-    "./stores": {
-      "types": "./dist/stores.d.ts",
-      "import": "./dist/stores.mjs",
-      "require": "./dist/stores.js"
-    },
-    "./components": {
-      "types": "./dist/components.d.ts",
-      "import": "./dist/components.mjs",
-      "require": "./dist/components.js"
-    },
-    "./lib": {
-      "types": "./dist/lib.d.ts",
-      "import": "./dist/lib.mjs",
-      "require": "./dist/lib.js"
-    }
+  "private": true,
+  "description": "A living cookbook and UI kit for modern React development",
+  "author": "Singgih Budi Purnadi",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sindev08/react-principles.git"
+  },
+  "homepage": "https://reactprinciples.dev",
+  "bugs": {
+    "url": "https://github.com/sindev08/react-principles/issues"
   },
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "next build",
-    "build:pkg": "tsup",
+    "build:cli": "pnpm --filter react-principles build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
@@ -58,65 +25,41 @@
     "prepare": "husky",
     "prepublishOnly": "pnpm build:pkg"
   },
-  "dependencies": {
+  "devDependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@material-symbols/font-400": "^0.40.2",
+    "@tailwindcss/postcss": "^4.2.1",
     "@tanstack/react-query": "^5.59.0",
     "@tanstack/react-query-devtools": "^5.59.0",
     "@tanstack/react-table": "^8.20.0",
-    "@types/three": "^0.183.1",
-    "axios": "^1.13.6",
-    "next": "^16.1.6",
-    "react-hook-form": "^7.53.0",
-    "three": "^0.183.2"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4.2.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.0.1",
     "@testing-library/user-event": "^14.5.2",
     "@types/node": "^25.3.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.183.1",
     "@typescript-eslint/eslint-plugin": "8.56.1",
     "@typescript-eslint/parser": "8.56.1",
     "@vitejs/plugin-react": "^4.3.4",
+    "axios": "^1.13.6",
     "clsx": "^2.1.1",
     "eslint": "9.39.1",
     "eslint-config-next": "^16.1.6",
     "husky": "^9.1.7",
     "jsdom": "^25.0.1",
+    "next": "^16.1.6",
     "postcss": "^8.4.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-hook-form": "^7.53.0",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.1",
+    "three": "^0.183.2",
     "tsup": "^8.5.1",
     "typescript": "^5.6.0",
     "vitest": "^2.1.8",
     "zod": "^4.3.6",
     "zustand": "^5.0.0"
-  },
-  "peerDependencies": {
-    "react": ">=18",
-    "react-dom": ">=18",
-    "zod": ">=4",
-    "zustand": ">=4",
-    "clsx": ">=2",
-    "tailwind-merge": ">=2"
-  },
-  "peerDependenciesMeta": {
-    "zod": {
-      "optional": true
-    },
-    "zustand": {
-      "optional": true
-    },
-    "clsx": {
-      "optional": true
-    },
-    "tailwind-merge": {
-      "optional": true
-    }
   }
 }

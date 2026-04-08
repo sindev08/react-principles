@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Dialog } from "@/ui/Dialog";
 import { Button } from "@/ui/Button";
@@ -46,8 +46,8 @@ const COPY_PASTE_SNIPPET = `"use client";
 
 import { useEffect, useRef, HTMLAttributes, ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { cn } from "@/shared/utils/cn";
-import { useAnimatedMount } from "@/shared/hooks/useAnimatedMount";
+import { cn } from "@/lib/utils";
+import { useAnimatedMount } from "@/hooks/use-animated-mount";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -326,6 +326,8 @@ export default function DialogDocPage() {
             ))}
           </div>
         </div>
+
+        <CliInstallBlock name="dialog" />
 
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">

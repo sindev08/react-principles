@@ -42,9 +42,9 @@ const STACK_ITEMS = [
     subtitle: "Styling",
   },
   {
-    icon: <span className="text-3xl material-symbols-outlined">extension</span>,
-    title: "shadcn/ui",
-    subtitle: "Components",
+    icon: <span className="text-3xl material-symbols-outlined">widgets</span>,
+    title: "react-principles",
+    subtitle: "UI Library",
   },
 ];
 

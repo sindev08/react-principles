@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Switch } from "@/ui/Switch";
 
@@ -21,7 +21,7 @@ const CODE_SNIPPET = `import { Switch } from "@/ui/Switch";
 />`;
 
 const COPY_PASTE_SNIPPET = `import { useMemo, useState } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export type SwitchSize = "sm" | "md" | "lg";
 
@@ -122,6 +122,8 @@ export default function SwitchDocPage() {
         <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">
           Binary toggle for on/off settings with optional label and helper text.
         </p>
+
+        <CliInstallBlock name="switch" />
 
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Tabs } from "@/ui/Tabs";
 import { Badge } from "@/ui/Badge";
@@ -52,7 +52,7 @@ const COPY_PASTE_SNIPPET = `import {
   HTMLAttributes,
   ReactNode,
 } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -358,6 +358,8 @@ export default function TabsDocPage() {
             ))}
           </div>
         </div>
+
+        <CliInstallBlock name="tabs" />
 
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">

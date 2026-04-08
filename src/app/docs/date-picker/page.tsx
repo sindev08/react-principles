@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DocsPageLayout } from "@/features/docs/components";
+import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { DatePicker } from "@/ui/DatePicker";
 
@@ -20,7 +20,7 @@ const CODE_SNIPPET = `import { DatePicker } from "@/ui/DatePicker";
 />`;
 
 const COPY_PASTE_SNIPPET = `import { forwardRef, type InputHTMLAttributes } from "react";
-import { cn } from "@/shared/utils/cn";
+import { cn } from "@/lib/utils";
 
 export interface DatePickerProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
   label?: string;
@@ -67,6 +67,8 @@ export default function DatePickerDocPage() {
       <div className="max-w-4xl">
         <h1 className="mb-3 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">Date Picker</h1>
         <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">Native date input wrapped with consistent styling and helper text.</p>
+
+        <CliInstallBlock name="date-picker" />
 
         <section id="demo" className="mb-16">
           <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
