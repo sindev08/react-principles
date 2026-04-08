@@ -22,8 +22,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prepare": "husky",
-    "prepublishOnly": "pnpm build:pkg"
+    "prepare": "husky"
   },
   "devDependencies": {
     "@hookform/resolvers": "^5.2.2",
