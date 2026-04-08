@@ -8,6 +8,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 const TITLE = "React Principles";
 const DESCRIPTION =
   "A living cookbook of production-grade React patterns. Real implementations with Next.js 16, Vite, TanStack Query, Zustand, React Hook Form, and TypeScript.";
+const OG_IMAGE = "/opengraph-image";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -36,19 +37,28 @@ export const metadata: Metadata = {
     siteName: TITLE,
     title: TITLE,
     description: DESCRIPTION,
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: TITLE,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
+    images: [OG_IMAGE],
   },
   icons: {
     icon: [
-      { url: "/favicon.ico" },
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon.ico?v=3" },
+      { url: "/favicon-16x16.png?v=3", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png?v=3", sizes: "32x32", type: "image/png" },
     ],
-    apple: [{ url: "/apple-touch-icon.png" }],
+    apple: [{ url: "/apple-touch-icon.png?v=3" }],
     other: [
       { rel: "manifest", url: "/site.webmanifest" },
     ],
@@ -78,6 +88,21 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: TITLE,
+    url: BASE_URL,
+    description: DESCRIPTION,
+    inLanguage: "en-US",
+    publisher: {
+      "@type": "Organization",
+      name: TITLE,
+      url: BASE_URL,
+      logo: `${BASE_URL}/android-chrome-512x512.png`,
+    },
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -87,6 +112,24 @@ export default function RootLayout({
             __html: `(function(){var t=localStorage.getItem('theme')||'dark';if(t==='dark')document.documentElement.classList.add('dark');})();`,
           }}
         />
+        <Script
+          id="website-structured-data"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+        <link
+          rel="icon"
+          href="/favicon-light.svg?v=3"
+          type="image/svg+xml"
+          media="(prefers-color-scheme: light)"
+        />
+        <link
+          rel="icon"
+          href="/favicon-dark.svg?v=3"
+          type="image/svg+xml"
+          media="(prefers-color-scheme: dark)"
+        />
+        <link rel="icon" href="/favicon-light.svg?v=3" type="image/svg+xml" />
       </head>
       <body className="min-h-screen bg-(--background) text-(--foreground) antialiased">
                 {process.env.NODE_ENV === "production" && (

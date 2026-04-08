@@ -1,0 +1,45 @@
+<svg
+  width="1600"
+  height="1200"
+  viewBox="0 0 1600 1200"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <title>React Principles Brand Preview</title>
+  <rect width="1600" height="1200" fill="#EDEDF2" />
+
+  <text x="96" y="110" fill="#0F172A" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="800">
+    React Principles Brand Preview
+  </text>
+  <text x="96" y="150" fill="#64748B" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="500">
+    Light, dark, purple, and monochrome usage contexts for issue #26
+  </text>
+
+  <rect x="96" y="212" width="656" height="392" rx="32" fill="#FFFFFF" stroke="#D8DEEA" stroke-width="2" />
+  <text x="144" y="274" fill="#64748B" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">
+    White Background
+  </text>
+  <image href="react-principles-logo-light@2x.png" x="144" y="328" width="584" height="128" />
+  <image href="react-principles-icon-light@2x.png" x="144" y="486" width="96" height="96" />
+
+  <rect x="848" y="212" width="656" height="392" rx="32" fill="#0B1020" stroke="#1D2842" stroke-width="2" />
+  <text x="896" y="274" fill="#94A3B8" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">
+    Dark Background
+  </text>
+  <image href="react-principles-logo-dark@2x.png" x="896" y="328" width="584" height="128" />
+  <image href="react-principles-icon-dark@2x.png" x="896" y="486" width="96" height="96" />
+
+  <rect x="96" y="700" width="656" height="392" rx="32" fill="#5B34E6" />
+  <text x="144" y="762" fill="#DDD6FE" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">
+    Purple Background
+  </text>
+  <image href="react-principles-logo-dark@2x.png" x="144" y="816" width="584" height="128" />
+  <image href="react-principles-icon-dark@2x.png" x="144" y="974" width="96" height="96" />
+
+  <rect x="848" y="700" width="656" height="392" rx="32" fill="#FFFFFF" stroke="#D8DEEA" stroke-width="2" />
+  <text x="896" y="762" fill="#64748B" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">
+    Monochrome
+  </text>
+  <image href="react-principles-logo-mono@2x.png" x="896" y="816" width="584" height="128" />
+  <image href="react-principles-icon-mono@2x.png" x="896" y="974" width="96" height="96" />
+</svg>

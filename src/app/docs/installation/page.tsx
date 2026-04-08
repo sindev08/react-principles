@@ -3,6 +3,7 @@ import { DocsPageLayout } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Alert } from "@/ui/Alert";
 import { Card } from "@/ui/Card";
+import { MAJOR_VERSIONS } from "@/shared/constants/versions";
 
 const TOC_ITEMS = [
   { label: "Requirements", href: "#requirements" },
@@ -27,18 +28,18 @@ npx react-principles@latest add button
 npx react-principles@latest add button badge card input dialog`;
 
 const REQUIREMENTS = [
-  "React 18+ or React 19",
-  "react-dom 18+",
-  "TypeScript 5+ for the best typing experience",
-  "Tailwind CSS v4",
+  `React ${MAJOR_VERSIONS.react}+`,
+  `react-dom ${MAJOR_VERSIONS.react}+`,
+  `TypeScript ${MAJOR_VERSIONS.typescript}+ for the best typing experience`,
+  `Tailwind CSS v${MAJOR_VERSIONS.tailwindcss}`,
 ];
 
 export default function InstallationPage() {
   return (
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-3xl">
-        <nav className="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
-          <Link href="/docs/introduction" className="cursor-pointer transition-colors hover:text-primary">
+        <nav className="flex items-center gap-2 mb-8 text-sm font-medium text-slate-500">
+          <Link href="/docs/introduction" className="transition-colors cursor-pointer hover:text-primary">
             Getting Started
           </Link>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
@@ -110,20 +111,20 @@ export default function InstallationPage() {
 
           <Alert variant="warning" className="mt-6">
             <Alert.Description>
-              UI components require Tailwind CSS v4. Make sure your project has Tailwind configured
+              UI components require Tailwind CSS v{MAJOR_VERSIONS.tailwindcss}. Make sure your project has Tailwind configured
               before running the CLI.
             </Alert.Description>
           </Alert>
         </section>
 
         <div className="flex items-center justify-between border-t border-slate-200 pt-8 dark:border-[#1f2937]">
-          <Link href="/docs/introduction" className="group flex flex-col gap-1 transition-colors">
+          <Link href="/docs/introduction" className="flex flex-col gap-1 transition-colors group">
             <span className="text-xs text-slate-400">Previous</span>
             <span className="text-sm font-medium text-slate-900 group-hover:text-primary dark:text-white">
               Introduction
             </span>
           </Link>
-          <Link href="/docs/theming" className="group flex flex-col items-end gap-1 transition-colors">
+          <Link href="/docs/theming" className="flex flex-col items-end gap-1 transition-colors group">
             <span className="text-xs text-slate-400">Next</span>
             <span className="text-sm font-medium text-slate-900 group-hover:text-primary dark:text-white">
               Theming
