@@ -9,6 +9,7 @@ import { useSearchStore } from "@/shared/stores/useSearchStore";
 import { useSavedStore } from "@/features/cookbook/stores/useSavedStore";
 import { RECIPES } from "@/features/cookbook/data/cookbook-data";
 import { DOCS_NAV } from "./docs-nav";
+import Image from "next/image";
 
 function GithubIcon() {
   return (
@@ -76,11 +77,25 @@ export function DocsHeader() {
         <div className="relative mx-auto flex h-14 max-w-[1440px] items-center justify-between px-6 lg:px-10">
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2">
+              <Image
+                src="/logo-icon.svg"
+                alt="React Principles logo"
+                width={32}
+                height={32}
+                className="block dark:hidden"
+              />
+              <Image
+                src="/logo-icon-dark.svg"
+                alt="React Principles logo"
+                width={32}
+                height={32}
+                className="hidden dark:block"
+              />
               <h2 className="text-base font-extrabold leading-tight tracking-tight text-primary">
                 react-principles
               </h2>
             </Link>
-            <nav className="hidden items-center gap-6 md:flex">
+            <nav className="items-center hidden gap-6 md:flex">
               <Link href="/" className={navLinkClass(!isDocsActive && !isCookbookActive)}>
                 Home
               </Link>
@@ -131,7 +146,7 @@ export function DocsHeader() {
             </button>
             <button
               onClick={toggle}
-              className="flex items-center justify-center rounded-lg p-2 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 sm:hidden"
+              className="flex items-center justify-center p-2 transition-colors rounded-lg text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 sm:hidden"
               aria-label="Search"
             >
               <span className="material-symbols-outlined text-[20px]">search</span>
