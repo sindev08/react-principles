@@ -1421,40 +1421,37 @@ Card.Footer = ({ children }: CardProps) => <div className="p-4 border-t">{childr
     },
     implementation: {
       nextjs: {
-        description: "In Next.js, composition works the same way. Server Components can pass Client Components as children — this is how you keep server/client boundaries clean.",
-        filename: "features/cookbook/components/RecipeLayout.tsx",
-        code: `// Server Component — fetches data
-export default async function RecipePage({ params }: PageProps) {
-  const detail = await getRecipeDetail(params.slug);
+        description: "In Next.js, composition works the same way. Server Components can pass Client Components as children — this is how you keep server/client boundaries clean. See the starter template: github.com/sindev08/react-principles-nextjs → src/shared/components/PageLayout.tsx and src/ui/Card.tsx",
+        filename: "shared/components/PageLayout.tsx — from react-principles-nextjs starter",
+        code: `// Named slots pattern — multiple injection points via named props
+interface PageLayoutProps {
+  header?: React.ReactNode;   // slot for navbar/header
+  sidebar?: React.ReactNode;  // slot for sidebar navigation
+  children: React.ReactNode;  // main content area
+}
 
+export function PageLayout({ header, sidebar, children }: PageLayoutProps) {
   return (
-    // Passes a Client Component as children
-    <RecipeLayout
-      header={<RecipeHeader title={detail.title} />}
-      sidebar={<RecipeToc sections={detail.sections} />}
-    >
-      {/* Client Component receives data as props, not fetching itself */}
-      <RecipeContent detail={detail} />
-    </RecipeLayout>
+    <div className="flex min-h-screen flex-col">
+      {header && <header className="border-b">{header}</header>}
+      <div className="flex flex-1">
+        {sidebar && <aside className="w-64 shrink-0 border-r">{sidebar}</aside>}
+        <main className="flex-1 p-6">{children}</main>
+      </div>
+    </div>
   );
 }
 
-// RecipeLayout — just structure, no data concerns
-interface RecipeLayoutProps {
-  header: React.ReactNode;
-  sidebar: React.ReactNode;
-  children: React.ReactNode;
-}
-
-export function RecipeLayout({ header, sidebar, children }: RecipeLayoutProps) {
+// Usage in a Server Component page:
+export default async function UsersPage() {
   return (
-    <div>
-      <header>{header}</header>
-      <div className="flex">
-        <aside>{sidebar}</aside>
-        <main>{children}</main>
-      </div>
-    </div>
+    <PageLayout
+      header={<Navbar />}
+      sidebar={<Sidebar items={menuItems} />}
+    >
+      {/* Client Component as children — clean server/client boundary */}
+      <UserList />
+    </PageLayout>
   );
 }`,
       },
@@ -1836,44 +1833,32 @@ function SearchInput() {
     },
     implementation: {
       nextjs: {
-        description: "In Next.js, hooks can only run in Client Components. If a hook uses browser APIs, add 'use client' to the component that calls it — not to the hook file itself.",
-        filename: "shared/hooks/useDebounce.ts",
-        code: `// The hook itself has no 'use client' — it is framework-agnostic
-import { useEffect, useState } from 'react';
+        description: "In Next.js, hooks that use browser APIs need 'use client'. Feature-specific hooks live in the feature folder, shared hooks in shared/. See the starter: github.com/sindev08/react-principles-nextjs → src/features/users/hooks/",
+        filename: "features/users/hooks/useUsers.ts — from react-principles-nextjs starter",
+        code: `'use client';
 
-export function useDebounce<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState<T>(value);
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/lib/api';
+import { ENDPOINTS } from '@/lib/endpoints';
+import { queryKeys } from '@/lib/query-keys';
+import type { UsersResponse } from '@/shared/types/user';
 
-  useEffect(() => {
-    const timer = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(timer);
-  }, [value, delay]);
-
-  return debounced;
+// Feature hook — encapsulates query key, endpoint, and response type
+// Components just call useUsers() and get typed data back
+export function useUsers(params?: { limit?: number; skip?: number }) {
+  return useQuery({
+    queryKey: queryKeys.users.list(params ?? {}),
+    queryFn: () => api.get<UsersResponse>(ENDPOINTS.users.list, {
+      params: { limit: params?.limit, skip: params?.skip },
+    }),
+  });
 }
 
-// The component that calls it gets 'use client'
-// features/cookbook/components/SearchInput.tsx
-'use client';
-
-import { useDebounce } from '@/shared/hooks/useDebounce';
-
-export function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
-  const [query, setQuery] = useState('');
-  const debouncedQuery = useDebounce(query, 300);
-
-  useEffect(() => {
-    onSearch(debouncedQuery);
-  }, [debouncedQuery, onSearch]);
-
-  return (
-    <input
-      value={query}
-      onChange={e => setQuery(e.target.value)}
-      placeholder="Search recipes..."
-    />
-  );
-}`,
+// Also in the starter:
+// features/users/hooks/useCreateUser.ts — mutation with cache invalidation
+// shared/hooks/useDebounce.ts — generic debounce (logic extraction)
+// shared/hooks/useMediaQuery.ts — browser API sync (useSyncExternalStore)
+// shared/hooks/useLocalStorage.ts — storage sync with cross-tab support`,
       },
       vite: {
         description: "In Vite, hooks work the same way with no SSR considerations. Co-locate feature-specific hooks inside the feature folder.",
