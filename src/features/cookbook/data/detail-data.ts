@@ -799,41 +799,43 @@ export function RevenueChart({ range }: { range: string }) {
       code: `src/
 ├── app/              # Next.js routing only — no business logic here
 ├── features/         # One folder per domain feature
-│   ├── cookbook/
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── data/
-│   │   └── index.ts  # Public API — only export what others need
-│   └── examples/
-│       ├── components/
-│       ├── hooks/
-│       └── index.ts
+│   └── users/
+│       ├── components/   # UI specific to this feature
+│       ├── hooks/        # Data fetching and logic hooks
+│       ├── stores/       # Zustand stores scoped to this feature
+│       └── index.ts      # Public API — only export what others need
 ├── shared/           # Truly cross-cutting code
-│   ├── components/   # Used by 2+ features
-│   ├── hooks/
-│   ├── stores/
-│   └── utils/
+│   ├── components/   # Used by 2+ features (ErrorBoundary, LoadingState)
+│   ├── hooks/        # Reusable hooks (useDebounce, useLocalStorage)
+│   ├── stores/       # App-wide stores (theme, sidebar)
+│   ├── types/        # Shared TypeScript types (API responses, common)
+│   └── utils/        # Utility functions (cn, formatters, validators)
 ├── lib/              # External service clients (API, query client)
 └── ui/               # Design system primitives (Button, Input, etc.)`,
     },
     implementation: {
       nextjs: {
-        description: "Next.js adds the app/ directory for file-based routing. Route logic (pages) lives in app/, all business logic stays in features/.",
+        description: "Next.js adds the app/ directory for file-based routing. Route logic (pages) lives in app/, all business logic stays in features/. See the starter template at github.com/sindev08/react-principles-nextjs.",
         filename: "src/app/ — routing only",
         code: `src/
 ├── app/
-│   ├── layout.tsx          # Root layout
-│   ├── page.tsx            # Landing page → renders <LandingPage />
-│   ├── (examples)/         # Route group — no URL segment
-│   │   └── forms/page.tsx  # Renders <UserForm /> from features/
-│   └── nextjs/
-│       └── cookbook/
-│           └── [slug]/page.tsx
+│   ├── layout.tsx          # Root layout (fonts, providers, metadata)
+│   ├── page.tsx            # Home page — thin, imports from features/
+│   ├── providers.tsx       # Client-side context providers
+│   └── globals.css         # Global styles and Tailwind imports
 ├── features/
-│   └── landing/
-│       └── components/
-│           └── LandingPage.tsx  # Actual component lives here
-└── shared/`,
+│   └── users/              # CRUD users feature
+│       ├── components/     # UserList, UserForm, UserCard
+│       ├── hooks/          # useGetUsers, useCreateUser
+│       ├── stores/         # useUserStore
+│       └── index.ts        # Public API barrel export
+├── shared/
+│   ├── components/         # ErrorBoundary, LoadingState, EmptyState
+│   ├── hooks/              # useDebounce, useLocalStorage
+│   ├── types/              # API response types
+│   └── utils/              # cn(), formatters
+├── lib/                    # API client, query client, endpoints
+└── ui/                     # Button, Card, Dialog, Input`,
       },
       vite: {
         description: "Vite projects use React Router for routing. The same src/ structure applies — routing config lives separately from feature code.",
