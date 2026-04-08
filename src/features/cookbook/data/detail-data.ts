@@ -11,6 +11,13 @@ export interface ImplTab {
 
 export type DemoKey = "react-query" | "zustand" | "forms" | "table";
 
+export interface StarterLink {
+  /** Label shown on the link (e.g., "View in starter template") */
+  label: string;
+  /** Full GitHub URL to the specific file or folder */
+  href: string;
+}
+
 export interface RecipeDetail {
   slug: string;
   title: string;
@@ -23,6 +30,8 @@ export interface RecipeDetail {
   implementation: { nextjs: ImplTab; vite: ImplTab };
   contributor: { name: string; role: string };
   demoKey?: DemoKey;
+  /** Link to the relevant file/folder in the starter template repo */
+  starterLink?: StarterLink;
 }
 
 export const RECIPE_DETAILS: Record<string, RecipeDetail> = {
@@ -855,6 +864,10 @@ export function RevenueChart({ range }: { range: string }) {
       },
     },
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+    starterLink: {
+      label: "View folder structure in starter",
+      href: "https://github.com/sindev08/react-principles-nextjs/tree/main/src",
+    },
   },
 
   "typescript-for-react": {
@@ -862,7 +875,7 @@ export function RevenueChart({ range }: { range: string }) {
     title: "TypeScript for React",
     breadcrumbCategory: "Foundations",
     description: "How to type component props, event handlers, and hooks correctly. The contracts that prevent silent bugs.",
-    lastUpdated: "2026-03-01",
+    lastUpdated: "Apr 8, 2026",
     principle: {
       text: "Bugs caught at compile time cost nothing to fix. Bugs caught in production cost everything. TypeScript for React is not about learning the full TypeScript language — it is about writing the right contracts between your components so that mistakes are caught before the code even runs.",
       tip: "Start by typing your component props. If you can describe what a component accepts and returns, the rest of the types follow naturally.",
@@ -963,6 +976,10 @@ function useUser(id: string): {
       },
     },
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+    starterLink: {
+      label: "View TypeScript config in starter",
+      href: "https://github.com/sindev08/react-principles-nextjs/blob/main/tsconfig.json",
+    },
   },
 
   "component-anatomy": {
@@ -970,7 +987,7 @@ function useUser(id: string): {
     title: "Component Anatomy",
     breadcrumbCategory: "Foundations",
     description: "The consistent internal structure every component follows — imports, types, constants, function, export.",
-    lastUpdated: "2026-03-01",
+    lastUpdated: "Apr 8, 2026",
     principle: {
       text: "When every component follows the same structure, you stop thinking about where things go inside a file and start thinking about what the component actually does. Consistent anatomy means anyone on the team can open any file and immediately know where to look — props are always at the top, constants are always before the function, exports are always at the bottom.",
       tip: "The hardest part of component anatomy is constants vs. props. Rule of thumb: if it never changes based on what's passed in, it is a constant. If it could change from outside, it is a prop.",
@@ -1104,6 +1121,10 @@ export function RecipeCard({ slug, title }: RecipeCardProps) {
       },
     },
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+    starterLink: {
+      label: "View Button anatomy in starter",
+      href: "https://github.com/sindev08/react-principles-nextjs/blob/main/src/ui/Button.tsx",
+    },
   },
 
   "oauth-flow": {
@@ -1349,6 +1370,10 @@ export function useWindowSize() {
       },
     },
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+    starterLink: {
+      label: "View hooks in starter",
+      href: "https://github.com/sindev08/react-principles-nextjs/tree/main/src/shared/hooks",
+    },
   },
 
   "component-composition": {
@@ -1356,7 +1381,7 @@ export function useWindowSize() {
     title: "Component Composition",
     breadcrumbCategory: "Foundations",
     description: "How components combine and communicate — children props, slot patterns, and why composition beats deep prop drilling.",
-    lastUpdated: "2026-03-01",
+    lastUpdated: "Apr 8, 2026",
     principle: {
       text: "Prop drilling happens when you pass data through multiple components that do not use it — just to get it to a component deep in the tree. Composition solves this differently: instead of passing data down, you pass components down. The parent controls what gets rendered, and children receive exactly what they need directly.",
       tip: "When you find yourself adding a prop to a component just to pass it further down, stop. That is the signal to use composition instead.",
@@ -1495,6 +1520,10 @@ export function RecipePage() {
       },
     },
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+    starterLink: {
+      label: "View composition components in starter",
+      href: "https://github.com/sindev08/react-principles-nextjs/blob/main/src/shared/components/PageLayout.tsx",
+    },
   },
 
   "services-layer": {
@@ -1502,7 +1531,7 @@ export function RecipePage() {
     title: "Services Layer",
     breadcrumbCategory: "Foundations",
     description: "How to organize all backend communication in one place — so when an API changes, you fix it in one file, not twenty.",
-    lastUpdated: "2026-03-01",
+    lastUpdated: "Apr 8, 2026",
     principle: {
       text: "When you fetch data directly inside a component, the component becomes responsible for knowing the URL, the HTTP method, the request format, and the error handling. That is four responsibilities too many. A services layer centralizes all backend communication — components just call a function and get data back. When the API changes, you fix it in one file, not twenty.",
       tip: "A service function should read like plain English: getUserById(id), createOrder(data), deletePost(id). If it needs more than one argument object, consider splitting it into two functions.",
@@ -1628,6 +1657,10 @@ export function useUsers(params?: { limit?: number; skip?: number }) {
       },
     },
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+    starterLink: {
+      label: "View services layer in starter",
+      href: "https://github.com/sindev08/react-principles-nextjs/tree/main/src/lib",
+    },
   },
 
   "state-taxonomy": {
@@ -1635,7 +1668,7 @@ export function useUsers(params?: { limit?: number; skip?: number }) {
     title: "State Taxonomy",
     breadcrumbCategory: "Foundations",
     description: "Three categories of state — local, shared, and server — and exactly which tool handles each one.",
-    lastUpdated: "2026-03-01",
+    lastUpdated: "Apr 8, 2026",
     principle: {
       text: "Not all state is the same. Before reaching for any state management library, ask one question: where does this data come from? Local state lives inside one component. Shared state is UI state needed by multiple components. Server state comes from an API and has its own lifecycle — loading, error, stale, and needs refreshing. Each category has a different tool, and mixing them up causes bugs that are hard to trace.",
       tip: "When you find yourself putting API data into Zustand, stop. Server state belongs in React Query. When you find yourself using React Query for a toggle or a modal, stop. UI state belongs in useState or Zustand.",
@@ -1753,6 +1786,10 @@ function Navbar() {
       },
     },
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+    starterLink: {
+      label: "View stores in starter",
+      href: "https://github.com/sindev08/react-principles-nextjs/tree/main/src/shared/stores",
+    },
   },
 
   "custom-hooks": {
@@ -1760,7 +1797,7 @@ function Navbar() {
     title: "Custom Hooks",
     breadcrumbCategory: "Foundations",
     description: "The boundary between logic and rendering. When to extract a hook, what the rules are, and how to avoid the most common mistake.",
-    lastUpdated: "2026-03-01",
+    lastUpdated: "Apr 8, 2026",
     principle: {
       text: "A custom hook is not just a function that starts with 'use' — it is a boundary between logic and rendering. The component handles what the user sees. The hook handles how data gets there. When you separate these two concerns, components become easier to read, logic becomes easier to test, and both become easier to change independently.",
       tip: "If you would write a unit test for the logic, it belongs in a hook. If you would write a component test for it, it belongs in the JSX.",
@@ -1890,6 +1927,10 @@ export function SearchInput({ onSearch }: { onSearch: (q: string) => void }) {
       },
     },
     contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
+    starterLink: {
+      label: "View custom hooks in starter",
+      href: "https://github.com/sindev08/react-principles-nextjs/tree/main/src/shared/hooks",
+    },
   },
 };
 

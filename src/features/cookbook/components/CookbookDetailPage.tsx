@@ -10,7 +10,7 @@ import { UserTable } from "@/features/examples/components/UserTable";
 import { useAppStore } from "@/shared/stores/useAppStore";
 import { useFilterStore } from "@/shared/stores/useFilterStore";
 import { useSavedStore } from "@/features/cookbook/stores/useSavedStore";
-import type { RecipeDetail, DemoKey } from "@/features/cookbook/data/detail-data";
+import type { RecipeDetail, DemoKey, StarterLink } from "@/features/cookbook/data/detail-data";
 import type { Framework } from "@/features/cookbook/components/CookbookListPage";
 
 const BASE_TOC = [
@@ -270,6 +270,9 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
             </p>
           </div>
         </div>
+        {framework === "vitejs" && (
+          <ViteComingSoon />
+        )}
         <div className="space-y-6">
           <p className="leading-relaxed text-slate-600 dark:text-slate-400">
             {activeImpl.description}
@@ -278,6 +281,9 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
             {activeImpl.code}
           </CodeBlock>
         </div>
+        {framework === "nextjs" && detail.starterLink && (
+          <StarterTemplateLink starterLink={detail.starterLink} />
+        )}
       </section>
 
       {/* 05 Live Demo */}
@@ -297,6 +303,56 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
         </section>
       )}
     </div>
+  );
+}
+
+function ViteComingSoon() {
+  return (
+    <div className="flex gap-4 p-4 mb-8 border border-blue-200 dark:border-blue-900/50 rounded-lg bg-blue-50 dark:bg-blue-900/20">
+      <span className="material-symbols-outlined text-blue-600">construction</span>
+      <div>
+        <p className="text-sm font-bold tracking-tight text-blue-900 dark:text-blue-300">
+          Vite Starter Template — Coming Soon
+        </p>
+        <p className="text-xs text-blue-800 dark:text-blue-400">
+          The Vite starter template is currently in development. In the meantime, the code patterns
+          shown below apply to any Vite + React project. Check out the{" "}
+          <a
+            href="https://github.com/sindev08/react-principles-nextjs"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium underline hover:text-blue-600 dark:hover:text-blue-300"
+          >
+            Next.js starter
+          </a>
+          {" "}for a working reference.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function StarterTemplateLink({ starterLink }: { starterLink: StarterLink }) {
+  return (
+    <a
+      href={starterLink.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-6 flex items-center gap-3 p-4 rounded-lg border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] transition-colors hover:border-primary/50 hover:bg-primary/5 group"
+    >
+      <span className="material-symbols-outlined text-primary">open_in_new</span>
+      <div className="flex-1">
+        <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+          {starterLink.label}
+        </p>
+        <p className="text-xs text-slate-500">
+          View the real implementation in react-principles-nextjs
+        </p>
+      </div>
+      <span className="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors text-[18px]">
+        arrow_forward
+      </span>
+    </a>
   );
 }
 
