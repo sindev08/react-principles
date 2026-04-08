@@ -3,6 +3,7 @@ import { DocsPageLayout } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Alert } from "@/ui/Alert";
 import { Card } from "@/ui/Card";
+import { MAJOR_VERSIONS } from "@/shared/constants/versions";
 
 const TOC_ITEMS = [
   { label: "Requirements", href: "#requirements" },
@@ -27,10 +28,10 @@ npx react-principles@latest add button
 npx react-principles@latest add button badge card input dialog`;
 
 const REQUIREMENTS = [
-  "React 18+ or React 19",
-  "react-dom 18+",
-  "TypeScript 5+ for the best typing experience",
-  "Tailwind CSS v4",
+  `React ${MAJOR_VERSIONS.react}+`,
+  `react-dom ${MAJOR_VERSIONS.react}+`,
+  `TypeScript ${MAJOR_VERSIONS.typescript}+ for the best typing experience`,
+  `Tailwind CSS v${MAJOR_VERSIONS.tailwindcss}`,
 ];
 
 export default function InstallationPage() {
@@ -110,7 +111,7 @@ export default function InstallationPage() {
 
           <Alert variant="warning" className="mt-6">
             <Alert.Description>
-              UI components require Tailwind CSS v4. Make sure your project has Tailwind configured
+              UI components require Tailwind CSS v{MAJOR_VERSIONS.tailwindcss}. Make sure your project has Tailwind configured
               before running the CLI.
             </Alert.Description>
           </Alert>

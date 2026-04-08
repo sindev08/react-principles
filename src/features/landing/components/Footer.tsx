@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { CLI_VERSION } from "@/shared/constants/versions";
 
 const RESOURCES = [
   { label: "Documentation", href: "/docs/introduction" },
@@ -97,7 +98,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col items-center justify-between gap-4 pt-8 border-t border-slate-100 dark:border-white/5 md:flex-row">
           <p className="text-sm text-slate-400">
-            © 2026 react-principles · Early access · npm: react-principles@0.0.3
+            © 2026 react-principles · Early access · npm: react-principles@{CLI_VERSION}
           </p>
         </div>
       </div>
