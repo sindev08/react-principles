@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { DocsPageLayout } from "@/features/docs/components";
 import { CookbookDetailPage } from "@/features/cookbook/components/CookbookDetailPage";
-import { getRecipeDetail } from "@/features/cookbook/data/detail-data";
+import { getRecipeDetail } from "@/features/cookbook/data";
 
 export async function generateMetadata({
   params,
