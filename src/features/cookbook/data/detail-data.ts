@@ -792,7 +792,7 @@ export function RevenueChart({ range }: { range: string }) {
       },
       {
         title: "Co-location",
-        description: "Tests, types, and constants live next to the code they describe. Avoid global /types or /constants folders.",
+        description: "Files live next to the code they describe — a component's types go in the same file, a feature's types go in that feature folder. A shared/ types folder is fine only for types used by two or more features. The decision is based on scope, not file type.",
       },
       {
         title: "No cross-feature imports",
