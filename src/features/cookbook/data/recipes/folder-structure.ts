@@ -40,6 +40,7 @@ export const folderStructure: RecipeDetail = {
 │   ├── providers.tsx     # Client-side context providers (QueryClient, etc.)
 │   ├── globals.css       # Global styles and Tailwind imports
 │   └── users/
+│       ├── page.tsx      # Users list page (composition: PageLayout + UserList)
 │       └── [id]/
 │           └── page.tsx  # Dynamic route — add routes here, never business logic
 │
@@ -51,7 +52,7 @@ export const folderStructure: RecipeDetail = {
 │       └── index.ts      # Barrel export — public API of the feature
 │
 ├── shared/               # Cross-feature shared code
-│   ├── components/       # Reusable components (ErrorBoundary, LoadingState, etc.)
+│   ├── components/       # Reusable components (PageLayout, Navbar, Sidebar, etc.)
 │   ├── hooks/            # Reusable hooks (useDebounce, useLocalStorage, etc.)
 │   ├── stores/           # App-wide stores (theme, sidebar, etc.)
 │   ├── types/            # Shared TypeScript types
@@ -87,7 +88,7 @@ export const folderStructure: RecipeDetail = {
 │       └── index.ts      # Barrel export — public API of the feature
 │
 ├── shared/               # Cross-feature shared code
-│   ├── components/       # Reusable components (ErrorBoundary, LoadingState, etc.)
+│   ├── components/       # Reusable components (PageLayout, Navbar, Sidebar, etc.)
 │   ├── hooks/            # Reusable hooks (useDebounce, useLocalStorage, etc.)
 │   ├── stores/           # App-wide stores (theme, sidebar, etc.)
 │   ├── types/            # Shared TypeScript types
