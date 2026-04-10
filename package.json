@@ -24,6 +24,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "check": "pnpm lint && pnpm typecheck && pnpm test",
     "prepare": "husky"
   },
   "devDependencies": {
