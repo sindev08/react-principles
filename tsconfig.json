@@ -32,6 +32,8 @@
   "include": [
     "next-env.d.ts",
     ".next/types/**/*.ts",
+    ".storybook/**/*.ts",
+    ".storybook/**/*.tsx",
     "**/*.ts",
     "**/*.tsx",
     ".next/dev/types/**/*.ts"
