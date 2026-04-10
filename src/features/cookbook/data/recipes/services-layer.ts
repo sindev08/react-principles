@@ -5,7 +5,7 @@ export const servicesLayer: RecipeDetail = {
   title: "Services Layer",
   breadcrumbCategory: "Foundations",
   description: "How to organize all backend communication in one place — so when an API changes, you fix it in one file, not twenty.",
-  lastUpdated: "Apr 8, 2026",
+  lastUpdated: "Apr 11, 2026",
   principle: {
     text: "When you fetch data directly inside a component, the component becomes responsible for knowing the URL, the HTTP method, the request format, and the error handling. That is four responsibilities too many. A services layer centralizes all backend communication — components just call a function and get data back. When the API changes, you fix it in one file, not twenty.",
     tip: "A service function should read like plain English: getUserById(id), createOrder(data), deletePost(id). If it needs more than one argument object, consider splitting it into two functions.",

@@ -5,7 +5,7 @@ export const customHooks: RecipeDetail = {
   title: "Custom Hooks",
   breadcrumbCategory: "Foundations",
   description: "The boundary between logic and rendering. When to extract a hook, what the rules are, and how to avoid the most common mistake.",
-  lastUpdated: "Apr 8, 2026",
+  lastUpdated: "Apr 11, 2026",
   principle: {
     text: "A custom hook is not just a function that starts with 'use' — it is a boundary between logic and rendering. The component handles what the user sees. The hook handles how data gets there. When you separate these two concerns, components become easier to read, logic becomes easier to test, and both become easier to change independently.",
     tip: "If you would write a unit test for the logic, it belongs in a hook. If you would write a component test for it, it belongs in the JSX.",
