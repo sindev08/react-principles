@@ -235,7 +235,7 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
               {detail.rulesLabel ?? "Rules"}
             </h2>
           </div>
-          <ul className="grid gap-4 sm:grid-cols-2">
+          <ul className="flex flex-col gap-4">
             {detail.rules.map((rule) => (
               <li
                 key={rule.title}

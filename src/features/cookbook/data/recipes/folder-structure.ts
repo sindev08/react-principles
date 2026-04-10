@@ -14,7 +14,7 @@ export const folderStructure: RecipeDetail = {
   rules: [
     {
       title: "Feature-based grouping",
-      description: "Everything related to a feature lives in src/features/[name]/ — its components, hooks, and data together.",
+      description: "Everything related to a feature lives in src/features/[name]/ — its components, hooks, and stores together. The stores/ directory is only needed when the feature has shared UI state that multiple components within that feature need — like a multi-step form or a selected item. If all data comes from an API, skip the store.",
     },
     {
       title: "Co-location",
