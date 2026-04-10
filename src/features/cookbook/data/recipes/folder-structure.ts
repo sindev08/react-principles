@@ -34,46 +34,71 @@ export const folderStructure: RecipeDetail = {
       description: "The four core directories apply to any React app: features/ for domain logic, shared/ for cross-feature code, lib/ for infrastructure, and ui/ for design system primitives. Next.js adds one more: app/ for file-based routing — keep it thin, no business logic here. See the starter template at github.com/sindev08/react-principles-nextjs.",
       filename: "src/ — react-principles-nextjs starter",
       code: `src/
-├── app/
-│   ├── layout.tsx          # Root layout (fonts, providers, metadata)
-│   ├── page.tsx            # Home page — thin, imports from features/
-│   ├── providers.tsx       # Client-side context providers
-│   └── globals.css         # Global styles and Tailwind imports
-├── features/
-│   └── users/              # CRUD users feature
-│       ├── components/     # UserCard, UserList
-│       ├── hooks/          # useUsers, useUser, useCreateUser
-│       ├── stores/         # (empty — server state handled by React Query)
-│       └── index.ts        # Public API barrel export
-├── shared/
-│   ├── components/         # ErrorBoundary, LoadingState, EmptyState
-│   ├── hooks/              # useDebounce, useLocalStorage
-│   ├── types/              # API response types
-│   └── utils/              # cn(), formatters
-├── lib/                    # API client, query client, endpoints
-└── ui/                     # Button, Card, Dialog, Input`,
+├── app/                  # Next.js App Router — routing and layouts ONLY
+│   ├── layout.tsx        # Root layout (fonts, providers, metadata)
+│   ├── page.tsx          # Home page
+│   ├── providers.tsx     # Client-side context providers (QueryClient, etc.)
+│   └── globals.css       # Global styles and Tailwind imports
+│
+├── features/             # Feature modules (vertical slices)
+│   └── users/            # Each feature owns its own components, hooks, stores
+│       ├── components/   # UI specific to this feature
+│       ├── hooks/        # Data fetching and logic hooks
+│       ├── stores/       # Zustand stores scoped to this feature
+│       └── index.ts      # Barrel export — public API of the feature
+│
+├── shared/               # Cross-feature shared code
+│   ├── components/       # Reusable components (ErrorBoundary, LoadingState, etc.)
+│   ├── hooks/            # Reusable hooks (useDebounce, useLocalStorage, etc.)
+│   ├── stores/           # App-wide stores (theme, sidebar, etc.)
+│   ├── types/            # Shared TypeScript types
+│   └── utils/            # Utility functions (cn, formatters, validators)
+│
+├── ui/                   # Design system primitives (Button, Card, Dialog, etc.)
+│
+├── lib/                  # Infrastructure code
+│   ├── api-client.ts     # Fetch-based API client factory
+│   ├── api.ts            # Pre-configured API instance (DummyJSON)
+│   ├── endpoints.ts      # Centralized endpoint definitions
+│   ├── query-client.ts   # TanStack Query client factory
+│   └── query-keys.ts     # Type-safe query key factory
+│
+└── test/
+    └── setup.ts          # Vitest setup (Testing Library matchers)`,
     },
     vite: {
       description: "Same four core directories. Vite uses React Router instead of file-based routing, so add a routes/ directory for route definitions. Everything else is identical.",
       filename: "src/ — Vite structure",
       code: `src/
-├── routes/
-│   ├── index.tsx           # Route definitions
+├── routes/               # React Router — routing only
+│   ├── index.tsx         # Route definitions
 │   └── layouts/
-│       └── RootLayout.tsx  # Root layout component
-├── features/
-│   └── users/              # CRUD users feature
-│       ├── components/     # UserCard, UserList
-│       ├── hooks/          # useUsers, useUser, useCreateUser
-│       ├── stores/         # (empty — server state handled by React Query)
-│       └── index.ts        # Public API barrel export
-├── shared/
-│   ├── components/         # ErrorBoundary, LoadingState, EmptyState
-│   ├── hooks/              # useDebounce, useLocalStorage
-│   ├── types/              # API response types
-│   └── utils/              # cn(), formatters
-├── lib/                    # API client, query client, endpoints
-└── ui/                     # Button, Card, Dialog, Input`,
+│       └── RootLayout.tsx
+│
+├── features/             # Feature modules (vertical slices)
+│   └── users/
+│       ├── components/   # UI specific to this feature
+│       ├── hooks/        # Data fetching and logic hooks
+│       ├── stores/       # Zustand stores scoped to this feature
+│       └── index.ts      # Barrel export — public API of the feature
+│
+├── shared/               # Cross-feature shared code
+│   ├── components/       # Reusable components (ErrorBoundary, LoadingState, etc.)
+│   ├── hooks/            # Reusable hooks (useDebounce, useLocalStorage, etc.)
+│   ├── stores/           # App-wide stores (theme, sidebar, etc.)
+│   ├── types/            # Shared TypeScript types
+│   └── utils/            # Utility functions (cn, formatters, validators)
+│
+├── ui/                   # Design system primitives (Button, Card, Dialog, etc.)
+│
+├── lib/                  # Infrastructure code
+│   ├── api-client.ts     # Fetch-based API client factory
+│   ├── api.ts            # Pre-configured API instance
+│   ├── endpoints.ts      # Centralized endpoint definitions
+│   └── query-keys.ts     # Type-safe query key factory
+│
+└── test/
+    └── setup.ts          # Vitest setup (Testing Library matchers)`,
     },
   },
   contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
