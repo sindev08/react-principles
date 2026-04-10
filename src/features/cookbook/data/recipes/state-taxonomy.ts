@@ -84,11 +84,11 @@ export const useAppStore = create<AppState>((set) => ({
 export function useUsers(params?: { limit?: number; skip?: number }) {
   return useQuery({
     queryKey: queryKeys.users.list(params ?? {}),
-    queryFn: () => api.get<UsersResponse>(ENDPOINTS.users.list, { params }),
+    queryFn: () => usersService.getAll(params),  // service → hook → component
   });
 }
-// useUser(id): single user detail
-// useCreateUser: mutation with cache invalidation`,
+// useUser(id): single user detail via usersService.getById
+// useCreateUser: mutation via usersService.create + cache invalidation`,
     },
     vite: {
       description: "In Vite, all rendering is client-side. Server state always goes through React Query, shared state through Zustand, and local state through useState.",

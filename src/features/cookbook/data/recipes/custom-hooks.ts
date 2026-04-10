@@ -73,19 +73,15 @@ function SearchInput() {
       code: `'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { api } from '@/lib/api';
-import { ENDPOINTS } from '@/lib/endpoints';
 import { queryKeys } from '@/lib/query-keys';
-import type { UsersResponse } from '@/shared/types/user';
+import { usersService } from '@/lib/services/users';
 
-// Feature hook — encapsulates query key, endpoint, and response type
+// Feature hook — encapsulates query key, service call, and caching
 // Components just call useUsers() and get typed data back
 export function useUsers(params?: { limit?: number; skip?: number }) {
   return useQuery({
     queryKey: queryKeys.users.list(params ?? {}),
-    queryFn: () => api.get<UsersResponse>(ENDPOINTS.users.list, {
-      params: { limit: params?.limit, skip: params?.skip },
-    }),
+    queryFn: () => usersService.getAll(params),
   });
 }
 
