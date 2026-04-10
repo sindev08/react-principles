@@ -22,7 +22,7 @@ export const folderStructure: RecipeDetail = {
     },
     {
       title: "No cross-feature imports",
-      description: "Features never import directly from each other. Code needed by multiple features moves to src/shared/.",
+      description: "By convention, features avoid importing directly from each other. Code needed by multiple features moves to src/shared/. Cross-feature imports are acceptable when composing product surfaces — for example, a layout feature pulling in a ThemeToggle from another feature — but should not be the default.",
     },
     {
       title: "Public API via index.ts",
@@ -61,7 +61,8 @@ export const folderStructure: RecipeDetail = {
 │   ├── api.ts            # Pre-configured API instance (DummyJSON)
 │   ├── endpoints.ts      # Centralized endpoint definitions
 │   ├── query-client.ts   # TanStack Query client factory
-│   └── query-keys.ts     # Type-safe query key factory
+│   ├── query-keys.ts     # Type-safe query key factory
+│   └── services/         # Per-resource API functions (users, products, etc.)
 │
 └── test/
     └── setup.ts          # Vitest setup (Testing Library matchers)`,
@@ -95,6 +96,7 @@ export const folderStructure: RecipeDetail = {
 │   ├── api-client.ts     # Fetch-based API client factory
 │   ├── api.ts            # Pre-configured API instance
 │   ├── endpoints.ts      # Centralized endpoint definitions
+│   ├── query-client.ts   # TanStack Query client factory
 │   └── query-keys.ts     # Type-safe query key factory
 │
 └── test/
