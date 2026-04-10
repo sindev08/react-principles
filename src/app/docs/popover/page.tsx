@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Popover } from "@/ui/Popover";
@@ -8,18 +9,16 @@ const TOC_ITEMS = [
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
   { label: "Copy-Paste", href: "#copy-paste" },
+  { label: "Props", href: "#props" },
 ];
 
 const CODE_SNIPPET = `import { Popover } from "@/ui/Popover";
 
-<Popover>
-  <Popover.Trigger>Open profile card</Popover.Trigger>
+<Popover side="bottom" align="start">
+  <Popover.Trigger>Open details</Popover.Trigger>
   <Popover.Content>
-    <h4 className="text-sm font-semibold">Project Access</h4>
-    <p className="mt-1 text-xs text-slate-500">Invite teammates and set role permissions.</p>
-    <div className="mt-3">
-      <Popover.Close>Done</Popover.Close>
-    </div>
+    <p>Popover content goes here.</p>
+    <Popover.Close>Close</Popover.Close>
   </Popover.Content>
 </Popover>`;
 
@@ -29,21 +28,6 @@ import { cn } from "@/lib/utils";
 type PopoverSide = "top" | "bottom";
 type PopoverAlign = "start" | "center" | "end";
 
-interface PopoverContextValue {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  side: PopoverSide;
-  align: PopoverAlign;
-}
-
-const PopoverContext = createContext<PopoverContextValue | null>(null);
-
-function usePopoverContext() {
-  const context = useContext(PopoverContext);
-  if (!context) throw new Error("Popover sub-components must be used inside <Popover>");
-  return context;
-}
-
 export interface PopoverProps {
   open?: boolean;
   defaultOpen?: boolean;
@@ -52,164 +36,77 @@ export interface PopoverProps {
   align?: PopoverAlign;
   children: ReactNode;
   className?: string;
-}
-
-export interface PopoverTriggerProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  children: ReactNode;
-}
-
-export interface PopoverContentProps extends HTMLAttributes<HTMLDivElement> {
-  children: ReactNode;
-}
-
-export interface PopoverCloseProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  children?: ReactNode;
-}
-
-export function Popover({
-  open,
-  defaultOpen = false,
-  onOpenChange,
-  side = "bottom",
-  align = "start",
-  children,
-  className,
-}: PopoverProps) {
-  const [internalOpen, setInternalOpen] = useState(defaultOpen);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const isControlled = open !== undefined;
-  const isOpen = isControlled ? open : internalOpen;
-
-  const setOpen = useCallback((next: boolean) => {
-    if (!isControlled) setInternalOpen(next);
-    onOpenChange?.(next);
-  }, [isControlled, onOpenChange]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleOutside = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-
-    window.addEventListener("mousedown", handleOutside);
-    window.addEventListener("keydown", handleEscape);
-
-    return () => {
-      window.removeEventListener("mousedown", handleOutside);
-      window.removeEventListener("keydown", handleEscape);
-    };
-  }, [isOpen, setOpen]);
-
-  return (
-    <PopoverContext.Provider value={{ open: isOpen, setOpen, side, align }}>
-      <div ref={containerRef} className={cn("relative inline-block", className)}>
-        {children}
-      </div>
-    </PopoverContext.Provider>
-  );
-}
-
-Popover.Trigger = function PopoverTrigger({ children, className, onClick, ...props }: PopoverTriggerProps) {
-  const { open, setOpen } = usePopoverContext();
-
-  return (
-    <button
-      type="button"
-      onClick={(event) => {
-        onClick?.(event);
-        setOpen(!open);
-      }}
-      className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-700 transition-all",
-        "hover:bg-slate-50 dark:border-[#1f2937] dark:text-slate-200 dark:hover:bg-[#161b22]",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-}
-
-const SIDE_CLASS: Record<PopoverSide, string> = {
-  top: "bottom-[calc(100%+8px)]",
-  bottom: "top-[calc(100%+8px)]",
-};
-
-const ALIGN_CLASS: Record<PopoverAlign, string> = {
-  start: "left-0",
-  center: "left-1/2 -translate-x-1/2",
-  end: "right-0",
-};
-
-Popover.Content = function PopoverContent({ children, className, ...props }: PopoverContentProps) {
-  const { open, side, align } = usePopoverContext();
-
-  if (!open) return null;
-
-  return (
-    <div
-      className={cn(
-        "absolute z-50 w-72 rounded-xl border border-slate-200 bg-white p-4 shadow-xl dark:border-[#1f2937] dark:bg-[#161b22]",
-        SIDE_CLASS[side],
-        ALIGN_CLASS[align],
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-}
-
-Popover.Close = function PopoverClose({ children = "Close", className, onClick, ...props }: PopoverCloseProps) {
-  const { setOpen } = usePopoverContext();
-
-  return (
-    <button
-      type="button"
-      onClick={(event) => {
-        onClick?.(event);
-        setOpen(false);
-      }}
-      className={cn("text-sm font-medium text-primary hover:underline", className)}
-      {...props}
-    >
-      {children}
-    </button>
-  );
 }`;
 
+const PROPS_ROWS = [
+  { prop: "open", type: "boolean", default: "—", description: "Controlled open state for the popover." },
+  { prop: "defaultOpen", type: "boolean", default: "false", description: "Initial open state when used uncontrolled." },
+  { prop: "onOpenChange", type: "(open: boolean) => void", default: "—", description: "Called when the popover opens or closes." },
+  { prop: "side", type: '"top" | "bottom"', default: '"bottom"', description: "Places the content above or below the trigger." },
+  { prop: "align", type: '"start" | "center" | "end"', default: '"start"', description: "Aligns the content relative to the trigger width." },
+  { prop: "className", type: "string", default: "—", description: "Additional classes applied to the root wrapper." },
+  { prop: "Popover.Trigger", type: "ButtonHTMLAttributes<HTMLButtonElement>", default: "—", description: "Interactive element that toggles the popover." },
+  { prop: "Popover.Content", type: "HTMLAttributes<HTMLDivElement>", default: "—", description: "Floating surface that holds the popover content." },
+  { prop: "Popover.Close", type: "ButtonHTMLAttributes<HTMLButtonElement>", default: '"Close"', description: "Convenience action for closing the popover from within the panel." },
+];
+
 export default function PopoverDocPage() {
+  const [open, setOpen] = useState(false);
+
   return (
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-4xl">
-        <h1 className="mb-3 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">Popover</h1>
-        <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">
-          Click-triggered floating panel for contextual actions and details.
-        </p>
+        <nav className="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
+          <span className="hover:text-primary cursor-pointer transition-colors">Components</span>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="hover:text-primary cursor-pointer transition-colors">Overlay</span>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="text-slate-900 dark:text-white">Popover</span>
+        </nav>
+
+        <div className="mb-12">
+          <h1 className="mb-4 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">
+            Popover
+          </h1>
+          <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-400">
+            Lightweight anchored surface for secondary actions and supporting content that should
+            stay attached to its trigger rather than interrupting the current page flow.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            {["Accessible", "Dark Mode", "Animated", "Keyboard Nav"].map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-400"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
 
         <CliInstallBlock name="popover" />
 
         <section id="demo" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">01</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+          </div>
           <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
-            <Popover>
-              <Popover.Trigger>Open profile card</Popover.Trigger>
+            <Popover open={open} onOpenChange={setOpen} side="bottom" align="start">
+              <Popover.Trigger>Open details</Popover.Trigger>
               <Popover.Content>
-                <h4 className="text-sm font-semibold text-slate-900 dark:text-white">Project Access</h4>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                  Invite teammates and set role permissions.
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">Deployment notes</p>
+                <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                  The next release window starts in 15 minutes. Confirm the checklist before you
+                  continue.
                 </p>
-                <div className="mt-3">
-                  <Popover.Close>Done</Popover.Close>
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                    Status: {open ? "Open" : "Closed"}
+                  </span>
+                  <Popover.Close>Close</Popover.Close>
                 </div>
               </Popover.Content>
             </Popover>
@@ -217,13 +114,55 @@ export default function PopoverDocPage() {
         </section>
 
         <section id="snippet" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">02 Code Snippet</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">02</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
+          </div>
           <CodeBlock filename="src/ui/Popover.tsx" copyText={CODE_SNIPPET}>{CODE_SNIPPET}</CodeBlock>
         </section>
 
         <section id="copy-paste" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">03 Copy-Paste (Single File)</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">03</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
+          </div>
           <CodeBlock filename="Popover.tsx" copyText={COPY_PASTE_SNIPPET}>{COPY_PASTE_SNIPPET}</CodeBlock>
+        </section>
+
+        <section id="props" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">04</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
+          </div>
+          <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#1f2937]">
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22]">
+                <tr>
+                  {["Prop", "Type", "Default", "Description"].map((heading) => (
+                    <th key={heading} className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      {heading}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-[#1f2937] bg-white dark:bg-[#0d1117]">
+                {PROPS_ROWS.map((row) => (
+                  <tr key={row.prop} className="transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
+                    <td className="px-4 py-3"><code className="text-xs font-mono font-semibold text-primary">{row.prop}</code></td>
+                    <td className="px-4 py-3 max-w-[260px]"><code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code></td>
+                    <td className="px-4 py-3"><code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code></td>
+                    <td className="px-4 py-3 text-xs leading-relaxed text-slate-600 dark:text-slate-400">{row.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       </div>
     </DocsPageLayout>
