@@ -91,6 +91,13 @@ packages/
 - Axios is listed as a dependency but the codebase uses a custom fetch-based client. [NAVIGATOR: clarify if axios should be removed]
 - All root dependencies are `devDependencies` including runtime ones (react, next, zustand, etc.). Works for deployment but may confuse contributors.
 
+## Docs Page Standard
+
+See `CONTRIBUTING.md` → **Docs Page Standard** for the full spec. Summary:
+- All docs pages must have: breadcrumb, feature tags, numbered badge headings, Props table
+- Conditional sections: Theme Preview (only if `variant`/`size` props exist), size/variant selectors in Live Demo
+- Reference implementations: Badge, Button (full), Alert (static multi-variant)
+
 ## Working Agreement
 
 ### For Planning Agent (Sonnet high)
