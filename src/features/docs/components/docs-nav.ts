@@ -40,6 +40,7 @@ export const DOCS_NAV: NavGroup[] = [
       { label: "Form", href: "/docs/forms" },
       { label: "Input", href: "/docs/input" },
       { label: "Pagination", href: "/docs/pagination" },
+      { label: "Page Progress", href: "/docs/page-progress" },
       { label: "Popover", href: "/docs/popover" },
       { label: "Progress", href: "/docs/progress" },
       { label: "Radio Group", href: "/docs/radio-group" },

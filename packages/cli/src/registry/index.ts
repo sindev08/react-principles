@@ -217,10 +217,10 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
-    name: "progress-bar",
+    name: "page-progress",
     description: "Animated top progress bar tied to navigation",
-    templateKey: "ProgressBar",
-    outputFile: "ProgressBar.tsx",
+    templateKey: "PageProgress",
+    outputFile: "PageProgress.tsx",
     internalDeps: ["utils"],
     npmDeps: [],
     target: "components",

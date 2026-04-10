@@ -9,13 +9,14 @@ const TOC_ITEMS = [
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
   { label: "Copy-Paste", href: "#copy-paste" },
+  { label: "Props", href: "#props" },
 ];
 
 const CODE_SNIPPET = `import { Pagination } from "@/ui/Pagination";
 
 <Pagination
   page={page}
-  totalPages={24}
+  totalPages={12}
   onPageChange={setPage}
   siblingCount={1}
 />`;
@@ -67,57 +68,15 @@ function buildRange(page: number, totalPages: number, siblingCount: number): Pag
   if (totalPages > 1) pages.push(totalPages);
 
   return pages;
-}
-
-export function Pagination({ page, totalPages, onPageChange, siblingCount = 1, className }: PaginationProps) {
-  const clampedPage = Math.min(Math.max(page, 1), Math.max(totalPages, 1));
-  const range = buildRange(clampedPage, totalPages, siblingCount);
-
-  return (
-    <nav aria-label="Pagination" className={cn("inline-flex items-center gap-1", className)}>
-      <button
-        type="button"
-        onClick={() => onPageChange(clampedPage - 1)}
-        disabled={clampedPage <= 1}
-        className="rounded-md border border-slate-200 px-2.5 py-1.5 text-xs text-slate-700 transition-all hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#1f2937] dark:text-slate-200 dark:hover:bg-[#161b22]"
-      >
-        Prev
-      </button>
-
-      {range.map((token, index) =>
-        token === "ellipsis" ? (
-          <span key={\`ellipsis-\${index}\`} className="px-1 text-xs text-slate-400">
-            ...
-          </span>
-        ) : (
-          <button
-            key={token}
-            type="button"
-            onClick={() => onPageChange(token)}
-            aria-current={token === clampedPage ? "page" : undefined}
-            className={cn(
-              "min-w-8 rounded-md px-2.5 py-1.5 text-xs font-medium transition-all",
-              token === clampedPage
-                ? "bg-primary text-white"
-                : "border border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-[#1f2937] dark:text-slate-200 dark:hover:bg-[#161b22]"
-            )}
-          >
-            {token}
-          </button>
-        )
-      )}
-
-      <button
-        type="button"
-        onClick={() => onPageChange(clampedPage + 1)}
-        disabled={clampedPage >= totalPages}
-        className="rounded-md border border-slate-200 px-2.5 py-1.5 text-xs text-slate-700 transition-all hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-[#1f2937] dark:text-slate-200 dark:hover:bg-[#161b22]"
-      >
-        Next
-      </button>
-    </nav>
-  );
 }`;
+
+const PROPS_ROWS = [
+  { prop: "page", type: "number", default: "—", description: "Current active page number." },
+  { prop: "totalPages", type: "number", default: "—", description: "Total number of pages available in the range." },
+  { prop: "onPageChange", type: "(page: number) => void", default: "—", description: "Called when users move to the previous, next, or a numbered page." },
+  { prop: "siblingCount", type: "number", default: "1", description: "Controls how many pages remain visible on either side of the current page." },
+  { prop: "className", type: "string", default: "—", description: "Additional classes applied to the pagination nav wrapper." },
+];
 
 export default function PaginationDocPage() {
   const [page, setPage] = useState(5);
@@ -125,29 +84,99 @@ export default function PaginationDocPage() {
   return (
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-4xl">
-        <h1 className="mb-3 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">Pagination</h1>
-        <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">
-          Page navigation control with previous/next and adaptive page range.
-        </p>
+        <nav className="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
+          <span className="hover:text-primary cursor-pointer transition-colors">Components</span>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="hover:text-primary cursor-pointer transition-colors">Navigation</span>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="text-slate-900 dark:text-white">Pagination</span>
+        </nav>
+
+        <div className="mb-12">
+          <h1 className="mb-4 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">
+            Pagination
+          </h1>
+          <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-400">
+            Compact page navigation control with clamped prev and next actions plus ellipsis-based
+            range collapsing for longer result sets.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            {["Accessible", "Dark Mode"].map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-400"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
 
         <CliInstallBlock name="pagination" />
 
         <section id="demo" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">01</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+          </div>
           <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
-            <Pagination page={page} totalPages={24} onPageChange={setPage} />
+            <Pagination page={page} totalPages={12} onPageChange={setPage} />
             <p className="text-xs text-slate-500 dark:text-slate-400">Current page: {page}</p>
           </div>
         </section>
 
         <section id="snippet" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">02 Code Snippet</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">02</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
+          </div>
           <CodeBlock filename="src/ui/Pagination.tsx" copyText={CODE_SNIPPET}>{CODE_SNIPPET}</CodeBlock>
         </section>
 
         <section id="copy-paste" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">03 Copy-Paste (Single File)</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">03</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
+          </div>
           <CodeBlock filename="Pagination.tsx" copyText={COPY_PASTE_SNIPPET}>{COPY_PASTE_SNIPPET}</CodeBlock>
+        </section>
+
+        <section id="props" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">04</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
+          </div>
+          <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#1f2937]">
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22]">
+                <tr>
+                  {["Prop", "Type", "Default", "Description"].map((heading) => (
+                    <th key={heading} className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      {heading}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-[#1f2937] bg-white dark:bg-[#0d1117]">
+                {PROPS_ROWS.map((row) => (
+                  <tr key={row.prop} className="transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
+                    <td className="px-4 py-3"><code className="text-xs font-mono font-semibold text-primary">{row.prop}</code></td>
+                    <td className="px-4 py-3 max-w-[240px]"><code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code></td>
+                    <td className="px-4 py-3"><code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code></td>
+                    <td className="px-4 py-3 text-xs leading-relaxed text-slate-600 dark:text-slate-400">{row.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       </div>
     </DocsPageLayout>
