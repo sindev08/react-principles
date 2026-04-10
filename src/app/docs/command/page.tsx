@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Command } from "@/ui/Command";
@@ -9,17 +8,18 @@ const TOC_ITEMS = [
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
   { label: "Copy-Paste", href: "#copy-paste" },
+  { label: "Props", href: "#props" },
 ];
 
 const CODE_SNIPPET = `import { Command } from "@/ui/Command";
 
 <Command>
-  <Command.Input placeholder="Type a command..." />
+  <Command.Input placeholder="Search commands..." />
   <Command.List>
     <Command.Group>
       <Command.Label>Navigation</Command.Label>
-      <Command.Item value="Go to dashboard">Go to dashboard</Command.Item>
-      <Command.Item value="Open settings">Open settings</Command.Item>
+      <Command.Item value="go-home">Go to home</Command.Item>
+      <Command.Item value="open-docs">Open docs</Command.Item>
     </Command.Group>
   </Command.List>
 </Command>`;
@@ -30,153 +30,131 @@ import { cn } from "@/lib/utils";
 interface CommandContextValue {
   query: string;
   setQuery: (query: string) => void;
-}
-
-const CommandContext = createContext<CommandContextValue | null>(null);
-
-function useCommandContext() {
-  const context = useContext(CommandContext);
-  if (!context) throw new Error("Command sub-components must be used inside <Command>");
-  return context;
-}
-
-export function Command({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  const [query, setQuery] = useState("");
-
-  return (
-    <CommandContext.Provider value={{ query, setQuery }}>
-      <div
-        className={cn(
-          "rounded-xl border border-slate-200 bg-white dark:border-[#1f2937] dark:bg-[#161b22]",
-          className
-        )}
-        {...props}
-      />
-    </CommandContext.Provider>
-  );
-}
-
-Command.Input = function CommandInput({ className, ...props }: InputHTMLAttributes<HTMLInputElement>) {
-  const { query, setQuery } = useCommandContext();
-
-  return (
-    <div className="flex items-center gap-2 border-b border-slate-100 px-3 py-2 dark:border-[#1f2937]">
-      <span className="material-symbols-outlined text-[18px] text-slate-400">search</span>
-      <input
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-        className={cn(
-          "h-8 w-full bg-transparent text-sm text-slate-900 outline-hidden placeholder:text-slate-400 dark:text-white",
-          className
-        )}
-        {...props}
-      />
-    </div>
-  );
-}
-
-Command.List = function CommandList({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("max-h-64 overflow-y-auto p-1", className)} {...props} />;
-}
-
-interface CommandItemProps extends HTMLAttributes<HTMLButtonElement> {
-  value: string;
-  keywords?: string[];
-  children: ReactNode;
-}
-
-Command.Item = function CommandItem({ value, keywords, className, children, ...props }: CommandItemProps) {
-  const { query } = useCommandContext();
-
-  const visible = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    if (!normalized) return true;
-    const terms = [value, ...(keywords ?? [])].join(" ").toLowerCase();
-    return terms.includes(normalized);
-  }, [query, value, keywords]);
-
-  if (!visible) return null;
-
-  return (
-    <button
-      type="button"
-      className={cn(
-        "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-[#0d1117]",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-}
-
-Command.Empty = function CommandEmpty({ className, children = "No results" }: { className?: string; children?: ReactNode }) {
-  const { query } = useCommandContext();
-  if (!query.trim()) return null;
-  return <p className={cn("px-3 py-5 text-center text-xs text-slate-500 dark:text-slate-400", className)}>{children}</p>;
-}
-
-Command.Group = function CommandGroup({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("space-y-1", className)} {...props} />;
-}
-
-Command.Label = function CommandLabel({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
-  return (
-    <p
-      className={cn("px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400", className)}
-      {...props}
-    />
-  );
-}
-
-Command.Separator = function CommandSeparator({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("my-1 h-px bg-slate-200 dark:bg-[#1f2937]", className)} {...props} />;
 }`;
 
-export default function CommandDocPage() {
-  const [lastCommand, setLastCommand] = useState("None");
+const PROPS_ROWS = [
+  { prop: "Command.Input", type: "InputHTMLAttributes<HTMLInputElement>", default: "—", description: "Search field bound to the internal command query state." },
+  { prop: "Command.List", type: "HTMLAttributes<HTMLDivElement>", default: "—", description: "Scrollable container for filtered command groups and items." },
+  { prop: "Command.Item.value", type: "string", default: "—", description: "Primary searchable string used for filtering the item." },
+  { prop: "Command.Item.keywords", type: "string[]", default: "—", description: "Additional search terms matched against the current query." },
+  { prop: "Command.Group", type: "HTMLAttributes<HTMLDivElement>", default: "—", description: "Logical grouping wrapper for related command items." },
+  { prop: "Command.Label", type: "HTMLAttributes<HTMLParagraphElement>", default: "—", description: "Uppercase section label for a command group." },
+  { prop: "Command.Separator", type: "HTMLAttributes<HTMLDivElement>", default: "—", description: "Visual divider between command groups." },
+  { prop: "Command.Empty", type: "{ className?: string; children?: ReactNode }", default: '"No results"', description: "Fallback message shown when the query has no matches." },
+];
 
+export default function CommandDocPage() {
   return (
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-4xl">
-        <h1 className="mb-3 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">Command</h1>
-        <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">Quick-action list with search filtering for power users.</p>
+        <nav className="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
+          <span className="hover:text-primary cursor-pointer transition-colors">Components</span>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="hover:text-primary cursor-pointer transition-colors">Navigation</span>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="text-slate-900 dark:text-white">Command</span>
+        </nav>
+
+        <div className="mb-12">
+          <h1 className="mb-4 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">
+            Command
+          </h1>
+          <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-400">
+            Search-first command palette surface for app navigation, shortcuts, and filtered action
+            discovery with a small set of composable subcomponents.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            {["Accessible", "Dark Mode", "Keyboard Nav"].map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-400"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
 
         <CliInstallBlock name="command" />
 
         <section id="demo" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
-          <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">01</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
             <Command>
-              <Command.Input placeholder="Type a command..." />
+              <Command.Input placeholder="Search commands..." />
               <Command.List>
                 <Command.Group>
                   <Command.Label>Navigation</Command.Label>
-                  <Command.Item value="Go to dashboard" onClick={() => setLastCommand("Go to dashboard")}>Go to dashboard</Command.Item>
-                  <Command.Item value="Open settings" onClick={() => setLastCommand("Open settings")}>Open settings</Command.Item>
+                  <Command.Item value="go-home" keywords={["dashboard", "landing"]}>Go to home</Command.Item>
+                  <Command.Item value="open-docs" keywords={["guide", "reference"]}>Open docs</Command.Item>
                 </Command.Group>
                 <Command.Separator />
                 <Command.Group>
-                  <Command.Label>Project</Command.Label>
-                  <Command.Item value="Invite member" onClick={() => setLastCommand("Invite member")}>Invite member</Command.Item>
-                  <Command.Item value="Archive project" onClick={() => setLastCommand("Archive project")}>Archive project</Command.Item>
+                  <Command.Label>Actions</Command.Label>
+                  <Command.Item value="create-project" keywords={["new", "workspace"]}>Create project</Command.Item>
+                  <Command.Item value="invite-team" keywords={["members", "collaborators"]}>Invite team</Command.Item>
                 </Command.Group>
-                <Command.Empty>No commands found</Command.Empty>
+                <Command.Empty>No matching command</Command.Empty>
               </Command.List>
             </Command>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Last command: {lastCommand}</p>
           </div>
         </section>
 
         <section id="snippet" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">02 Code Snippet</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">02</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
+          </div>
           <CodeBlock filename="src/ui/Command.tsx" copyText={CODE_SNIPPET}>{CODE_SNIPPET}</CodeBlock>
         </section>
 
         <section id="copy-paste" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">03 Copy-Paste (Single File)</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">03</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
+          </div>
           <CodeBlock filename="Command.tsx" copyText={COPY_PASTE_SNIPPET}>{COPY_PASTE_SNIPPET}</CodeBlock>
+        </section>
+
+        <section id="props" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">04</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
+          </div>
+          <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#1f2937]">
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22]">
+                <tr>
+                  {["Prop", "Type", "Default", "Description"].map((heading) => (
+                    <th key={heading} className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      {heading}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-[#1f2937] bg-white dark:bg-[#0d1117]">
+                {PROPS_ROWS.map((row) => (
+                  <tr key={row.prop} className="transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
+                    <td className="px-4 py-3"><code className="text-xs font-mono font-semibold text-primary">{row.prop}</code></td>
+                    <td className="px-4 py-3 max-w-[260px]"><code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code></td>
+                    <td className="px-4 py-3"><code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code></td>
+                    <td className="px-4 py-3 text-xs leading-relaxed text-slate-600 dark:text-slate-400">{row.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       </div>
     </DocsPageLayout>
