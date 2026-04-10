@@ -29,29 +29,10 @@ export const folderStructure: RecipeDetail = {
       description: "By convention, each feature exposes its public API through an index.ts barrel file. Other parts of the codebase import from the feature, not from its internals. This keeps refactoring contained — if a file moves inside the feature, nothing outside breaks. If you want to enforce this automatically, ESLint's no-restricted-imports rule can prevent direct internal imports.",
     },
   ],
-  pattern: {
-    filename: "src/ — feature-based structure",
-    code: `src/
-├── app/              # Next.js routing only — no business logic here
-├── features/         # One folder per domain feature
-│   └── users/
-│       ├── components/   # UI specific to this feature
-│       ├── hooks/        # Data fetching and logic hooks
-│       ├── stores/       # Zustand stores scoped to this feature
-│       └── index.ts      # Public API — only export what others need
-├── shared/           # Truly cross-cutting code
-│   ├── components/   # Used by 2+ features (ErrorBoundary, LoadingState)
-│   ├── hooks/        # Reusable hooks (useDebounce, useLocalStorage)
-│   ├── stores/       # App-wide stores (theme, sidebar)
-│   ├── types/        # Shared TypeScript types (API responses, common)
-│   └── utils/        # Utility functions (cn, formatters, validators)
-├── lib/              # External service clients (API, query client)
-└── ui/               # Design system primitives (Button, Input, etc.)`,
-  },
   implementation: {
     nextjs: {
-      description: "Next.js adds the app/ directory for file-based routing. Route logic (pages) lives in app/, all business logic stays in features/. See the starter template at github.com/sindev08/react-principles-nextjs.",
-      filename: "src/app/ — routing only",
+      description: "The four core directories apply to any React app: features/ for domain logic, shared/ for cross-feature code, lib/ for infrastructure, and ui/ for design system primitives. Next.js adds one more: app/ for file-based routing — keep it thin, no business logic here. See the starter template at github.com/sindev08/react-principles-nextjs.",
+      filename: "src/ — react-principles-nextjs starter",
       code: `src/
 ├── app/
 │   ├── layout.tsx          # Root layout (fonts, providers, metadata)
@@ -73,20 +54,26 @@ export const folderStructure: RecipeDetail = {
 └── ui/                     # Button, Card, Dialog, Input`,
     },
     vite: {
-      description: "Vite projects use React Router for routing. The same src/ structure applies — routing config lives separately from feature code.",
+      description: "Same four core directories. Vite uses React Router instead of file-based routing, so add a routes/ directory for route definitions. Everything else is identical.",
       filename: "src/ — Vite structure",
       code: `src/
-├── routes/             # React Router config — routing only
-│   ├── index.tsx       # Route definitions
+├── routes/
+│   ├── index.tsx           # Route definitions
 │   └── layouts/
-├── features/           # Same feature-based structure
-│   └── cookbook/
-│       ├── components/
-│       ├── hooks/
-│       └── index.ts
+│       └── RootLayout.tsx  # Root layout component
+├── features/
+│   └── users/              # CRUD users feature
+│       ├── components/     # UserCard, UserList
+│       ├── hooks/          # useUsers, useUser, useCreateUser
+│       ├── stores/         # (empty — server state handled by React Query)
+│       └── index.ts        # Public API barrel export
 ├── shared/
-├── lib/
-└── ui/`,
+│   ├── components/         # ErrorBoundary, LoadingState, EmptyState
+│   ├── hooks/              # useDebounce, useLocalStorage
+│   ├── types/              # API response types
+│   └── utils/              # cn(), formatters
+├── lib/                    # API client, query client, endpoints
+└── ui/                     # Button, Card, Dialog, Input`,
     },
   },
   contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
