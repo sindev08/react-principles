@@ -834,9 +834,9 @@ export function RevenueChart({ range }: { range: string }) {
 │   └── globals.css         # Global styles and Tailwind imports
 ├── features/
 │   └── users/              # CRUD users feature
-│       ├── components/     # UserList, UserForm, UserCard
-│       ├── hooks/          # useGetUsers, useCreateUser
-│       ├── stores/         # useUserStore
+│       ├── components/     # UserCard, UserList
+│       ├── hooks/          # useUsers, useUser, useCreateUser
+│       ├── stores/         # (empty — server state handled by React Query)
 │       └── index.ts        # Public API barrel export
 ├── shared/
 │   ├── components/         # ErrorBoundary, LoadingState, EmptyState
