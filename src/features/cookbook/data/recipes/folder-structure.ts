@@ -26,7 +26,7 @@ export const folderStructure: RecipeDetail = {
     },
     {
       title: "Public API via index.ts",
-      description: "Each feature exposes only what needs to be exposed via an index.ts file. Internals stay internal.",
+      description: "By convention, each feature exposes its public API through an index.ts barrel file. Other parts of the codebase import from the feature, not from its internals. This keeps refactoring contained — if a file moves inside the feature, nothing outside breaks. If you want to enforce this automatically, ESLint's no-restricted-imports rule can prevent direct internal imports.",
     },
   ],
   pattern: {
