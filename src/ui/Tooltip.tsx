@@ -66,16 +66,24 @@ const SIDE_CLASSES: Record<TooltipSide, string> = {
   right: "left-[calc(100%+8px)] top-1/2 -translate-y-1/2",
 };
 
+const SIDE_ANIMATION_CLASSES: Record<TooltipSide, { open: string; closed: string }> = {
+  top: { open: "translate-y-0", closed: "translate-y-1" },
+  bottom: { open: "translate-y-0", closed: "-translate-y-1" },
+  left: { open: "translate-x-0", closed: "translate-x-1" },
+  right: { open: "translate-x-0", closed: "-translate-x-1" },
+};
+
 Tooltip.Content = function TooltipContent({ children, className, ...props }: TooltipContentProps) {
   const { open, side } = useTooltipContext();
+  const animationClasses = SIDE_ANIMATION_CLASSES[side];
 
   return (
     <div
       role="tooltip"
       className={cn(
-        "pointer-events-none absolute z-50 rounded-md bg-slate-900 px-2.5 py-1.5 text-xs text-white shadow-lg transition-all",
+        "pointer-events-none absolute z-50 whitespace-nowrap rounded-md bg-slate-900 px-2.5 py-1.5 text-xs text-white shadow-lg transition-all",
         SIDE_CLASSES[side],
-        open ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0",
+        open ? `${animationClasses.open} opacity-100` : `${animationClasses.closed} opacity-0`,
         className
       )}
       {...props}
