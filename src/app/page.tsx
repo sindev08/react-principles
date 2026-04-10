@@ -3,6 +3,7 @@ import {
   Navbar,
   HeroSection,
   WhySection,
+  ComponentShowcaseSection,
   TechStackSection,
   MonorepoSection,
   DocsSection,
@@ -46,6 +47,7 @@ export default function LandingPage() {
       <main>
         <HeroSection />
         <WhySection />
+        <ComponentShowcaseSection />
         <TechStackSection />
         <MonorepoSection />
         <DocsSection />
