@@ -15,7 +15,7 @@ const TOC_ITEMS = [
   { label: "Props", href: "#props" },
 ];
 
-const VARIANTS: { variant: ToastVariant; label: string; title: string; description: string }[] = [
+const VARIANTS: Array<{ variant: ToastVariant; label: string; title: string; description: string }> = [
   {
     variant: "default",
     label: "Default",

@@ -13,7 +13,7 @@ const TOC_ITEMS = [
   { label: "Props", href: "#props" },
 ];
 
-const VARIANTS: { variant: SkeletonVariant; label: string }[] = [
+const VARIANTS: Array<{ variant: SkeletonVariant; label: string }> = [
   { variant: "line", label: "Line" },
   { variant: "rect", label: "Rect" },
   { variant: "circle", label: "Circle" },

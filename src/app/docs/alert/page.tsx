@@ -13,7 +13,7 @@ const TOC_ITEMS = [
   { label: "Props", href: "#props" },
 ];
 
-const VARIANTS: { variant: AlertVariant; title: string; description: string }[] = [
+const VARIANTS: Array<{ variant: AlertVariant; title: string; description: string }> = [
   { variant: "default", title: "Information", description: "System maintenance starts at 22:00 UTC." },
   { variant: "success", title: "Published", description: "Your release is now visible to all workspace members." },
   { variant: "warning", title: "Unsaved changes", description: "You have pending edits that are not yet published." },
