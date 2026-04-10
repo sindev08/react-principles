@@ -10,3 +10,4 @@ build
 
 # Internal task tracking
 .tasks/
+.vercel

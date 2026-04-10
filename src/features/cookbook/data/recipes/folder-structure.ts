@@ -38,7 +38,10 @@ export const folderStructure: RecipeDetail = {
 │   ├── layout.tsx        # Root layout (fonts, providers, metadata)
 │   ├── page.tsx          # Home page
 │   ├── providers.tsx     # Client-side context providers (QueryClient, etc.)
-│   └── globals.css       # Global styles and Tailwind imports
+│   ├── globals.css       # Global styles and Tailwind imports
+│   └── users/
+│       └── [id]/
+│           └── page.tsx  # Dynamic route — add routes here, never business logic
 │
 ├── features/             # Feature modules (vertical slices)
 │   └── users/            # Each feature owns its own components, hooks, stores

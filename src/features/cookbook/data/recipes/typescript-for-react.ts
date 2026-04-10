@@ -58,7 +58,7 @@ const fetchUser = async (): Promise<unknown> => { ... }`,
   },
   implementation: {
     nextjs: {
-      description: "Next.js page components receive typed params and searchParams. Always type these explicitly.",
+      description: "Next.js page components receive typed params and searchParams. Always type these explicitly. URL params are always strings — convert to the expected type before use.",
       filename: "app/users/[id]/page.tsx",
       code: `// ✅ Typed Next.js page props
 interface PageProps {
@@ -68,7 +68,9 @@ interface PageProps {
 
 export default async function UserPage({ params }: PageProps) {
   const { id } = await params;
-  return <UserDetail id={id} />;
+
+  // URL params are always strings — convert to number before passing to the hook
+  return <UserDetail id={Number(id)} />;
 }
 
 // ✅ Typed Server Action
