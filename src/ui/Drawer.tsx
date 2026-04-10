@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type HTMLAttributes, type ReactNode } from "react";
+import { useEffect, type HTMLAttributes, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/shared/utils/cn";
 import { useAnimatedMount } from "@/shared/hooks/useAnimatedMount";
@@ -98,7 +98,6 @@ Drawer.Footer = function DrawerFooter({ children, className, ...props }: DrawerF
 // ─── Drawer ───────────────────────────────────────────────────────────────────
 
 export function Drawer({ open, onClose, side = "right", size = "md", children, className }: DrawerProps) {
-  const backdropRef = useRef<HTMLDivElement>(null);
   const { mounted, visible } = useAnimatedMount(open, 300);
 
   useEffect(() => {
@@ -122,19 +121,14 @@ export function Drawer({ open, onClose, side = "right", size = "md", children, c
   const { panel, hidden } = SIDE_CLASSES[side];
 
   const drawer = (
-    <div
-      ref={backdropRef}
-      className="fixed inset-0 z-50 flex"
-      onClick={(e) => {
-        if (e.target === backdropRef.current) onClose();
-      }}
-    >
+    <div className="fixed inset-0 z-50 flex">
       {/* Backdrop */}
       <div
         className={cn(
           "absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300",
           visible ? "opacity-100" : "opacity-0"
         )}
+        onClick={onClose}
       />
 
       {/* Panel */}
