@@ -23,6 +23,7 @@ See [packages/cli/README.md](./packages/cli/README.md) for full CLI documentatio
 
 | Category | Tool |
 |----------|------|
+| Runtime | React 19 |
 | Framework | Next.js 16 (App Router) |
 | Server State | TanStack Query v5 |
 | Client State | Zustand v5 |

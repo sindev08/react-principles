@@ -5,7 +5,7 @@ A CLI to add react-principles UI components to your project — copy-paste based
 ## Requirements
 
 - Node.js 18+
-- React 18+
+- React 19+
 - Tailwind CSS v4
 
 ## Usage
