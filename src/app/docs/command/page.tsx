@@ -1,7 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
+import { getStorybookComponentUrl } from "@/features/docs/lib/storybook";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
+import { Button } from "@/ui/Button";
 import { Command } from "@/ui/Command";
 
 const TOC_ITEMS = [
@@ -78,11 +81,26 @@ export default function CommandDocPage() {
         <CliInstallBlock name="command" />
 
         <section id="demo" className="mb-16">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">01</span>
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                    <span className="text-sm font-bold">01</span>
+                  </div>
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+            <Button asChild variant="ghost" size="sm">
+              <Link
+                href={getStorybookComponentUrl("command")}
+              target="_blank"
+              rel="noopener noreferrer"
+                className="inline-flex"
+              >
+                Open in Storybook
+                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+                  open_in_new
+                </span>
+              </Link>
+            </Button>
           </div>
           <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
             <Command>
