@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
-import { getStorybookComponentUrl } from "@/features/docs/lib/storybook";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Dialog } from "@/ui/Dialog";
 import { Button } from "@/ui/Button";
@@ -17,6 +16,8 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
   { label: "Props", href: "#props" },
 ];
+
+const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-dialog--default";
 
 const CODE_SNIPPET = `import { Dialog } from "@/ui/Dialog";
 import { Button } from "@/ui/Button";
@@ -193,7 +194,7 @@ export function Dialog({ open, onClose, size = "md", children, className }: Dial
           className="absolute right-4 top-4 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1f2937] hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
           aria-label="Close dialog"
         >
-          <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none">
+          <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
             <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
         </button>
@@ -265,10 +266,10 @@ function ThemedDialogPreview({ theme }: { theme: "light" | "dark" }) {
         {/* Inline static dialog panel */}
         <div className={`rounded-2xl border ${c.border} ${c.bg} shadow-2xl shadow-black/10 max-w-sm w-full mx-auto`}>
           {/* Header */}
-          <div className="px-6 pt-6 pb-4 relative">
+          <div className="relative px-6 pt-6 pb-4">
             {/* X button placeholder */}
-            <div className="absolute right-4 top-4 h-7 w-7 rounded-lg flex items-center justify-center text-slate-400">
-              <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none">
+            <div className="absolute flex items-center justify-center rounded-lg right-4 top-4 h-7 w-7 text-slate-400">
+              <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
                 <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </div>
@@ -303,10 +304,10 @@ export default function DialogDocPage() {
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-4xl">
         {/* Breadcrumb */}
-        <nav className="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
-          <span className="hover:text-primary cursor-pointer transition-colors">Components</span>
+        <nav className="flex items-center gap-2 mb-8 text-sm font-medium text-slate-500">
+          <span className="transition-colors cursor-pointer hover:text-primary">Components</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <span className="hover:text-primary cursor-pointer transition-colors">Overlay</span>
+          <span className="transition-colors cursor-pointer hover:text-primary">Overlay</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
           <span className="text-slate-900 dark:text-white">Dialog</span>
         </nav>
@@ -334,7 +335,7 @@ export default function DialogDocPage() {
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
@@ -350,24 +351,17 @@ export default function DialogDocPage() {
 
         {/* 02 Live Demo */}
         <section id="demo" className="mb-16">
-          <div className="mb-6 flex items-center justify-between gap-4">
+          <div className="mb-6 flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
-                    <span className="text-sm font-bold">02</span>
-                  </div>
-                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+              <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <span className="text-sm font-bold">02</span>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
             </div>
-            <Button asChild variant="ghost" size="sm">
-              <Link
-                href={getStorybookComponentUrl("dialog")}
-              target="_blank"
-              rel="noopener noreferrer"
-                className="inline-flex"
-              >
+            <Button asChild variant="ghost" size="sm" className="shrink-0">
+              <Link href={STORYBOOK_HREF} target="_blank" rel="noopener noreferrer">
                 Open in Storybook
-                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
-                  open_in_new
-                </span>
+                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
               </Link>
             </Button>
           </div>
@@ -409,7 +403,7 @@ export default function DialogDocPage() {
               </Dialog.Description>
             </Dialog.Header>
             <Dialog.Content>
-              <div className="space-y-4 py-2">
+              <div className="py-2 space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
                     Display name
@@ -471,7 +465,7 @@ export default function DialogDocPage() {
         {/* 03 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
@@ -488,7 +482,7 @@ export default function DialogDocPage() {
         {/* 04 Copy-Paste */}
         <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
@@ -504,17 +498,17 @@ export default function DialogDocPage() {
         {/* 05 Props */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>
           <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#1f2937]">
-            <table className="w-full text-left text-sm">
+            <table className="w-full text-sm text-left">
               <thead className="border-b border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22]">
                 <tr>
                   {["Prop", "Type", "Default", "Description"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    <th key={h} className="px-4 py-3 text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">
                       {h}
                     </th>
                   ))}
@@ -524,15 +518,15 @@ export default function DialogDocPage() {
                 {PROPS_ROWS.map((row) => (
                   <tr key={row.prop} className="transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono font-semibold text-primary">{row.prop}</code>
+                      <code className="font-mono text-xs font-semibold text-primary">{row.prop}</code>
                     </td>
                     <td className="px-4 py-3 max-w-[180px]">
-                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
+                      <code className="font-mono text-xs text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
                     </td>
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code>
+                      <code className="font-mono text-xs text-slate-500 dark:text-slate-400">{row.default}</code>
                     </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400 text-xs leading-relaxed">
+                    <td className="px-4 py-3 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
                       {row.description}
                     </td>
                   </tr>

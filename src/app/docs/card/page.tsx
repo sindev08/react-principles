@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
-import { getStorybookComponentUrl } from "@/features/docs/lib/storybook";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Card } from "@/ui/Card";
 import { Button } from "@/ui/Button";
@@ -17,6 +16,8 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
   { label: "Props", href: "#props" },
 ];
+
+const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-card--default";
 
 const VARIANTS: CardVariant[] = ["default", "elevated", "flat"];
 
@@ -178,7 +179,7 @@ function ThemedCardPreview({ theme }: { theme: "light" | "dark" }) {
         {/* Divider */}
         <div className={`mx-6 border-t ${t.divider}`} />
         {/* Footer */}
-        <div className="p-6 pt-4 flex gap-2">
+        <div className="flex gap-2 p-6 pt-4">
           <button className={`inline-flex items-center justify-center font-semibold rounded-lg text-xs px-3 py-1.5 h-7 ${t.btn}`}>Follow</button>
           <button className={`inline-flex items-center justify-center font-semibold rounded-lg text-xs px-3 py-1.5 h-7 ${t.btnOutline}`}>Message</button>
         </div>
@@ -196,10 +197,10 @@ export default function CardDocPage() {
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-4xl">
         {/* Breadcrumb */}
-        <nav className="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
-          <span className="hover:text-primary cursor-pointer transition-colors">Components</span>
+        <nav className="flex items-center gap-2 mb-8 text-sm font-medium text-slate-500">
+          <span className="transition-colors cursor-pointer hover:text-primary">Components</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <span className="hover:text-primary cursor-pointer transition-colors">Layout</span>
+          <span className="transition-colors cursor-pointer hover:text-primary">Layout</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
           <span className="text-slate-900 dark:text-white">Card</span>
         </nav>
@@ -227,7 +228,7 @@ export default function CardDocPage() {
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
@@ -239,14 +240,14 @@ export default function CardDocPage() {
           <div className="grid gap-6 lg:grid-cols-2">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <div className="h-3 w-3 rounded-full bg-amber-400 shadow-xs shadow-amber-300" />
+                <div className="w-3 h-3 rounded-full shadow-xs bg-amber-400 shadow-amber-300" />
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Light</span>
               </div>
               <ThemedCardPreview theme="light" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <div className="h-3 w-3 rounded-full bg-indigo-500 shadow-xs shadow-indigo-400" />
+                <div className="w-3 h-3 bg-indigo-500 rounded-full shadow-xs shadow-indigo-400" />
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Dark</span>
               </div>
               <ThemedCardPreview theme="dark" />
@@ -256,31 +257,24 @@ export default function CardDocPage() {
 
         {/* 02 Live Demo */}
         <section id="demo" className="mb-16">
-          <div className="mb-6 flex items-center justify-between gap-4">
+          <div className="mb-6 flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
-                    <span className="text-sm font-bold">02</span>
-                  </div>
-                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+              <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <span className="text-sm font-bold">02</span>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
             </div>
-            <Button asChild variant="ghost" size="sm">
-              <Link
-                href={getStorybookComponentUrl("card")}
-              target="_blank"
-              rel="noopener noreferrer"
-                className="inline-flex"
-              >
+            <Button asChild variant="ghost" size="sm" className="shrink-0">
+              <Link href={STORYBOOK_HREF} target="_blank" rel="noopener noreferrer">
                 Open in Storybook
-                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
-                  open_in_new
-                </span>
+                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
               </Link>
             </Button>
           </div>
           <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-xs space-y-6">
             {/* Variant selector */}
             <div className="flex items-center gap-3">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Variant</span>
+              <span className="text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">Variant</span>
               <div className="flex gap-2">
                 {VARIANTS.map((v) => (
                   <button
@@ -303,7 +297,7 @@ export default function CardDocPage() {
               <Card variant={activeVariant}>
                 <Card.Header>
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
+                    <div className="flex items-center justify-center rounded-full h-9 w-9 bg-primary/10">
                       <span className="text-xs font-bold text-primary">AJ</span>
                     </div>
                     <div>
@@ -326,7 +320,7 @@ export default function CardDocPage() {
               <Card variant={activeVariant}>
                 <Card.Content className="pt-6">
                   <div className="flex items-start justify-between mb-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30">
+                    <div className="flex items-center justify-center bg-green-100 rounded-lg h-9 w-9 dark:bg-green-900/30">
                       <span className="material-symbols-outlined text-[18px] text-green-600 dark:text-green-400">trending_up</span>
                     </div>
                     <span className="text-xs font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded-full">
@@ -342,7 +336,7 @@ export default function CardDocPage() {
               <Card variant={activeVariant}>
                 <Card.Header>
                   <div className="flex items-start gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 bg-primary/10">
                       <span className="material-symbols-outlined text-[16px] text-primary">notifications</span>
                     </div>
                     <div>
@@ -362,7 +356,7 @@ export default function CardDocPage() {
         {/* 03 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
@@ -379,7 +373,7 @@ export default function CardDocPage() {
         {/* 04 Copy-Paste */}
         <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
@@ -395,7 +389,7 @@ export default function CardDocPage() {
         {/* 05 Props */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
@@ -404,11 +398,11 @@ export default function CardDocPage() {
             All sub-components extend their corresponding HTML element attributes.
           </p>
           <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#1f2937]">
-            <table className="w-full text-left text-sm">
+            <table className="w-full text-sm text-left">
               <thead className="border-b border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22]">
                 <tr>
                   {["Component", "Prop", "Type", "Default", "Description"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    <th key={h} className="px-4 py-3 text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">
                       {h}
                     </th>
                   ))}
@@ -418,18 +412,18 @@ export default function CardDocPage() {
                 {PROPS_ROWS.map((row, i) => (
                   <tr key={i} className="transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.component}</code>
+                      <code className="font-mono text-xs text-slate-500 dark:text-slate-400">{row.component}</code>
                     </td>
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono font-semibold text-primary">{row.prop}</code>
+                      <code className="font-mono text-xs font-semibold text-primary">{row.prop}</code>
                     </td>
                     <td className="px-4 py-3 max-w-[180px]">
-                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
+                      <code className="font-mono text-xs text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
                     </td>
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code>
+                      <code className="font-mono text-xs text-slate-500 dark:text-slate-400">{row.default}</code>
                     </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400 text-xs leading-relaxed">
+                    <td className="px-4 py-3 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
                       {row.description}
                     </td>
                   </tr>

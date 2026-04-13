@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
-import { getStorybookComponentUrl } from "@/features/docs/lib/storybook";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
-import { Button } from "@/ui/Button";
 import { Separator } from "@/ui/Separator";
+import { Button } from "@/ui/Button";
 
 const TOC_ITEMS = [
   { label: "Live Demo", href: "#demo" },
@@ -13,6 +12,8 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
   { label: "Props", href: "#props" },
 ];
+
+const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-separator--default";
 
 const CODE_SNIPPET = `import { Separator } from "@/ui/Separator";
 
@@ -62,10 +63,10 @@ export default function SeparatorDocPage() {
   return (
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-4xl">
-        <nav className="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
-          <span className="hover:text-primary cursor-pointer transition-colors">Components</span>
+        <nav className="flex items-center gap-2 mb-8 text-sm font-medium text-slate-500">
+          <span className="transition-colors cursor-pointer hover:text-primary">Components</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <span className="hover:text-primary cursor-pointer transition-colors">General</span>
+          <span className="transition-colors cursor-pointer hover:text-primary">General</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
           <span className="text-slate-900 dark:text-white">Separator</span>
         </nav>
@@ -78,7 +79,7 @@ export default function SeparatorDocPage() {
             Thin visual divider used to group related content, split toolbar items, and create
             clearer boundaries between adjacent sections.
           </p>
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 mt-6">
             {["Accessible", "Dark Mode"].map((tag) => (
               <span
                 key={tag}
@@ -93,24 +94,17 @@ export default function SeparatorDocPage() {
         <CliInstallBlock name="separator" />
 
         <section id="demo" className="mb-16">
-          <div className="mb-6 flex items-center justify-between gap-4">
+          <div className="mb-6 flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
-                    <span className="text-sm font-bold">01</span>
-                  </div>
-                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+              <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <span className="text-sm font-bold">01</span>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
             </div>
-            <Button asChild variant="ghost" size="sm">
-              <Link
-                href={getStorybookComponentUrl("separator")}
-              target="_blank"
-              rel="noopener noreferrer"
-                className="inline-flex"
-              >
+            <Button asChild variant="ghost" size="sm" className="shrink-0">
+              <Link href={STORYBOOK_HREF} target="_blank" rel="noopener noreferrer">
                 Open in Storybook
-                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
-                  open_in_new
-                </span>
+                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
               </Link>
             </Button>
           </div>
@@ -118,7 +112,7 @@ export default function SeparatorDocPage() {
             <p className="text-sm font-medium text-slate-900 dark:text-white">Profile Settings</p>
             <Separator />
             <p className="text-sm font-medium text-slate-900 dark:text-white">Billing Settings</p>
-            <div className="flex h-8 items-center gap-3">
+            <div className="flex items-center h-8 gap-3">
               <span className="text-xs text-slate-500 dark:text-slate-400">Daily</span>
               <Separator orientation="vertical" className="h-full" />
               <span className="text-xs text-slate-500 dark:text-slate-400">Weekly</span>
@@ -128,7 +122,7 @@ export default function SeparatorDocPage() {
 
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">02</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
@@ -140,7 +134,7 @@ export default function SeparatorDocPage() {
 
         <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
@@ -154,19 +148,19 @@ export default function SeparatorDocPage() {
 
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>
           <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#1f2937]">
-            <table className="w-full text-left text-sm">
+            <table className="w-full text-sm text-left">
               <thead className="border-b border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22]">
                 <tr>
                   {["Prop", "Type", "Default", "Description"].map((heading) => (
                     <th
                       key={heading}
-                      className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400"
+                      className="px-4 py-3 text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400"
                     >
                       {heading}
                     </th>
@@ -177,13 +171,13 @@ export default function SeparatorDocPage() {
                 {PROPS_ROWS.map((row) => (
                   <tr key={row.prop} className="transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono font-semibold text-primary">{row.prop}</code>
+                      <code className="font-mono text-xs font-semibold text-primary">{row.prop}</code>
                     </td>
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400">{row.type}</code>
+                      <code className="font-mono text-xs text-slate-600 dark:text-slate-400">{row.type}</code>
                     </td>
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code>
+                      <code className="font-mono text-xs text-slate-500 dark:text-slate-400">{row.default}</code>
                     </td>
                     <td className="px-4 py-3 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
                       {row.description}

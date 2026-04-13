@@ -3,11 +3,10 @@
 import Link from "next/link";
 import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
-import { getStorybookComponentUrl } from "@/features/docs/lib/storybook";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
-import { Button } from "@/ui/Button";
 import { Badge } from "@/ui/Badge";
 import type { BadgeVariant, BadgeSize } from "@/ui/Badge";
+import { Button } from "@/ui/Button";
 
 const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },
@@ -16,6 +15,8 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
   { label: "Props", href: "#props" },
 ];
+
+const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-badge--default";
 
 type VariantMeta = { variant: BadgeVariant; label: string };
 
@@ -152,10 +153,10 @@ export default function BadgeDocPage() {
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-4xl">
         {/* Breadcrumb */}
-        <nav className="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
-          <span className="hover:text-primary cursor-pointer transition-colors">Components</span>
+        <nav className="flex items-center gap-2 mb-8 text-sm font-medium text-slate-500">
+          <span className="transition-colors cursor-pointer hover:text-primary">Components</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <span className="hover:text-primary cursor-pointer transition-colors">General</span>
+          <span className="transition-colors cursor-pointer hover:text-primary">General</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
           <span className="text-slate-900 dark:text-white">Badge</span>
         </nav>
@@ -183,7 +184,7 @@ export default function BadgeDocPage() {
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
@@ -195,14 +196,14 @@ export default function BadgeDocPage() {
           <div className="grid gap-6 lg:grid-cols-2">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <div className="h-3 w-3 rounded-full bg-amber-400 shadow-xs shadow-amber-300" />
+                <div className="w-3 h-3 rounded-full shadow-xs bg-amber-400 shadow-amber-300" />
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Light</span>
               </div>
               <ThemedBadgeGrid theme="light" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <div className="h-3 w-3 rounded-full bg-indigo-500 shadow-xs shadow-indigo-400" />
+                <div className="w-3 h-3 bg-indigo-500 rounded-full shadow-xs shadow-indigo-400" />
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Dark</span>
               </div>
               <ThemedBadgeGrid theme="dark" />
@@ -212,31 +213,24 @@ export default function BadgeDocPage() {
 
         {/* 02 Live Demo */}
         <section id="demo" className="mb-16">
-          <div className="mb-6 flex items-center justify-between gap-4">
+          <div className="mb-6 flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
-                    <span className="text-sm font-bold">02</span>
-                  </div>
-                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+              <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <span className="text-sm font-bold">02</span>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
             </div>
-            <Button asChild variant="ghost" size="sm">
-              <Link
-                href={getStorybookComponentUrl("badge")}
-              target="_blank"
-              rel="noopener noreferrer"
-                className="inline-flex"
-              >
+            <Button asChild variant="ghost" size="sm" className="shrink-0">
+              <Link href={STORYBOOK_HREF} target="_blank" rel="noopener noreferrer">
                 Open in Storybook
-                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
-                  open_in_new
-                </span>
+                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
               </Link>
             </Button>
           </div>
           <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-xs space-y-6">
             {/* Size selector */}
             <div className="flex items-center gap-3">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Size</span>
+              <span className="text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">Size</span>
               <div className="flex gap-2">
                 {SIZES.map((s) => (
                   <button
@@ -266,7 +260,7 @@ export default function BadgeDocPage() {
         {/* 03 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
@@ -283,7 +277,7 @@ export default function BadgeDocPage() {
         {/* 04 Copy-Paste */}
         <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
@@ -296,17 +290,17 @@ export default function BadgeDocPage() {
         {/* 05 Props */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>
           <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#1f2937]">
-            <table className="w-full text-left text-sm">
+            <table className="w-full text-sm text-left">
               <thead className="border-b border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22]">
                 <tr>
                   {["Prop", "Type", "Default", "Description"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    <th key={h} className="px-4 py-3 text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">
                       {h}
                     </th>
                   ))}
@@ -316,15 +310,15 @@ export default function BadgeDocPage() {
                 {PROPS_ROWS.map((row) => (
                   <tr key={row.prop} className="transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono font-semibold text-primary">{row.prop}</code>
+                      <code className="font-mono text-xs font-semibold text-primary">{row.prop}</code>
                     </td>
                     <td className="px-4 py-3 max-w-[200px]">
-                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
+                      <code className="font-mono text-xs text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
                     </td>
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code>
+                      <code className="font-mono text-xs text-slate-500 dark:text-slate-400">{row.default}</code>
                     </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400 text-xs leading-relaxed">
+                    <td className="px-4 py-3 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
                       {row.description}
                     </td>
                   </tr>
