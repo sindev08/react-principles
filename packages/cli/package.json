@@ -13,11 +13,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/sindev08/react-principles.git",
+    "url": "git+https://github.com/sindev08/react-principles.git",
     "directory": "packages/cli"
   },
   "bin": {
-    "react-principles": "./dist/index.js"
+    "react-principles": "dist/index.js"
   },
   "files": [
     "dist",
