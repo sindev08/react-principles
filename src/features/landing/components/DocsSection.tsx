@@ -27,10 +27,16 @@ const STEPS = [
       "The same pattern applied to Next.js App Router and Vite side by side. Switch frameworks with one click.",
   },
   {
-    step: "05. Live Demo",
+    step: "05. Starter Template",
+    title: "Real Project",
+    description:
+      "Jump directly to the file in the react-principles-nextjs starter — see how the pattern lives in a working codebase.",
+  },
+  {
+    step: "06. Live Demo",
     title: "Try It",
     description:
-      "An interactive sandbox embedded directly in the recipe — no setup, no context switching.",
+      "Interact with a working implementation of the pattern — available on Applied recipes.",
   },
 ];
 
@@ -56,7 +62,7 @@ export function DocsSection() {
           </div>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-5">
+        <div className="grid gap-8 md:grid-cols-6">
           {STEPS.map((step) => (
             <StepCard
               key={step.step}
