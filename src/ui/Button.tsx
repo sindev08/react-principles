@@ -1,4 +1,10 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import {
+  cloneElement,
+  isValidElement,
+  type ButtonHTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import { cn } from "@/shared/utils/cn";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive" | "outline";
@@ -8,6 +14,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   isLoading?: boolean;
+  asChild?: boolean;
   children: ReactNode;
 }
 
@@ -43,23 +50,35 @@ export function Button({
   variant = "primary",
   size = "md",
   isLoading = false,
+  asChild = false,
   disabled,
   children,
   className,
   ...props
 }: ButtonProps) {
+  const buttonClassName = cn(
+    "inline-flex items-center justify-center font-semibold rounded-lg transition-all",
+    "focus-visible:outline-hidden focus-visible:ring-2",
+    "disabled:opacity-50 disabled:cursor-not-allowed",
+    VARIANT_CLASSES[variant],
+    SIZE_CLASSES[size],
+    className,
+  );
+
+  if (asChild && isValidElement(children)) {
+    const child = children as ReactElement<{ className?: string }>;
+
+    return cloneElement(child, {
+      ...props,
+      className: cn(buttonClassName, child.props.className),
+    });
+  }
+
   return (
     <button
       {...props}
       disabled={disabled || isLoading}
-      className={cn(
-        "inline-flex items-center justify-center font-semibold rounded-lg transition-all",
-        "focus-visible:outline-hidden focus-visible:ring-2",
-        "disabled:opacity-50 disabled:cursor-not-allowed",
-        VARIANT_CLASSES[variant],
-        SIZE_CLASSES[size],
-        className,
-      )}
+      className={buttonClassName}
     >
       {isLoading && <Spinner />}
       {children}

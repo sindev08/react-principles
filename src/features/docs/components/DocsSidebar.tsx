@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/shared/utils/cn";
+import { Separator } from "@/ui/Separator";
 import { DOCS_NAV } from "./docs-nav";
 import { RECIPES } from "@/features/cookbook/data/cookbook-data";
 
@@ -163,6 +164,19 @@ export function DocsSidebar() {
             </ul>
           </div>
         )}
+
+        <div className="relative z-10">
+          <Separator className="mb-4" />
+          <Link
+            href="https://storybook.reactprinciples.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+          >
+            <span>Storybook ↗</span>
+            <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+          </Link>
+        </div>
       </div>
     </aside>
   );
