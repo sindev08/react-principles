@@ -5,7 +5,7 @@ import {
   WhySection,
   ComponentShowcaseSection,
   TechStackSection,
-  MonorepoSection,
+  ProjectStructureSection,
   DocsSection,
   Footer,
 } from "@/features/landing/components";
@@ -49,7 +49,7 @@ export default function LandingPage() {
         <WhySection />
         <ComponentShowcaseSection />
         <TechStackSection />
-        <MonorepoSection />
+        <ProjectStructureSection />
         <DocsSection />
       </main>
       <Footer />

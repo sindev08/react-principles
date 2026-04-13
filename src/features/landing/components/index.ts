@@ -4,6 +4,6 @@ export { HeroSection } from "./HeroSection";
 export { WhySection } from "./WhySection";
 export { ComponentShowcaseSection } from "./ComponentShowcaseSection";
 export { TechStackSection } from "./TechStackSection";
-export { MonorepoSection } from "./MonorepoSection";
+export { ProjectStructureSection } from "./ProjectStructureSection";
 export { DocsSection } from "./DocsSection";
 export { Footer } from "./Footer";
