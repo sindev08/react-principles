@@ -5,7 +5,7 @@ export const stateTaxonomy: RecipeDetail = {
   title: "State Taxonomy",
   breadcrumbCategory: "Foundations",
   description: "Three categories of state — local, shared, and server — and exactly which tool handles each one.",
-  lastUpdated: "Apr 8, 2026",
+  lastUpdated: "Apr 11, 2026",
   principle: {
     text: "Not all state is the same. Before reaching for any state management library, ask one question: where does this data come from? Local state lives inside one component. Shared state is UI state needed by multiple components. Server state comes from an API and has its own lifecycle — loading, error, stale, and needs refreshing. Each category has a different tool, and mixing them up causes bugs that are hard to trace.",
     tip: "When you find yourself putting API data into Zustand, stop. Server state belongs in React Query. When you find yourself using React Query for a toggle or a modal, stop. UI state belongs in useState or Zustand.",
@@ -84,11 +84,11 @@ export const useAppStore = create<AppState>((set) => ({
 export function useUsers(params?: { limit?: number; skip?: number }) {
   return useQuery({
     queryKey: queryKeys.users.list(params ?? {}),
-    queryFn: () => api.get<UsersResponse>(ENDPOINTS.users.list, { params }),
+    queryFn: () => usersService.getAll(params),  // service → hook → component
   });
 }
-// useUser(id): single user detail
-// useCreateUser: mutation with cache invalidation`,
+// useUser(id): single user detail via usersService.getById
+// useCreateUser: mutation via usersService.create + cache invalidation`,
     },
     vite: {
       description: "In Vite, all rendering is client-side. Server state always goes through React Query, shared state through Zustand, and local state through useState.",

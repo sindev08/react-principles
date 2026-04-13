@@ -5,7 +5,7 @@ export const customHooks: RecipeDetail = {
   title: "Custom Hooks",
   breadcrumbCategory: "Foundations",
   description: "The boundary between logic and rendering. When to extract a hook, what the rules are, and how to avoid the most common mistake.",
-  lastUpdated: "Apr 8, 2026",
+  lastUpdated: "Apr 11, 2026",
   principle: {
     text: "A custom hook is not just a function that starts with 'use' — it is a boundary between logic and rendering. The component handles what the user sees. The hook handles how data gets there. When you separate these two concerns, components become easier to read, logic becomes easier to test, and both become easier to change independently.",
     tip: "If you would write a unit test for the logic, it belongs in a hook. If you would write a component test for it, it belongs in the JSX.",
@@ -73,19 +73,15 @@ function SearchInput() {
       code: `'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { api } from '@/lib/api';
-import { ENDPOINTS } from '@/lib/endpoints';
 import { queryKeys } from '@/lib/query-keys';
-import type { UsersResponse } from '@/shared/types/user';
+import { usersService } from '@/lib/services/users';
 
-// Feature hook — encapsulates query key, endpoint, and response type
+// Feature hook — encapsulates query key, service call, and caching
 // Components just call useUsers() and get typed data back
 export function useUsers(params?: { limit?: number; skip?: number }) {
   return useQuery({
     queryKey: queryKeys.users.list(params ?? {}),
-    queryFn: () => api.get<UsersResponse>(ENDPOINTS.users.list, {
-      params: { limit: params?.limit, skip: params?.skip },
-    }),
+    queryFn: () => usersService.getAll(params),
   });
 }
 

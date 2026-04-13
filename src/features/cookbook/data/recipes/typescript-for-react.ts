@@ -5,7 +5,7 @@ export const typescriptForReact: RecipeDetail = {
   title: "TypeScript for React",
   breadcrumbCategory: "Foundations",
   description: "How to type component props, event handlers, and hooks correctly. The contracts that prevent silent bugs.",
-  lastUpdated: "Apr 8, 2026",
+  lastUpdated: "Apr 11, 2026",
   principle: {
     text: "Bugs caught at compile time cost nothing to fix. Bugs caught in production cost everything. TypeScript for React is not about learning the full TypeScript language — it is about writing the right contracts between your components so that mistakes are caught before the code even runs.",
     tip: "Start by typing your component props. If you can describe what a component accepts and returns, the rest of the types follow naturally.",
@@ -58,7 +58,7 @@ const fetchUser = async (): Promise<unknown> => { ... }`,
   },
   implementation: {
     nextjs: {
-      description: "Next.js page components receive typed params and searchParams. Always type these explicitly.",
+      description: "Next.js page components receive typed params and searchParams. Always type these explicitly. URL params are always strings — convert to the expected type before use.",
       filename: "app/users/[id]/page.tsx",
       code: `// ✅ Typed Next.js page props
 interface PageProps {
@@ -68,7 +68,9 @@ interface PageProps {
 
 export default async function UserPage({ params }: PageProps) {
   const { id } = await params;
-  return <UserDetail id={id} />;
+
+  // URL params are always strings — convert to number before passing to the hook
+  return <UserDetail id={Number(id)} />;
 }
 
 // ✅ Typed Server Action

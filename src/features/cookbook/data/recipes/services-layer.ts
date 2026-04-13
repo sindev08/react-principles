@@ -5,7 +5,7 @@ export const servicesLayer: RecipeDetail = {
   title: "Services Layer",
   breadcrumbCategory: "Foundations",
   description: "How to organize all backend communication in one place — so when an API changes, you fix it in one file, not twenty.",
-  lastUpdated: "Apr 8, 2026",
+  lastUpdated: "Apr 11, 2026",
   principle: {
     text: "When you fetch data directly inside a component, the component becomes responsible for knowing the URL, the HTTP method, the request format, and the error handling. That is four responsibilities too many. A services layer centralizes all backend communication — components just call a function and get data back. When the API changes, you fix it in one file, not twenty.",
     tip: "A service function should read like plain English: getUserById(id), createOrder(data), deletePost(id). If it needs more than one argument object, consider splitting it into two functions.",
@@ -30,34 +30,26 @@ export const servicesLayer: RecipeDetail = {
   ],
   pattern: {
     filename: "lib/services/users.ts — service layer pattern",
-    code: `import { apiClient } from '@/lib/api-client';
-import type { User, CreateUserInput, UpdateUserInput } from '@/shared/types/user';
+    code: `import { api } from '@/lib/api';
+import { ENDPOINTS } from '@/lib/endpoints';
+import type { User, UsersResponse, CreateUserInput, UpdateUserInput } from '@/shared/types/user';
 
-// ✅ Service functions — pure API communication
+// ✅ Service functions — pure API communication (no React, no state)
 export const usersService = {
-  getAll: async (): Promise<User[]> => {
-    const response = await apiClient.get('/users');
-    return response.data;
-  },
+  getAll: (params?: { limit?: number; skip?: number }): Promise<UsersResponse> =>
+    api.get<UsersResponse>(ENDPOINTS.users.list, { params }),
 
-  getById: async (id: string): Promise<User> => {
-    const response = await apiClient.get(\`/users/\${id}\`);
-    return response.data;
-  },
+  getById: (id: number): Promise<User> =>
+    api.get<User>(ENDPOINTS.users.detail(id)),
 
-  create: async (data: CreateUserInput): Promise<User> => {
-    const response = await apiClient.post('/users', data);
-    return response.data;
-  },
+  create: (data: CreateUserInput): Promise<User> =>
+    api.post<User>(ENDPOINTS.users.create, data),
 
-  update: async (id: string, data: UpdateUserInput): Promise<User> => {
-    const response = await apiClient.patch(\`/users/\${id}\`, data);
-    return response.data;
-  },
+  update: (id: number, data: UpdateUserInput): Promise<User> =>
+    api.put<User>(ENDPOINTS.users.update(id), data),
 
-  delete: async (id: string): Promise<void> => {
-    await apiClient.delete(\`/users/\${id}\`);
-  },
+  delete: (id: number): Promise<User> =>
+    api.delete<User>(ENDPOINTS.users.delete(id)),
 };`,
   },
   implementation: {
