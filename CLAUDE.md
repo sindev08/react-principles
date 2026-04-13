@@ -127,3 +127,5 @@ See `CONTRIBUTING.md` → **Docs Page Standard** for the full spec. Summary:
 - Do not install new dependencies without explicit approval
 - Do not skip Husky hooks with `--no-verify`
 - Do not commit `.env` or `.env.local` files
+- Do not add co-author attribution (e.g., `Co-Authored-By`) in any commit or file
+- Do not add "Generated with" or similar AI attribution tags in PRs, issues, or code
