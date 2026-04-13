@@ -1,10 +1,16 @@
 {
   "name": "react-principles",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "CLI to add react-principles UI components to your project",
   "author": "Singgih Budi Purnadi",
   "license": "MIT",
-  "keywords": ["react", "cli", "components", "tailwindcss", "typescript"],
+  "keywords": [
+    "react",
+    "cli",
+    "components",
+    "tailwindcss",
+    "typescript"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/sindev08/react-principles.git",
@@ -13,7 +19,10 @@
   "bin": {
     "react-principles": "./dist/index.js"
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
     "prebuild": "node ../../scripts/sync-registry.mjs",
     "build": "tsup",

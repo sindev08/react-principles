@@ -5,7 +5,7 @@ export const componentComposition: RecipeDetail = {
   title: "Component Composition",
   breadcrumbCategory: "Foundations",
   description: "How components combine and communicate — children props, slot patterns, and why composition beats deep prop drilling.",
-  lastUpdated: "Apr 8, 2026",
+  lastUpdated: "Apr 13, 2026",
   principle: {
     text: "Prop drilling happens when you pass data through multiple components that do not use it — just to get it to a component deep in the tree. Composition solves this differently: instead of passing data down, you pass components down. The parent controls what gets rendered, and children receive exactly what they need directly.",
     tip: "When you find yourself adding a prop to a component just to pass it further down, stop. That is the signal to use composition instead.",

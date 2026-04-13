@@ -5,7 +5,7 @@ export const folderStructure: RecipeDetail = {
   title: "Folder Structure",
   breadcrumbCategory: "Foundations",
   description: "A feature-based folder structure so you always know where a file goes — and why it belongs there.",
-  lastUpdated: "Apr 10, 2026",
+  lastUpdated: "Apr 13, 2026",
   principle: {
     text: "A good folder structure answers one question instantly: 'where does this file go?' Feature-based organization groups everything related to a feature together — its components, hooks, and data — so you spend time building, not searching. When a feature grows or gets deleted, everything moves together. This works best for apps with multiple distinct features and more than one developer — think e-commerce with products, cart, checkout, and auth all living side by side. For a small app with 2–3 pages, this structure is like organizing a studio apartment with a full filing cabinet system. Useful later, overkill now.",
     tip: "One rule to decide where a file goes: if only one feature uses it, put it in that feature. If two or more features need it, move it to shared/. If it's infrastructure (API client, query config), put it in lib/.",

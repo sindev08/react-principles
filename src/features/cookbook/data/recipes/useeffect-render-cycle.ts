@@ -5,7 +5,7 @@ export const useeffectRenderCycle: RecipeDetail = {
   title: "useEffect & Render Cycle",
   breadcrumbCategory: "Foundations",
   description: "When effects run, why the dependency array exists, and how to clean up after yourself.",
-  lastUpdated: "2026-03-01",
+  lastUpdated: "Apr 13, 2026",
   principle: {
     text: "useEffect is not a lifecycle method — it is a synchronization tool. It answers one question: 'what side effects need to stay in sync with this data?' Every time the dependency array changes, React re-runs the effect to keep things synchronized. When you understand this mental model, dependency arrays stop feeling like magic rules and start making sense.",
     tip: "If you find yourself writing useEffect to fetch data, stop. That is what React Query is for. useEffect is for synchronizing with things outside React — browser APIs, subscriptions, timers.",

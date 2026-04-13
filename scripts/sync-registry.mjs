@@ -37,7 +37,9 @@ templates["utils"] = escape(readFileSync(CN_SRC, "utf8").trim());
 templates["use-animated-mount"] = escape(readFileSync(HOOK_SRC, "utf8").trim());
 
 // ui components
-const files = readdirSync(UI_DIR).filter((f) => f.endsWith(".tsx"));
+const files = readdirSync(UI_DIR).filter(
+  (f) => f.endsWith(".tsx") && !f.includes(".stories.") && !f.includes(".test.")
+);
 for (const file of files) {
   const name = basename(file, ".tsx");
   const raw = readFileSync(join(UI_DIR, file), "utf8").trim();

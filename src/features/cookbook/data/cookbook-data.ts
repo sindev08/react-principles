@@ -37,7 +37,7 @@ export const RECIPES: Recipe[] = [
     gradient: "linear-gradient(135deg, #6366f1 0%, #4338ca 100%)",
     tags: ["Foundations"],
     category: "Foundations",
-    status: "coming-soon",
+    status: "published",
     order: 1,
   },
   {
@@ -50,7 +50,7 @@ export const RECIPES: Recipe[] = [
     gradient: "linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%)",
     tags: ["Foundations"],
     category: "Foundations",
-    status: "coming-soon",
+    status: "published",
     order: 2,
   },
   {
@@ -63,7 +63,7 @@ export const RECIPES: Recipe[] = [
     gradient: "linear-gradient(135deg, #10b981 0%, #0d9488 100%)",
     tags: ["Foundations"],
     category: "Foundations",
-    status: "coming-soon",
+    status: "published",
     order: 3,
   },
   {
@@ -75,7 +75,7 @@ export const RECIPES: Recipe[] = [
     gradient: "linear-gradient(135deg, #f97316 0%, #c2410c 100%)",
     tags: ["Foundations"],
     category: "Foundations",
-    status: "coming-soon",
+    status: "published",
     order: 4,
   },
   {
@@ -87,7 +87,7 @@ export const RECIPES: Recipe[] = [
     gradient: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
     tags: ["Foundations"],
     category: "Foundations",
-    status: "coming-soon",
+    status: "published",
     order: 5,
   },
   {
@@ -99,7 +99,7 @@ export const RECIPES: Recipe[] = [
     gradient: "linear-gradient(135deg, #14b8a6 0%, #0f766e 100%)",
     tags: ["Foundations"],
     category: "Foundations",
-    status: "coming-soon",
+    status: "published",
     order: 6,
   },
   {
@@ -111,7 +111,7 @@ export const RECIPES: Recipe[] = [
     gradient: "linear-gradient(135deg, #f43f5e 0%, #be123c 100%)",
     tags: ["Foundations"],
     category: "Foundations",
-    status: "coming-soon",
+    status: "published",
     order: 7,
   },
   {
@@ -123,7 +123,7 @@ export const RECIPES: Recipe[] = [
     gradient: "linear-gradient(135deg, #22c55e 0%, #15803d 100%)",
     tags: ["Foundations"],
     category: "Foundations",
-    status: "coming-soon",
+    status: "published",
     order: 8,
   },
   {

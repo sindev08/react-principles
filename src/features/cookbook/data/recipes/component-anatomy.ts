@@ -5,7 +5,7 @@ export const componentAnatomy: RecipeDetail = {
   title: "Component Anatomy",
   breadcrumbCategory: "Foundations",
   description: "The consistent internal structure every component follows — imports, types, constants, function, export.",
-  lastUpdated: "Apr 8, 2026",
+  lastUpdated: "Apr 13, 2026",
   principle: {
     text: "When every component follows the same structure, you stop thinking about where things go inside a file and start thinking about what the component actually does. Consistent anatomy means anyone on the team can open any file and immediately know where to look — props are always at the top, constants are always before the function, exports are always at the bottom.",
     tip: "The hardest part of component anatomy is constants vs. props. Rule of thumb: if it never changes based on what's passed in, it is a constant. If it could change from outside, it is a prop.",

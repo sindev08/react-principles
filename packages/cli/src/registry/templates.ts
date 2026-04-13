@@ -629,7 +629,13 @@ Breadcrumb.Page = function BreadcrumbPage({ className, ...props }: HTMLAttribute
 Breadcrumb.Separator = function BreadcrumbSeparator({ className, children = <span aria-hidden="true">/</span> }: { className?: string; children?: ReactNode }) {
   return <span className={cn("text-slate-400 dark:text-slate-500", className)}>{children}</span>;
 }`,
-  "Button": `import type { ButtonHTMLAttributes, ReactNode } from "react";
+  "Button": `import {
+  cloneElement,
+  isValidElement,
+  type ButtonHTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import { cn } from "@/lib/utils";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive" | "outline";
@@ -639,6 +645,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   isLoading?: boolean;
+  asChild?: boolean;
   children: ReactNode;
 }
 
@@ -663,7 +670,7 @@ const SIZE_CLASSES: Record<ButtonSize, string> = {
 
 function Spinner() {
   return (
-    <svg className="animate-spin h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <svg className="w-4 h-4 animate-spin shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
     </svg>
@@ -674,23 +681,35 @@ export function Button({
   variant = "primary",
   size = "md",
   isLoading = false,
+  asChild = false,
   disabled,
   children,
   className,
   ...props
 }: ButtonProps) {
+  const buttonClassName = cn(
+    "inline-flex items-center justify-center font-semibold rounded-lg transition-all",
+    "focus-visible:outline-hidden focus-visible:ring-2",
+    "disabled:opacity-50 disabled:cursor-not-allowed",
+    VARIANT_CLASSES[variant],
+    SIZE_CLASSES[size],
+    className,
+  );
+
+  if (asChild && isValidElement(children)) {
+    const child = children as ReactElement<{ className?: string }>;
+
+    return cloneElement(child, {
+      ...props,
+      className: cn(buttonClassName, child.props.className),
+    });
+  }
+
   return (
     <button
       {...props}
       disabled={disabled || isLoading}
-      className={cn(
-        "inline-flex items-center justify-center font-semibold rounded-lg transition-all",
-        "focus-visible:outline-hidden focus-visible:ring-2",
-        "disabled:opacity-50 disabled:cursor-not-allowed",
-        VARIANT_CLASSES[variant],
-        SIZE_CLASSES[size],
-        className,
-      )}
+      className={buttonClassName}
     >
       {isLoading && <Spinner />}
       {children}
@@ -1374,7 +1393,7 @@ export function Dialog({ open, onClose, size = "md", children, className }: Dial
 }`,
   "Drawer": `"use client";
 
-import { useEffect, useRef, type HTMLAttributes, type ReactNode } from "react";
+import { useEffect, type HTMLAttributes, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { useAnimatedMount } from "@/hooks/use-animated-mount";
@@ -1472,7 +1491,6 @@ Drawer.Footer = function DrawerFooter({ children, className, ...props }: DrawerF
 // ─── Drawer ───────────────────────────────────────────────────────────────────
 
 export function Drawer({ open, onClose, side = "right", size = "md", children, className }: DrawerProps) {
-  const backdropRef = useRef<HTMLDivElement>(null);
   const { mounted, visible } = useAnimatedMount(open, 300);
 
   useEffect(() => {
@@ -1496,19 +1514,14 @@ export function Drawer({ open, onClose, side = "right", size = "md", children, c
   const { panel, hidden } = SIDE_CLASSES[side];
 
   const drawer = (
-    <div
-      ref={backdropRef}
-      className="fixed inset-0 z-50 flex"
-      onClick={(e) => {
-        if (e.target === backdropRef.current) onClose();
-      }}
-    >
+    <div className="fixed inset-0 z-50 flex">
       {/* Backdrop */}
       <div
         className={cn(
           "absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300",
           visible ? "opacity-100" : "opacity-0"
         )}
+        onClick={onClose}
       />
 
       {/* Panel */}
@@ -2294,6 +2307,46 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function InputRoot
     </div>
   );
 });`,
+  "PageProgress": `import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface PageProgressProps {
+  /** Current progress 0–100 */
+  progress: number;
+  /** Whether the bar is visible (false triggers fade-out) */
+  visible: boolean;
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+/**
+ * Thin top-of-page progress bar for navigation feedback.
+ * Pair with \`useProgressBar\` hook.
+ */
+export function PageProgress({ progress, visible }: PageProgressProps) {
+  return (
+    <div
+      role="progressbar"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={progress}
+      aria-hidden="true"
+      className={cn(
+        "pointer-events-none fixed left-0 top-0 z-200 h-0.5 bg-primary",
+        // Glow effect matching the primary color
+        "shadow-[0_0_8px_1px_rgba(70,40,241,0.7)]",
+        "transition-opacity duration-300",
+        visible ? "opacity-100" : "opacity-0"
+      )}
+      style={{
+        width: \`\${progress}%\`,
+        // Instant reset to 0, ease-out for forward progress
+        transition: \`width \${progress === 0 ? "0ms" : progress === 100 ? "150ms" : "350ms"} ease-out, opacity 300ms\`,
+      }}
+    />
+  );
+}`,
   "Pagination": `import { cn } from "@/lib/utils";
 
 type PaginationToken = number | "ellipsis";
@@ -2582,46 +2635,6 @@ export function Progress({ value, max = 100, className, ...props }: ProgressProp
         style={{ width: \`\${percentage}%\` }}
       />
     </div>
-  );
-}`,
-  "PageProgress": `import { cn } from "@/lib/utils";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-export interface PageProgressProps {
-  /** Current progress 0–100 */
-  progress: number;
-  /** Whether the bar is visible (false triggers fade-out) */
-  visible: boolean;
-}
-
-// ─── Component ────────────────────────────────────────────────────────────────
-
-/**
- * Thin top-of-page progress bar for navigation feedback.
- * Pair with \`useProgressBar\` hook.
- */
-export function PageProgress({ progress, visible }: PageProgressProps) {
-  return (
-    <div
-      role="progressbar"
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuenow={progress}
-      aria-hidden="true"
-      className={cn(
-        "pointer-events-none fixed left-0 top-0 z-200 h-0.5 bg-primary",
-        // Glow effect matching the primary color
-        "shadow-[0_0_8px_1px_rgba(70,40,241,0.7)]",
-        "transition-opacity duration-300",
-        visible ? "opacity-100" : "opacity-0"
-      )}
-      style={{
-        width: \`\${progress}%\`,
-        // Instant reset to 0, ease-out for forward progress
-        transition: \`width \${progress === 0 ? "0ms" : progress === 100 ? "150ms" : "350ms"} ease-out, opacity 300ms\`,
-      }}
-    />
   );
 }`,
   "RadioGroup": `import { createContext, useContext, useId, useState, type HTMLAttributes, type ReactNode } from "react";
@@ -3745,16 +3758,24 @@ const SIDE_CLASSES: Record<TooltipSide, string> = {
   right: "left-[calc(100%+8px)] top-1/2 -translate-y-1/2",
 };
 
+const SIDE_ANIMATION_CLASSES: Record<TooltipSide, { open: string; closed: string }> = {
+  top: { open: "translate-y-0", closed: "translate-y-1" },
+  bottom: { open: "translate-y-0", closed: "-translate-y-1" },
+  left: { open: "translate-x-0", closed: "translate-x-1" },
+  right: { open: "translate-x-0", closed: "-translate-x-1" },
+};
+
 Tooltip.Content = function TooltipContent({ children, className, ...props }: TooltipContentProps) {
   const { open, side } = useTooltipContext();
+  const animationClasses = SIDE_ANIMATION_CLASSES[side];
 
   return (
     <div
       role="tooltip"
       className={cn(
-        "pointer-events-none absolute z-50 rounded-md bg-slate-900 px-2.5 py-1.5 text-xs text-white shadow-lg transition-all",
+        "pointer-events-none absolute z-50 whitespace-nowrap rounded-md bg-slate-900 px-2.5 py-1.5 text-xs text-white shadow-lg transition-all",
         SIDE_CLASSES[side],
-        open ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0",
+        open ? \`\${animationClasses.open} opacity-100\` : \`\${animationClasses.closed} opacity-0\`,
         className
       )}
       {...props}
@@ -3762,5 +3783,66 @@ Tooltip.Content = function TooltipContent({ children, className, ...props }: Too
       {children}
     </div>
   );
+}`,
+  "storybook-utils": `import { useState, type PropsWithChildren, type ReactNode } from "react";
+
+export const SAMPLE_OPTIONS = [
+  { label: "Design System", value: "design-system", description: "Reusable UI building blocks" },
+  { label: "Cookbook", value: "cookbook", description: "Production-ready React patterns" },
+  { label: "CLI", value: "cli", description: "Copy-paste component installer" },
+  { label: "Playground", value: "playground", description: "Interactive configuration", disabled: true },
+];
+
+export const SEARCH_ITEMS = [
+  {
+    title: "Button",
+    href: "/docs/button",
+    group: "Docs" as const,
+    section: "Components",
+    description: "Primary, outline, and ghost actions",
+  },
+  {
+    title: "Form Validation with Zod",
+    href: "/nextjs/cookbook/form-validation",
+    group: "Cookbook" as const,
+    icon: "fact_check",
+    description: "Schema-first forms with React Hook Form",
+  },
+  {
+    title: "Tabs",
+    href: "/docs/tabs",
+    group: "Docs" as const,
+    section: "Components",
+    description: "Underline and pill variants",
+  },
+];
+
+export function StorySurface({
+  children,
+  padded = true,
+  className = "",
+}: PropsWithChildren<{ padded?: boolean; className?: string }>) {
+  return (
+    <div
+      className={[
+        "min-w-[280px] rounded-2xl border border-slate-200 bg-white text-slate-900 shadow-xs dark:border-[#1f2937] dark:bg-[#0b0e14] dark:text-slate-100",
+        padded ? "p-6" : "",
+        className,
+      ].join(" ")}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function StatefulWrapper({
+  initial = false,
+  children,
+}: {
+  initial?: boolean;
+  children: (state: boolean, setState: (next: boolean) => void) => ReactNode;
+}) {
+  const [open, setOpen] = useState(initial);
+  return <>{children(open, setOpen)}</>;
 }`,
 };
