@@ -4,11 +4,20 @@ import { useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Badge } from "@/features/cookbook/components/Badge";
+import { useAppStore } from "@/shared/stores/useAppStore";
 
 const FloatingLines = dynamic(
   () =>
     import("@/ui/FloatingLines").then((m) => ({
       default: m.FloatingLines,
+    })),
+  { ssr: false },
+);
+
+const Grainient = dynamic(
+  () =>
+    import("@/ui/Grainient").then((m) => ({
+      default: m.Grainient,
     })),
   { ssr: false },
 );
@@ -126,16 +135,36 @@ function CodePanel({ activeTab, setActiveTab }: { activeTab: Tab; setActiveTab: 
 
 export function HeroSection() {
   const [activeTab, setActiveTab] = useState<Tab>("hook");
+  const theme = useAppStore((s) => s.theme);
+  const isDark = theme === "dark";
 
   return (
     <section className="mesh-gradient relative overflow-hidden px-6 pb-20 pt-40">
-      <FloatingLines
-        linesGradient={["#4628F1", "#7c3aed", "#06b6d4"]}
-        enabledWaves={["middle", "bottom"]}
-        lineCount={[5, 10]}
-        lineDistance={[5, 3]}
-        animationSpeed={0.4}
-      />
+      {isDark ? (
+        <FloatingLines
+          linesGradient={["#4628F1", "#7c3aed", "#06b6d4"]}
+          enabledWaves={["middle", "bottom"]}
+          lineCount={[5, 10]}
+          lineDistance={[5, 3]}
+          animationSpeed={0.4}
+        />
+      ) : (
+        <div className="absolute inset-0">
+          <Grainient
+            color1="#c4b5fd"
+            color2="#4628F1"
+            color3="#e0e7ff"
+            timeSpeed={0.5}
+            grainAmount={0.05}
+            contrast={1.2}
+            saturation={0.8}
+            warpAmplitude={50.0}
+            warpFrequency={5.0}
+            warpSpeed={2.0}
+            rotationAmount={500.0}
+          />
+        </div>
+      )}
       <div className="relative z-10 mx-auto max-w-4xl text-center">
         <Badge className="mb-6">
           <span className="material-symbols-outlined text-sm">

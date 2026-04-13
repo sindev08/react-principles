@@ -10,17 +10,19 @@ import { UserTable } from "@/features/examples/components/UserTable";
 import { useAppStore } from "@/shared/stores/useAppStore";
 import { useFilterStore } from "@/shared/stores/useFilterStore";
 import { useSavedStore } from "@/features/cookbook/stores/useSavedStore";
-import type { RecipeDetail, DemoKey } from "@/features/cookbook/data/detail-data";
+import type { RecipeDetail, DemoKey, StarterLink } from "@/features/cookbook/data";
 import type { Framework } from "@/features/cookbook/components/CookbookListPage";
 
-const BASE_TOC = [
-  { label: "1. Principle", href: "#principle" },
-  { label: "2. Rules", href: "#rules" },
-  { label: "3. Pattern", href: "#pattern" },
-  { label: "4. Implementation", href: "#implementation" },
-];
-
-const DEMO_TOC_ITEM = { label: "5. Live Demo", href: "#demo" };
+function buildTocItems(detail: RecipeDetail) {
+  const items: Array<{ label: string; href: string }> = [];
+  let n = 1;
+  if (detail.principle) items.push({ label: `${n++}. Principle`, href: "#principle" });
+  if (detail.rules) items.push({ label: `${n++}. ${detail.rulesLabel ?? "Rules"}`, href: "#rules" });
+  if (detail.pattern) items.push({ label: `${n++}. Pattern`, href: "#pattern" });
+  if (detail.implementation) items.push({ label: `${n++}. Implementation`, href: "#implementation" });
+  if (detail.demoKey) items.push({ label: `${n++}. Live Demo`, href: "#demo" });
+  return items;
+}
 
 interface CookbookDetailPageProps {
   detail: RecipeDetail;
@@ -28,7 +30,7 @@ interface CookbookDetailPageProps {
 }
 
 export function CookbookDetailPage({ detail, framework }: CookbookDetailPageProps) {
-  const tocItems = detail.demoKey ? [...BASE_TOC, DEMO_TOC_ITEM] : BASE_TOC;
+  const tocItems = buildTocItems(detail);
 
   return (
     <DocsPageLayout tocItems={tocItems}>
@@ -119,13 +121,23 @@ function LiveDemo({ demoKey }: { demoKey: DemoKey }) {
   return null;
 }
 
+function SectionBadge({ n }: { n: number }) {
+  return (
+    <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+      <span className="text-sm font-bold">{String(n).padStart(2, "0")}</span>
+    </div>
+  );
+}
+
 function DetailContent({ detail, framework }: { detail: RecipeDetail; framework: Framework }) {
   const [copied, setCopied] = useState(false);
   const { isSaved, toggleSaved } = useSavedStore();
   const saved = isSaved(detail.slug);
 
   const activeImpl =
-    framework === "nextjs" ? detail.implementation.nextjs : detail.implementation.vite;
+    framework === "nextjs"
+      ? detail.implementation?.nextjs
+      : detail.implementation?.vite;
 
   const handleCopyLink = () => {
     if (typeof window !== "undefined") {
@@ -134,6 +146,10 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
       setTimeout(() => setCopied(false), 2000);
     }
   };
+
+  // Track section number dynamically so numbering stays correct
+  // regardless of which optional sections are present
+  let sectionNum = 0;
 
   return (
     <div className="max-w-3xl">
@@ -187,106 +203,112 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
         </div>
       </div>
 
-      {/* 01 Principle */}
-      <section className="mb-16" id="principle">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
-            <span className="text-sm font-bold">01</span>
+      {/* Principle (optional) */}
+      {detail.principle && (
+        <section className="mb-16" id="principle">
+          <div className="flex items-center gap-3 mb-6">
+            <SectionBadge n={++sectionNum} />
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Principle</h2>
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Principle</h2>
-        </div>
-        <div className="p-6 bg-white dark:bg-[#161b22] border border-slate-200 dark:border-[#1f2937] rounded-xl shadow-xs">
-          <p className="leading-relaxed text-slate-700 dark:text-slate-300">
-            {detail.principle.text}
-          </p>
-          <div className="flex items-start gap-4 p-4 mt-6 border-l-4 rounded-lg bg-primary/5 border-primary">
-            <span className="material-symbols-outlined text-primary">lightbulb</span>
-            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-              {detail.principle.tip}
+          <div className="p-6 bg-white dark:bg-[#161b22] border border-slate-200 dark:border-[#1f2937] rounded-xl shadow-xs">
+            <p className="leading-relaxed text-slate-700 dark:text-slate-300">
+              {detail.principle.text}
             </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 02 Rules */}
-      <section className="mb-16" id="rules">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
-            <span className="text-sm font-bold">02</span>
-          </div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Rules</h2>
-        </div>
-        <ul className="grid gap-4 sm:grid-cols-2">
-          {detail.rules.map((rule) => (
-            <li
-              key={rule.title}
-              className="flex gap-3 p-5 bg-white dark:bg-[#161b22] border border-slate-200 dark:border-[#1f2937] rounded-xl"
-            >
-              <span className="material-symbols-outlined text-emerald-500">check_circle</span>
-              <div>
-                <span className="block font-bold text-slate-900 dark:text-white">
-                  {rule.title}
-                </span>
-                <span className="text-sm text-slate-600 dark:text-slate-400">
-                  {rule.description}
-                </span>
+            {detail.principle.tip && (
+              <div className="flex items-start gap-4 p-4 mt-6 border-l-4 rounded-lg bg-primary/5 border-primary">
+                <span className="material-symbols-outlined text-primary">lightbulb</span>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  {detail.principle.tip}
+                </p>
               </div>
-            </li>
-          ))}
-        </ul>
-      </section>
+            )}
+          </div>
+        </section>
+      )}
 
-      {/* 03 Pattern */}
-      <section className="mb-16" id="pattern">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
-            <span className="text-sm font-bold">03</span>
+      {/* Rules / Guidelines (optional, label customizable) */}
+      {detail.rules && (
+        <section className="mb-16" id="rules">
+          <div className="flex items-center gap-3 mb-6">
+            <SectionBadge n={++sectionNum} />
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+              {detail.rulesLabel ?? "Rules"}
+            </h2>
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Pattern</h2>
-        </div>
-        <CodeBlock filename={detail.pattern.filename} copyText={detail.pattern.code}>
-          {detail.pattern.code}
-        </CodeBlock>
-      </section>
+          <ul className="flex flex-col gap-4">
+            {detail.rules.map((rule) => (
+              <li
+                key={rule.title}
+                className="flex gap-3 p-5 bg-white dark:bg-[#161b22] border border-slate-200 dark:border-[#1f2937] rounded-xl"
+              >
+                <span className="material-symbols-outlined text-emerald-500">check_circle</span>
+                <div>
+                  <span className="block font-bold text-slate-900 dark:text-white">
+                    {rule.title}
+                  </span>
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                    {rule.description}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
-      {/* 04 Implementation */}
-      <section className="mb-16" id="implementation">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
-            <span className="text-sm font-bold">04</span>
+      {/* Pattern (optional) */}
+      {detail.pattern && (
+        <section className="mb-16" id="pattern">
+          <div className="flex items-center gap-3 mb-6">
+            <SectionBadge n={++sectionNum} />
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Pattern</h2>
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-            Implementation
-          </h2>
-        </div>
-        <div className="flex gap-4 p-4 mb-8 border border-amber-200 dark:border-amber-900/50 rounded-lg bg-amber-50 dark:bg-amber-900/20">
-          <span className="material-symbols-outlined text-amber-600">info</span>
-          <div>
-            <p className="text-sm font-bold tracking-tight text-amber-900 dark:text-amber-300">
-              Version Compatibility
-            </p>
-            <p className="text-xs text-amber-800 dark:text-amber-400">
-              Requires React 19+ and the latest stable versions of all dependencies shown.
-            </p>
-          </div>
-        </div>
-        <div className="space-y-6">
-          <p className="leading-relaxed text-slate-600 dark:text-slate-400">
-            {activeImpl.description}
-          </p>
-          <CodeBlock filename={activeImpl.filename} copyText={activeImpl.code}>
-            {activeImpl.code}
+          <CodeBlock filename={detail.pattern.filename} copyText={detail.pattern.code}>
+            {detail.pattern.code}
           </CodeBlock>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* 05 Live Demo */}
+      {/* Implementation (optional) */}
+      {detail.implementation && activeImpl && (
+        <section className="mb-16" id="implementation">
+          <div className="flex items-center gap-3 mb-6">
+            <SectionBadge n={++sectionNum} />
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+              Implementation
+            </h2>
+          </div>
+          <div className="flex gap-4 p-4 mb-8 border border-amber-200 dark:border-amber-900/50 rounded-lg bg-amber-50 dark:bg-amber-900/20">
+            <span className="material-symbols-outlined text-amber-600">info</span>
+            <div>
+              <p className="text-sm font-bold tracking-tight text-amber-900 dark:text-amber-300">
+                Version Compatibility
+              </p>
+              <p className="text-xs text-amber-800 dark:text-amber-400">
+                Requires React 19+ and the latest stable versions of all dependencies shown.
+              </p>
+            </div>
+          </div>
+          {framework === "vitejs" && <ViteComingSoon />}
+          <div className="space-y-6">
+            <p className="leading-relaxed text-slate-600 dark:text-slate-400">
+              {activeImpl.description}
+            </p>
+            <CodeBlock filename={activeImpl.filename} copyText={activeImpl.code}>
+              {activeImpl.code}
+            </CodeBlock>
+          </div>
+          {framework === "nextjs" && detail.starterLink && (
+            <StarterTemplateLink starterLink={detail.starterLink} />
+          )}
+        </section>
+      )}
+
+      {/* Live Demo (optional) */}
       {detail.demoKey && (
         <section className="mb-16" id="demo">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">05</span>
-            </div>
+            <SectionBadge n={++sectionNum} />
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
               Live Demo
             </h2>
@@ -297,6 +319,56 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
         </section>
       )}
     </div>
+  );
+}
+
+function ViteComingSoon() {
+  return (
+    <div className="flex gap-4 p-4 mb-8 border border-blue-200 dark:border-blue-900/50 rounded-lg bg-blue-50 dark:bg-blue-900/20">
+      <span className="material-symbols-outlined text-blue-600">construction</span>
+      <div>
+        <p className="text-sm font-bold tracking-tight text-blue-900 dark:text-blue-300">
+          Vite Starter Template — Coming Soon
+        </p>
+        <p className="text-xs text-blue-800 dark:text-blue-400">
+          The Vite starter template is currently in development. In the meantime, the code patterns
+          shown below apply to any Vite + React project. Check out the{" "}
+          <a
+            href="https://github.com/sindev08/react-principles-nextjs"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium underline hover:text-blue-600 dark:hover:text-blue-300"
+          >
+            Next.js starter
+          </a>
+          {" "}for a working reference.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function StarterTemplateLink({ starterLink }: { starterLink: StarterLink }) {
+  return (
+    <a
+      href={starterLink.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-6 flex items-center gap-3 p-4 rounded-lg border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] transition-colors hover:border-primary/50 hover:bg-primary/5 group"
+    >
+      <span className="material-symbols-outlined text-primary">open_in_new</span>
+      <div className="flex-1">
+        <p className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+          {starterLink.label}
+        </p>
+        <p className="text-xs text-slate-500">
+          View the real implementation in react-principles-nextjs
+        </p>
+      </div>
+      <span className="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors text-[18px]">
+        arrow_forward
+      </span>
+    </a>
   );
 }
 
@@ -323,11 +395,12 @@ function CookbookFooter() {
               Resources
             </h6>
             <ul className="space-y-2 text-sm text-slate-500">
-              {["GitHub", "Discord", "NPM Package"].map((item) => (
-                <li key={item}>
-                  <a href="#" className="hover:text-primary transition-colors">{item}</a>
-                </li>
-              ))}
+              <li>
+                <a href="https://github.com/sindev08/react-principles" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">GitHub</a>
+              </li>
+              <li>
+                <a href="https://www.npmjs.com/package/react-principles" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">NPM Package</a>
+              </li>
             </ul>
           </div>
           <div>
@@ -335,11 +408,9 @@ function CookbookFooter() {
               Legal
             </h6>
             <ul className="space-y-2 text-sm text-slate-500">
-              {["Privacy", "License"].map((item) => (
-                <li key={item}>
-                  <a href="#" className="hover:text-primary transition-colors">{item}</a>
-                </li>
-              ))}
+              <li>
+                <a href="https://github.com/sindev08/react-principles/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">License (MIT)</a>
+              </li>
             </ul>
           </div>
         </div>

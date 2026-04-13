@@ -1,11 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Accordion } from "@/ui/Accordion";
 import type { AccordionType } from "@/ui/Accordion";
 
+import { Button } from "@/ui/Button";
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TOC_ITEMS = [
@@ -15,6 +17,8 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
   { label: "Props", href: "#props" },
 ];
+
+const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-accordion--default";
 
 const TYPES: AccordionType[] = ["single", "multiple"];
 
@@ -372,10 +376,10 @@ export default function AccordionDocPage() {
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-4xl">
         {/* Breadcrumb */}
-        <nav className="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
-          <span className="hover:text-primary cursor-pointer transition-colors">Components</span>
+        <nav className="flex items-center gap-2 mb-8 text-sm font-medium text-slate-500">
+          <span className="transition-colors cursor-pointer hover:text-primary">Components</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <span className="hover:text-primary cursor-pointer transition-colors">Disclosure</span>
+          <span className="transition-colors cursor-pointer hover:text-primary">Disclosure</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
           <span className="text-slate-900 dark:text-white">Accordion</span>
         </nav>
@@ -403,7 +407,7 @@ export default function AccordionDocPage() {
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
@@ -419,17 +423,25 @@ export default function AccordionDocPage() {
 
         {/* 02 Live Demo */}
         <section id="demo" className="mb-16">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">02</span>
+          <div className="mb-6 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <span className="text-sm font-bold">02</span>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+            <Button asChild variant="ghost" size="sm" className="shrink-0">
+              <Link href={STORYBOOK_HREF} target="_blank" rel="noopener noreferrer">
+                Open in Storybook
+                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+              </Link>
+            </Button>
           </div>
           <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-xs space-y-6">
 
             {/* Type selector */}
             <div className="flex items-center gap-3">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Type</span>
+              <span className="text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">Type</span>
               <div className="flex gap-2">
                 {TYPES.map((t) => (
                   <button
@@ -448,7 +460,7 @@ export default function AccordionDocPage() {
 
             {/* FAQ accordion */}
             <div>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">
+              <p className="mb-3 text-xs text-slate-400 dark:text-slate-500">
                 {activeType === "single" ? "Only one item open at a time." : "Multiple items can be open simultaneously."}
               </p>
               <Accordion
@@ -467,7 +479,7 @@ export default function AccordionDocPage() {
 
             {/* Second accordion — non-collapsible single */}
             <div>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mb-3">
+              <p className="mb-3 text-xs text-slate-400 dark:text-slate-500">
                 <code className="font-mono">collapsible=&#123;false&#125;</code> — active item cannot be collapsed.
               </p>
               <Accordion type="single" collapsible={false} defaultValue="react">
@@ -485,7 +497,7 @@ export default function AccordionDocPage() {
         {/* 03 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
@@ -502,7 +514,7 @@ export default function AccordionDocPage() {
         {/* 04 Copy-Paste */}
         <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
@@ -518,17 +530,17 @@ export default function AccordionDocPage() {
         {/* 05 Props */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>
           <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#1f2937]">
-            <table className="w-full text-left text-sm">
+            <table className="w-full text-sm text-left">
               <thead className="border-b border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22]">
                 <tr>
                   {["Component", "Prop", "Type", "Default", "Description"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    <th key={h} className="px-4 py-3 text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">
                       {h}
                     </th>
                   ))}
@@ -538,18 +550,18 @@ export default function AccordionDocPage() {
                 {PROPS_ROWS.map((row) => (
                   <tr key={`${row.component}-${row.prop}`} className="transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.component}</code>
+                      <code className="font-mono text-xs text-slate-500 dark:text-slate-400">{row.component}</code>
                     </td>
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono font-semibold text-primary">{row.prop}</code>
+                      <code className="font-mono text-xs font-semibold text-primary">{row.prop}</code>
                     </td>
                     <td className="px-4 py-3 max-w-[160px]">
-                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
+                      <code className="font-mono text-xs text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
                     </td>
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code>
+                      <code className="font-mono text-xs text-slate-500 dark:text-slate-400">{row.default}</code>
                     </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400 text-xs leading-relaxed">
+                    <td className="px-4 py-3 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
                       {row.description}
                     </td>
                   </tr>

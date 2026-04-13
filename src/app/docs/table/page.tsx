@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { DocsPageLayout } from "@/features/docs/components";
 import { UserTable } from "@/features/examples/components/UserTable";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { mockUsers } from "@/lib/mock-data";
 import type { User } from "@/shared/types/common";
+import { Button } from "@/ui/Button";
 
 const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },
@@ -12,6 +14,8 @@ const TOC_ITEMS = [
   { label: "Column Config", href: "#columns" },
   { label: "Props", href: "#props" },
 ];
+
+const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-table--default";
 
 const PREVIEW_ROWS: User[] = mockUsers.slice(0, 5);
 
@@ -191,11 +195,19 @@ export default function TableDocPage() {
 
         {/* 02 Live Demo */}
         <section id="demo" className="mb-16">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">02</span>
+          <div className="mb-6 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <span className="text-sm font-bold">02</span>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+            <Button asChild variant="ghost" size="sm" className="shrink-0">
+              <Link href={STORYBOOK_HREF} target="_blank" rel="noopener noreferrer">
+                Open in Storybook
+                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+              </Link>
+            </Button>
           </div>
           <p className="mb-6 leading-relaxed text-slate-600 dark:text-slate-400">
             Fully interactive — try sorting columns, filtering rows, and navigating pages.

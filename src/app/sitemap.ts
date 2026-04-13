@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { RECIPES } from "@/features/cookbook/data/cookbook-data";
-import { getRecipeDetail } from "@/features/cookbook/data/detail-data";
+import { getRecipeDetail } from "@/features/cookbook/data";
 import { DOCS_NAV } from "@/features/docs/components/docs-nav";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";

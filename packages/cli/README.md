@@ -5,7 +5,9 @@ A CLI to add react-principles UI components to your project — copy-paste based
 ## Requirements
 
 - Node.js 18+
-- React 18+
+- React 19+
+- react-dom 19+
+- TypeScript 5+
 - Tailwind CSS v4
 
 ## Usage
@@ -13,9 +15,9 @@ A CLI to add react-principles UI components to your project — copy-paste based
 No installation needed. Run directly with `npx`:
 
 ```bash
-npx react-principles init
-npx react-principles add <component>
-npx react-principles list
+npx react-principles@latest init
+npx react-principles@latest add <component>
+npx react-principles@latest list
 ```
 
 ---
@@ -189,7 +191,7 @@ These are installed automatically as dependencies but can also be added directly
 | `pagination` | `Pagination.tsx` | Page navigation | — |
 | `popover` | `Popover.tsx` | Floating content anchored to a trigger | — |
 | `progress` | `Progress.tsx` | Linear progress bar | — |
-| `progress-bar` | `ProgressBar.tsx` | Animated top progress bar tied to navigation | `use-animated-mount` |
+| `page-progress` | `PageProgress.tsx` | Animated top progress bar tied to navigation | `use-animated-mount` |
 | `radio-group` | `RadioGroup.tsx` | Radio button group | — |
 | `search-dialog` | `SearchDialog.tsx` | Full-screen search dialog | `use-animated-mount` |
 | `select` | `Select.tsx` | Native select with styling | — |

@@ -1,13 +1,25 @@
 "use client";
 
+import Link from "next/link";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Tooltip } from "@/ui/Tooltip";
+import { Button } from "@/ui/Button";
 
 const TOC_ITEMS = [
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
   { label: "Copy-Paste", href: "#copy-paste" },
+  { label: "Props", href: "#props" },
+];
+
+const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-tooltip--default";
+
+const TOOLTIP_SIDES = [
+  { side: "top" as const, label: "Top" },
+  { side: "bottom" as const, label: "Bottom" },
+  { side: "left" as const, label: "Left" },
+  { side: "right" as const, label: "Right" },
 ];
 
 const CODE_SNIPPET = `import { Tooltip } from "@/ui/Tooltip";
@@ -43,100 +55,134 @@ export interface TooltipProps {
   side?: TooltipSide;
   children: ReactNode;
   className?: string;
-}
-
-export interface TooltipTriggerProps extends HTMLAttributes<HTMLSpanElement> {
-  children: ReactNode;
-}
-
-export interface TooltipContentProps extends HTMLAttributes<HTMLDivElement> {
-  children: ReactNode;
-}
-
-export function Tooltip({ defaultOpen = false, side = "top", children, className }: TooltipProps) {
-  const [open, setOpen] = useState(defaultOpen);
-
-  return (
-    <TooltipContext.Provider value={{ open, setOpen, side }}>
-      <span className={cn("relative inline-flex", className)}>{children}</span>
-    </TooltipContext.Provider>
-  );
-}
-
-Tooltip.Trigger = function TooltipTrigger({ children, className, ...props }: TooltipTriggerProps) {
-  const { setOpen } = useTooltipContext();
-
-  return (
-    <span
-      className={cn("inline-flex", className)}
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      onFocus={() => setOpen(true)}
-      onBlur={() => setOpen(false)}
-      {...props}
-    >
-      {children}
-    </span>
-  );
-}
-
-const SIDE_CLASSES: Record<TooltipSide, string> = {
-  top: "bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2",
-  bottom: "top-[calc(100%+8px)] left-1/2 -translate-x-1/2",
-  left: "right-[calc(100%+8px)] top-1/2 -translate-y-1/2",
-  right: "left-[calc(100%+8px)] top-1/2 -translate-y-1/2",
-};
-
-Tooltip.Content = function TooltipContent({ children, className, ...props }: TooltipContentProps) {
-  const { open, side } = useTooltipContext();
-
-  return (
-    <div
-      role="tooltip"
-      className={cn(
-        "pointer-events-none absolute z-50 rounded-md bg-slate-900 px-2.5 py-1.5 text-xs text-white shadow-lg transition-all",
-        SIDE_CLASSES[side],
-        open ? "translate-y-0 opacity-100" : "translate-y-1 opacity-0",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </div>
-  );
 }`;
+
+const PROPS_ROWS = [
+  { prop: "defaultOpen", type: "boolean", default: "false", description: "Controls the initial open state before hover or focus interactions occur." },
+  { prop: "side", type: '"top" | "bottom" | "left" | "right"', default: '"top"', description: "Positions the tooltip relative to its trigger." },
+  { prop: "className", type: "string", default: "—", description: "Additional classes applied to the tooltip root wrapper." },
+  { prop: "Tooltip.Trigger", type: "HTMLAttributes<HTMLSpanElement>", default: "—", description: "Wraps the interactive element that opens the tooltip on hover or focus." },
+  { prop: "Tooltip.Content", type: "HTMLAttributes<HTMLDivElement>", default: "—", description: "Renders the floating tooltip message surface." },
+];
 
 export default function TooltipDocPage() {
   return (
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-4xl">
-        <h1 className="mb-3 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">Tooltip</h1>
-        <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">
-          Contextual hint on hover/focus for compact interfaces.
-        </p>
+        <nav className="flex items-center gap-2 mb-8 text-sm font-medium text-slate-500">
+          <span className="transition-colors cursor-pointer hover:text-primary">Components</span>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="transition-colors cursor-pointer hover:text-primary">Overlay</span>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="text-slate-900 dark:text-white">Tooltip</span>
+        </nav>
+
+        <div className="mb-12">
+          <h1 className="mb-4 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">
+            Tooltip
+          </h1>
+          <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-400">
+            Contextual helper text for compact actions and icon-only controls. Tooltips appear on
+            hover and focus while keeping the surrounding layout unchanged.
+          </p>
+          <div className="flex flex-wrap gap-2 mt-6">
+            {["Accessible", "Dark Mode", "Animated", "Keyboard Nav"].map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-400"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
 
         <CliInstallBlock name="tooltip" />
 
         <section id="demo" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
-          <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
-            <Tooltip side="top">
-              <Tooltip.Trigger>
-                <button type="button" className="rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-[#1f2937]">Hover for hint</button>
-              </Tooltip.Trigger>
-              <Tooltip.Content>Only project owners can publish changes</Tooltip.Content>
-            </Tooltip>
+          <div className="mb-6 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <span className="text-sm font-bold">01</span>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+            </div>
+            <Button asChild variant="ghost" size="sm" className="shrink-0">
+              <Link href={STORYBOOK_HREF} target="_blank" rel="noopener noreferrer">
+                Open in Storybook
+                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+              </Link>
+            </Button>
+          </div>
+          <div className="grid gap-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22] sm:grid-cols-2">
+            {TOOLTIP_SIDES.map(({ side, label }) => (
+              <div key={side} className="flex min-h-24 items-center justify-center rounded-xl border border-dashed border-slate-200 dark:border-[#1f2937]">
+                <Tooltip side={side}>
+                  <Tooltip.Trigger>
+                    <button
+                      type="button"
+                      className="rounded-lg border border-slate-200 px-3 py-2 text-sm dark:border-[#1f2937]"
+                    >
+                      {label} tooltip
+                    </button>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content>{label} aligned guidance</Tooltip.Content>
+                </Tooltip>
+              </div>
+            ))}
           </div>
         </section>
 
         <section id="snippet" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">02 Code Snippet</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">02</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
+          </div>
           <CodeBlock filename="src/ui/Tooltip.tsx" copyText={CODE_SNIPPET}>{CODE_SNIPPET}</CodeBlock>
         </section>
 
         <section id="copy-paste" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">03 Copy-Paste (Single File)</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">03</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
+          </div>
           <CodeBlock filename="Tooltip.tsx" copyText={COPY_PASTE_SNIPPET}>{COPY_PASTE_SNIPPET}</CodeBlock>
+        </section>
+
+        <section id="props" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">04</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
+          </div>
+          <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#1f2937]">
+            <table className="w-full text-sm text-left">
+              <thead className="border-b border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22]">
+                <tr>
+                  {["Prop", "Type", "Default", "Description"].map((heading) => (
+                    <th key={heading} className="px-4 py-3 text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">
+                      {heading}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-[#1f2937] bg-white dark:bg-[#0d1117]">
+                {PROPS_ROWS.map((row) => (
+                  <tr key={row.prop} className="transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
+                    <td className="px-4 py-3"><code className="font-mono text-xs font-semibold text-primary">{row.prop}</code></td>
+                    <td className="px-4 py-3 max-w-[260px]"><code className="font-mono text-xs text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code></td>
+                    <td className="px-4 py-3"><code className="font-mono text-xs text-slate-500 dark:text-slate-400">{row.default}</code></td>
+                    <td className="px-4 py-3 text-xs leading-relaxed text-slate-600 dark:text-slate-400">{row.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       </div>
     </DocsPageLayout>

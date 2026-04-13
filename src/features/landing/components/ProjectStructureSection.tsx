@@ -51,7 +51,7 @@ const FILE_TREE = [
     icon: "extension",
     iconColor: "text-primary",
     label: "ui/",
-    comment: "// custom shadcn-style primitives",
+    comment: "// copy-paste UI primitives",
     bold: false,
     highlight: true,
   },
@@ -80,7 +80,7 @@ const FILE_TREE = [
 
 const INDENT_MAP: Record<number, string> = { 0: "", 1: "pl-6", 2: "pl-12" };
 
-export function MonorepoSection() {
+export function ProjectStructureSection() {
   return (
     <section
       className="px-6 py-24 overflow-hidden bg-white dark:bg-slate-900"

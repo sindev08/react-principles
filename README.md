@@ -23,12 +23,14 @@ See [packages/cli/README.md](./packages/cli/README.md) for full CLI documentatio
 
 | Category | Tool |
 |----------|------|
+| Runtime | React 19 |
 | Framework | Next.js 16 (App Router) |
 | Server State | TanStack Query v5 |
 | Client State | Zustand v5 |
 | Tables | TanStack Table v8 |
 | Forms | React Hook Form v7 + Zod v4 |
 | UI | Tailwind CSS v4 + custom `src/ui` primitives |
+| Component Explorer | Storybook 10 |
 | Testing | Vitest + Testing Library |
 | Type Safety | TypeScript strict mode |
 
@@ -43,6 +45,14 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
+```
+
+### Storybook
+
+Browse and interact with all 32 UI components in isolation, with light/dark mode toggle and accessibility checks:
+
+```bash
+pnpm storybook  # http://localhost:6006
 ```
 
 ### Building the CLI

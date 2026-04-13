@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getRecipeDetail } from "@/features/cookbook/data/detail-data";
+import { getRecipeDetail } from "@/features/cookbook/data";
 import { getRecipeBySlug } from "@/features/cookbook/data/cookbook-data";
 
 const ICON_EMOJI: Record<string, string> = {

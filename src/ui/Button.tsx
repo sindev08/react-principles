@@ -1,4 +1,10 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import {
+  cloneElement,
+  isValidElement,
+  type ButtonHTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import { cn } from "@/shared/utils/cn";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive" | "outline";
@@ -8,6 +14,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   isLoading?: boolean;
+  asChild?: boolean;
   children: ReactNode;
 }
 
@@ -32,7 +39,7 @@ const SIZE_CLASSES: Record<ButtonSize, string> = {
 
 function Spinner() {
   return (
-    <svg className="animate-spin h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <svg className="w-4 h-4 animate-spin shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
     </svg>
@@ -43,23 +50,35 @@ export function Button({
   variant = "primary",
   size = "md",
   isLoading = false,
+  asChild = false,
   disabled,
   children,
   className,
   ...props
 }: ButtonProps) {
+  const buttonClassName = cn(
+    "inline-flex items-center justify-center font-semibold rounded-lg transition-all",
+    "focus-visible:outline-hidden focus-visible:ring-2",
+    "disabled:opacity-50 disabled:cursor-not-allowed",
+    VARIANT_CLASSES[variant],
+    SIZE_CLASSES[size],
+    className,
+  );
+
+  if (asChild && isValidElement(children)) {
+    const child = children as ReactElement<{ className?: string }>;
+
+    return cloneElement(child, {
+      ...props,
+      className: cn(buttonClassName, child.props.className),
+    });
+  }
+
   return (
     <button
       {...props}
       disabled={disabled || isLoading}
-      className={cn(
-        "inline-flex items-center justify-center font-semibold rounded-lg transition-all",
-        "focus-visible:outline-hidden focus-visible:ring-2",
-        "disabled:opacity-50 disabled:cursor-not-allowed",
-        VARIANT_CLASSES[variant],
-        SIZE_CLASSES[size],
-        className,
-      )}
+      className={buttonClassName}
     >
       {isLoading && <Spinner />}
       {children}

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
@@ -17,6 +18,8 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
   { label: "Props", href: "#props" },
 ];
+
+const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-drawer--default";
 
 const SIZES: DrawerSize[] = ["sm", "md", "lg", "full"];
 const SIDES: DrawerSide[] = ["right", "left"];
@@ -208,7 +211,7 @@ export function Drawer({ open, onClose, side = "right", size = "md", children, c
           className="absolute right-4 top-4 z-10 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1f2937] hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
           aria-label="Close drawer"
         >
-          <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none">
+          <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
             <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
         </button>
@@ -303,8 +306,8 @@ function ThemedDrawerPreview({ theme }: { theme: "light" | "dark" }) {
         <div className={`${c.panelBg} ${c.panelBorder} w-full flex flex-col`}>
           {/* Header */}
           <div className={`px-5 pt-5 pb-4 border-b ${c.divider} relative`}>
-            <div className="absolute right-4 top-4 h-7 w-7 rounded-lg flex items-center justify-center text-slate-400">
-              <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none">
+            <div className="absolute flex items-center justify-center rounded-lg right-4 top-4 h-7 w-7 text-slate-400">
+              <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
                 <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </div>
@@ -382,10 +385,10 @@ export default function DrawerDocPage() {
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-4xl">
         {/* Breadcrumb */}
-        <nav className="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
-          <span className="hover:text-primary cursor-pointer transition-colors">Components</span>
+        <nav className="flex items-center gap-2 mb-8 text-sm font-medium text-slate-500">
+          <span className="transition-colors cursor-pointer hover:text-primary">Components</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <span className="hover:text-primary cursor-pointer transition-colors">Overlay</span>
+          <span className="transition-colors cursor-pointer hover:text-primary">Overlay</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
           <span className="text-slate-900 dark:text-white">Drawer</span>
         </nav>
@@ -413,7 +416,7 @@ export default function DrawerDocPage() {
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
@@ -429,18 +432,26 @@ export default function DrawerDocPage() {
 
         {/* 02 Live Demo */}
         <section id="demo" className="mb-16">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">02</span>
+          <div className="mb-6 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <span className="text-sm font-bold">02</span>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+            <Button asChild variant="ghost" size="sm" className="shrink-0">
+              <Link href={STORYBOOK_HREF} target="_blank" rel="noopener noreferrer">
+                Open in Storybook
+                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+              </Link>
+            </Button>
           </div>
           <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-xs space-y-5">
 
             {/* Controls */}
-            <div className="flex flex-wrap gap-6 items-center">
+            <div className="flex flex-wrap items-center gap-6">
               <div className="flex items-center gap-3">
-                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Size</span>
+                <span className="text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">Size</span>
                 <div className="flex gap-2">
                   {SIZES.map((s) => (
                     <button
@@ -457,7 +468,7 @@ export default function DrawerDocPage() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Side</span>
+                <span className="text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">Side</span>
                 <div className="flex gap-2">
                   {SIDES.map((s) => (
                     <button
@@ -566,7 +577,7 @@ export default function DrawerDocPage() {
               <div className="space-y-6">
                 {/* Avatar */}
                 <div className="flex items-center gap-4">
-                  <div className="h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">
+                  <div className="flex items-center justify-center text-xl font-bold rounded-full h-14 w-14 bg-primary/10 text-primary">
                     JD
                   </div>
                   <div>
@@ -601,7 +612,7 @@ export default function DrawerDocPage() {
         {/* 03 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
@@ -618,7 +629,7 @@ export default function DrawerDocPage() {
         {/* 04 Copy-Paste */}
         <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
@@ -634,17 +645,17 @@ export default function DrawerDocPage() {
         {/* 05 Props */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>
           <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#1f2937]">
-            <table className="w-full text-left text-sm">
+            <table className="w-full text-sm text-left">
               <thead className="border-b border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22]">
                 <tr>
                   {["Prop", "Type", "Default", "Description"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    <th key={h} className="px-4 py-3 text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">
                       {h}
                     </th>
                   ))}
@@ -654,15 +665,15 @@ export default function DrawerDocPage() {
                 {PROPS_ROWS.map((row) => (
                   <tr key={row.prop} className="transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono font-semibold text-primary">{row.prop}</code>
+                      <code className="font-mono text-xs font-semibold text-primary">{row.prop}</code>
                     </td>
                     <td className="px-4 py-3 max-w-[180px]">
-                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
+                      <code className="font-mono text-xs text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
                     </td>
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code>
+                      <code className="font-mono text-xs text-slate-500 dark:text-slate-400">{row.default}</code>
                     </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400 text-xs leading-relaxed">
+                    <td className="px-4 py-3 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
                       {row.description}
                     </td>
                   </tr>

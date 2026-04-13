@@ -3,7 +3,7 @@ import { DocsPageLayout } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Alert } from "@/ui/Alert";
 import { Card } from "@/ui/Card";
-import { MAJOR_VERSIONS } from "@/shared/constants/versions";
+import { CLI_VERSION, MAJOR_VERSIONS } from "@/shared/constants/versions";
 
 const TOC_ITEMS = [
   { label: "Requirements", href: "#requirements" },
@@ -28,6 +28,7 @@ npx react-principles@latest add button
 npx react-principles@latest add button badge card input dialog`;
 
 const REQUIREMENTS = [
+  `Node.js 18+`,
   `React ${MAJOR_VERSIONS.react}+`,
   `react-dom ${MAJOR_VERSIONS.react}+`,
   `TypeScript ${MAJOR_VERSIONS.typescript}+ for the best typing experience`,
@@ -75,7 +76,12 @@ export default function InstallationPage() {
 
         {/* UI Components via CLI */}
         <section id="ui-components" className="mb-14">
-          <h2 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">UI Components</h2>
+          <div className="mb-2 flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">UI Components</h2>
+            <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
+              v{CLI_VERSION}
+            </span>
+          </div>
           <p className="mb-6 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
             Components are copied directly into your codebase with all dependencies resolved automatically.
           </p>

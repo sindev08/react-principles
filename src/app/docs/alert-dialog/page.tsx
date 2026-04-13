@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
@@ -16,6 +17,8 @@ const TOC_ITEMS = [
   { label: "Copy-Paste", href: "#copy-paste" },
   { label: "Props", href: "#props" },
 ];
+
+const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-alert-dialog--default";
 
 const VARIANTS: AlertDialogVariant[] = ["destructive", "warning", "default"];
 
@@ -89,20 +92,20 @@ const ICON_BG: Record<AlertDialogVariant, string> = {
 function VariantIcon({ variant }: { variant: AlertDialogVariant }) {
   if (variant === "destructive") {
     return (
-      <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none">
+      <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none">
         <path d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2zm0 5v4m0 2.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     );
   }
   if (variant === "warning") {
     return (
-      <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none">
+      <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none">
         <path d="M8.485 3.495a1.75 1.75 0 0 1 3.03 0l6.28 10.875A1.75 1.75 0 0 1 16.28 17H3.72a1.75 1.75 0 0 1-1.515-2.63L8.485 3.495zM10 8v3m0 2.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     );
   }
   return (
-    <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none">
+    <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none">
       <circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="1.5" />
       <path d="M10 6v4m0 2.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
@@ -113,7 +116,7 @@ function VariantIcon({ variant }: { variant: AlertDialogVariant }) {
 
 function Spinner() {
   return (
-    <svg className="h-4 w-4 animate-spin" viewBox="0 0 16 16" fill="none">
+    <svg className="w-4 h-4 animate-spin" viewBox="0 0 16 16" fill="none">
       <circle cx="8" cy="8" r="6" stroke="currentColor" strokeOpacity="0.25" strokeWidth="2" />
       <path d="M14 8a6 6 0 0 0-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
     </svg>
@@ -172,7 +175,7 @@ export function AlertDialog({
               <VariantIcon variant={variant} />
             </div>
             <div className="flex-1 min-w-0">
-              <h2 id="alert-title" className="text-base font-semibold text-slate-900 dark:text-white leading-snug">
+              <h2 id="alert-title" className="text-base font-semibold leading-snug text-slate-900 dark:text-white">
                 {title}
               </h2>
               <p id="alert-desc" className="mt-1.5 text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
@@ -183,7 +186,7 @@ export function AlertDialog({
         </div>
 
         {/* Footer */}
-        <div className="px-6 pb-6 flex items-center justify-end gap-3">
+        <div className="flex items-center justify-end gap-3 px-6 pb-6">
           <button
             onClick={onClose}
             disabled={isLoading}
@@ -271,7 +274,7 @@ const FORCED: Record<"light" | "dark", ForcedTheme> = {
 };
 
 const DESTRUCTIVE_SVG = (
-  <svg className="h-5 w-5" viewBox="0 0 20 20" fill="none">
+  <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none">
     <path d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2zm0 5v4m0 2.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
   </svg>
 );
@@ -307,7 +310,7 @@ function ThemedAlertPreview({ theme }: { theme: "light" | "dark" }) {
               </div>
             </div>
           </div>
-          <div className="px-6 pb-6 flex justify-end gap-3">
+          <div className="flex justify-end gap-3 px-6 pb-6">
             <button className={`px-4 py-2 rounded-lg text-sm font-medium ${c.cancelBorder} ${c.cancelText} ${c.cancelBg}`}>
               Keep it
             </button>
@@ -376,10 +379,10 @@ export default function AlertDialogDocPage() {
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-4xl">
         {/* Breadcrumb */}
-        <nav className="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
-          <span className="hover:text-primary cursor-pointer transition-colors">Components</span>
+        <nav className="flex items-center gap-2 mb-8 text-sm font-medium text-slate-500">
+          <span className="transition-colors cursor-pointer hover:text-primary">Components</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <span className="hover:text-primary cursor-pointer transition-colors">Overlay</span>
+          <span className="transition-colors cursor-pointer hover:text-primary">Overlay</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
           <span className="text-slate-900 dark:text-white">Alert Dialog</span>
         </nav>
@@ -403,7 +406,7 @@ export default function AlertDialogDocPage() {
         </div>
 
         {/* Callout — key difference */}
-        <div className="mb-12 flex gap-3 rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-900/10 p-4">
+        <div className="flex gap-3 p-4 mb-12 border rounded-xl border-amber-200 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-900/10">
           <svg className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" viewBox="0 0 16 16" fill="none">
             <path d="M8 1.5L1.5 13h13L8 1.5zM8 6v3.5m0 1.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -417,7 +420,7 @@ export default function AlertDialogDocPage() {
         {/* 01 Theme Preview */}
         <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
@@ -433,17 +436,25 @@ export default function AlertDialogDocPage() {
 
         {/* 02 Live Demo */}
         <section id="demo" className="mb-16">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">02</span>
+          <div className="mb-6 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <span className="text-sm font-bold">02</span>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
             </div>
-            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+            <Button asChild variant="ghost" size="sm" className="shrink-0">
+              <Link href={STORYBOOK_HREF} target="_blank" rel="noopener noreferrer">
+                Open in Storybook
+                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+              </Link>
+            </Button>
           </div>
           <div className="rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] p-6 shadow-xs space-y-5">
 
             {/* Variant selector */}
             <div className="flex items-center gap-3">
-              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Variant</span>
+              <span className="text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">Variant</span>
               <div className="flex gap-2">
                 {VARIANTS.map((v) => (
                   <button
@@ -492,7 +503,7 @@ export default function AlertDialogDocPage() {
         {/* 03 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
@@ -509,7 +520,7 @@ export default function AlertDialogDocPage() {
         {/* 04 Copy-Paste */}
         <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
@@ -525,17 +536,17 @@ export default function AlertDialogDocPage() {
         {/* 05 Props */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>
           <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#1f2937]">
-            <table className="w-full text-left text-sm">
+            <table className="w-full text-sm text-left">
               <thead className="border-b border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22]">
                 <tr>
                   {["Prop", "Type", "Default", "Description"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    <th key={h} className="px-4 py-3 text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">
                       {h}
                     </th>
                   ))}
@@ -545,15 +556,15 @@ export default function AlertDialogDocPage() {
                 {PROPS_ROWS.map((row) => (
                   <tr key={row.prop} className="transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono font-semibold text-primary">{row.prop}</code>
+                      <code className="font-mono text-xs font-semibold text-primary">{row.prop}</code>
                     </td>
                     <td className="px-4 py-3 max-w-[180px]">
-                      <code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
+                      <code className="font-mono text-xs text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code>
                     </td>
                     <td className="px-4 py-3">
-                      <code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code>
+                      <code className="font-mono text-xs text-slate-500 dark:text-slate-400">{row.default}</code>
                     </td>
-                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400 text-xs leading-relaxed">
+                    <td className="px-4 py-3 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
                       {row.description}
                     </td>
                   </tr>

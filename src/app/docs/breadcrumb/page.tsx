@@ -1,14 +1,19 @@
 "use client";
 
+import Link from "next/link";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Breadcrumb } from "@/ui/Breadcrumb";
+import { Button } from "@/ui/Button";
 
 const TOC_ITEMS = [
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
   { label: "Copy-Paste", href: "#copy-paste" },
+  { label: "Props", href: "#props" },
 ];
+
+const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-breadcrumb--default";
 
 const CODE_SNIPPET = `import { Breadcrumb } from "@/ui/Breadcrumb";
 
@@ -57,30 +62,77 @@ Breadcrumb.Separator = function BreadcrumbSeparator({ className, children = <spa
   return <span className={cn("text-slate-400 dark:text-slate-500", className)}>{children}</span>;
 }`;
 
+const PROPS_ROWS = [
+  { prop: "Breadcrumb", type: "HTMLAttributes<HTMLElement>", default: "—", description: "Root navigation landmark with the breadcrumb ARIA label." },
+  { prop: "Breadcrumb.List", type: "HTMLAttributes<HTMLOListElement>", default: "—", description: "Ordered list wrapper that lays out items inline." },
+  { prop: "Breadcrumb.Item", type: "HTMLAttributes<HTMLLIElement>", default: "—", description: "List item wrapper for each breadcrumb segment." },
+  { prop: "Breadcrumb.Link", type: "AnchorHTMLAttributes<HTMLAnchorElement>", default: "—", description: "Interactive ancestor link for navigable segments." },
+  { prop: "Breadcrumb.Page", type: "HTMLAttributes<HTMLSpanElement>", default: "—", description: "Current page label rendered as non-interactive text." },
+  { prop: "Breadcrumb.Separator", type: "{ className?: string; children?: ReactNode }", default: '"/"', description: "Visual separator between breadcrumb items." },
+];
+
 export default function BreadcrumbDocPage() {
   return (
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-4xl">
-        <h1 className="mb-3 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">Breadcrumb</h1>
-        <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">Hierarchical navigation path for nested pages.</p>
+        <nav className="flex items-center gap-2 mb-8 text-sm font-medium text-slate-500">
+          <span className="transition-colors cursor-pointer hover:text-primary">Components</span>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="transition-colors cursor-pointer hover:text-primary">Navigation</span>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="text-slate-900 dark:text-white">Breadcrumb</span>
+        </nav>
+
+        <div className="mb-12">
+          <h1 className="mb-4 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">
+            Breadcrumb
+          </h1>
+          <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-400">
+            Hierarchical navigation pattern that shows the current page location and gives users a
+            quick path back to parent sections.
+          </p>
+          <div className="flex flex-wrap gap-2 mt-6">
+            {["Accessible", "Dark Mode"].map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-400"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
 
         <CliInstallBlock name="breadcrumb" />
 
         <section id="demo" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
+          <div className="mb-6 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <span className="text-sm font-bold">01</span>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+            </div>
+            <Button asChild variant="ghost" size="sm" className="shrink-0">
+              <Link href={STORYBOOK_HREF} target="_blank" rel="noopener noreferrer">
+                Open in Storybook
+                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+              </Link>
+            </Button>
+          </div>
           <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
             <Breadcrumb>
               <Breadcrumb.List>
                 <Breadcrumb.Item>
-                  <Breadcrumb.Link href="#">Dashboard</Breadcrumb.Link>
+                  <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
                 </Breadcrumb.Item>
                 <Breadcrumb.Separator />
                 <Breadcrumb.Item>
-                  <Breadcrumb.Link href="#">Projects</Breadcrumb.Link>
+                  <Breadcrumb.Link href="/docs">Docs</Breadcrumb.Link>
                 </Breadcrumb.Item>
                 <Breadcrumb.Separator />
                 <Breadcrumb.Item>
-                  <Breadcrumb.Page>React Principles</Breadcrumb.Page>
+                  <Breadcrumb.Page>Button</Breadcrumb.Page>
                 </Breadcrumb.Item>
               </Breadcrumb.List>
             </Breadcrumb>
@@ -88,13 +140,74 @@ export default function BreadcrumbDocPage() {
         </section>
 
         <section id="snippet" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">02 Code Snippet</h2>
-          <CodeBlock filename="src/ui/Breadcrumb.tsx" copyText={CODE_SNIPPET}>{CODE_SNIPPET}</CodeBlock>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">02</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
+          </div>
+          <CodeBlock filename="src/ui/Breadcrumb.tsx" copyText={CODE_SNIPPET}>
+            {CODE_SNIPPET}
+          </CodeBlock>
         </section>
 
         <section id="copy-paste" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">03 Copy-Paste (Single File)</h2>
-          <CodeBlock filename="Breadcrumb.tsx" copyText={COPY_PASTE_SNIPPET}>{COPY_PASTE_SNIPPET}</CodeBlock>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">03</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+              Copy-Paste (Single File)
+            </h2>
+          </div>
+          <CodeBlock filename="Breadcrumb.tsx" copyText={COPY_PASTE_SNIPPET}>
+            {COPY_PASTE_SNIPPET}
+          </CodeBlock>
+        </section>
+
+        <section id="props" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">04</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
+          </div>
+          <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#1f2937]">
+            <table className="w-full text-sm text-left">
+              <thead className="border-b border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22]">
+                <tr>
+                  {["Prop", "Type", "Default", "Description"].map((heading) => (
+                    <th
+                      key={heading}
+                      className="px-4 py-3 text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400"
+                    >
+                      {heading}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-[#1f2937] bg-white dark:bg-[#0d1117]">
+                {PROPS_ROWS.map((row) => (
+                  <tr key={row.prop} className="transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
+                    <td className="px-4 py-3">
+                      <code className="font-mono text-xs font-semibold text-primary">{row.prop}</code>
+                    </td>
+                    <td className="px-4 py-3 max-w-[260px]">
+                      <code className="font-mono text-xs text-slate-600 dark:text-slate-400 wrap-break-word">
+                        {row.type}
+                      </code>
+                    </td>
+                    <td className="px-4 py-3">
+                      <code className="font-mono text-xs text-slate-500 dark:text-slate-400">{row.default}</code>
+                    </td>
+                    <td className="px-4 py-3 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                      {row.description}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       </div>
     </DocsPageLayout>

@@ -1,44 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { DropdownMenu } from "@/ui/DropdownMenu";
+import { Button } from "@/ui/Button";
 
 const TOC_ITEMS = [
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
   { label: "Copy-Paste", href: "#copy-paste" },
+  { label: "Props", href: "#props" },
 ];
+
+const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-dropdown-menu--default";
 
 const CODE_SNIPPET = `import { DropdownMenu } from "@/ui/DropdownMenu";
 
 <DropdownMenu>
-  <DropdownMenu.Trigger>Actions</DropdownMenu.Trigger>
+  <DropdownMenu.Trigger>Open menu</DropdownMenu.Trigger>
   <DropdownMenu.Content>
-    <DropdownMenu.Label>Profile</DropdownMenu.Label>
-    <DropdownMenu.Item onSelect={() => console.log("Edit")}>Edit profile</DropdownMenu.Item>
-    <DropdownMenu.Item onSelect={() => console.log("Invite")}>Invite member</DropdownMenu.Item>
-    <DropdownMenu.Separator />
-    <DropdownMenu.Item onSelect={() => console.log("Delete")}>Delete project</DropdownMenu.Item>
+    <DropdownMenu.Label>Actions</DropdownMenu.Label>
+    <DropdownMenu.Item onSelect={() => console.log("Rename")}>Rename</DropdownMenu.Item>
+    <DropdownMenu.Item inset onSelect={() => console.log("Duplicate")}>Duplicate</DropdownMenu.Item>
   </DropdownMenu.Content>
 </DropdownMenu>`;
 
-const COPY_PASTE_SNIPPET = `import { createContext, useCallback, useContext, useEffect, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
+const COPY_PASTE_SNIPPET = `import { createContext, useContext, useEffect, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
-
-interface DropdownMenuContextValue {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-}
-
-const DropdownMenuContext = createContext<DropdownMenuContextValue | null>(null);
-
-function useDropdownMenuContext() {
-  const context = useContext(DropdownMenuContext);
-  if (!context) throw new Error("DropdownMenu sub-components must be used inside <DropdownMenu>");
-  return context;
-}
 
 export interface DropdownMenuProps {
   open?: boolean;
@@ -46,179 +35,134 @@ export interface DropdownMenuProps {
   onOpenChange?: (open: boolean) => void;
   children: ReactNode;
   className?: string;
-}
-
-export interface DropdownMenuTriggerProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  children: ReactNode;
-}
-
-export interface DropdownMenuContentProps extends HTMLAttributes<HTMLDivElement> {
-  children: ReactNode;
-}
-
-export interface DropdownMenuItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  inset?: boolean;
-  onSelect?: () => void;
-}
-
-export function DropdownMenu({ open, defaultOpen = false, onOpenChange, children, className }: DropdownMenuProps) {
-  const [internalOpen, setInternalOpen] = useState(defaultOpen);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const isControlled = open !== undefined;
-  const isOpen = isControlled ? open : internalOpen;
-
-  const setOpen = useCallback((next: boolean) => {
-    if (!isControlled) setInternalOpen(next);
-    onOpenChange?.(next);
-  }, [isControlled, onOpenChange]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const onPointerDown = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-
-    window.addEventListener("mousedown", onPointerDown);
-    window.addEventListener("keydown", onKeyDown);
-
-    return () => {
-      window.removeEventListener("mousedown", onPointerDown);
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [isOpen, setOpen]);
-
-  return (
-    <DropdownMenuContext.Provider value={{ open: isOpen, setOpen }}>
-      <div ref={containerRef} className={cn("relative inline-block", className)}>
-        {children}
-      </div>
-    </DropdownMenuContext.Provider>
-  );
-}
-
-DropdownMenu.Trigger = function DropdownMenuTrigger({ children, className, onClick, ...props }: DropdownMenuTriggerProps) {
-  const { open, setOpen } = useDropdownMenuContext();
-
-  return (
-    <button
-      type="button"
-      onClick={(event) => {
-        onClick?.(event);
-        setOpen(!open);
-      }}
-      className={cn(
-        "inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 transition-all",
-        "hover:bg-slate-50 dark:border-[#1f2937] dark:bg-[#0d1117] dark:text-slate-200 dark:hover:bg-[#161b22]",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </button>
-  );
-}
-
-DropdownMenu.Content = function DropdownMenuContent({ children, className, ...props }: DropdownMenuContentProps) {
-  const { open } = useDropdownMenuContext();
-  if (!open) return null;
-
-  return (
-    <div
-      className={cn(
-        "absolute right-0 top-[calc(100%+8px)] z-50 min-w-56 rounded-xl border border-slate-200 bg-white p-1 shadow-xl",
-        "dark:border-[#1f2937] dark:bg-[#161b22]",
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-}
-
-DropdownMenu.Label = function DropdownMenuLabel({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn("px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400", className)}
-      {...props}
-    />
-  );
-}
-
-DropdownMenu.Separator = function DropdownMenuSeparator({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("my-1 h-px bg-slate-200 dark:bg-[#1f2937]", className)} {...props} />;
-}
-
-DropdownMenu.Item = function DropdownMenuItem({ inset = false, onSelect, onClick, className, disabled, ...props }: DropdownMenuItemProps) {
-  const { setOpen } = useDropdownMenuContext();
-
-  return (
-    <button
-      type="button"
-      disabled={disabled}
-      onClick={(event) => {
-        onClick?.(event);
-        if (disabled) return;
-        onSelect?.();
-        setOpen(false);
-      }}
-      className={cn(
-        "flex w-full items-center rounded-lg px-2.5 py-2 text-left text-sm text-slate-700 transition-all",
-        "hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-[#0d1117]",
-        inset && "pl-8",
-        disabled && "cursor-not-allowed opacity-50",
-        className
-      )}
-      {...props}
-    />
-  );
 }`;
 
-export default function DropdownMenuDocPage() {
-  const [lastAction, setLastAction] = useState("None");
+const PROPS_ROWS = [
+  { prop: "open", type: "boolean", default: "—", description: "Controlled open state for the menu." },
+  { prop: "defaultOpen", type: "boolean", default: "false", description: "Initial open state for uncontrolled usage." },
+  { prop: "onOpenChange", type: "(open: boolean) => void", default: "—", description: "Called whenever the menu opens or closes." },
+  { prop: "className", type: "string", default: "—", description: "Additional classes applied to the root wrapper." },
+  { prop: "DropdownMenu.Trigger", type: "ButtonHTMLAttributes<HTMLButtonElement>", default: "—", description: "Button that toggles the menu." },
+  { prop: "DropdownMenu.Content", type: "HTMLAttributes<HTMLDivElement>", default: "—", description: "Floating content surface that contains labels, items, and separators." },
+  { prop: "DropdownMenu.Item.inset", type: "boolean", default: "false", description: "Adds extra left padding for nested or secondary items." },
+  { prop: "DropdownMenu.Item.onSelect", type: "() => void", default: "—", description: "Convenience callback invoked before the menu closes." },
+  { prop: "DropdownMenu.Label", type: "HTMLAttributes<HTMLDivElement>", default: "—", description: "Section label for grouped menu items." },
+  { prop: "DropdownMenu.Separator", type: "HTMLAttributes<HTMLDivElement>", default: "—", description: "Visual divider between menu sections." },
+];
 
+export default function DropdownMenuDocPage() {
   return (
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-4xl">
-        <h1 className="mb-3 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">Dropdown Menu</h1>
-        <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">
-          Compact action menu for contextual operations.
-        </p>
+        <nav className="flex items-center gap-2 mb-8 text-sm font-medium text-slate-500">
+          <span className="transition-colors cursor-pointer hover:text-primary">Components</span>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="transition-colors cursor-pointer hover:text-primary">Overlay</span>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="text-slate-900 dark:text-white">Dropdown Menu</span>
+        </nav>
+
+        <div className="mb-12">
+          <h1 className="mb-4 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">
+            Dropdown Menu
+          </h1>
+          <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-400">
+            Compact action menu for grouped commands, secondary controls, and contextual operations
+            that should stay close to their trigger.
+          </p>
+          <div className="flex flex-wrap gap-2 mt-6">
+            {["Accessible", "Dark Mode", "Animated", "Keyboard Nav"].map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-400"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
 
         <CliInstallBlock name="dropdown-menu" />
 
         <section id="demo" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
-          <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
+          <div className="mb-6 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                <span className="text-sm font-bold">01</span>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+            </div>
+            <Button asChild variant="ghost" size="sm" className="shrink-0">
+              <Link href={STORYBOOK_HREF} target="_blank" rel="noopener noreferrer">
+                Open in Storybook
+                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+              </Link>
+            </Button>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
             <DropdownMenu>
-              <DropdownMenu.Trigger>Actions</DropdownMenu.Trigger>
+              <DropdownMenu.Trigger>Open menu</DropdownMenu.Trigger>
               <DropdownMenu.Content>
-                <DropdownMenu.Label>Project</DropdownMenu.Label>
-                <DropdownMenu.Item onSelect={() => setLastAction("Edit profile")}>Edit profile</DropdownMenu.Item>
-                <DropdownMenu.Item onSelect={() => setLastAction("Invite member")}>Invite member</DropdownMenu.Item>
+                <DropdownMenu.Label>Actions</DropdownMenu.Label>
+                <DropdownMenu.Item onSelect={() => undefined}>Rename project</DropdownMenu.Item>
+                <DropdownMenu.Item inset onSelect={() => undefined}>Duplicate project</DropdownMenu.Item>
                 <DropdownMenu.Separator />
-                <DropdownMenu.Item onSelect={() => setLastAction("Delete project")}>Delete project</DropdownMenu.Item>
+                <DropdownMenu.Item onSelect={() => undefined}>Archive project</DropdownMenu.Item>
               </DropdownMenu.Content>
             </DropdownMenu>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Last action: {lastAction}</p>
           </div>
         </section>
 
         <section id="snippet" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">02 Code Snippet</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">02</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
+          </div>
           <CodeBlock filename="src/ui/DropdownMenu.tsx" copyText={CODE_SNIPPET}>{CODE_SNIPPET}</CodeBlock>
         </section>
 
         <section id="copy-paste" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">03 Copy-Paste (Single File)</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">03</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
+          </div>
           <CodeBlock filename="DropdownMenu.tsx" copyText={COPY_PASTE_SNIPPET}>{COPY_PASTE_SNIPPET}</CodeBlock>
+        </section>
+
+        <section id="props" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">04</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
+          </div>
+          <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#1f2937]">
+            <table className="w-full text-sm text-left">
+              <thead className="border-b border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22]">
+                <tr>
+                  {["Prop", "Type", "Default", "Description"].map((heading) => (
+                    <th key={heading} className="px-4 py-3 text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">
+                      {heading}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-[#1f2937] bg-white dark:bg-[#0d1117]">
+                {PROPS_ROWS.map((row) => (
+                  <tr key={row.prop} className="transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
+                    <td className="px-4 py-3"><code className="font-mono text-xs font-semibold text-primary">{row.prop}</code></td>
+                    <td className="px-4 py-3 max-w-[260px]"><code className="font-mono text-xs text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code></td>
+                    <td className="px-4 py-3"><code className="font-mono text-xs text-slate-500 dark:text-slate-400">{row.default}</code></td>
+                    <td className="px-4 py-3 text-xs leading-relaxed text-slate-600 dark:text-slate-400">{row.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       </div>
     </DocsPageLayout>
