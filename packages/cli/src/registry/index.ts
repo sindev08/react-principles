@@ -172,15 +172,6 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
-    name: "floating-lines",
-    description: "Decorative animated background",
-    templateKey: "FloatingLines",
-    outputFile: "FloatingLines.tsx",
-    internalDeps: ["utils"],
-    npmDeps: [],
-    target: "components",
-  },
-  {
     name: "input",
     description: "Text input with variants",
     templateKey: "Input",
