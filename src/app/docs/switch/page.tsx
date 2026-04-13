@@ -1,15 +1,23 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
+import { getStorybookComponentUrl } from "@/features/docs/lib/storybook";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
+import { Button } from "@/ui/Button";
 import { Switch } from "@/ui/Switch";
+import type { SwitchSize } from "@/ui/Switch";
 
 const TOC_ITEMS = [
+  { label: "Theme Preview", href: "#comparison" },
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
   { label: "Copy-Paste", href: "#copy-paste" },
+  { label: "Props", href: "#props" },
 ];
+
+const SIZES: SwitchSize[] = ["sm", "md", "lg"];
 
 const CODE_SNIPPET = `import { Switch } from "@/ui/Switch";
 
@@ -34,118 +42,197 @@ export interface SwitchProps {
   label?: string;
   description?: string;
   className?: string;
-}
+}`;
 
-const TRACK_SIZES: Record<SwitchSize, string> = {
-  sm: "h-5 w-9",
-  md: "h-6 w-11",
-  lg: "h-7 w-14",
-};
+const PROPS_ROWS = [
+  { prop: "checked", type: "boolean", default: "—", description: "Controlled on or off state." },
+  { prop: "defaultChecked", type: "boolean", default: "false", description: "Initial state when the switch is uncontrolled." },
+  { prop: "onChange", type: "(checked: boolean) => void", default: "—", description: "Called whenever the switch toggles." },
+  { prop: "disabled", type: "boolean", default: "false", description: "Prevents interaction and reduces opacity." },
+  { prop: "size", type: '"sm" | "md" | "lg"', default: '"md"', description: "Changes the track and thumb dimensions." },
+  { prop: "label", type: "string", default: "—", description: "Primary label rendered next to the control." },
+  { prop: "description", type: "string", default: "—", description: "Secondary helper text rendered below the label." },
+  { prop: "className", type: "string", default: "—", description: "Additional classes applied to the root wrapper." },
+];
 
-const THUMB_SIZES: Record<SwitchSize, string> = {
-  sm: "h-4 w-4 data-[checked=true]:translate-x-4",
-  md: "h-5 w-5 data-[checked=true]:translate-x-5",
-  lg: "h-6 w-6 data-[checked=true]:translate-x-7",
-};
-
-export function Switch({
-  checked,
-  defaultChecked = false,
-  onChange,
-  disabled = false,
-  size = "md",
-  label,
-  description,
-  className,
-}: SwitchProps) {
-  const [internal, setInternal] = useState(defaultChecked);
-  const isControlled = checked !== undefined;
-  const isOn = isControlled ? checked : internal;
-
-  const stateLabel = useMemo(() => (isOn ? "enabled" : "disabled"), [isOn]);
-
-  const toggle = () => {
-    if (disabled) return;
-    const next = !isOn;
-    if (!isControlled) setInternal(next);
-    onChange?.(next);
-  };
+function ThemedSwitchPanel({ dark }: { dark: boolean }) {
+  const shell = dark ? "border-[#1f2937] bg-[#0d1117]" : "border-slate-200 bg-white";
 
   return (
-    <div className={cn("inline-flex items-start gap-3", className)}>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={isOn}
-        aria-label={label ?? "Switch"}
-        aria-disabled={disabled}
-        data-state={isOn ? "checked" : "unchecked"}
-        onClick={toggle}
-        className={cn(
-          "relative shrink-0 rounded-full p-0.5 transition-all outline-hidden",
-          "focus-visible:ring-2 focus-visible:ring-primary/40",
-          TRACK_SIZES[size],
-          isOn ? "bg-primary" : "bg-slate-300 dark:bg-slate-700",
-          disabled && "cursor-not-allowed opacity-50"
-        )}
-      >
-        <span
-          data-checked={isOn}
-          className={cn(
-            "block rounded-full bg-white shadow-sm transition-transform duration-200",
-            THUMB_SIZES[size]
-          )}
+    <div className={`rounded-xl border p-6 space-y-4 ${shell}`}>
+      {SIZES.map((size) => (
+        <Switch
+          key={size}
+          defaultChecked={size !== "sm"}
+          size={size}
+          label={`Notifications ${size}`}
+          description={`Preview of the ${size} switch size.`}
         />
-      </button>
-
-      {(label ?? description) && (
-        <div className="min-w-0">
-          {label && <p className="text-sm font-medium text-slate-900 dark:text-white">{label}</p>}
-          {description && (
-            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-              {description} ({stateLabel})
-            </p>
-          )}
-        </div>
-      )}
+      ))}
     </div>
   );
-}`;
+}
 
 export default function SwitchDocPage() {
   const [enabled, setEnabled] = useState(true);
+  const [size, setSize] = useState<SwitchSize>("md");
 
   return (
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-4xl">
-        <h1 className="mb-3 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">Switch</h1>
-        <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">
-          Binary toggle for on/off settings with optional label and helper text.
-        </p>
+        <nav className="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
+          <span className="hover:text-primary cursor-pointer transition-colors">Components</span>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="hover:text-primary cursor-pointer transition-colors">Form</span>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="text-slate-900 dark:text-white">Switch</span>
+        </nav>
+
+        <div className="mb-12">
+          <h1 className="mb-4 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">
+            Switch
+          </h1>
+          <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-400">
+            Binary toggle control for settings and preferences where users need an immediate on or
+            off action with optional descriptive context.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            {["Accessible", "Dark Mode", "3 Sizes", "Animated", "Keyboard Nav"].map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-400"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
 
         <CliInstallBlock name="switch" />
 
+        <section id="comparison" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">01</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div>
+              <div className="mb-3 flex items-center gap-2">
+                <div className="h-3 w-3 rounded-full bg-amber-400 shadow-xs shadow-amber-300" />
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Light</span>
+              </div>
+              <ThemedSwitchPanel dark={false} />
+            </div>
+            <div>
+              <div className="mb-3 flex items-center gap-2">
+                <div className="h-3 w-3 rounded-full bg-indigo-500 shadow-xs shadow-indigo-400" />
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Dark</span>
+              </div>
+              <ThemedSwitchPanel dark />
+            </div>
+          </div>
+        </section>
+
         <section id="demo" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                    <span className="text-sm font-bold">02</span>
+                  </div>
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+            </div>
+            <Button asChild variant="ghost" size="sm">
+              <Link
+                href={getStorybookComponentUrl("switch")}
+              target="_blank"
+              rel="noopener noreferrer"
+                className="inline-flex"
+              >
+                Open in Storybook
+                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+                  open_in_new
+                </span>
+              </Link>
+            </Button>
+          </div>
           <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Size</span>
+              <div className="flex gap-2">
+                {SIZES.map((entry) => (
+                  <button
+                    key={entry}
+                    type="button"
+                    onClick={() => setSize(entry)}
+                    className={`rounded-lg px-3 py-1 text-xs font-semibold transition-all ${size === entry ? "bg-primary text-white" : "bg-slate-100 text-slate-600 dark:bg-[#1f2937] dark:text-slate-400"}`}
+                  >
+                    {entry}
+                  </button>
+                ))}
+              </div>
+            </div>
             <Switch
               checked={enabled}
               onChange={setEnabled}
+              size={size}
               label="Enable analytics"
               description={enabled ? "Analytics is active" : "Analytics is disabled"}
             />
-            <Switch defaultChecked={false} label="Email alerts" description="Receive weekly summary emails." />
           </div>
         </section>
 
         <section id="snippet" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">02 Code Snippet</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">03</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
+          </div>
           <CodeBlock filename="src/ui/Switch.tsx" copyText={CODE_SNIPPET}>{CODE_SNIPPET}</CodeBlock>
         </section>
 
         <section id="copy-paste" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">03 Copy-Paste (Single File)</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">04</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
+          </div>
           <CodeBlock filename="Switch.tsx" copyText={COPY_PASTE_SNIPPET}>{COPY_PASTE_SNIPPET}</CodeBlock>
+        </section>
+
+        <section id="props" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">05</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
+          </div>
+          <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#1f2937]">
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22]">
+                <tr>
+                  {["Prop", "Type", "Default", "Description"].map((heading) => (
+                    <th key={heading} className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      {heading}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-[#1f2937] bg-white dark:bg-[#0d1117]">
+                {PROPS_ROWS.map((row) => (
+                  <tr key={row.prop} className="transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
+                    <td className="px-4 py-3"><code className="text-xs font-mono font-semibold text-primary">{row.prop}</code></td>
+                    <td className="px-4 py-3 max-w-[240px]"><code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code></td>
+                    <td className="px-4 py-3"><code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code></td>
+                    <td className="px-4 py-3 text-xs leading-relaxed text-slate-600 dark:text-slate-400">{row.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       </div>
     </DocsPageLayout>

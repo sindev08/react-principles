@@ -189,7 +189,7 @@ These are installed automatically as dependencies but can also be added directly
 | `pagination` | `Pagination.tsx` | Page navigation | — |
 | `popover` | `Popover.tsx` | Floating content anchored to a trigger | — |
 | `progress` | `Progress.tsx` | Linear progress bar | — |
-| `progress-bar` | `ProgressBar.tsx` | Animated top progress bar tied to navigation | `use-animated-mount` |
+| `page-progress` | `PageProgress.tsx` | Animated top progress bar tied to navigation | `use-animated-mount` |
 | `radio-group` | `RadioGroup.tsx` | Radio button group | — |
 | `search-dialog` | `SearchDialog.tsx` | Full-screen search dialog | `use-animated-mount` |
 | `select` | `Select.tsx` | Native select with styling | — |

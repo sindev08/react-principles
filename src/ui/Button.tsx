@@ -1,4 +1,5 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { cloneElement, isValidElement } from "react";
+import type { ButtonHTMLAttributes, ReactElement, ReactNode } from "react";
 import { cn } from "@/shared/utils/cn";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "destructive" | "outline";
@@ -8,6 +9,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   isLoading?: boolean;
+  asChild?: boolean;
   children: ReactNode;
 }
 
@@ -43,23 +45,40 @@ export function Button({
   variant = "primary",
   size = "md",
   isLoading = false,
+  asChild = false,
   disabled,
   children,
   className,
   ...props
 }: ButtonProps) {
+  const classes = cn(
+    "inline-flex items-center justify-center font-semibold rounded-lg transition-all",
+    "focus-visible:outline-hidden focus-visible:ring-2",
+    "disabled:opacity-50 disabled:cursor-not-allowed",
+    VARIANT_CLASSES[variant],
+    SIZE_CLASSES[size],
+    className,
+  );
+
+  if (asChild && isValidElement(children)) {
+    const child = children as ReactElement<{ className?: string; children?: ReactNode }>;
+
+    return cloneElement(child, {
+      className: cn(classes, child.props.className),
+      children: (
+        <>
+          {isLoading && <Spinner />}
+          {child.props.children}
+        </>
+      ),
+    });
+  }
+
   return (
     <button
       {...props}
       disabled={disabled || isLoading}
-      className={cn(
-        "inline-flex items-center justify-center font-semibold rounded-lg transition-all",
-        "focus-visible:outline-hidden focus-visible:ring-2",
-        "disabled:opacity-50 disabled:cursor-not-allowed",
-        VARIANT_CLASSES[variant],
-        SIZE_CLASSES[size],
-        className,
-      )}
+      className={classes}
     >
       {isLoading && <Spinner />}
       {children}
