@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/shared/utils/cn";
+import { STORYBOOK_BASE_URL } from "@/features/docs/lib/storybook";
 import { DOCS_NAV } from "./docs-nav";
 import { RECIPES } from "@/features/cookbook/data/cookbook-data";
 
@@ -49,7 +50,7 @@ export function DocsSidebar() {
 
   return (
     <aside className="sidebar-scroll sticky top-14 hidden h-[calc(100vh-3.5rem)] w-64 shrink-0 overflow-y-auto border-r border-slate-200 dark:border-[#1f2937] py-8 pr-6 lg:block">
-      <div ref={navRef} className="relative flex flex-col gap-8">
+      <div ref={navRef} className="relative flex min-h-full flex-col gap-8">
         {/* Sliding active indicator */}
         <div
           aria-hidden
@@ -104,6 +105,21 @@ export function DocsSidebar() {
                 </ul>
               </div>
             ))}
+
+            <div className="mt-auto pt-2">
+              <div className="mb-4 h-px bg-slate-200 dark:bg-[#1f2937]" />
+              <Link
+                href={STORYBOOK_BASE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative z-10 flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              >
+                <span>Storybook</span>
+                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+                  open_in_new
+                </span>
+              </Link>
+            </div>
           </>
         ) : (
           /* Cookbook nav */

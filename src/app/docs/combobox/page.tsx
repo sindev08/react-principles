@@ -1,27 +1,35 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
+import { getStorybookComponentUrl } from "@/features/docs/lib/storybook";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
+import { Button } from "@/ui/Button";
 import { Combobox } from "@/ui/Combobox";
 
 const TOC_ITEMS = [
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
   { label: "Copy-Paste", href: "#copy-paste" },
+  { label: "Props", href: "#props" },
+];
+
+const OPTIONS = [
+  { label: "Next.js", value: "next", description: "App Router and full-stack React" },
+  { label: "Vite", value: "vite", description: "Fast dev server for modern frontends" },
+  { label: "Remix", value: "remix", description: "Nested routing with progressive enhancement" },
+  { label: "Vue", value: "vue", description: "Progressive framework" },
 ];
 
 const CODE_SNIPPET = `import { Combobox } from "@/ui/Combobox";
 
 <Combobox
-  value={value}
-  onValueChange={setValue}
-  options={[
-    { label: "React", value: "react" },
-    { label: "Vue", value: "vue" },
-    { label: "Svelte", value: "svelte" },
-  ]}
-  placeholder="Search framework..."
+  options={frameworks}
+  value={framework}
+  onValueChange={setFramework}
+  label="Framework"
+  description="Search and select a frontend stack."
 />`;
 
 const COPY_PASTE_SNIPPET = `import { useEffect, useMemo, useRef, useState } from "react";
@@ -44,200 +52,140 @@ export interface ComboboxProps {
   label?: string;
   description?: string;
   className?: string;
-}
-
-export function Combobox({
-  options,
-  value,
-  defaultValue,
-  onValueChange,
-  placeholder = "Search...",
-  emptyText = "No results",
-  label,
-  description,
-  className,
-}: ComboboxProps) {
-  const [query, setQuery] = useState("");
-  const [open, setOpen] = useState(false);
-  const [highlightedIndex, setHighlightedIndex] = useState(0);
-  const [internalValue, setInternalValue] = useState(defaultValue ?? "");
-  const containerRef = useRef<HTMLDivElement>(null);
-  const isControlled = value !== undefined;
-  const selectedValue = isControlled ? value : internalValue;
-
-  const selectedOption = useMemo(
-    () => options.find((option) => option.value === selectedValue),
-    [options, selectedValue]
-  );
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return options;
-    return options.filter(
-      (option) =>
-        option.label.toLowerCase().includes(q) || option.description?.toLowerCase().includes(q)
-    );
-  }, [options, query]);
-
-  useEffect(() => {
-    if (!open) return;
-    const onPointerDown = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    };
-    window.addEventListener("mousedown", onPointerDown);
-    return () => window.removeEventListener("mousedown", onPointerDown);
-  }, [open]);
-
-  useEffect(() => {
-    if (selectedOption && !open) {
-      setQuery(selectedOption.label);
-    }
-  }, [selectedOption, open]);
-
-  const selectValue = (nextValue: string) => {
-    if (!isControlled) setInternalValue(nextValue);
-    onValueChange?.(nextValue);
-    const nextOption = options.find((option) => option.value === nextValue);
-    setQuery(nextOption?.label ?? "");
-    setOpen(false);
-  };
-
-  return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
-      {label && <label className="text-sm font-medium text-slate-700 dark:text-slate-300">{label}</label>}
-
-      <div ref={containerRef} className="relative">
-        <input
-          value={query}
-          onChange={(event) => {
-            setQuery(event.target.value);
-            setOpen(true);
-            setHighlightedIndex(0);
-          }}
-          onFocus={() => setOpen(true)}
-          onKeyDown={(event) => {
-            if (!open && event.key === "ArrowDown") {
-              setOpen(true);
-              return;
-            }
-            if (event.key === "ArrowDown") {
-              event.preventDefault();
-              setHighlightedIndex((index) => Math.min(index + 1, filtered.length - 1));
-            }
-            if (event.key === "ArrowUp") {
-              event.preventDefault();
-              setHighlightedIndex((index) => Math.max(index - 1, 0));
-            }
-            if (event.key === "Enter") {
-              event.preventDefault();
-              const option = filtered[highlightedIndex];
-              if (option && !option.disabled) selectValue(option.value);
-            }
-            if (event.key === "Escape") {
-              setOpen(false);
-            }
-          }}
-          placeholder={placeholder}
-          className={cn(
-            "h-10 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-sm text-slate-900 outline-hidden transition-all",
-            "hover:border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20",
-            "dark:border-[#1f2937] dark:bg-[#0d1117] dark:text-white dark:hover:border-slate-600"
-          )}
-        />
-        <span className="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[18px] text-slate-400">
-          {open ? "expand_less" : "expand_more"}
-        </span>
-
-        {open && (
-          <div className="absolute z-40 mt-2 max-h-64 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-lg dark:border-[#1f2937] dark:bg-[#161b22]">
-            {filtered.length === 0 && (
-              <p className="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">{emptyText}</p>
-            )}
-            {filtered.map((option, index) => {
-              const isSelected = selectedValue === option.value;
-              const isHighlighted = index === highlightedIndex;
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  disabled={option.disabled}
-                  onMouseEnter={() => setHighlightedIndex(index)}
-                  onClick={() => !option.disabled && selectValue(option.value)}
-                  className={cn(
-                    "flex w-full items-start gap-2 rounded-lg px-3 py-2 text-left transition-colors",
-                    isHighlighted && "bg-primary/10",
-                    !isHighlighted && "hover:bg-slate-50 dark:hover:bg-[#0d1117]",
-                    option.disabled && "cursor-not-allowed opacity-50"
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "mt-0.5 material-symbols-outlined text-[16px]",
-                      isSelected ? "text-primary" : "text-transparent"
-                    )}
-                  >
-                    check
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm text-slate-900 dark:text-white">{option.label}</span>
-                    {option.description && (
-                      <span className="mt-0.5 block truncate text-xs text-slate-500 dark:text-slate-400">
-                        {option.description}
-                      </span>
-                    )}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {description && <p className="text-xs text-slate-500 dark:text-slate-400">{description}</p>}
-    </div>
-  );
 }`;
 
+const PROPS_ROWS = [
+  { prop: "options", type: "ComboboxOption[]", default: "—", description: "Available options shown in the floating results list." },
+  { prop: "value", type: "string", default: "—", description: "Controlled selected option value." },
+  { prop: "defaultValue", type: "string", default: "—", description: "Initial selected option value when uncontrolled." },
+  { prop: "onValueChange", type: "(value: string) => void", default: "—", description: "Called when users pick a result." },
+  { prop: "placeholder", type: "string", default: '"Search..."', description: "Input placeholder text before search begins." },
+  { prop: "emptyText", type: "string", default: '"No results"', description: "Fallback message when filtering returns no matches." },
+  { prop: "label", type: "string", default: "—", description: "Optional field label shown above the input." },
+  { prop: "description", type: "string", default: "—", description: "Helper text displayed below the combobox." },
+  { prop: "className", type: "string", default: "—", description: "Additional classes applied to the root wrapper." },
+];
+
 export default function ComboboxDocPage() {
-  const [value, setValue] = useState("react");
+  const [framework, setFramework] = useState("next");
 
   return (
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-4xl">
-        <h1 className="mb-3 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">Combobox</h1>
-        <p className="mb-10 text-lg text-slate-600 dark:text-slate-400">
-          Searchable picker for larger option lists with keyboard navigation support.
-        </p>
+        <nav className="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
+          <span className="hover:text-primary cursor-pointer transition-colors">Components</span>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="hover:text-primary cursor-pointer transition-colors">Form</span>
+          <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          <span className="text-slate-900 dark:text-white">Combobox</span>
+        </nav>
+
+        <div className="mb-12">
+          <h1 className="mb-4 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">
+            Combobox
+          </h1>
+          <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-400">
+            Searchable selection input that combines free-form filtering with a structured list of
+            options for large or descriptive datasets.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            {["Accessible", "Dark Mode", "Keyboard Nav", "Animated"].map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-400"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
 
         <CliInstallBlock name="combobox" />
 
         <section id="demo" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">01 Live Demo</h2>
-          <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+                    <span className="text-sm font-bold">01</span>
+                  </div>
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+            </div>
+            <Button asChild variant="ghost" size="sm">
+              <Link
+                href={getStorybookComponentUrl("combobox")}
+              target="_blank"
+              rel="noopener noreferrer"
+                className="inline-flex"
+              >
+                Open in Storybook
+                <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+                  open_in_new
+                </span>
+              </Link>
+            </Button>
+          </div>
+          <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
             <Combobox
-              value={value}
-              onValueChange={setValue}
-              placeholder="Search framework..."
-              options={[
-                { label: "React", value: "react", description: "Component-driven UI" },
-                { label: "Vue", value: "vue", description: "Progressive framework" },
-                { label: "Svelte", value: "svelte", description: "Compiler-based" },
-                { label: "Solid", value: "solid", description: "Fine-grained reactivity" },
-              ]}
+              options={OPTIONS}
+              value={framework}
+              onValueChange={setFramework}
+              label="Framework"
+              description="Search and select a frontend stack."
             />
+            <p className="text-xs text-slate-500 dark:text-slate-400">Selected value: {framework}</p>
           </div>
         </section>
 
         <section id="snippet" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">02 Code Snippet</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">02</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
+          </div>
           <CodeBlock filename="src/ui/Combobox.tsx" copyText={CODE_SNIPPET}>{CODE_SNIPPET}</CodeBlock>
         </section>
 
         <section id="copy-paste" className="mb-16">
-          <h2 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">03 Copy-Paste (Single File)</h2>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">03</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
+          </div>
           <CodeBlock filename="Combobox.tsx" copyText={COPY_PASTE_SNIPPET}>{COPY_PASTE_SNIPPET}</CodeBlock>
+        </section>
+
+        <section id="props" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">04</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
+          </div>
+          <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-[#1f2937]">
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22]">
+                <tr>
+                  {["Prop", "Type", "Default", "Description"].map((heading) => (
+                    <th key={heading} className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                      {heading}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-[#1f2937] bg-white dark:bg-[#0d1117]">
+                {PROPS_ROWS.map((row) => (
+                  <tr key={row.prop} className="transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
+                    <td className="px-4 py-3"><code className="text-xs font-mono font-semibold text-primary">{row.prop}</code></td>
+                    <td className="px-4 py-3 max-w-[240px]"><code className="text-xs font-mono text-slate-600 dark:text-slate-400 wrap-break-word">{row.type}</code></td>
+                    <td className="px-4 py-3"><code className="text-xs font-mono text-slate-500 dark:text-slate-400">{row.default}</code></td>
+                    <td className="px-4 py-3 text-xs leading-relaxed text-slate-600 dark:text-slate-400">{row.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </section>
       </div>
     </DocsPageLayout>

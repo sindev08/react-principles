@@ -46,6 +46,7 @@ export { useAppStore, useFilterStore, useHasActiveFilters, useSearchStore } from
 
 // Components
 export { EmptyState, ErrorBoundary, LoadingState } from "./shared/components";
+export { PageProgress, type PageProgressProps } from "./ui/PageProgress";
 
 // Lib
 export { createApiClient, type ApiClient, type ApiClientConfig, type RequestOptions } from "./lib/exportable";

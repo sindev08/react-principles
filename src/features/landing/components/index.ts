@@ -2,6 +2,7 @@ export { Navbar } from "./Navbar";
 export { ThemeToggle } from "./ThemeToggle";
 export { HeroSection } from "./HeroSection";
 export { WhySection } from "./WhySection";
+export { ComponentShowcaseSection } from "./ComponentShowcaseSection";
 export { TechStackSection } from "./TechStackSection";
 export { MonorepoSection } from "./MonorepoSection";
 export { DocsSection } from "./DocsSection";

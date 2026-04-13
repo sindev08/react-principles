@@ -2,10 +2,10 @@
 
 import { usePathname } from "next/navigation";
 import { useProgressBar } from "@/shared/hooks/useProgressBar";
-import { ProgressBar } from "@/ui/ProgressBar";
+import { PageProgress } from "@/ui/PageProgress";
 
 export function NavigationProgress() {
   const pathname = usePathname();
   const { progress, visible } = useProgressBar(pathname);
-  return <ProgressBar progress={progress} visible={visible} />;
+  return <PageProgress progress={progress} visible={visible} />;
 }

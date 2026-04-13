@@ -2584,11 +2584,11 @@ export function Progress({ value, max = 100, className, ...props }: ProgressProp
     </div>
   );
 }`,
-  "ProgressBar": `import { cn } from "@/lib/utils";
+  "PageProgress": `import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-export interface ProgressBarProps {
+export interface PageProgressProps {
   /** Current progress 0–100 */
   progress: number;
   /** Whether the bar is visible (false triggers fade-out) */
@@ -2601,7 +2601,7 @@ export interface ProgressBarProps {
  * Thin top-of-page progress bar for navigation feedback.
  * Pair with \`useProgressBar\` hook.
  */
-export function ProgressBar({ progress, visible }: ProgressBarProps) {
+export function PageProgress({ progress, visible }: PageProgressProps) {
   return (
     <div
       role="progressbar"
