@@ -6,6 +6,8 @@ A CLI to add react-principles UI components to your project — copy-paste based
 
 - Node.js 18+
 - React 19+
+- react-dom 19+
+- TypeScript 5+
 - Tailwind CSS v4
 
 ## Usage
@@ -13,9 +15,9 @@ A CLI to add react-principles UI components to your project — copy-paste based
 No installation needed. Run directly with `npx`:
 
 ```bash
-npx react-principles init
-npx react-principles add <component>
-npx react-principles list
+npx react-principles@latest init
+npx react-principles@latest add <component>
+npx react-principles@latest list
 ```
 
 ---
