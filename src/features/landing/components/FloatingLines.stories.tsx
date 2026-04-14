@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { FloatingLines } from "./FloatingLines";
 
 const meta = {
-  title: "UI/FloatingLines",
+  title: "Landing/FloatingLines",
   component: FloatingLines,
   args: {
     linesGradient: ["#4628f1", "#7c3aed", "#06b6d4"],

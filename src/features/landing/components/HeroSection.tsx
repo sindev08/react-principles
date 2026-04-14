@@ -8,7 +8,7 @@ import { useAppStore } from "@/shared/stores/useAppStore";
 
 const FloatingLines = dynamic(
   () =>
-    import("@/ui/FloatingLines").then((m) => ({
+    import("@/features/landing/components/FloatingLines").then((m) => ({
       default: m.FloatingLines,
     })),
   { ssr: false },
