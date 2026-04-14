@@ -1714,473 +1714,279 @@ DropdownMenu.Item = function DropdownMenuItem({ inset = false, onSelect, onClick
     />
   );
 }`,
-  "FloatingLines": `import { useEffect, useRef } from "react";
-import {
-  Scene,
-  OrthographicCamera,
-  WebGLRenderer,
-  PlaneGeometry,
-  Mesh,
-  ShaderMaterial,
-  Vector3,
-  Vector2,
-  Clock,
-} from "three";
+  "Grainient": `"use client";
 
-const vertexShader = \`
-precision highp float;
+import { useEffect, useRef } from "react";
+import { Renderer, Program, Mesh, Triangle } from "ogl";
+import { cn } from "@/lib/utils";
 
-void main() {
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-}
-\`;
-
-const fragmentShader = \`
-precision highp float;
-
-uniform float iTime;
-uniform vec3 iResolution;
-uniform float animationSpeed;
-
-uniform bool enableTop;
-uniform bool enableMiddle;
-uniform bool enableBottom;
-
-uniform int topLineCount;
-uniform int middleLineCount;
-uniform int bottomLineCount;
-
-uniform float topLineDistance;
-uniform float middleLineDistance;
-uniform float bottomLineDistance;
-
-uniform vec3 topWavePosition;
-uniform vec3 middleWavePosition;
-uniform vec3 bottomWavePosition;
-
-uniform vec2 iMouse;
-uniform bool interactive;
-uniform float bendRadius;
-uniform float bendStrength;
-uniform float bendInfluence;
-
-uniform bool parallax;
-uniform float parallaxStrength;
-uniform vec2 parallaxOffset;
-
-uniform vec3 lineGradient[8];
-uniform int lineGradientCount;
-
-const vec3 BLACK = vec3(0.0);
-const vec3 PINK = vec3(233.0, 71.0, 245.0) / 255.0;
-const vec3 BLUE = vec3(47.0, 75.0, 162.0) / 255.0;
-
-mat2 rotate(float r) {
-  return mat2(cos(r), sin(r), -sin(r), cos(r));
-}
-
-vec3 background_color(vec2 uv) {
-  vec3 col = vec3(0.0);
-  float y = sin(uv.x - 0.2) * 0.3 - 0.1;
-  float m = uv.y - y;
-  col += mix(BLUE, BLACK, smoothstep(0.0, 1.0, abs(m)));
-  col += mix(PINK, BLACK, smoothstep(0.0, 1.0, abs(m - 0.8)));
-  return col * 0.5;
-}
-
-vec3 getLineColor(float t, vec3 baseColor) {
-  if (lineGradientCount <= 0) return baseColor;
-
-  vec3 gradientColor;
-  if (lineGradientCount == 1) {
-    gradientColor = lineGradient[0];
-  } else {
-    float clampedT = clamp(t, 0.0, 0.9999);
-    float scaled = clampedT * float(lineGradientCount - 1);
-    int idx = int(floor(scaled));
-    float f = fract(scaled);
-    int idx2 = min(idx + 1, lineGradientCount - 1);
-    vec3 c1 = lineGradient[idx];
-    vec3 c2 = lineGradient[idx2];
-    gradientColor = mix(c1, c2, f);
-  }
-  return gradientColor * 0.5;
-}
-
-float wave(vec2 uv, float offset, vec2 screenUv, vec2 mouseUv, bool shouldBend) {
-  float time = iTime * animationSpeed;
-  float x_offset = offset;
-  float x_movement = time * 0.1;
-  float amp = sin(offset + time * 0.2) * 0.3;
-  float y = sin(uv.x + x_offset + x_movement) * amp;
-
-  if (shouldBend) {
-    vec2 d = screenUv - mouseUv;
-    float influence = exp(-dot(d, d) * bendRadius);
-    float bendOffset = (mouseUv.y - screenUv.y) * influence * bendStrength * bendInfluence;
-    y += bendOffset;
-  }
-
-  float m = uv.y - y;
-  return 0.0175 / max(abs(m) + 0.01, 1e-3) + 0.01;
-}
-
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-  vec2 baseUv = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
-  baseUv.y *= -1.0;
-
-  if (parallax) baseUv += parallaxOffset;
-
-  vec3 col = vec3(0.0);
-  vec3 b = lineGradientCount > 0 ? vec3(0.0) : background_color(baseUv);
-
-  vec2 mouseUv = vec2(0.0);
-  if (interactive) {
-    mouseUv = (2.0 * iMouse - iResolution.xy) / iResolution.y;
-    mouseUv.y *= -1.0;
-  }
-
-  if (enableBottom) {
-    for (int i = 0; i < bottomLineCount; ++i) {
-      float fi = float(i);
-      float t = fi / max(float(bottomLineCount - 1), 1.0);
-      vec3 lineCol = getLineColor(t, b);
-      float angle = bottomWavePosition.z * log(length(baseUv) + 1.0);
-      vec2 ruv = baseUv * rotate(angle);
-      col += lineCol * wave(
-        ruv + vec2(bottomLineDistance * fi + bottomWavePosition.x, bottomWavePosition.y),
-        1.5 + 0.2 * fi, baseUv, mouseUv, interactive
-      ) * 0.2;
-    }
-  }
-
-  if (enableMiddle) {
-    for (int i = 0; i < middleLineCount; ++i) {
-      float fi = float(i);
-      float t = fi / max(float(middleLineCount - 1), 1.0);
-      vec3 lineCol = getLineColor(t, b);
-      float angle = middleWavePosition.z * log(length(baseUv) + 1.0);
-      vec2 ruv = baseUv * rotate(angle);
-      col += lineCol * wave(
-        ruv + vec2(middleLineDistance * fi + middleWavePosition.x, middleWavePosition.y),
-        2.0 + 0.15 * fi, baseUv, mouseUv, interactive
-      );
-    }
-  }
-
-  if (enableTop) {
-    for (int i = 0; i < topLineCount; ++i) {
-      float fi = float(i);
-      float t = fi / max(float(topLineCount - 1), 1.0);
-      vec3 lineCol = getLineColor(t, b);
-      float angle = topWavePosition.z * log(length(baseUv) + 1.0);
-      vec2 ruv = baseUv * rotate(angle);
-      ruv.x *= -1.0;
-      col += lineCol * wave(
-        ruv + vec2(topLineDistance * fi + topWavePosition.x, topWavePosition.y),
-        1.0 + 0.2 * fi, baseUv, mouseUv, interactive
-      ) * 0.1;
-    }
-  }
-
-  fragColor = vec4(col, 1.0);
-}
-
-void main() {
-  vec4 color = vec4(0.0);
-  mainImage(color, gl_FragCoord.xy);
-  gl_FragColor = color;
-}
-\`;
-
-const MAX_GRADIENT_STOPS = 8;
-
-function hexToVec3(hex: string): Vector3 {
-  const value = hex.trim().replace(/^#/, "");
-  let r = 255, g = 255, b = 255;
-
-  if (value.length === 3) {
-    r = parseInt((value[0] ?? "f") + (value[0] ?? "f"), 16);
-    g = parseInt((value[1] ?? "f") + (value[1] ?? "f"), 16);
-    b = parseInt((value[2] ?? "f") + (value[2] ?? "f"), 16);
-  } else if (value.length === 6) {
-    r = parseInt(value.slice(0, 2), 16);
-    g = parseInt(value.slice(2, 4), 16);
-    b = parseInt(value.slice(4, 6), 16);
-  }
-
-  return new Vector3(r / 255, g / 255, b / 255);
-}
-
-export interface WavePosition {
-  x?: number;
-  y?: number;
-  rotate?: number;
-}
-
-export interface FloatingLinesProps {
-  linesGradient?: string[];
-  enabledWaves?: Array<"top" | "middle" | "bottom">;
-  lineCount?: number | number[];
-  lineDistance?: number | number[];
-  topWavePosition?: WavePosition;
-  middleWavePosition?: WavePosition;
-  bottomWavePosition?: WavePosition;
-  animationSpeed?: number;
-  interactive?: boolean;
-  bendRadius?: number;
-  bendStrength?: number;
-  mouseDamping?: number;
-  parallax?: boolean;
-  parallaxStrength?: number;
-  mixBlendMode?: React.CSSProperties["mixBlendMode"];
+export interface GrainientProps {
+  timeSpeed?: number;
+  colorBalance?: number;
+  warpStrength?: number;
+  warpFrequency?: number;
+  warpSpeed?: number;
+  warpAmplitude?: number;
+  blendAngle?: number;
+  blendSoftness?: number;
+  rotationAmount?: number;
+  noiseScale?: number;
+  grainAmount?: number;
+  grainScale?: number;
+  grainAnimated?: boolean;
+  contrast?: number;
+  gamma?: number;
+  saturation?: number;
+  centerX?: number;
+  centerY?: number;
+  zoom?: number;
+  color1?: string;
+  color2?: string;
+  color3?: string;
   className?: string;
 }
 
-type WaveType = "top" | "middle" | "bottom";
+function hexToRgb(hex: string): [number, number, number] {
+  const result = /^#?([a-f\\d]{2})([a-f\\d]{2})([a-f\\d]{2})$/i.exec(hex);
+  if (!result) return [1, 1, 1];
+  return [
+    parseInt(result[1] ?? "ff", 16) / 255,
+    parseInt(result[2] ?? "ff", 16) / 255,
+    parseInt(result[3] ?? "ff", 16) / 255,
+  ];
+}
 
-export function FloatingLines({
-  linesGradient,
-  enabledWaves = ["top", "middle", "bottom"],
-  lineCount = 6,
-  lineDistance = 5,
-  topWavePosition,
-  middleWavePosition,
-  bottomWavePosition = { x: 2.0, y: -0.7, rotate: -1 },
-  animationSpeed = 1,
-  interactive = true,
-  bendRadius = 5.0,
-  bendStrength = -0.5,
-  mouseDamping = 0.05,
-  parallax = true,
-  parallaxStrength = 0.2,
-  mixBlendMode = "screen",
+const vertex = \`#version 300 es
+in vec2 position;
+void main() {
+  gl_Position = vec4(position, 0.0, 1.0);
+}
+\`;
+
+const fragment = \`#version 300 es
+precision highp float;
+uniform vec2 iResolution;
+uniform float iTime;
+uniform float uTimeSpeed;
+uniform float uColorBalance;
+uniform float uWarpStrength;
+uniform float uWarpFrequency;
+uniform float uWarpSpeed;
+uniform float uWarpAmplitude;
+uniform float uBlendAngle;
+uniform float uBlendSoftness;
+uniform float uRotationAmount;
+uniform float uNoiseScale;
+uniform float uGrainAmount;
+uniform float uGrainScale;
+uniform float uGrainAnimated;
+uniform float uContrast;
+uniform float uGamma;
+uniform float uSaturation;
+uniform vec2 uCenterOffset;
+uniform float uZoom;
+uniform vec3 uColor1;
+uniform vec3 uColor2;
+uniform vec3 uColor3;
+out vec4 fragColor;
+#define S(a,b,t) smoothstep(a,b,t)
+mat2 Rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}
+vec2 hash(vec2 p){p=vec2(dot(p,vec2(2127.1,81.17)),dot(p,vec2(1269.5,283.37)));return fract(sin(p)*43758.5453);}
+float noise(vec2 p){vec2 i=floor(p),f=fract(p),u=f*f*(3.0-2.0*f);float n=mix(mix(dot(-1.0+2.0*hash(i+vec2(0.0,0.0)),f-vec2(0.0,0.0)),dot(-1.0+2.0*hash(i+vec2(1.0,0.0)),f-vec2(1.0,0.0)),u.x),mix(dot(-1.0+2.0*hash(i+vec2(0.0,1.0)),f-vec2(0.0,1.0)),dot(-1.0+2.0*hash(i+vec2(1.0,1.0)),f-vec2(1.0,1.0)),u.x),u.y);return 0.5+0.5*n;}
+void mainImage(out vec4 o, vec2 C){
+  float t=iTime*uTimeSpeed;
+  vec2 uv=C/iResolution.xy;
+  float ratio=iResolution.x/iResolution.y;
+  vec2 tuv=uv-0.5+uCenterOffset;
+  tuv/=max(uZoom,0.001);
+
+  float degree=noise(vec2(t*0.1,tuv.x*tuv.y)*uNoiseScale);
+  tuv.y*=1.0/ratio;
+  tuv*=Rot(radians((degree-0.5)*uRotationAmount+180.0));
+  tuv.y*=ratio;
+
+  float frequency=uWarpFrequency;
+  float ws=max(uWarpStrength,0.001);
+  float amplitude=uWarpAmplitude/ws;
+  float warpTime=t*uWarpSpeed;
+  tuv.x+=sin(tuv.y*frequency+warpTime)/amplitude;
+  tuv.y+=sin(tuv.x*(frequency*1.5)+warpTime)/(amplitude*0.5);
+
+  vec3 colLav=uColor1;
+  vec3 colOrg=uColor2;
+  vec3 colDark=uColor3;
+  float b=uColorBalance;
+  float s=max(uBlendSoftness,0.0);
+  mat2 blendRot=Rot(radians(uBlendAngle));
+  float blendX=(tuv*blendRot).x;
+  float edge0=-0.3-b-s;
+  float edge1=0.2-b+s;
+  float v0=0.5-b+s;
+  float v1=-0.3-b-s;
+  vec3 layer1=mix(colDark,colOrg,S(edge0,edge1,blendX));
+  vec3 layer2=mix(colOrg,colLav,S(edge0,edge1,blendX));
+  vec3 col=mix(layer1,layer2,S(v0,v1,tuv.y));
+
+  vec2 grainUv=uv*max(uGrainScale,0.001);
+  if(uGrainAnimated>0.5){grainUv+=vec2(iTime*0.05);}
+  float grain=fract(sin(dot(grainUv,vec2(12.9898,78.233)))*43758.5453);
+  col+=(grain-0.5)*uGrainAmount;
+
+  col=(col-0.5)*uContrast+0.5;
+  float luma=dot(col,vec3(0.2126,0.7152,0.0722));
+  col=mix(vec3(luma),col,uSaturation);
+  col=pow(max(col,0.0),vec3(1.0/max(uGamma,0.001)));
+  col=clamp(col,0.0,1.0);
+
+  o=vec4(col,1.0);
+}
+void main(){
+  vec4 o=vec4(0.0);
+  mainImage(o,gl_FragCoord.xy);
+  fragColor=o;
+}
+\`;
+
+export function Grainient({
+  timeSpeed = 0.25,
+  colorBalance = 0.0,
+  warpStrength = 1.0,
+  warpFrequency = 5.0,
+  warpSpeed = 2.0,
+  warpAmplitude = 50.0,
+  blendAngle = 0.0,
+  blendSoftness = 0.05,
+  rotationAmount = 500.0,
+  noiseScale = 2.0,
+  grainAmount = 0.1,
+  grainScale = 2.0,
+  grainAnimated = false,
+  contrast = 1.5,
+  gamma = 1.0,
+  saturation = 1.0,
+  centerX = 0.0,
+  centerY = 0.0,
+  zoom = 0.9,
+  color1 = "#FF9FFC",
+  color2 = "#5227FF",
+  color3 = "#B19EEF",
   className,
-}: FloatingLinesProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const targetMouseRef = useRef(new Vector2(-1000, -1000));
-  const currentMouseRef = useRef(new Vector2(-1000, -1000));
-  const targetInfluenceRef = useRef(0);
-  const currentInfluenceRef = useRef(0);
-  const targetParallaxRef = useRef(new Vector2(0, 0));
-  const currentParallaxRef = useRef(new Vector2(0, 0));
-
-  const getLineCount = (waveType: WaveType): number => {
-    if (typeof lineCount === "number") return lineCount;
-    if (!enabledWaves.includes(waveType)) return 0;
-    const index = enabledWaves.indexOf(waveType);
-    return lineCount[index] ?? 6;
-  };
-
-  const getLineDistance = (waveType: WaveType): number => {
-    if (typeof lineDistance === "number") return lineDistance;
-    if (!enabledWaves.includes(waveType)) return 0.1;
-    const index = enabledWaves.indexOf(waveType);
-    return lineDistance[index] ?? 0.1;
-  };
-
-  const topLineCount = enabledWaves.includes("top") ? getLineCount("top") : 0;
-  const middleLineCount = enabledWaves.includes("middle") ? getLineCount("middle") : 0;
-  const bottomLineCount = enabledWaves.includes("bottom") ? getLineCount("bottom") : 0;
-
-  const topLineDistance = enabledWaves.includes("top") ? getLineDistance("top") * 0.01 : 0.01;
-  const middleLineDistance = enabledWaves.includes("middle") ? getLineDistance("middle") * 0.01 : 0.01;
-  const bottomLineDistance = enabledWaves.includes("bottom") ? getLineDistance("bottom") * 0.01 : 0.01;
+}: GrainientProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const scene = new Scene();
-    const camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    camera.position.z = 1;
+    const renderer = new Renderer({
+      webgl: 2,
+      alpha: true,
+      antialias: false,
+      dpr: Math.min(window.devicePixelRatio || 1, 2),
+    });
 
-    const renderer = new WebGLRenderer({ antialias: true, alpha: false });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.domElement.style.width = "100%";
-    renderer.domElement.style.height = "100%";
-    containerRef.current.appendChild(renderer.domElement);
+    const gl = renderer.gl;
+    const canvas = gl.canvas as HTMLCanvasElement;
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.style.display = "block";
 
-    const uniforms = {
-      iTime: { value: 0 },
-      iResolution: { value: new Vector3(1, 1, 1) },
-      animationSpeed: { value: animationSpeed },
+    const container = containerRef.current;
+    container.appendChild(canvas);
 
-      enableTop: { value: enabledWaves.includes("top") },
-      enableMiddle: { value: enabledWaves.includes("middle") },
-      enableBottom: { value: enabledWaves.includes("bottom") },
-
-      topLineCount: { value: topLineCount },
-      middleLineCount: { value: middleLineCount },
-      bottomLineCount: { value: bottomLineCount },
-
-      topLineDistance: { value: topLineDistance },
-      middleLineDistance: { value: middleLineDistance },
-      bottomLineDistance: { value: bottomLineDistance },
-
-      topWavePosition: {
-        value: new Vector3(
-          topWavePosition?.x ?? 10.0,
-          topWavePosition?.y ?? 0.5,
-          topWavePosition?.rotate ?? -0.4,
-        ),
+    const geometry = new Triangle(gl);
+    const program = new Program(gl, {
+      vertex,
+      fragment,
+      uniforms: {
+        iTime: { value: 0 },
+        iResolution: { value: new Float32Array([1, 1]) },
+        uTimeSpeed: { value: timeSpeed },
+        uColorBalance: { value: colorBalance },
+        uWarpStrength: { value: warpStrength },
+        uWarpFrequency: { value: warpFrequency },
+        uWarpSpeed: { value: warpSpeed },
+        uWarpAmplitude: { value: warpAmplitude },
+        uBlendAngle: { value: blendAngle },
+        uBlendSoftness: { value: blendSoftness },
+        uRotationAmount: { value: rotationAmount },
+        uNoiseScale: { value: noiseScale },
+        uGrainAmount: { value: grainAmount },
+        uGrainScale: { value: grainScale },
+        uGrainAnimated: { value: grainAnimated ? 1.0 : 0.0 },
+        uContrast: { value: contrast },
+        uGamma: { value: gamma },
+        uSaturation: { value: saturation },
+        uCenterOffset: { value: new Float32Array([centerX, centerY]) },
+        uZoom: { value: zoom },
+        uColor1: { value: new Float32Array(hexToRgb(color1)) },
+        uColor2: { value: new Float32Array(hexToRgb(color2)) },
+        uColor3: { value: new Float32Array(hexToRgb(color3)) },
       },
-      middleWavePosition: {
-        value: new Vector3(
-          middleWavePosition?.x ?? 5.0,
-          middleWavePosition?.y ?? 0.0,
-          middleWavePosition?.rotate ?? 0.2,
-        ),
-      },
-      bottomWavePosition: {
-        value: new Vector3(
-          bottomWavePosition?.x ?? 2.0,
-          bottomWavePosition?.y ?? -0.7,
-          bottomWavePosition?.rotate ?? 0.4,
-        ),
-      },
+    });
 
-      iMouse: { value: new Vector2(-1000, -1000) },
-      interactive: { value: interactive },
-      bendRadius: { value: bendRadius },
-      bendStrength: { value: bendStrength },
-      bendInfluence: { value: 0 },
-
-      parallax: { value: parallax },
-      parallaxStrength: { value: parallaxStrength },
-      parallaxOffset: { value: new Vector2(0, 0) },
-
-      lineGradient: {
-        value: Array.from({ length: MAX_GRADIENT_STOPS }, () => new Vector3(1, 1, 1)),
-      },
-      lineGradientCount: { value: 0 },
-    };
-
-    if (linesGradient && linesGradient.length > 0) {
-      const stops = linesGradient.slice(0, MAX_GRADIENT_STOPS);
-      uniforms.lineGradientCount.value = stops.length;
-      stops.forEach((hex, i) => {
-        const color = hexToVec3(hex);
-        const gradientEntry = uniforms.lineGradient.value[i];
-        if (gradientEntry) gradientEntry.set(color.x, color.y, color.z);
-      });
-    }
-
-    const material = new ShaderMaterial({ uniforms, vertexShader, fragmentShader });
-    const geometry = new PlaneGeometry(2, 2);
-    const mesh = new Mesh(geometry, material);
-    scene.add(mesh);
-
-    const clock = new Clock();
+    const mesh = new Mesh(gl, { geometry, program });
 
     const setSize = () => {
-      const el = containerRef.current;
-      if (!el) return;
-      const width = el.clientWidth || 1;
-      const height = el.clientHeight || 1;
-      renderer.setSize(width, height, false);
-      const cw = renderer.domElement.width;
-      const ch = renderer.domElement.height;
-      uniforms.iResolution.value.set(cw, ch, 1);
+      const rect = container.getBoundingClientRect();
+      const width = Math.max(1, Math.floor(rect.width));
+      const height = Math.max(1, Math.floor(rect.height));
+      renderer.setSize(width, height);
+      const res = (program.uniforms.iResolution as { value: Float32Array }).value;
+      res[0] = gl.drawingBufferWidth;
+      res[1] = gl.drawingBufferHeight;
     };
 
+    const ro = new ResizeObserver(setSize);
+    ro.observe(container);
     setSize();
 
-    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(setSize) : null;
-    if (ro && containerRef.current) ro.observe(containerRef.current);
-
-    const handlePointerMove = (event: PointerEvent) => {
-      const rect = renderer.domElement.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      const dpr = renderer.getPixelRatio();
-      targetMouseRef.current.set(x * dpr, (rect.height - y) * dpr);
-      targetInfluenceRef.current = 1.0;
-
-      if (parallax) {
-        const cx = rect.width / 2;
-        const cy = rect.height / 2;
-        targetParallaxRef.current.set(
-          ((x - cx) / rect.width) * parallaxStrength,
-          (-(y - cy) / rect.height) * parallaxStrength,
-        );
-      }
-    };
-
-    const handlePointerLeave = () => {
-      targetInfluenceRef.current = 0.0;
-    };
-
-    if (interactive) {
-      renderer.domElement.addEventListener("pointermove", handlePointerMove);
-      renderer.domElement.addEventListener("pointerleave", handlePointerLeave);
-    }
-
     let raf = 0;
-    const renderLoop = () => {
-      uniforms.iTime.value = clock.getElapsedTime();
-
-      if (interactive) {
-        currentMouseRef.current.lerp(targetMouseRef.current, mouseDamping);
-        uniforms.iMouse.value.copy(currentMouseRef.current);
-        currentInfluenceRef.current +=
-          (targetInfluenceRef.current - currentInfluenceRef.current) * mouseDamping;
-        uniforms.bendInfluence.value = currentInfluenceRef.current;
-      }
-
-      if (parallax) {
-        currentParallaxRef.current.lerp(targetParallaxRef.current, mouseDamping);
-        uniforms.parallaxOffset.value.copy(currentParallaxRef.current);
-      }
-
-      renderer.render(scene, camera);
-      raf = requestAnimationFrame(renderLoop);
+    const t0 = performance.now();
+    const loop = (t: number) => {
+      (program.uniforms.iTime as { value: number }).value = (t - t0) * 0.001;
+      renderer.render({ scene: mesh });
+      raf = requestAnimationFrame(loop);
     };
-    renderLoop();
+    raf = requestAnimationFrame(loop);
 
     return () => {
       cancelAnimationFrame(raf);
-      ro?.disconnect();
-
-      if (interactive) {
-        renderer.domElement.removeEventListener("pointermove", handlePointerMove);
-        renderer.domElement.removeEventListener("pointerleave", handlePointerLeave);
-      }
-
-      geometry.dispose();
-      material.dispose();
-      renderer.dispose();
-      if (renderer.domElement.parentElement) {
-        renderer.domElement.parentElement.removeChild(renderer.domElement);
+      ro.disconnect();
+      try {
+        container.removeChild(canvas);
+      } catch {
+        // canvas already removed
       }
     };
   }, [
-    linesGradient,
-    enabledWaves,
-    lineCount,
-    lineDistance,
-    topWavePosition,
-    middleWavePosition,
-    bottomWavePosition,
-    animationSpeed,
-    interactive,
-    bendRadius,
-    bendStrength,
-    mouseDamping,
-    parallax,
-    parallaxStrength,
-    topLineCount,
-    middleLineCount,
-    bottomLineCount,
-    topLineDistance,
-    middleLineDistance,
-    bottomLineDistance,
+    timeSpeed,
+    colorBalance,
+    warpStrength,
+    warpFrequency,
+    warpSpeed,
+    warpAmplitude,
+    blendAngle,
+    blendSoftness,
+    rotationAmount,
+    noiseScale,
+    grainAmount,
+    grainScale,
+    grainAnimated,
+    contrast,
+    gamma,
+    saturation,
+    centerX,
+    centerY,
+    zoom,
+    color1,
+    color2,
+    color3,
   ]);
 
   return (
     <div
       ref={containerRef}
-      className={className}
-      style={{ mixBlendMode, position: "absolute", inset: 0, width: "100%", height: "100%" }}
+      className={cn("relative h-full w-full overflow-hidden", className)}
     />
   );
 }`,

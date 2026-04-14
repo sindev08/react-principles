@@ -186,7 +186,6 @@ These are installed automatically as dependencies but can also be added directly
 | `dialog` | `Dialog.tsx` | Modal dialog with compound sub-components | `use-animated-mount` |
 | `drawer` | `Drawer.tsx` | Slide-in panel (left/right) | `use-animated-mount` |
 | `dropdown-menu` | `DropdownMenu.tsx` | Contextual dropdown | — |
-| `floating-lines` | `FloatingLines.tsx` | Decorative animated background | — |
 | `input` | `Input.tsx` | Text input with variants | — |
 | `pagination` | `Pagination.tsx` | Page navigation | — |
 | `popover` | `Popover.tsx` | Floating content anchored to a trigger | — |
