@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { getStorybookComponentUrl, STORYBOOK_BASE_URL } from "./storybook";
+import {
+  getStorybookComponentUrl,
+  getStorybookEmbedUrl,
+  STORYBOOK_BASE_URL,
+} from "./storybook";
 
 describe("getStorybookComponentUrl", () => {
   it("builds the default story URL from a component slug", () => {
@@ -35,6 +39,15 @@ describe("getStorybookComponentUrl", () => {
     );
     expect(getStorybookComponentUrl("tooltip")).toBe(
       `${STORYBOOK_BASE_URL}/?path=/story/ui-tooltip--top`,
+    );
+  });
+
+  it("builds iframe-friendly storybook URLs for embedded previews", () => {
+    expect(getStorybookEmbedUrl("button")).toBe(
+      `${STORYBOOK_BASE_URL}/iframe.html?id=ui-button--default&viewMode=story`,
+    );
+    expect(getStorybookEmbedUrl("alert-dialog")).toBe(
+      `${STORYBOOK_BASE_URL}/iframe.html?id=ui-alertdialog--destructive&viewMode=story`,
     );
   });
 });

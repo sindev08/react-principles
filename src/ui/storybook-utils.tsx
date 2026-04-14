@@ -1,10 +1,17 @@
 import { useState, type PropsWithChildren, type ReactNode } from "react";
 
-export const SAMPLE_OPTIONS = [
+type SampleOption = {
+  label: string;
+  value: string;
+  description: string;
+  disabled?: boolean;
+};
+
+export const SAMPLE_OPTIONS: SampleOption[] = [
   { label: "Design System", value: "design-system", description: "Reusable UI building blocks" },
   { label: "Cookbook", value: "cookbook", description: "Production-ready React patterns" },
   { label: "CLI", value: "cli", description: "Copy-paste component installer" },
-  { label: "Playground", value: "playground", description: "Interactive configuration", disabled: true },
+  { label: "Playground", value: "playground", description: "Interactive configuration" },
 ];
 
 export const SEARCH_ITEMS = [

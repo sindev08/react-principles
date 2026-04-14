@@ -214,6 +214,12 @@ export function ComponentShowcaseSection() {
               Browse docs
             </Link>
             <Link
+              href="/docs/playground"
+              className="inline-flex items-center justify-center rounded-xl border border-primary/20 bg-primary/8 px-5 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/12"
+            >
+              Launch playground
+            </Link>
+            <Link
               href="/nextjs/cookbook"
               className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-900 transition-colors hover:border-slate-400 hover:bg-slate-50 dark:border-white/10 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800"
             >

@@ -17,9 +17,17 @@ interface SearchDialogProps {
   onClose: () => void;
   onNavigate: (href: string) => void;
   savedSlugs?: string[];
+  initialQuery?: string;
 }
 
-export function SearchDialog({ open, items, onClose, onNavigate, savedSlugs = [] }: SearchDialogProps) {
+export function SearchDialog({
+  open,
+  items,
+  onClose,
+  onNavigate,
+  savedSlugs = [],
+  initialQuery = "",
+}: SearchDialogProps) {
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -39,11 +47,11 @@ export function SearchDialog({ open, items, onClose, onNavigate, savedSlugs = []
   // Focus input and reset state on open
   useEffect(() => {
     if (open) {
-      setQuery("");
+      setQuery(initialQuery);
       setActiveIndex(0);
       setTimeout(() => inputRef.current?.focus(), 50);
     }
-  }, [open]);
+  }, [initialQuery, open]);
 
   // Reset active index when results change
   useEffect(() => {
