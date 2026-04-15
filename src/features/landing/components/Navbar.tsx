@@ -35,8 +35,10 @@ export function Navbar() {
             height={32}
             className="hidden dark:block"
           />
-          <span className="text-lg font-extrabold tracking-tight text-primary">
-            react-principles
+          <span className="text-lg tracking-tight">
+            <span className="font-medium text-slate-600 dark:text-slate-300">React</span>
+            {" "}
+            <span className="font-black text-primary">Principles</span>
           </span>
         </div>
 
@@ -60,10 +62,13 @@ export function Navbar() {
           <ThemeToggle />
           <Link
             href="/nextjs/cookbook"
-            className="items-center hidden gap-2 px-4 py-2 text-sm font-bold text-white transition-all rounded-lg md:flex bg-primary hover:bg-primary/90"
+            className="group items-center hidden gap-2 px-4 py-2 text-sm font-bold text-primary transition-all rounded-lg md:flex hover:bg-primary/10 dark:hover:bg-primary/15"
           >
             <span className="text-sm material-symbols-outlined">menu_book</span>
             <span>Cookbook</span>
+            <span className="material-symbols-outlined text-[16px] animate-nudge group-hover:animate-none group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200">
+              arrow_forward
+            </span>
           </Link>
           <button
             className="flex items-center justify-center transition-colors rounded-lg md:hidden w-9 h-9 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"

@@ -35,8 +35,10 @@ export function Footer() {
                 height={32}
                 className="hidden dark:block"
               />
-              <span className="text-lg font-extrabold tracking-tight text-primary">
-                react-principles
+              <span className="text-lg tracking-tight">
+                <span className="font-medium text-slate-600 dark:text-slate-300">React</span>
+                {" "}
+                <span className="font-black text-primary">Principles</span>
               </span>
             </div>
             <p className="max-w-sm mb-6 text-slate-500">
