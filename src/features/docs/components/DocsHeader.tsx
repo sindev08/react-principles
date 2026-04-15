@@ -91,8 +91,10 @@ export function DocsHeader() {
                 height={32}
                 className="hidden dark:block"
               />
-              <h2 className="text-base font-extrabold leading-tight tracking-tight text-primary">
-                react-principles
+              <h2 className="text-base tracking-tight leading-tight">
+                <span className="font-medium text-slate-600 dark:text-slate-300">React</span>
+                {" "}
+                <span className="font-black text-primary">Principles</span>
               </h2>
             </Link>
             <nav className="items-center hidden gap-6 md:flex">

@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, type HTMLAttributes, type InputHTMLAttributes, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, type HTMLAttributes, type InputHTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/shared/utils/cn";
 
 interface CommandContextValue {
@@ -8,14 +8,22 @@ interface CommandContextValue {
 
 const CommandContext = createContext<CommandContextValue | null>(null);
 
+export interface CommandProps extends HTMLAttributes<HTMLDivElement> {
+  initialQuery?: string;
+}
+
 function useCommandContext() {
   const context = useContext(CommandContext);
   if (!context) throw new Error("Command sub-components must be used inside <Command>");
   return context;
 }
 
-export function Command({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  const [query, setQuery] = useState("");
+export function Command({ className, initialQuery = "", ...props }: CommandProps) {
+  const [query, setQuery] = useState(initialQuery);
+
+  useEffect(() => {
+    setQuery(initialQuery);
+  }, [initialQuery]);
 
   return (
     <CommandContext.Provider value={{ query, setQuery }}>

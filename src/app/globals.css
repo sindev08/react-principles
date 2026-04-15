@@ -34,6 +34,10 @@
   animation: fade-in 200ms ease-out both;
 }
 
+@utility animate-nudge {
+  animation: nudge 1.6s ease-in-out infinite;
+}
+
 @layer utilities {
   :root {
     --background: #f6f6f8;
@@ -102,5 +106,10 @@
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  @keyframes nudge {
+    0%, 100% { transform: translateX(-2px); opacity: 0.3; }
+    50% { transform: translateX(2px); opacity: 0.6; }
   }
 }

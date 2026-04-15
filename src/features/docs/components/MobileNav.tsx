@@ -42,8 +42,10 @@ export function MobileNav() {
       >
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-extrabold text-primary">
-              react-principles
+            <span className="text-sm tracking-tight">
+              <span className="font-medium text-slate-600 dark:text-slate-300">React</span>
+              {" "}
+              <span className="font-black text-primary">Principles</span>
             </span>
           </div>
           <button
