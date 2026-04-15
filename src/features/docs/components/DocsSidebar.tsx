@@ -105,6 +105,33 @@ export function DocsSidebar() {
                 </ul>
               </div>
             ))}
+            <div className="relative z-10">
+              <Separator className="mb-4" />
+              <p className="mb-2 px-1 text-xs font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">
+                Resources
+              </p>
+              <Link
+                href="https://storybook.reactprinciples.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-3 rounded-lg border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#0d1117] px-3 py-2.5 transition-all hover:border-primary/40 hover:bg-primary/5 dark:hover:bg-primary/10"
+              >
+                <span className="material-symbols-outlined text-[18px] text-slate-400 dark:text-slate-500 group-hover:text-primary transition-colors">
+                  auto_stories
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-primary transition-colors leading-none mb-0.5">
+                    Storybook
+                  </p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-none">
+                    Component explorer
+                  </p>
+                </div>
+                <span className="material-symbols-outlined text-[14px] text-slate-300 dark:text-slate-600 group-hover:text-primary transition-colors">
+                  open_in_new
+                </span>
+              </Link>
+            </div>
           </>
         ) : (
           /* Cookbook nav */
@@ -165,18 +192,6 @@ export function DocsSidebar() {
           </div>
         )}
 
-        <div className="relative z-10">
-          <Separator className="mb-4" />
-          <Link
-            href="https://storybook.reactprinciples.dev"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-          >
-            <span>Storybook ↗</span>
-            <span className="material-symbols-outlined text-[16px]">open_in_new</span>
-          </Link>
-        </div>
       </div>
     </aside>
   );
