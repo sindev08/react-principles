@@ -40,6 +40,7 @@ export const DOCS_NAV: NavGroup[] = [
       { label: "Drawer", href: "/docs/drawer" },
       { label: "Form", href: "/docs/forms" },
       { label: "Input", href: "/docs/input" },
+      { label: "Label", href: "/docs/label" },
       { label: "Pagination", href: "/docs/pagination" },
       { label: "Page Progress", href: "/docs/page-progress" },
       { label: "Popover", href: "/docs/popover" },

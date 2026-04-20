@@ -1082,7 +1082,7 @@ export function Combobox({
     </div>
   );
 }`,
-  "Command": `import { createContext, useContext, useMemo, useState, type HTMLAttributes, type InputHTMLAttributes, type ReactNode } from "react";
+  "Command": `import { createContext, useContext, useEffect, useMemo, useState, type HTMLAttributes, type InputHTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface CommandContextValue {
@@ -1092,14 +1092,22 @@ interface CommandContextValue {
 
 const CommandContext = createContext<CommandContextValue | null>(null);
 
+export interface CommandProps extends HTMLAttributes<HTMLDivElement> {
+  initialQuery?: string;
+}
+
 function useCommandContext() {
   const context = useContext(CommandContext);
   if (!context) throw new Error("Command sub-components must be used inside <Command>");
   return context;
 }
 
-export function Command({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  const [query, setQuery] = useState("");
+export function Command({ className, initialQuery = "", ...props }: CommandProps) {
+  const [query, setQuery] = useState(initialQuery);
+
+  useEffect(() => {
+    setQuery(initialQuery);
+  }, [initialQuery]);
 
   return (
     <CommandContext.Provider value={{ query, setQuery }}>
@@ -2113,6 +2121,35 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function InputRoot
     </div>
   );
 });`,
+  "Label": `import { forwardRef, type LabelHTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface LabelProps extends LabelHTMLAttributes<HTMLLabelElement> {
+  required?: boolean;
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export const Label = forwardRef<HTMLLabelElement, LabelProps>(function LabelRoot(
+  { required, className, children, ...rest },
+  ref
+) {
+  return (
+    <label
+      ref={ref}
+      className={cn(
+        "font-medium text-slate-700 dark:text-slate-300 text-sm",
+        className
+      )}
+      {...rest}
+    >
+      {children}
+      {required && <span className="text-red-500 dark:text-red-400 ml-1">*</span>}
+    </label>
+  );
+});`,
   "PageProgress": `import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -2570,9 +2607,17 @@ interface SearchDialogProps {
   onClose: () => void;
   onNavigate: (href: string) => void;
   savedSlugs?: string[];
+  initialQuery?: string;
 }
 
-export function SearchDialog({ open, items, onClose, onNavigate, savedSlugs = [] }: SearchDialogProps) {
+export function SearchDialog({
+  open,
+  items,
+  onClose,
+  onNavigate,
+  savedSlugs = [],
+  initialQuery = "",
+}: SearchDialogProps) {
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -2592,11 +2637,11 @@ export function SearchDialog({ open, items, onClose, onNavigate, savedSlugs = []
   // Focus input and reset state on open
   useEffect(() => {
     if (open) {
-      setQuery("");
+      setQuery(initialQuery);
       setActiveIndex(0);
       setTimeout(() => inputRef.current?.focus(), 50);
     }
-  }, [open]);
+  }, [initialQuery, open]);
 
   // Reset active index when results change
   useEffect(() => {
@@ -3592,11 +3637,18 @@ Tooltip.Content = function TooltipContent({ children, className, ...props }: Too
 }`,
   "storybook-utils": `import { useState, type PropsWithChildren, type ReactNode } from "react";
 
-export const SAMPLE_OPTIONS = [
+type SampleOption = {
+  label: string;
+  value: string;
+  description: string;
+  disabled?: boolean;
+};
+
+export const SAMPLE_OPTIONS: SampleOption[] = [
   { label: "Design System", value: "design-system", description: "Reusable UI building blocks" },
   { label: "Cookbook", value: "cookbook", description: "Production-ready React patterns" },
   { label: "CLI", value: "cli", description: "Copy-paste component installer" },
-  { label: "Playground", value: "playground", description: "Interactive configuration", disabled: true },
+  { label: "Playground", value: "playground", description: "Interactive configuration" },
 ];
 
 export const SEARCH_ITEMS = [

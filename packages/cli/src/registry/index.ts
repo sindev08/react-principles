@@ -181,6 +181,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "label",
+    description: "Form label with required and disabled states",
+    templateKey: "Label",
+    outputFile: "Label.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "pagination",
     description: "Page navigation",
     templateKey: "Pagination",
