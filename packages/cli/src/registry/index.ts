@@ -172,6 +172,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "field",
+    description: "Form field wrapper with label, helper text, and error message",
+    templateKey: "Field",
+    outputFile: "Field.tsx",
+    internalDeps: ["utils", "label"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "input",
     description: "Text input with variants",
     templateKey: "Input",
