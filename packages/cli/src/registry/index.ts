@@ -351,6 +351,15 @@ export const REGISTRY: RegistryEntry[] = [
     npmDeps: [],
     target: "components",
   },
+  {
+    name: "typography",
+    description: "Semantic text elements with consistent styling",
+    templateKey: "Typography",
+    outputFile: "Typography.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
 ];
 
 const BY_NAME = new Map(REGISTRY.map((e) => [e.name, e]));

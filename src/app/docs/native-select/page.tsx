@@ -269,11 +269,11 @@ export default function NativeSelectDocPage() {
               />
 
               <div className="p-4 bg-slate-50 dark:bg-[#161b22] rounded-lg border border-slate-200 dark:border-[#1f2937]">
-                <p className="text-xs text-slate-600 dark:text-slate-400 space-y-1">
+                <div className="text-xs text-slate-600 dark:text-slate-400 space-y-1">
                   <div>Category: <code className="font-mono">{category || "(none)"}</code></div>
                   <div>Size: <code className="font-mono">{size}</code></div>
                   <div>Fruit: <code className="font-mono">{fruit || "(none)"}</code></div>
-                </p>
+                </div>
               </div>
             </div>
           </div>

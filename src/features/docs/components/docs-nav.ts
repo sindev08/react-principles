@@ -60,6 +60,7 @@ export const DOCS_NAV: NavGroup[] = [
       { label: "Textarea", href: "/docs/textarea" },
       { label: "Toast", href: "/docs/toast" },
       { label: "Tooltip", href: "/docs/tooltip" },
+      { label: "Typography", href: "/docs/typography" },
     ],
   },
 ];
