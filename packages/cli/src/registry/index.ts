@@ -190,6 +190,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "input-group",
+    description: "Input with prefix and suffix slots",
+    templateKey: "InputGroup",
+    outputFile: "InputGroup.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "label",
     description: "Form label with required and disabled states",
     templateKey: "Label",
