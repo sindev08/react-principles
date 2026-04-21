@@ -208,6 +208,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "kbd",
+    description: "Keyboard shortcut and key combination display",
+    templateKey: "Kbd",
+    outputFile: "Kbd.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "native-select",
     description: "Styled native select element",
     templateKey: "NativeSelect",
