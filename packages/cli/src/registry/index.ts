@@ -109,6 +109,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "collapsible",
+    description: "Simple expand/collapse component for single-section toggling",
+    templateKey: "Collapsible",
+    outputFile: "Collapsible.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "card",
     description: "Content container with variants",
     templateKey: "Card",
