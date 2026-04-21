@@ -26,6 +26,7 @@ export const DOCS_NAV: NavGroup[] = [
       { label: "Accordion", href: "/docs/accordion" },
       { label: "Alert", href: "/docs/alert" },
       { label: "Alert Dialog", href: "/docs/alert-dialog" },
+      { label: "Aspect Ratio", href: "/docs/aspect-ratio" },
       { label: "Avatar", href: "/docs/avatar" },
       { label: "Badge", href: "/docs/badge" },
       { label: "Breadcrumb", href: "/docs/breadcrumb" },

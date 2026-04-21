@@ -64,6 +64,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "aspect-ratio",
+    description: "Container with fixed aspect ratio",
+    templateKey: "AspectRatio",
+    outputFile: "AspectRatio.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "avatar",
     description: "User avatar with size variants",
     templateKey: "Avatar",
