@@ -54,6 +54,7 @@ export const DOCS_NAV: NavGroup[] = [
       { label: "Separator", href: "/docs/separator" },
       { label: "Skeleton", href: "/docs/skeleton" },
       { label: "Slider", href: "/docs/slider" },
+      { label: "Spinner", href: "/docs/spinner" },
       { label: "Switch", href: "/docs/switch" },
       { label: "Table", href: "/docs/table" },
       { label: "Tabs", href: "/docs/tabs" },
