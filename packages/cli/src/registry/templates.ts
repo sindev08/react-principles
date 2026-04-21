@@ -2219,19 +2219,19 @@ const SIZE_CLASSES: Record<
   { input: string; label: string; prefix: string; suffix: string }
 > = {
   sm: {
-    input: "h-8 px-3 text-xs",
+    input: "h-8 text-xs",
     label: "text-xs",
     prefix: "pl-3 pr-2 text-xs",
     suffix: "pl-2 pr-3 text-xs",
   },
   md: {
-    input: "h-10 px-3.5 text-sm",
+    input: "h-10 text-sm",
     label: "text-sm",
     prefix: "pl-3.5 pr-3 text-sm",
     suffix: "pl-3 pr-3.5 text-sm",
   },
   lg: {
-    input: "h-12 px-4 text-base",
+    input: "h-12 text-base",
     label: "text-sm",
     prefix: "pl-4 pr-3 text-base",
     suffix: "pl-3 pr-4 text-base",
@@ -2279,11 +2279,17 @@ export const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(
     const inputId = id ?? (label ? label.toLowerCase().replace(/\\s+/g, "-") : undefined);
 
     // Calculate padding based on slots
+    const getInputPadding = () => {
+      if (prefix && suffix) return "p-0";
+      if (prefix) return size === "sm" ? "pr-2" : size === "lg" ? "pr-3" : "pr-3";
+      if (suffix) return size === "sm" ? "pl-2" : size === "lg" ? "pl-3" : "pl-3";
+      return size === "sm" ? "px-3" : size === "lg" ? "px-4" : "px-3.5";
+    };
+
     const inputPadding = cn(
+      "bg-transparent outline-hidden border-0 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500",
       s.input,
-      "bg-transparent outline-hidden border-0 p-0 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500",
-      prefix && "pl-0",
-      suffix && "pr-0"
+      getInputPadding()
     );
 
     return (
@@ -2319,7 +2325,7 @@ export const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(
             ref={ref}
             id={inputId}
             disabled={disabled}
-            className={inputPadding}
+            className={cn(inputPadding, "w-full")}
             {...rest}
           />
 
@@ -2340,6 +2346,206 @@ export const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(
     );
   }
 );`,
+  "InputOTP": `import { useRef, useEffect, type KeyboardEvent } from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface InputOTPProps {
+  length?: number;
+  value: string[];
+  onChange: (value: string[]) => void;
+  onComplete?: (value: string) => void;
+  disabled?: boolean;
+  error?: string;
+  autoFocus?: boolean;
+  id?: string;
+  className?: string;
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export function InputOTP({
+  length = 6,
+  value,
+  onChange,
+  onComplete,
+  disabled = false,
+  error,
+  autoFocus = false,
+  id,
+  className,
+}: InputOTPProps) {
+  const inputRefs = useRef<HTMLInputElement[]>([]);
+
+  // Focus management
+  const focusInput = (index: number) => {
+    if (inputRefs.current[index]) {
+      inputRefs.current[index]?.focus();
+    }
+  };
+
+  const focusNext = (index: number) => {
+    const nextIndex = Math.min(index + 1, length - 1);
+    focusInput(nextIndex);
+  };
+
+  const focusPrevious = (index: number) => {
+    const prevIndex = Math.max(index - 1, 0);
+    focusInput(prevIndex);
+  };
+
+  // Handle digit input
+  const handleChange = (index: number, inputValue: string) => {
+    const digit = inputValue.slice(-1); // Take last character
+    if (!/^\\d$/.test(digit)) return; // Only allow digits
+
+    const newValue = [...value];
+    newValue[index] = digit;
+
+    onChange(newValue);
+
+    // Auto-advance to next slot if digit was entered
+    if (digit && index < length - 1) {
+      focusNext(index);
+    }
+
+    // Check if all slots are filled
+    const code = newValue.join("");
+    if (code.length === length && onComplete) {
+      onComplete(code);
+    }
+  };
+
+  // Handle keyboard navigation
+  const handleKeyDown = (index: number, e: KeyboardEvent) => {
+    switch (e.key) {
+      case "Backspace":
+        if (!value[index]) {
+          // Current slot is empty, go back
+          e.preventDefault();
+          focusPrevious(index);
+        }
+        break;
+
+      case "ArrowLeft":
+        e.preventDefault();
+        if (index > 0) {
+          focusPrevious(index);
+        }
+        break;
+
+      case "ArrowRight":
+        e.preventDefault();
+        if (index < length - 1) {
+          focusNext(index);
+        }
+        break;
+
+      case "Home":
+        e.preventDefault();
+        focusInput(0);
+        break;
+
+      case "End":
+        e.preventDefault();
+        focusInput(length - 1);
+        break;
+
+      case "Delete":
+        // Clear current slot
+        const newValue = [...value];
+        newValue[index] = "";
+        onChange(newValue);
+        break;
+    }
+  };
+
+  // Handle paste
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pasteData = e.clipboardData.getData("text");
+    const digits = pasteData.slice(0, length).split("").filter((d) => /^\\d$/.test(d));
+
+    // Create new value array with pasted digits
+    const newValue = [...digits, ...Array(length - digits.length).fill("")];
+    onChange(newValue);
+
+    // Check if complete
+    const code = newValue.join("");
+    if (code.length === length && onComplete) {
+      onComplete(code);
+    }
+  };
+
+  // Auto-focus on mount
+  useEffect(() => {
+    if (autoFocus) {
+      focusInput(0);
+    }
+  }, [autoFocus]);
+
+  const errorId = id ? \`\${id}-error\` : undefined;
+  const groupId = id || "otp";
+
+  return (
+    <div className={cn("flex flex-col gap-1.5", className)}>
+      {/* Hidden input for accessibility - announces full OTP to screen readers */}
+      <input
+        type="text"
+        value={value.join("")}
+        onChange={() => {}}
+        className="sr-only"
+        aria-hidden="true"
+        tabIndex={-1}
+      />
+
+      <div
+        role="group"
+        aria-label="One-time password"
+        aria-describedby={error ? errorId : undefined}
+        className="flex items-center gap-2"
+      >
+        {value.map((digit, index) => (
+          <input
+            key={index}
+            ref={(el) => {
+              if (el) inputRefs.current[index] = el;
+            }}
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            maxLength={1}
+            value={digit}
+            disabled={disabled}
+            autoFocus={index === 0 && autoFocus}
+            aria-label={\`Digit \${index + 1}\`}
+            className={cn(
+              "w-full h-12 text-center text-lg rounded-lg border border-slate-200 dark:border-[#1f2937]",
+              "bg-white dark:bg-[#0d1117]",
+              "text-slate-900 dark:text-white",
+              "placeholder:text-slate-400 dark:placeholder:text-slate-500",
+              "focus:outline-none",
+              "focus:border-primary dark:focus:border-primary",
+              "focus:ring-2 focus:ring-primary/20",
+              "disabled:opacity-50 disabled:cursor-not-allowed",
+              error && "border-red-400 dark:border-red-500"
+            )}
+            onChange={(e) => handleChange(index, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(index, e)}
+            onPaste={handlePaste}
+          />
+        ))}
+      </div>
+
+      {error && (
+        <p id={errorId} className="text-xs text-red-500 dark:text-red-400">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}`,
   "Label": `import { forwardRef, type LabelHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 

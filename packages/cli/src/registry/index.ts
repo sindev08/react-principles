@@ -199,6 +199,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "input-otp",
+    description: "Segmented input for OTP/PIN codes",
+    templateKey: "InputOTP",
+    outputFile: "InputOTP.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "label",
     description: "Form label with required and disabled states",
     templateKey: "Label",

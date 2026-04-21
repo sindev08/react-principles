@@ -42,6 +42,7 @@ export const DOCS_NAV: NavGroup[] = [
       { label: "Form", href: "/docs/forms" },
       { label: "Input", href: "/docs/input" },
       { label: "Input Group", href: "/docs/input-group" },
+      { label: "Input OTP", href: "/docs/input-otp" },
       { label: "Label", href: "/docs/label" },
       { label: "Pagination", href: "/docs/pagination" },
       { label: "Page Progress", href: "/docs/page-progress" },
