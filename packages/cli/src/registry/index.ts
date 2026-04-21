@@ -289,6 +289,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "scrollarea",
+    description: "Scrollable container with custom scrollbar styling",
+    templateKey: "ScrollArea",
+    outputFile: "ScrollArea.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "select",
     description: "Native select with styling",
     templateKey: "Select",

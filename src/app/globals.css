@@ -95,6 +95,21 @@
     background: #1f2937;
   }
 
+  .scrollarea-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollarea-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollarea-scrollbar::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+  }
+  .dark .scrollarea-scrollbar::-webkit-scrollbar-thumb {
+    background: #1f2937;
+  }
+
   /* ─── Animations ──────────────────────────────────────────────────────────── */
 
   @keyframes fade-in {
