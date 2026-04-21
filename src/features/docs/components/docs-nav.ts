@@ -51,6 +51,7 @@ export const DOCS_NAV: NavGroup[] = [
       { label: "Popover", href: "/docs/popover" },
       { label: "Progress", href: "/docs/progress" },
       { label: "Radio Group", href: "/docs/radio-group" },
+      { label: "Resizable", href: "/docs/resizable" },
       { label: "Select", href: "/docs/select" },
       { label: "ScrollArea", href: "/docs/scrollarea" },
       { label: "Separator", href: "/docs/separator" },

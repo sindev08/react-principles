@@ -3235,6 +3235,301 @@ RadioGroup.Item = function RadioGroupItem({
     </button>
   );
 }`,
+  "Resizable": `"use client";
+
+import { createContext, useContext, useCallback, useEffect, useRef, useState, type HTMLAttributes, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type ResizableDirection = "horizontal" | "vertical";
+
+export interface ResizablePanelGroupProps {
+  direction: ResizableDirection;
+  children: ReactNode;
+  className?: string;
+}
+
+export interface ResizablePanelProps {
+  defaultSize?: number;
+  minSize?: number;
+  maxSize?: number;
+  children: ReactNode;
+  className?: string;
+}
+
+export interface ResizableHandleProps {
+  withHandle?: boolean;
+  className?: string;
+  disabled?: boolean;
+}
+
+// ─── Context ─────────────────────────────────────────────────────────────────
+
+interface PanelData {
+  id: string;
+  size: number;
+  minSize: number;
+  maxSize: number;
+}
+
+interface ResizableContextValue {
+  direction: ResizableDirection;
+  panels: Map<string, PanelData>;
+  registerPanel: (id: string, data: Omit<PanelData, "id">) => void;
+  unregisterPanel: (id: string) => void;
+  updatePanelSize: (id: string, newSize: number) => void;
+  resizePanel: (panelId: string, delta: number) => void;
+  activeHandle: string | null;
+  setActiveHandle: (handleId: string | null) => void;
+}
+
+const ResizableContext = createContext<ResizableContextValue | null>(null);
+
+function useResizableContext() {
+  const context = useContext(ResizableContext);
+  if (!context) {
+    throw new Error("Resizable components must be used within ResizablePanelGroup");
+  }
+  return context;
+}
+
+// ─── Panel Group ──────────────────────────────────────────────────────────────
+
+export function ResizablePanelGroup({ direction, children, className }: ResizablePanelGroupProps) {
+  const [panels, setPanels] = useState<Map<string, PanelData>>(new Map());
+  const [activeHandle, setActiveHandle] = useState<string | null>(null);
+
+  const registerPanel = useCallback((id: string, data: Omit<PanelData, "id">) => {
+    setPanels((prev) => {
+      const next = new Map(prev);
+      next.set(id, { id, ...data });
+      return next;
+    });
+  }, []);
+
+  const unregisterPanel = useCallback((id: string) => {
+    setPanels((prev) => {
+      const next = new Map(prev);
+      next.delete(id);
+      return next;
+    });
+  }, []);
+
+  const updatePanelSize = useCallback((id: string, newSize: number) => {
+    setPanels((prev) => {
+      const next = new Map(prev);
+      const panel = next.get(id);
+      if (panel) {
+        next.set(id, { ...panel, size: newSize });
+      }
+      return next;
+    });
+  }, []);
+
+  const resizePanel = useCallback((panelId: string, delta: number) => {
+    setPanels((prev) => {
+      const next = new Map(prev);
+      const panelIds = Array.from(next.keys());
+      const panelIndex = panelIds.indexOf(panelId);
+
+      if (panelIndex === -1 || panelIndex === panelIds.length - 1) {
+        return next; // Can't resize first or last panel
+      }
+
+      const panel = next.get(panelId);
+      const nextPanelId = panelIds[panelIndex + 1];
+
+      if (!nextPanelId) {
+        return next;
+      }
+
+      const nextPanel = next.get(nextPanelId);
+
+      if (!panel || !nextPanel) {
+        return next;
+      }
+
+      // Calculate new sizes respecting min/max bounds
+      const newPanelSize = Math.max(panel.minSize, Math.min(panel.maxSize, panel.size + delta));
+      const actualDelta = newPanelSize - panel.size;
+      const newNextPanelSize = nextPanel.size - actualDelta;
+
+      // Check if next panel can accommodate the change
+      if (newNextPanelSize >= nextPanel.minSize && newNextPanelSize <= nextPanel.maxSize) {
+        next.set(panelId, { ...panel, size: newPanelSize });
+        next.set(nextPanelId, { ...nextPanel, size: newNextPanelSize });
+      }
+
+      return next;
+    });
+  }, []);
+
+  return (
+    <ResizableContext.Provider
+      value={{ direction, panels, registerPanel, unregisterPanel, updatePanelSize, resizePanel, activeHandle, setActiveHandle }}
+    >
+      <div
+        className={cn(
+          "flex",
+          direction === "horizontal" ? "flex-row" : "flex-col",
+          className
+        )}
+      >
+        {children}
+      </div>
+    </ResizableContext.Provider>
+  );
+}
+
+// ─── Panel ────────────────────────────────────────────────────────────────────
+
+let panelIdCounter = 0;
+
+export function ResizablePanel({ defaultSize = 50, minSize = 10, maxSize = 90, children, className }: ResizablePanelProps) {
+  const { direction, panels, registerPanel, unregisterPanel } = useResizableContext();
+  const panelId = useRef<string>(\`panel-\${panelIdCounter++}\`);
+
+  useEffect(() => {
+    registerPanel(panelId.current, { size: defaultSize, minSize, maxSize });
+    return () => unregisterPanel(panelId.current);
+  }, [defaultSize, minSize, maxSize, registerPanel, unregisterPanel]);
+
+  const panel = panels.get(panelId.current);
+  const flexBasis = panel ? \`\${panel.size}%\` : \`\${defaultSize}%\`;
+
+  const isHorizontal = direction === "horizontal";
+
+  return (
+    <div
+      className={cn("flex-shrink-0", className)}
+      style={{
+        flexBasis,
+        flexGrow: 0,
+        flexShrink: 0,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ─── Handle ───────────────────────────────────────────────────────────────────
+
+let handleIdCounter = 0;
+
+export function ResizableHandle({ withHandle = false, className, disabled = false }: ResizableHandleProps) {
+  const { direction, resizePanel, activeHandle, setActiveHandle } = useResizableContext();
+  const handleRef = useRef<HTMLDivElement>(null);
+  const handleId = useRef<string>(\`handle-\${handleIdCounter++}\`);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const isHorizontal = direction === "horizontal";
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (disabled) return;
+
+    const step = e.shiftKey ? 10 : 1;
+    let delta = 0;
+
+    switch (e.key) {
+      case "ArrowLeft":
+        delta = isHorizontal ? -step : 0;
+        break;
+      case "ArrowRight":
+        delta = isHorizontal ? step : 0;
+        break;
+      case "ArrowUp":
+        delta = isHorizontal ? 0 : -step;
+        break;
+      case "ArrowDown":
+        delta = isHorizontal ? 0 : step;
+        break;
+      default:
+        return;
+    }
+
+    e.preventDefault();
+    // Find the panel before this handle and resize it
+    const panelId = handleId.current.replace("handle-", "panel-");
+    resizePanel(panelId, delta);
+  }, [disabled, isHorizontal, resizePanel]);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (disabled) return;
+
+    e.preventDefault();
+    setIsDragging(true);
+    setActiveHandle(handleId.current);
+
+    const startX = e.clientX;
+    const startY = e.clientY;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const deltaX = moveEvent.clientX - startX;
+      const deltaY = moveEvent.clientY - startY;
+
+      const delta = isHorizontal ? deltaX : deltaY;
+      const panelId = handleId.current.replace("handle-", "panel-");
+      resizePanel(panelId, delta);
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      setActiveHandle(null);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+  }, [disabled, isHorizontal, resizePanel, setActiveHandle]);
+
+  // Handle drag end when component unmounts
+  useEffect(() => {
+    return () => {
+      if (isDragging) {
+        setActiveHandle(null);
+      }
+    };
+  }, [isDragging, setActiveHandle]);
+
+  return (
+    <div
+      ref={handleRef}
+      tabIndex={disabled ? -1 : 0}
+      role="separator"
+      aria-orientation={direction}
+      className={cn(
+        "flex-shrink-0 bg-slate-200 dark:bg-[#1f2937]",
+        "transition-colors hover:bg-primary/20",
+        disabled && "opacity-50 cursor-not-allowed",
+        !disabled && "cursor-col-resize",
+        isHorizontal ? "w-1 cursor-col-resize" : "h-1 cursor-row-resize",
+        activeHandle === handleId.current && !disabled && "bg-primary",
+        className
+      )}
+      onKeyDown={handleKeyDown}
+      onMouseDown={handleMouseDown}
+    >
+      {withHandle && (
+        <div
+          className={cn(
+            "flex items-center justify-center",
+            isHorizontal ? "h-full w-4" : "w-full h-4"
+          )}
+        >
+          <div
+            className={cn(
+              "bg-slate-400 dark:bg-slate-600 rounded-full",
+              isHorizontal ? "w-1 h-8" : "w-8 h-1"
+            )}
+          />
+        </div>
+      )}
+    </div>
+  );
+}`,
   "ScrollArea": `"use client";
 
 import { useEffect, useRef, type HTMLAttributes, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";

@@ -262,6 +262,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "resizable",
+    description: "Resizable panel layout with drag handles",
+    templateKey: "Resizable",
+    outputFile: "Resizable.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "page-progress",
     description: "Animated top progress bar tied to navigation",
     templateKey: "PageProgress",
