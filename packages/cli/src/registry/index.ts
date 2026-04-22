@@ -109,6 +109,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "button-group",
+    description: "Visually connected group of buttons with shared variant and size",
+    templateKey: "ButtonGroup",
+    outputFile: "ButtonGroup.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "collapsible",
     description: "Simple expand/collapse component for single-section toggling",
     templateKey: "Collapsible",

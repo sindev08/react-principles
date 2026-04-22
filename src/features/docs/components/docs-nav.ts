@@ -31,6 +31,7 @@ export const DOCS_NAV: NavGroup[] = [
       { label: "Badge", href: "/docs/badge" },
       { label: "Breadcrumb", href: "/docs/breadcrumb" },
       { label: "Button", href: "/docs/button" },
+      { label: "Button Group", href: "/docs/button-group" },
       { label: "Card", href: "/docs/card" },
       { label: "Checkbox", href: "/docs/checkbox" },
       { label: "Collapsible", href: "/docs/collapsible" },
