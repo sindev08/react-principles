@@ -415,6 +415,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "toggle",
+    description: "Two-state button with pressed/unpressed behavior",
+    templateKey: "Toggle",
+    outputFile: "Toggle.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "textarea",
     description: "Multi-line text input",
     templateKey: "Textarea",

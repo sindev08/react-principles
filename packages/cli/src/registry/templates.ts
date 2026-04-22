@@ -2805,8 +2805,6 @@ export interface MenubarTriggerProps extends ButtonHTMLAttributes<HTMLButtonElem
 
 export interface MenubarContentProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
-  align?: "start" | "center" | "end";
-  sideOffset?: number;
 }
 
 export interface MenubarItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -2838,7 +2836,9 @@ export interface MenubarRadioItemProps extends ButtonHTMLAttributes<HTMLButtonEl
   disabled?: boolean;
 }
 
-export interface MenubarSeparatorProps extends HTMLAttributes<HTMLDivElement> {}
+export interface MenubarSeparatorProps extends HTMLAttributes<HTMLDivElement> {
+  className?: string;
+}
 
 export interface MenubarSubProps {
   children: ReactNode;
@@ -2993,7 +2993,7 @@ export function Menubar({ children, className }: MenubarProps) {
 // ─── Menu Sub-Component ───────────────────────────────────────────────────────
 
 Menubar.Menu = function MenubarMenu({ children, className }: MenubarMenuProps) {
-  const { openMenu, setOpenMenu, registerTrigger } = useMenubarContext();
+  const { openMenu, setOpenMenu } = useMenubarContext();
   const menuValue = React.useId();
   const isOpen = openMenu === menuValue;
   const hasContent = React.Children.toArray(children).some(
@@ -3019,11 +3019,7 @@ Menubar.Menu = function MenubarMenu({ children, className }: MenubarMenuProps) {
           const contentChild = child as ReactElement<MenubarContentProps & InjectedContentProps>;
           return React.cloneElement(contentChild, {
             isOpen,
-            onClose: () => {
-              setOpenMenu(null);
-              registerTrigger(menuValue, null);
-              requestAnimationFrame(() => registerTrigger(menuValue, triggerRefs_get(menuValue)));
-            },
+            onClose: () => setOpenMenu(null),
           });
         }
 
@@ -3033,25 +3029,17 @@ Menubar.Menu = function MenubarMenu({ children, className }: MenubarMenuProps) {
   );
 };
 
-// Helper to get trigger ref from the context map (via a workaround)
-// We use the registerTrigger callback directly on the element
-function triggerRefs_get(_value: string): HTMLButtonElement | null {
-  return null;
-}
-
 // ─── Trigger Sub-Component ─────────────────────────────────────────────────────
 
 Menubar.Trigger = function MenubarTrigger({
-  asChild,
   children,
   className,
   isOpen,
   onToggle,
   hasContent,
   menuValue,
-  ref: _ref,
   ...props
-}: MenubarTriggerProps & InjectedTriggerProps & { asChild?: boolean; ref?: unknown }) {
+}: MenubarTriggerProps & InjectedTriggerProps) {
   const { registerTrigger, focusTrigger, triggerValues, openMenu, setOpenMenu } = useMenubarContext();
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -3076,13 +3064,19 @@ Menubar.Trigger = function MenubarTrigger({
     if (e.key === "ArrowRight") {
       e.preventDefault();
       const nextIndex = currentIndex < values.length - 1 ? currentIndex + 1 : 0;
-      setOpenMenu(values[nextIndex]);
-      focusTrigger(values[nextIndex]);
+      const nextValue = values[nextIndex];
+      if (nextValue) {
+        setOpenMenu(nextValue);
+        focusTrigger(nextValue);
+      }
     } else if (e.key === "ArrowLeft") {
       e.preventDefault();
       const prevIndex = currentIndex > 0 ? currentIndex - 1 : values.length - 1;
-      setOpenMenu(values[prevIndex]);
-      focusTrigger(values[prevIndex]);
+      const prevValue = values[prevIndex];
+      if (prevValue) {
+        setOpenMenu(prevValue);
+        focusTrigger(prevValue);
+      }
     } else if (e.key === "ArrowDown") {
       e.preventDefault();
       onToggle?.();
@@ -3099,34 +3093,18 @@ Menubar.Trigger = function MenubarTrigger({
     className
   );
 
-  const buttonProps = {
-    type: "button" as const,
-    onClick: handleClick,
-    onKeyDown: handleKeyDown,
-    className: triggerClassName,
-    "aria-expanded": isOpen ?? false,
-    "aria-haspopup": hasContent ? "true" : undefined,
-    role: "menuitem" as const,
-  };
-
-  if (asChild && React.isValidElement(children)) {
-    const child = children as ReactElement<{
-      className?: string;
-      onClick?: () => void;
-      onKeyDown?: (e: React.KeyboardEvent) => void;
-      "aria-expanded"?: boolean;
-      "aria-haspopup"?: string;
-      ref?: React.Ref<HTMLButtonElement>;
-    }>;
-    return React.cloneElement(child, {
-      ...buttonProps,
-      className: cn(triggerClassName, child.props.className),
-      ref: triggerRef,
-    });
-  }
-
   return (
-    <button ref={triggerRef} {...buttonProps} {...props}>
+    <button
+      ref={triggerRef}
+      type="button"
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      className={triggerClassName}
+      aria-expanded={isOpen ?? false}
+      aria-haspopup={hasContent ? true : undefined}
+      role="menuitem"
+      {...props}
+    >
       {children}
     </button>
   );
@@ -3137,14 +3115,12 @@ Menubar.Trigger = function MenubarTrigger({
 Menubar.Content = function MenubarContent({
   children,
   className,
-  align = "start",
-  sideOffset = 4,
   isOpen,
   onClose,
   isSubmenu,
   ...props
 }: MenubarContentProps & InjectedContentProps) {
-  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const focusedIndex = useRef(-1);
 
   const registerItem = useCallback((el: HTMLButtonElement | null) => {
@@ -3190,16 +3166,6 @@ Menubar.Content = function MenubarContent({
   };
 
   if (!isOpen) return null;
-
-  const alignClasses: Record<string, string> = {
-    start: "left-0",
-    center: "left-1/2 -translate-x-1/2",
-    end: "right-0",
-  };
-
-  const positionClass = isSubmenu
-    ? cn("absolute left-full top-0", \`ml-\${sideOffset}\`)
-    : cn("absolute top-full", alignClasses[align], \`mt-\${sideOffset}\`);
 
   return (
     <MenubarContentFocusContext.Provider value={{ registerItem }}>
@@ -6082,6 +6048,89 @@ Toast.Close = function ToastClose({ className, onClick, children = "Dismiss", ..
 
 Toast.Footer = function ToastFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("mt-3 flex items-center justify-end gap-2", className)} {...props} />;
+}`,
+  "Toggle": `import { useState, type ButtonHTMLAttributes, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
+
+export type ToggleVariant = "default" | "outline";
+export type ToggleSize = "sm" | "md" | "lg";
+
+export interface ToggleProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  pressed?: boolean;
+  defaultPressed?: boolean;
+  onPressedChange?: (pressed: boolean) => void;
+  variant?: ToggleVariant;
+  size?: ToggleSize;
+  disabled?: boolean;
+  children: ReactNode;
+}
+
+const VARIANT_CLASSES: Record<ToggleVariant, Record<"on" | "off", string>> = {
+  default: {
+    on: "bg-primary text-white hover:bg-primary/90 focus-visible:ring-primary/40",
+    off: "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700 focus-visible:ring-slate-400/40",
+  },
+  outline: {
+    on: "bg-slate-100 text-slate-900 border border-slate-300 dark:bg-slate-800 dark:text-white dark:border-slate-600 focus-visible:ring-slate-400/40",
+    off: "border border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800/50 focus-visible:ring-slate-400/40",
+  },
+};
+
+const SIZE_CLASSES: Record<ToggleSize, string> = {
+  sm: "text-xs px-3 py-1.5 h-7 gap-1.5",
+  md: "text-sm px-4 py-2 h-9 gap-2",
+  lg: "text-base px-6 py-2.5 h-11 gap-2",
+};
+
+export function Toggle({
+  pressed,
+  defaultPressed = false,
+  onPressedChange,
+  variant = "default",
+  size = "md",
+  disabled = false,
+  children,
+  className,
+  onClick,
+  ...props
+}: ToggleProps) {
+  const [internal, setInternal] = useState(defaultPressed);
+  const isControlled = pressed !== undefined;
+  const isOn = isControlled ? pressed : internal;
+
+  const toggle = () => {
+    if (disabled) return;
+    const next = !isOn;
+    if (!isControlled) setInternal(next);
+    onPressedChange?.(next);
+  };
+
+  const stateClasses = isOn
+    ? VARIANT_CLASSES[variant].on
+    : VARIANT_CLASSES[variant].off;
+
+  return (
+    <button
+      type="button"
+      aria-pressed={isOn}
+      disabled={disabled}
+      onClick={(e) => {
+        onClick?.(e);
+        toggle();
+      }}
+      className={cn(
+        "inline-flex items-center justify-center font-semibold rounded-lg transition-all",
+        "focus-visible:outline-hidden focus-visible:ring-2",
+        "disabled:opacity-50 disabled:cursor-not-allowed",
+        stateClasses,
+        SIZE_CLASSES[size],
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
 }`,
   "Tooltip": `import { createContext, useContext, useState, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
