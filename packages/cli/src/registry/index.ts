@@ -136,6 +136,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "calendar",
+    description: "Visual calendar for date selection with single, range, and multiple modes",
+    templateKey: "Calendar",
+    outputFile: "Calendar.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "card",
     description: "Content container with variants",
     templateKey: "Card",
@@ -173,10 +182,10 @@ export const REGISTRY: RegistryEntry[] = [
   },
   {
     name: "date-picker",
-    description: "Date input",
+    description: "Date input with calendar picker",
     templateKey: "DatePicker",
     outputFile: "DatePicker.tsx",
-    internalDeps: ["utils"],
+    internalDeps: ["utils", "calendar"],
     npmDeps: [],
     target: "components",
   },
