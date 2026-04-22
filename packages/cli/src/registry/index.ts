@@ -451,6 +451,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "table",
+    description: "Styled HTML table primitives with responsive overflow",
+    templateKey: "Table",
+    outputFile: "Table.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "toggle",
     description: "Two-state button with pressed/unpressed behavior",
     templateKey: "Toggle",
