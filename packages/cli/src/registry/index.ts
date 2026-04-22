@@ -424,6 +424,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "toggle-group",
+    description: "Group of toggle buttons with single/multiple selection",
+    templateKey: "ToggleGroup",
+    outputFile: "ToggleGroup.tsx",
+    internalDeps: ["utils", "toggle"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "textarea",
     description: "Multi-line text input",
     templateKey: "Textarea",

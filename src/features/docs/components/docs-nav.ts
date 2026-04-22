@@ -65,6 +65,7 @@ export const DOCS_NAV: NavGroup[] = [
       { label: "Table", href: "/docs/table" },
       { label: "Tabs", href: "/docs/tabs" },
       { label: "Toggle", href: "/docs/toggle" },
+      { label: "Toggle Group", href: "/docs/toggle-group" },
       { label: "Textarea", href: "/docs/textarea" },
       { label: "Toast", href: "/docs/toast" },
       { label: "Tooltip", href: "/docs/tooltip" },
