@@ -46,6 +46,7 @@ export const DOCS_NAV: NavGroup[] = [
       { label: "Hover Card", href: "/docs/hover-card" },
       { label: "Input", href: "/docs/input" },
       { label: "Input Group", href: "/docs/input-group" },
+      { label: "Item", href: "/docs/item" },
       { label: "Input OTP", href: "/docs/input-otp" },
       { label: "Label", href: "/docs/label" },
       { label: "Native Select", href: "/docs/native-select" },

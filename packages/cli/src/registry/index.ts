@@ -244,6 +244,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "item",
+    description: "Composable list item with icon, label, description, and trailing slots",
+    templateKey: "Item",
+    outputFile: "Item.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "input-otp",
     description: "Segmented input for OTP/PIN codes",
     templateKey: "InputOTP",
