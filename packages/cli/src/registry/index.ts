@@ -208,6 +208,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "hover-card",
+    description: "Hover-activated popover for previews",
+    templateKey: "HoverCard",
+    outputFile: "HoverCard.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "input",
     description: "Text input with variants",
     templateKey: "Input",

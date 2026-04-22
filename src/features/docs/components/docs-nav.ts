@@ -42,6 +42,7 @@ export const DOCS_NAV: NavGroup[] = [
       { label: "Dropdown Menu", href: "/docs/dropdown-menu" },
       { label: "Drawer", href: "/docs/drawer" },
       { label: "Form", href: "/docs/forms" },
+      { label: "Hover Card", href: "/docs/hover-card" },
       { label: "Input", href: "/docs/input" },
       { label: "Input Group", href: "/docs/input-group" },
       { label: "Input OTP", href: "/docs/input-otp" },
