@@ -941,6 +941,127 @@ export function Checkbox({
     </label>
   );
 }`,
+  "Collapsible": `"use client";
+
+import React, { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface CollapsibleProps {
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  disabled?: boolean;
+  children: ReactNode;
+  className?: string;
+}
+
+export interface CollapsibleTriggerProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export interface CollapsibleContentProps {
+  children: ReactNode;
+  className?: string;
+}
+
+// ─── Context ───────────────────────────────────────────────────────────────────
+
+interface CollapsibleContextValue {
+  open: boolean;
+  toggle: () => void;
+  disabled: boolean;
+}
+
+const CollapsibleContext = createContext<CollapsibleContextValue | null>(null);
+
+function useCollapsibleContext() {
+  const context = useContext(CollapsibleContext);
+  if (!context) {
+    throw new Error("Collapsible sub-components must be used inside <Collapsible>");
+  }
+  return context;
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+export function Collapsible({
+  open: controlledOpen,
+  defaultOpen = false,
+  onOpenChange,
+  disabled = false,
+  children,
+  className,
+}: CollapsibleProps) {
+  const [internalOpen, setInternalOpen] = useState(defaultOpen);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+
+  const toggle = useCallback(() => {
+    if (disabled) return;
+
+    const next = !open;
+    if (!isControlled) {
+      setInternalOpen(next);
+    }
+    if (onOpenChange) {
+      onOpenChange(next);
+    }
+  }, [open, isControlled, disabled, onOpenChange]);
+
+  return (
+    <CollapsibleContext.Provider value={{ open, toggle, disabled }}>
+      <div className={className}>{children}</div>
+    </CollapsibleContext.Provider>
+  );
+}
+
+// ─── Trigger Sub-Component ─────────────────────────────────────────────────────
+
+Collapsible.Trigger = function CollapsibleTrigger({ children, className }: CollapsibleTriggerProps) {
+  const { open, toggle, disabled } = useCollapsibleContext();
+
+  return (
+    <button
+      type="button"
+      aria-expanded={open}
+      aria-disabled={disabled}
+      disabled={disabled}
+      onClick={toggle}
+      className={cn(
+        "flex w-full items-center justify-between",
+        "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40",
+        disabled && "opacity-50 cursor-not-allowed",
+        !disabled && "cursor-pointer",
+        className
+      )}
+    >
+      {children}
+    </button>
+  );
+};
+
+// ─── Content Sub-Component ─────────────────────────────────────────────────────
+
+Collapsible.Content = function CollapsibleContent({ children, className }: CollapsibleContentProps) {
+  const { open } = useCollapsibleContext();
+
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateRows: open ? "1fr" : "0fr",
+        transition: "grid-template-rows 0.2s ease",
+      }}
+    >
+      <div style={{ overflow: "hidden" }}>
+        <div className={className}>{children}</div>
+      </div>
+    </div>
+  );
+};`,
   "Combobox": `import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -2797,6 +2918,308 @@ export const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
     );
   }
 );`,
+  "NavigationMenu": `"use client";
+
+import { createContext, useContext, useEffect, useState, type ReactElement, type ReactNode, cloneElement } from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface NavigationMenuProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export interface NavigationMenuListProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export interface NavigationMenuItemProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export interface NavigationMenuTriggerProps {
+  children: ReactNode;
+  asChild?: boolean;
+  className?: string;
+}
+
+export interface NavigationMenuContentProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export interface NavigationMenuLinkProps {
+  href?: string;
+  children: ReactNode;
+  asChild?: boolean;
+  className?: string;
+}
+
+// ─── Context ────────────────────────────────────────────────────────────────────
+
+interface NavigationMenuContextValue {
+  open: string | null;
+  setOpen: (value: string | null) => void;
+}
+
+const NavigationMenuContext = createContext<NavigationMenuContextValue | null>(null);
+
+function useNavigationMenuContext() {
+  const context = useContext(NavigationMenuContext);
+  if (!context) {
+    throw new Error("NavigationMenu sub-components must be used inside <NavigationMenu>");
+  }
+  return context;
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+export function NavigationMenu({ children, className }: NavigationMenuProps) {
+  const [open, setOpen] = useState<string | null>(null);
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(null);
+    };
+
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [open]);
+
+  // Close when clicking outside
+  useEffect(() => {
+    const handlePointerDown = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const menu = target.closest("[data-navigation-menu]");
+      if (!menu && open) setOpen(null);
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [open]);
+
+  // Assign indices to items
+  let itemIndex = 0;
+  const childrenWithProps = React.Children.map(children, (child) => {
+    if (!React.isValidElement(child)) return child;
+
+    if (child.type === NavigationMenu.Item) {
+      const index = itemIndex++;
+      return cloneElement(child, {
+        index,
+        value: \`item-\${index}\`,
+      } as any);
+    }
+
+    return child;
+  });
+
+  return (
+    <NavigationMenuContext.Provider value={{ open, setOpen }}>
+      <nav className={className} data-navigation-menu>
+        {childrenWithProps}
+      </nav>
+    </NavigationMenuContext.Provider>
+  );
+}
+
+// ─── List Sub-Component ───────────────────────────────────────────────────────
+
+NavigationMenu.List = function NavigationMenuList({ children, className }: NavigationMenuListProps) {
+  return (
+    <ul className={cn("flex items-center gap-1", className)} role="menubar">
+      {children}
+    </ul>
+  );
+};
+
+// ─── Item Sub-Component ───────────────────────────────────────────────────────
+
+NavigationMenu.Item = function NavigationMenuItem({
+  children,
+  className,
+  index,
+  value,
+}: NavigationMenuItemProps & { index?: number; value?: string }) {
+  const { open, setOpen } = useNavigationMenuContext();
+  const isOpen = open === value;
+  const hasContent = React.Children.toArray(children).some(
+    (child) => React.isValidElement(child) && child.type === NavigationMenu.Content
+  );
+
+  return (
+    <li className={cn("relative", className)} role="none">
+      {React.Children.map(children, (child) => {
+        if (!React.isValidElement(child)) return child;
+
+        if (child.type === NavigationMenu.Trigger) {
+          return cloneElement(child, {
+            isOpen,
+            onToggle: () => setOpen(isOpen ? null : value),
+            hasContent,
+          } as any);
+        }
+
+        if (child.type === NavigationMenu.Content) {
+          return cloneElement(child, {
+            isOpen,
+            onClose: () => setOpen(null),
+          } as any);
+        }
+
+        return child;
+      })}
+    </li>
+  );
+};
+
+// ─── Trigger Sub-Component ─────────────────────────────────────────────────────
+
+NavigationMenu.Trigger = function NavigationMenuTrigger({
+  asChild = false,
+  children,
+  className,
+  isOpen,
+  onToggle,
+  hasContent,
+}: NavigationMenuTriggerProps & {
+  isOpen?: boolean;
+  onToggle?: () => void;
+  hasContent?: boolean;
+}) {
+  // Handle hover for desktop
+  const handleMouseEnter = () => {
+    if (hasContent && onToggle) {
+      onToggle();
+    }
+  };
+
+  // Handle click for touch/mobile
+  const handleClick = () => {
+    if (onToggle) {
+      onToggle();
+    }
+  };
+
+  const triggerClassName = cn(
+    "inline-flex items-center justify-center rounded-sm px-4 py-2 text-sm font-medium",
+    "transition-colors",
+    "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40",
+    "cursor-pointer",
+    isOpen
+      ? "bg-slate-100 dark:bg-[#1f2937] text-slate-900 dark:text-white"
+      : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1f2937]",
+    className
+  );
+
+  if (asChild && React.isValidElement(children)) {
+    return cloneElement(children as ReactElement<any>, {
+      onMouseEnter: handleMouseEnter,
+      onClick: handleClick,
+      className: cn(triggerClassName, (children as ReactElement<any>).props.className),
+      'aria-expanded': isOpen,
+      'aria-haspopup': hasContent,
+    } as any);
+  }
+
+  return (
+    <button
+      type="button"
+      onMouseEnter={handleMouseEnter}
+      onClick={handleClick}
+      className={triggerClassName}
+      aria-expanded={isOpen}
+      aria-haspopup={hasContent}
+    >
+      {children}
+      {/* Chevron indicator */}
+      {hasContent && (
+        <svg
+          className={cn(
+            "ml-2 h-4 w-4 transition-transform duration-200",
+            isOpen ? "rotate-180" : ""
+          )}
+          viewBox="0 0 16 16"
+          fill="none"
+        >
+          <path
+            d="M4 6l4 4 4-4"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      )}
+    </button>
+  );
+};
+
+// ─── Content Sub-Component ───────────────────────────────────────────────────
+
+NavigationMenu.Content = function NavigationMenuContent({
+  children,
+  className,
+  isOpen,
+  onClose,
+}: NavigationMenuContentProps & {
+  isOpen?: boolean;
+  onClose?: () => void;
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className={cn(
+        "absolute top-full left-0 mt-2 min-w-[200px] p-2",
+        "bg-white dark:bg-[#161b22]",
+        "border border-slate-200 dark:border-[#1f2937]",
+        "rounded-lg shadow-lg",
+        "z-50",
+        className
+      )}
+      onMouseLeave={onClose}
+    >
+      {children}
+    </div>
+  );
+};
+
+// ─── Link Sub-Component ────────────────────────────────────────────────────────
+
+NavigationMenu.Link = function NavigationMenuLink({
+  href,
+  asChild = false,
+  children,
+  className,
+}: NavigationMenuLinkProps) {
+  const linkClassName = cn(
+    "block rounded-sm px-4 py-2 text-sm font-medium",
+    "text-slate-700 dark:text-slate-300",
+    "hover:bg-slate-100 dark:hover:bg-[#1f2937] hover:text-slate-900 dark:hover:text-white",
+    "transition-colors",
+    "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40",
+    className
+  );
+
+  if (asChild && React.isValidElement(children)) {
+    return cloneElement(children as ReactElement<any>, {
+      className: cn(linkClassName, (children as ReactElement<any>).props.className),
+    } as any);
+  }
+
+  return (
+    <a href={href} className={linkClassName}>
+      {children}
+    </a>
+  );
+};`,
   "PageProgress": `import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -3237,14 +3660,14 @@ RadioGroup.Item = function RadioGroupItem({
 }`,
   "Resizable": `"use client";
 
-import { createContext, useContext, useCallback, useEffect, useRef, useState, type HTMLAttributes, type ReactNode } from "react";
+import React, { useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type ResizableDirection = "horizontal" | "vertical";
 
-export interface ResizablePanelGroupProps {
+export interface ResizableProps {
   direction: ResizableDirection;
   children: ReactNode;
   className?: string;
@@ -3260,243 +3683,189 @@ export interface ResizablePanelProps {
 
 export interface ResizableHandleProps {
   withHandle?: boolean;
-  className?: string;
   disabled?: boolean;
+  className?: string;
 }
 
-// ─── Context ─────────────────────────────────────────────────────────────────
+// ─── Internal Props (passed via cloneElement) ───────────────────────────────
 
-interface PanelData {
-  id: string;
-  size: number;
-  minSize: number;
-  maxSize: number;
+interface ResizablePanelInternalProps {
+  index?: number;
+  sizes?: number[];
+  setSizes?: React.Dispatch<React.SetStateAction<number[]>>;
+  containerRef?: React.RefObject<HTMLDivElement>;
+  direction?: ResizableDirection;
+  activeHandle?: number | null;
+  setActiveHandle?: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
-interface ResizableContextValue {
-  direction: ResizableDirection;
-  panels: Map<string, PanelData>;
-  registerPanel: (id: string, data: Omit<PanelData, "id">) => void;
-  unregisterPanel: (id: string) => void;
-  updatePanelSize: (id: string, newSize: number) => void;
-  resizePanel: (panelId: string, delta: number) => void;
-  activeHandle: string | null;
-  setActiveHandle: (handleId: string | null) => void;
+interface ResizableHandleInternalProps {
+  index?: number;
+  sizes?: number[];
+  setSizes?: React.Dispatch<React.SetStateAction<number[]>>;
+  containerRef?: React.RefObject<HTMLDivElement>;
+  direction?: ResizableDirection;
+  activeHandle?: number | null;
+  setActiveHandle?: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
-const ResizableContext = createContext<ResizableContextValue | null>(null);
+// ─── Main Component ───────────────────────────────────────────────────────────
 
-function useResizableContext() {
-  const context = useContext(ResizableContext);
-  if (!context) {
-    throw new Error("Resizable components must be used within ResizablePanelGroup");
-  }
-  return context;
-}
+export function Resizable({ direction, children, className }: ResizableProps) {
+  const [sizes, setSizes] = useState<number[]>([]);
+  const [activeHandle, setActiveHandle] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-// ─── Panel Group ──────────────────────────────────────────────────────────────
+  // Count panels and assign indices to children
+  let panelCount = 0;
+  const childrenWithProps = React.Children.map(children, (child) => {
+    if (!React.isValidElement(child)) return child;
 
-export function ResizablePanelGroup({ direction, children, className }: ResizablePanelGroupProps) {
-  const [panels, setPanels] = useState<Map<string, PanelData>>(new Map());
-  const [activeHandle, setActiveHandle] = useState<string | null>(null);
+    if (child.type === Resizable.Panel) {
+      const index = panelCount++;
 
-  const registerPanel = useCallback((id: string, data: Omit<PanelData, "id">) => {
-    setPanels((prev) => {
-      const next = new Map(prev);
-      next.set(id, { id, ...data });
-      return next;
-    });
-  }, []);
-
-  const unregisterPanel = useCallback((id: string) => {
-    setPanels((prev) => {
-      const next = new Map(prev);
-      next.delete(id);
-      return next;
-    });
-  }, []);
-
-  const updatePanelSize = useCallback((id: string, newSize: number) => {
-    setPanels((prev) => {
-      const next = new Map(prev);
-      const panel = next.get(id);
-      if (panel) {
-        next.set(id, { ...panel, size: newSize });
-      }
-      return next;
-    });
-  }, []);
-
-  const resizePanel = useCallback((panelId: string, delta: number) => {
-    setPanels((prev) => {
-      const next = new Map(prev);
-      const panelIds = Array.from(next.keys());
-      const panelIndex = panelIds.indexOf(panelId);
-
-      if (panelIndex === -1 || panelIndex === panelIds.length - 1) {
-        return next; // Can't resize first or last panel
+      // Initialize size if not set
+      if (sizes[index] === undefined) {
+        setSizes((prev) => {
+          const next = [...prev];
+          next[index] = (child.props as ResizablePanelProps).defaultSize || 50;
+          return next;
+        });
       }
 
-      const panel = next.get(panelId);
-      const nextPanelId = panelIds[panelIndex + 1];
+      return React.cloneElement(child, {
+        index,
+        sizes,
+        setSizes,
+        containerRef,
+        direction,
+        activeHandle,
+        setActiveHandle,
+      } as ResizablePanelInternalProps);
+    }
 
-      if (!nextPanelId) {
-        return next;
-      }
+    if (child.type === Resizable.Handle) {
+      const handleIndex = panelCount - 1;
 
-      const nextPanel = next.get(nextPanelId);
+      return React.cloneElement(child, {
+        index: handleIndex,
+        sizes,
+        setSizes,
+        containerRef,
+        direction,
+        activeHandle,
+        setActiveHandle,
+      } as ResizableHandleInternalProps);
+    }
 
-      if (!panel || !nextPanel) {
-        return next;
-      }
-
-      // Calculate new sizes respecting min/max bounds
-      const newPanelSize = Math.max(panel.minSize, Math.min(panel.maxSize, panel.size + delta));
-      const actualDelta = newPanelSize - panel.size;
-      const newNextPanelSize = nextPanel.size - actualDelta;
-
-      // Check if next panel can accommodate the change
-      if (newNextPanelSize >= nextPanel.minSize && newNextPanelSize <= nextPanel.maxSize) {
-        next.set(panelId, { ...panel, size: newPanelSize });
-        next.set(nextPanelId, { ...nextPanel, size: newNextPanelSize });
-      }
-
-      return next;
-    });
-  }, []);
+    return child;
+  });
 
   return (
-    <ResizableContext.Provider
-      value={{ direction, panels, registerPanel, unregisterPanel, updatePanelSize, resizePanel, activeHandle, setActiveHandle }}
+    <div
+      ref={containerRef}
+      className={cn("flex", direction === "horizontal" ? "flex-row" : "flex-col", className)}
     >
-      <div
-        className={cn(
-          "flex",
-          direction === "horizontal" ? "flex-row" : "flex-col",
-          className
-        )}
-      >
-        {children}
-      </div>
-    </ResizableContext.Provider>
+      {childrenWithProps}
+    </div>
   );
 }
 
-// ─── Panel ────────────────────────────────────────────────────────────────────
+// ─── Panel Sub-Component ───────────────────────────────────────────────────────
 
-let panelIdCounter = 0;
-
-export function ResizablePanel({ defaultSize = 50, minSize = 10, maxSize = 90, children, className }: ResizablePanelProps) {
-  const { direction, panels, registerPanel, unregisterPanel } = useResizableContext();
-  const panelId = useRef<string>(\`panel-\${panelIdCounter++}\`);
-
-  useEffect(() => {
-    registerPanel(panelId.current, { size: defaultSize, minSize, maxSize });
-    return () => unregisterPanel(panelId.current);
-  }, [defaultSize, minSize, maxSize, registerPanel, unregisterPanel]);
-
-  const panel = panels.get(panelId.current);
-  const flexBasis = panel ? \`\${panel.size}%\` : \`\${defaultSize}%\`;
-
-  const isHorizontal = direction === "horizontal";
+Resizable.Panel = function ResizablePanel({
+  defaultSize = 50,
+  children,
+  className,
+  index,
+  sizes,
+}: ResizablePanelProps & ResizablePanelInternalProps) {
+  const size = index !== undefined && sizes?.[index] !== undefined ? sizes[index] : defaultSize;
 
   return (
     <div
       className={cn("flex-shrink-0", className)}
       style={{
-        flexBasis,
-        flexGrow: 0,
+        flexBasis: \`\${size}%\`,
         flexShrink: 0,
+        minWidth: 0,
       }}
     >
       {children}
     </div>
   );
-}
+};
 
-// ─── Handle ───────────────────────────────────────────────────────────────────
+// ─── Handle Sub-Component ───────────────────────────────────────────────────────────
 
-let handleIdCounter = 0;
-
-export function ResizableHandle({ withHandle = false, className, disabled = false }: ResizableHandleProps) {
-  const { direction, resizePanel, activeHandle, setActiveHandle } = useResizableContext();
-  const handleRef = useRef<HTMLDivElement>(null);
-  const handleId = useRef<string>(\`handle-\${handleIdCounter++}\`);
-  const [isDragging, setIsDragging] = useState(false);
-
+Resizable.Handle = function ResizableHandle({
+  withHandle = false,
+  disabled = false,
+  className,
+  index,
+  sizes,
+  setSizes,
+  containerRef,
+  activeHandle,
+  setActiveHandle,
+}: ResizableHandleProps & ResizableHandleInternalProps) {
+  const direction = "horizontal"; // Hardcode for now
   const isHorizontal = direction === "horizontal";
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (disabled) return;
-
-    const step = e.shiftKey ? 10 : 1;
-    let delta = 0;
-
-    switch (e.key) {
-      case "ArrowLeft":
-        delta = isHorizontal ? -step : 0;
-        break;
-      case "ArrowRight":
-        delta = isHorizontal ? step : 0;
-        break;
-      case "ArrowUp":
-        delta = isHorizontal ? 0 : -step;
-        break;
-      case "ArrowDown":
-        delta = isHorizontal ? 0 : step;
-        break;
-      default:
-        return;
-    }
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (disabled || index === undefined || !setActiveHandle) return;
 
     e.preventDefault();
-    // Find the panel before this handle and resize it
-    const panelId = handleId.current.replace("handle-", "panel-");
-    resizePanel(panelId, delta);
-  }, [disabled, isHorizontal, resizePanel]);
+    e.stopPropagation();
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (disabled) return;
-
-    e.preventDefault();
-    setIsDragging(true);
-    setActiveHandle(handleId.current);
+    const container = containerRef?.current;
+    if (!container || !setSizes) return;
 
     const startX = e.clientX;
-    const startY = e.clientY;
+    const initialSizes = [...(sizes || [])];
+
+    setActiveHandle(index);
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
-      const deltaX = moveEvent.clientX - startX;
-      const deltaY = moveEvent.clientY - startY;
+      const containerWidth = container.offsetWidth;
+      if (containerWidth === 0) return;
 
-      const delta = isHorizontal ? deltaX : deltaY;
-      const panelId = handleId.current.replace("handle-", "panel-");
-      resizePanel(panelId, delta);
+      const deltaX = moveEvent.clientX - startX;
+      const deltaPercent = (deltaX / containerWidth) * 100;
+
+      if (index === undefined) return;
+
+      const initialPanelSize = initialSizes[index] || 50;
+      const initialNextPanelSize = initialSizes[index + 1] || 50;
+
+      let newPanelSize = initialPanelSize + deltaPercent;
+      newPanelSize = Math.max(10, Math.min(90, newPanelSize));
+
+      const actualDelta = newPanelSize - initialPanelSize;
+      const newNextPanelSize = initialNextPanelSize - actualDelta;
+
+      if (newNextPanelSize >= 10 && newNextPanelSize <= 90 && index + 1 < initialSizes.length) {
+        setSizes((prev: number[]) => {
+          const next = [...prev];
+          next[index] = newPanelSize;
+          next[index + 1] = newNextPanelSize;
+          return next;
+        });
+      }
     };
 
     const handleMouseUp = () => {
-      setIsDragging(false);
-      setActiveHandle(null);
+      setActiveHandle?.(null);
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
 
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
-  }, [disabled, isHorizontal, resizePanel, setActiveHandle]);
-
-  // Handle drag end when component unmounts
-  useEffect(() => {
-    return () => {
-      if (isDragging) {
-        setActiveHandle(null);
-      }
-    };
-  }, [isDragging, setActiveHandle]);
+  };
 
   return (
     <div
-      ref={handleRef}
       tabIndex={disabled ? -1 : 0}
       role="separator"
       aria-orientation={direction}
@@ -3504,32 +3873,22 @@ export function ResizableHandle({ withHandle = false, className, disabled = fals
         "flex-shrink-0 bg-slate-200 dark:bg-[#1f2937]",
         "transition-colors hover:bg-primary/20",
         disabled && "opacity-50 cursor-not-allowed",
-        !disabled && "cursor-col-resize",
-        isHorizontal ? "w-1 cursor-col-resize" : "h-1 cursor-row-resize",
-        activeHandle === handleId.current && !disabled && "bg-primary",
+        !disabled && "select-none",
+        !disabled && (isHorizontal ? "cursor-col-resize" : "cursor-row-resize"),
+        isHorizontal ? "w-1" : "h-1",
+        activeHandle === index && !disabled && "bg-primary",
         className
       )}
-      onKeyDown={handleKeyDown}
       onMouseDown={handleMouseDown}
     >
       {withHandle && (
-        <div
-          className={cn(
-            "flex items-center justify-center",
-            isHorizontal ? "h-full w-4" : "w-full h-4"
-          )}
-        >
-          <div
-            className={cn(
-              "bg-slate-400 dark:bg-slate-600 rounded-full",
-              isHorizontal ? "w-1 h-8" : "w-8 h-1"
-            )}
-          />
+        <div className={cn("flex items-center justify-center", isHorizontal ? "h-full w-4" : "w-full h-4")}>
+          <div className={cn("bg-slate-400 dark:bg-slate-600 rounded-full", isHorizontal ? "w-1 h-8" : "w-8 h-1")} />
         </div>
       )}
     </div>
   );
-}`,
+};`,
   "ScrollArea": `"use client";
 
 import { useEffect, useRef, type HTMLAttributes, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
@@ -4070,6 +4429,264 @@ export function Separator({
       {...props}
     />
   );
+}`,
+  "Sheet": `"use client";
+
+import { createContext, useContext, useEffect, type HTMLAttributes, type ReactNode } from "react";
+import { createPortal } from "react-dom";
+import { cn } from "@/lib/utils";
+import { useAnimatedMount } from "@/hooks/use-animated-mount";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type SheetSide = "top" | "right" | "bottom" | "left";
+export type SheetSize = "sm" | "md" | "lg" | "xl" | "full" | "content";
+
+export interface SheetProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  side?: SheetSide;
+  size?: SheetSize;
+  children: ReactNode;
+  className?: string;
+}
+
+export interface SheetTriggerProps extends HTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+}
+
+export interface SheetContentProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+
+export interface SheetHeaderProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+
+export interface SheetTitleProps extends HTMLAttributes<HTMLHeadingElement> {
+  children: ReactNode;
+}
+
+export interface SheetDescriptionProps extends HTMLAttributes<HTMLParagraphElement> {
+  children: ReactNode;
+}
+
+export interface SheetFooterProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+
+export interface SheetCloseProps extends HTMLAttributes<HTMLButtonElement> {
+  children?: ReactNode;
+}
+
+// ─── Context ───────────────────────────────────────────────────────────────────
+
+interface SheetContextValue {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+const SheetContext = createContext<SheetContextValue | null>(null);
+
+function useSheetContext() {
+  const context = useContext(SheetContext);
+  if (!context) {
+    throw new Error("Sheet sub-components must be used inside <Sheet>");
+  }
+  return context;
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const WIDTH_CLASSES: Record<SheetSize, string> = {
+  sm: "w-80",
+  md: "w-96",
+  lg: "w-[512px]",
+  xl: "w-[576px]",
+  full: "w-full",
+  content: "w-auto",
+};
+
+const HEIGHT_CLASSES: Record<SheetSize, string> = {
+  sm: "h-[50vh]",
+  md: "h-[70vh]",
+  lg: "h-[85vh]",
+  xl: "h-[90vh]",
+  full: "h-full",
+  content: "h-auto",
+};
+
+const SIDE_CLASSES: Record<SheetSide, { panel: string; hidden: string }> = {
+  right: { panel: "right-0 inset-y-0", hidden: "translate-x-full" },
+  left: { panel: "left-0 inset-y-0", hidden: "-translate-x-full" },
+  top: { panel: "top-0 inset-x-0", hidden: "-translate-y-full" },
+  bottom: { panel: "bottom-0 inset-x-0", hidden: "translate-y-full" },
+};
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+Sheet.Trigger = function SheetTrigger({ children, className, ...props }: SheetTriggerProps) {
+  const { open, onOpenChange } = useSheetContext();
+
+  return (
+    <button
+      type="button"
+      onClick={() => onOpenChange(!open)}
+      className={cn(
+        "inline-flex items-center justify-center rounded-sm px-4 py-2 text-sm font-medium",
+        "bg-primary text-white hover:bg-primary/90",
+        "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40",
+        "disabled:opacity-50 disabled:cursor-not-allowed",
+        "transition-colors",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+
+Sheet.Content = function SheetContent({ children, className, ...props }: SheetContentProps) {
+  return (
+    <div className={cn("flex-1 overflow-y-auto px-6 py-4", className)} {...props}>
+      {children}
+    </div>
+  );
+};
+
+Sheet.Header = function SheetHeader({ children, className, ...props }: SheetHeaderProps) {
+  return (
+    <div className={cn("px-6 pt-6 pb-4 border-b border-slate-100 dark:border-[#1f2937]", className)} {...props}>
+      {children}
+    </div>
+  );
+};
+
+Sheet.Title = function SheetTitle({ children, className, ...props }: SheetTitleProps) {
+  return (
+    <h2 className={cn("text-lg font-semibold text-slate-900 dark:text-white pr-8", className)} {...props}>
+      {children}
+    </h2>
+  );
+};
+
+Sheet.Description = function SheetDescription({ children, className, ...props }: SheetDescriptionProps) {
+  return (
+    <p className={cn("mt-1 text-sm text-slate-500 dark:text-slate-400 leading-relaxed", className)} {...props}>
+      {children}
+    </p>
+  );
+};
+
+Sheet.Footer = function SheetFooter({ children, className, ...props }: SheetFooterProps) {
+  return (
+    <div className={cn("px-6 py-4 border-t border-slate-100 dark:border-[#1f2937] flex items-center justify-end gap-3 shrink-0", className)} {...props}>
+      {children}
+    </div>
+  );
+};
+
+Sheet.Close = function SheetClose({ children, className, ...props }: SheetCloseProps) {
+  const { onOpenChange } = useSheetContext();
+
+  return (
+    <button
+      type="button"
+      onClick={() => onOpenChange(false)}
+      className={cn(
+        "inline-flex items-center justify-center rounded-sm px-4 py-2 text-sm font-medium",
+        "bg-slate-100 dark:bg-[#1f2937] text-slate-900 dark:text-white",
+        "hover:bg-slate-200 dark:hover:bg-[#161b22]",
+        "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40",
+        "transition-colors",
+        className
+      )}
+      {...props}
+    >
+      {children || "Close"}
+    </button>
+  );
+};
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+export function Sheet({ open, onOpenChange, side = "right", size = "md", children, className }: SheetProps) {
+  const { mounted, visible } = useAnimatedMount(open, 300);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onOpenChange(false);
+    };
+
+    document.addEventListener("keydown", handleKey);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", handleKey);
+      document.body.style.overflow = "";
+    };
+  }, [open, onOpenChange]);
+
+  if (!mounted) return null;
+
+  const { panel, hidden } = SIDE_CLASSES[side];
+
+  const sheet = (
+    <SheetContext.Provider value={{ open, onOpenChange }}>
+      <div className="fixed inset-0 z-50 flex">
+        {/* Backdrop */}
+        <div
+          className={cn(
+            "absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300",
+            visible ? "opacity-100" : "opacity-0"
+          )}
+          onClick={() => onOpenChange(false)}
+        />
+
+        {/* Panel */}
+        <div
+          role="dialog"
+          aria-modal="true"
+          className={cn(
+            "absolute flex flex-col bg-white dark:bg-[#161b22]",
+            "border-slate-200 dark:border-[#1f2937]",
+            side === "right" && "border-l",
+            side === "left" && "border-r",
+            side === "top" && "border-b",
+            side === "bottom" && "border-t",
+            "shadow-2xl shadow-black/20",
+            "transition-transform duration-300 ease-in-out",
+            // For top/bottom: size controls height, width is full
+            // For left/right: size controls width, height is full
+            side === "top" || side === "bottom"
+              ? \`w-full \${HEIGHT_CLASSES[size]}\`
+              : \`h-full \${WIDTH_CLASSES[size]}\`,
+            panel,
+            visible ? "translate-x-0 translate-y-0" : hidden,
+            className
+          )}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => onOpenChange(false)}
+            className="absolute right-4 top-4 z-10 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1f2937] hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            aria-label="Close sheet"
+          >
+            <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none">
+              <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+
+          {children}
+        </div>
+      </div>
+    </SheetContext.Provider>
+  );
+
+  return createPortal(sheet, document.body);
 }`,
   "Skeleton": `import { cn } from "@/lib/utils";
 

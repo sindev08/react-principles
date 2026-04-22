@@ -244,6 +244,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "navigation-menu",
+    description: "Horizontal navigation with dropdown/flyout panels",
+    templateKey: "NavigationMenu",
+    outputFile: "NavigationMenu.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "pagination",
     description: "Page navigation",
     templateKey: "Pagination",
