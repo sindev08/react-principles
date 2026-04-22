@@ -118,6 +118,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "context-menu",
+    description: "Right-click menu with nested dropdowns",
+    templateKey: "ContextMenu",
+    outputFile: "ContextMenu.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "card",
     description: "Content container with variants",
     templateKey: "Card",
