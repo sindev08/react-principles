@@ -316,6 +316,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "sheet",
+    description: "Panel that slides in from any edge of the screen (top/right/bottom/left)",
+    templateKey: "Sheet",
+    outputFile: "Sheet.tsx",
+    internalDeps: ["utils", "use-animated-mount"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "select",
     description: "Native select with styling",
     templateKey: "Select",

@@ -55,6 +55,7 @@ export const DOCS_NAV: NavGroup[] = [
       { label: "Resizable", href: "/docs/resizable" },
       { label: "Select", href: "/docs/select" },
       { label: "ScrollArea", href: "/docs/scrollarea" },
+      { label: "Sheet", href: "/docs/sheet" },
       { label: "Separator", href: "/docs/separator" },
       { label: "Skeleton", href: "/docs/skeleton" },
       { label: "Slider", href: "/docs/slider" },
