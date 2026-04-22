@@ -69,6 +69,7 @@ export const DOCS_NAV: NavGroup[] = [
       { label: "Tooltip", href: "/docs/tooltip" },
       { label: "Typography", href: "/docs/typography" },
       { label: "Kbd", href: "/docs/kbd" },
+      { label: "Menubar", href: "/docs/menubar" },
     ],
   },
 ];

@@ -235,6 +235,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "menubar",
+    description: "Desktop-style menu bar with nested dropdowns",
+    templateKey: "Menubar",
+    outputFile: "Menubar.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "native-select",
     description: "Styled native select element",
     templateKey: "NativeSelect",
