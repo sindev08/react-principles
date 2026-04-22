@@ -38,6 +38,7 @@ export const DOCS_NAV: NavGroup[] = [
       { label: "Combobox", href: "/docs/combobox" },
       { label: "Command", href: "/docs/command" },
       { label: "Date Picker", href: "/docs/date-picker" },
+      { label: "Data Table", href: "/docs/data-table" },
       { label: "Dialog", href: "/docs/dialog" },
       { label: "Field", href: "/docs/field" },
       { label: "Dropdown Menu", href: "/docs/dropdown-menu" },

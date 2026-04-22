@@ -181,6 +181,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "data-table",
+    description: "Full-featured table with sorting, filtering, and pagination",
+    templateKey: "DataTable",
+    outputFile: "DataTable.tsx",
+    internalDeps: ["utils", "table", "button", "skeleton"],
+    npmDeps: ["@tanstack/react-table"],
+    target: "components",
+  },
+  {
     name: "dialog",
     description: "Modal dialog with compound sub-components",
     templateKey: "Dialog",
