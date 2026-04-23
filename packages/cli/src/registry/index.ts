@@ -145,6 +145,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "carousel",
+    description: "Horizontal/vertical content slider with touch drag and loop mode",
+    templateKey: "Carousel",
+    outputFile: "Carousel.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "card",
     description: "Content container with variants",
     templateKey: "Card",
