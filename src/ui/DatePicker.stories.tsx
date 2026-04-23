@@ -26,6 +26,21 @@ export const ErrorState: Story = {
   args: {
     label: "Publish window",
     error: "Please choose a valid date in the future.",
-    defaultValue: "2026-04-01",
+  },
+};
+
+export const RangeMode: Story = {
+  args: {
+    label: "Date range",
+    description: "Select a start and end date.",
+    mode: "range",
+    placeholder: "Select a range",
+  },
+};
+
+export const Placeholder: Story = {
+  args: {
+    label: "Due date",
+    placeholder: "Choose a due date",
   },
 };
