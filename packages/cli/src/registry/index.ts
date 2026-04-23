@@ -154,6 +154,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "chart",
+    description: "Responsive charts (bar, line, area, pie) with themed tooltips and legends",
+    templateKey: "Chart",
+    outputFile: "Chart.tsx",
+    internalDeps: ["utils"],
+    npmDeps: ["recharts"],
+    target: "components",
+  },
+  {
     name: "card",
     description: "Content container with variants",
     templateKey: "Card",

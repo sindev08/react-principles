@@ -1485,9 +1485,9 @@ export interface CarouselProps {
   className?: string;
 }
 
-export interface CarouselContentProps extends HTMLAttributes<HTMLDivElement> {}
+export type CarouselContentProps = HTMLAttributes<HTMLDivElement>;
 
-export interface CarouselItemProps extends HTMLAttributes<HTMLDivElement> {}
+export type CarouselItemProps = HTMLAttributes<HTMLDivElement>;
 
 export interface CarouselButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -1538,7 +1538,6 @@ export function Carousel({
   className,
 }: CarouselProps) {
   const loop = opts?.loop ?? false;
-  const align = opts?.align ?? "start";
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemCount, setItemCount] = useState(0);
@@ -1549,8 +1548,10 @@ export function Carousel({
   const currentIndexRef = useRef(0);
 
   // Keep refs in sync
-  itemCountRef.current = itemCount;
-  currentIndexRef.current = currentIndex;
+  useEffect(() => {
+    itemCountRef.current = itemCount;
+    currentIndexRef.current = currentIndex;
+  }, [itemCount, currentIndex]);
 
   // Measure container size
   const measure = useCallback(() => {
@@ -1621,7 +1622,7 @@ export function Carousel({
   );
 
   // Build stable API
-  const apiRef = useRef<CarouselApi>({
+  const [api, setApiState] = useState<CarouselApi>(() => ({
     scrollPrev,
     scrollNext,
     scrollTo,
@@ -1629,11 +1630,23 @@ export function Carousel({
     canScrollNext: () => canScrollNext,
     getCurrentIndex: () => currentIndexRef.current,
     getItemCount: () => itemCountRef.current,
-  });
+  }));
 
   useEffect(() => {
-    if (setApi) setApi(apiRef.current);
-  }, [setApi]);
+    setApiState({
+      scrollPrev,
+      scrollNext,
+      scrollTo,
+      canScrollPrev: () => canScrollPrev,
+      canScrollNext: () => canScrollNext,
+      getCurrentIndex: () => currentIndexRef.current,
+      getItemCount: () => itemCountRef.current,
+    });
+  }, [scrollPrev, scrollNext, scrollTo, canScrollPrev, canScrollNext]);
+
+  useEffect(() => {
+    if (setApi) setApi(api);
+  }, [setApi, api]);
 
   // Item registration
   const registerItem = useCallback(() => {
@@ -1657,7 +1670,7 @@ export function Carousel({
     scrollTo,
     canScrollPrev,
     canScrollNext,
-    api: apiRef.current,
+    api,
   };
 
   return (
@@ -1692,10 +1705,6 @@ Carousel.Content = function CarouselContent({
     containerSize,
     scrollPrev,
     scrollNext,
-    canScrollPrev,
-    canScrollNext,
-    registerItem,
-    unregisterItem,
   } = useCarouselContext();
 
   const trackRef = useRef<HTMLDivElement>(null);
@@ -1778,7 +1787,7 @@ Carousel.Content = function CarouselContent({
   );
 
   const handlePointerUp = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
+    (_e: React.PointerEvent<HTMLDivElement>) => {
       if (!isDraggingRef.current) return;
 
       isDraggingRef.current = false;
@@ -1853,7 +1862,7 @@ Carousel.Item = function CarouselItem({
   className,
   ...props
 }: CarouselItemProps) {
-  const { registerItem, unregisterItem, orientation } = useCarouselContext();
+  const { registerItem, unregisterItem } = useCarouselContext();
 
   useEffect(() => {
     registerItem();
@@ -1956,6 +1965,178 @@ Carousel.Next = function CarouselNext({
     </button>
   );
 };`,
+  "Chart": `"use client";
+
+import {
+  createContext,
+  useContext,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
+import { cn } from "@/lib/utils";
+import {
+  ResponsiveContainer,
+  Tooltip as RechartsTooltip,
+  Legend as RechartsLegend,
+  BarChart,
+  LineChart,
+  AreaChart,
+  PieChart,
+  type TooltipProps,
+  type LegendProps,
+} from "recharts";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface ChartConfigItem {
+  label: string;
+  color: string;
+}
+
+export type ChartConfig = Record<string, ChartConfigItem>;
+
+export interface ChartContainerProps {
+  config: ChartConfig;
+  children: ReactNode;
+  className?: string;
+}
+
+// ─── Context ──────────────────────────────────────────────────────────────────
+
+const ChartContext = createContext<ChartConfig>({});
+
+function useChartConfig(): ChartConfig {
+  return useContext(ChartContext);
+}
+
+// ─── Default Colors ───────────────────────────────────────────────────────────
+
+export const CHART_COLORS = [
+  "#4628F1",
+  "#06B6D4",
+  "#22C55E",
+  "#F59E0B",
+  "#EF4444",
+  "#8B5CF6",
+] as const;
+
+// ─── ChartContainer ───────────────────────────────────────────────────────────
+
+export function ChartContainer({
+  config,
+  children,
+  className,
+}: ChartContainerProps) {
+  return (
+    <ChartContext.Provider value={config}>
+      <div className={cn("w-full", className)}>
+        <ResponsiveContainer width="100%" height="100%">
+          {children}
+        </ResponsiveContainer>
+      </div>
+    </ChartContext.Provider>
+  );
+}
+
+// ─── ChartTooltip ─────────────────────────────────────────────────────────────
+
+export function ChartTooltipContent({
+  active,
+  payload,
+  label,
+}: TooltipProps<number, string>) {
+  if (!active || !payload?.length) return null;
+  const config = useChartConfig();
+
+  return (
+    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-lg dark:border-[#1f2937] dark:bg-[#0d1117]">
+      <p className="mb-1 text-xs font-semibold text-slate-900 dark:text-white">
+        {label}
+      </p>
+      {payload.map((entry, i) => {
+        const key = entry.dataKey as string;
+        const item = config[key];
+        const color = item?.color ?? CHART_COLORS[i % CHART_COLORS.length];
+        const entryLabel = item?.label ?? key;
+
+        return (
+          <div key={key} className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <span
+                className="h-2.5 w-2.5 shrink-0 rounded-full"
+                style={{ backgroundColor: color }}
+              />
+              <span className="text-xs text-slate-600 dark:text-slate-400">
+                {entryLabel}
+              </span>
+            </div>
+            <span className="text-xs font-semibold text-slate-900 dark:text-white">
+              {typeof entry.value === "number"
+                ? entry.value.toLocaleString()
+                : String(entry.value)}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export function ChartTooltip(props?: Partial<TooltipProps<number, string>>) {
+  return (
+    <RechartsTooltip
+      content={<ChartTooltipContent />}
+      cursor={false}
+      {...props}
+    />
+  );
+}
+
+// ─── ChartLegend ───────────────────────────────────────────────────────────────
+
+export function ChartLegendContent({
+  payload,
+}: LegendProps) {
+  const config = useChartConfig();
+
+  if (!payload?.length) return null;
+
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+      {payload.map((entry, i) => {
+        const key = entry.value as string;
+        const item = config[key];
+        const color = item?.color ?? entry.color ?? CHART_COLORS[i % CHART_COLORS.length];
+        const entryLabel = item?.label ?? entry.value;
+
+        return (
+          <div key={key} className="flex items-center gap-1.5">
+            <span
+              className="h-2.5 w-2.5 rounded-full"
+              style={{ backgroundColor: color }}
+            />
+            <span className="text-xs text-slate-600 dark:text-slate-400">
+              {entryLabel}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export function ChartLegend(props?: Partial<LegendProps>) {
+  return (
+    <RechartsLegend
+      content={<ChartLegendContent />}
+      {...props}
+    />
+  );
+}
+
+// ─── Re-exports ────────────────────────────────────────────────────────────────
+
+export { BarChart, LineChart, AreaChart, PieChart };`,
   "Checkbox": `import { useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
