@@ -72,6 +72,9 @@
     "zustand": "^5.0.0"
   },
   "dependencies": {
+    "@iconify/react": "^6.0.2",
+    "fflate": "^0.8.2",
+    "lucide-react": "^1.9.0",
     "recharts": "^3.8.1"
   }
 }
