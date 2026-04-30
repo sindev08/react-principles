@@ -150,14 +150,14 @@ export function getCuratedFonts(): GoogleFont[] {
 export function getPopularFonts(): GoogleFont[] {
   const allFonts = getCuratedFonts();
   return [
-    allFonts.find((f) => f.family === "Inter")!,
-    allFonts.find((f) => f.family === "Roboto")!,
-    allFonts.find((f) => f.family === "Open Sans")!,
-    allFonts.find((f) => f.family === "Montserrat")!,
-    allFonts.find((f) => f.family === "Merriweather")!,
-    allFonts.find((f) => f.family === "Playfair Display")!,
-    allFonts.find((f) => f.family === "JetBrains Mono")!,
-  ].filter(Boolean) as GoogleFont[];
+    allFonts.find((f) => f.family === "Inter"),
+    allFonts.find((f) => f.family === "Roboto"),
+    allFonts.find((f) => f.family === "Open Sans"),
+    allFonts.find((f) => f.family === "Montserrat"),
+    allFonts.find((f) => f.family === "Merriweather"),
+    allFonts.find((f) => f.family === "Playfair Display"),
+    allFonts.find((f) => f.family === "JetBrains Mono"),
+  ].filter((f): f is GoogleFont => f !== undefined);
 }
 
 /**

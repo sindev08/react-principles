@@ -22,7 +22,6 @@ export const FontCard = memo(function FontCard({
 
   // Sample text for preview
   const sampleText = "Aa";
-  const displayChars = family.split('').slice(0, 3);
 
   return (
     <button

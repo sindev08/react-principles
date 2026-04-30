@@ -214,7 +214,7 @@ export function Step3Generate() {
             size="sm"
             variant="outline"
             onClick={() => {
-              navigator.clipboard.writeText(shareUrl);
+              void navigator.clipboard.writeText(shareUrl);
               alert("URL copied to clipboard!");
             }}
             className={cn(

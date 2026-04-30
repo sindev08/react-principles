@@ -1,12 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Switch } from "@/ui/Switch";
 import type { SwitchSize } from "@/ui/Switch";
-import { Button } from "@/ui/Button";
 
 const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },

@@ -1,13 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Accordion } from "@/ui/Accordion";
 import type { AccordionType } from "@/ui/Accordion";
-
-import { Button } from "@/ui/Button";
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TOC_ITEMS = [

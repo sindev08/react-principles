@@ -15,23 +15,6 @@ function SearchIcon() {
   );
 }
 
-function UserIcon() {
-  return (
-    <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="5" r="3" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M2 14c0-3.314 2.686-5 6-5s6 1.686 6 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function EmailIcon() {
-  return (
-    <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
-      <rect x="2" y="4" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M2 5.5l6 4 6-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
 
 function DollarIcon() {
   return (
