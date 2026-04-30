@@ -32,7 +32,6 @@ export function LivePreviewPanel() {
   const styleProps = getStyleProperties(style);
   const stylePrimary = styleProps["--color-primary"];
   const styleSecondary = styleProps["--color-secondary"];
-  const styleAccent = styleProps["--color-accent"];
 
   // Apply style properties and fonts
   useEffect(() => {
@@ -80,7 +79,7 @@ export function LivePreviewPanel() {
     if (containerRef.current) {
       // Apply style properties (spacing, typography, colors, etc.)
       Object.entries(styleProps).forEach(([key, value]) => {
-        containerRef.current!.style.setProperty(key, value);
+        containerRef.current?.style.setProperty(key, value);
       });
 
       // Set custom color variables

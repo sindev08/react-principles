@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Field } from "./Field";
 import { StorySurface } from "./storybook-utils";
 import { Input } from "./Input";
-import { Checkbox } from "./Checkbox";
 import { Select } from "./Select";
 import { Textarea } from "./Textarea";
 

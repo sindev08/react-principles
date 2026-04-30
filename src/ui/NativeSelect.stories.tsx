@@ -134,76 +134,80 @@ export const WithChildren: Story = {
   ),
 };
 
+function ControlledExample() {
+  const [value, setValue] = useState("design-system");
+
+  return (
+    <StorySurface className="w-[420px] space-y-4">
+      <NativeSelect
+        label="Controlled Select"
+        options={SAMPLE_OPTIONS}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        description="Selected value: {value}"
+      />
+
+      <div className="p-3 bg-slate-50 dark:bg-[#161b22] rounded-lg border border-slate-200 dark:border-[#1f2937]">
+        <p className="text-sm text-slate-600 dark:text-slate-400">
+          Selected value: <code className="font-mono text-primary">{value || "(none)"}</code>
+        </p>
+      </div>
+    </StorySurface>
+  );
+}
+
 export const Controlled: Story = {
-  render: () => {
-    const [value, setValue] = useState("design-system");
-
-    return (
-      <StorySurface className="w-[420px] space-y-4">
-        <NativeSelect
-          label="Controlled Select"
-          options={SAMPLE_OPTIONS}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          description="Selected value: {value}"
-        />
-
-        <div className="p-3 bg-slate-50 dark:bg-[#161b22] rounded-lg border border-slate-200 dark:border-[#1f2937]">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            Selected value: <code className="font-mono text-primary">{value || "(none)"}</code>
-          </p>
-        </div>
-      </StorySurface>
-    );
-  },
+  render: () => <ControlledExample />,
 };
 
+function CompleteExampleComponent() {
+  const [category, setCategory] = useState("");
+  const [size, setSize] = useState("md");
+  const [fruit, setFruit] = useState("");
+
+  return (
+    <StorySurface className="w-[420px] space-y-4">
+      <NativeSelect
+        label="Category"
+        placeholder="Select a category..."
+        options={SAMPLE_OPTIONS}
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+        description="Choose the feature category"
+      />
+
+      <NativeSelect
+        label="Size"
+        options={[
+          { label: "Small", value: "sm" },
+          { label: "Medium", value: "md" },
+          { label: "Large", value: "lg" },
+        ]}
+        value={size}
+        onChange={(e) => setSize(e.target.value)}
+      />
+
+      <NativeSelect
+        label="Favorite Fruit"
+        placeholder="Pick your favorite..."
+        options={FRUIT_OPTIONS}
+        value={fruit}
+        onChange={(e) => setFruit(e.target.value)}
+      />
+
+      <div className="p-3 bg-slate-50 dark:bg-[#161b22] rounded-lg border border-slate-200 dark:border-[#1f2937]">
+        <p className="text-xs text-slate-600 dark:text-slate-400">
+          Category: <code className="font-mono">{category || "(none)"}</code>
+          <br />
+          Size: <code className="font-mono">{size}</code>
+          <br />
+          Fruit: <code className="font-mono">{fruit || "(none)"}</code>
+        </p>
+      </div>
+    </StorySurface>
+  );
+}
+
 export const CompleteExample: Story = {
-  render: () => {
-    const [category, setCategory] = useState("");
-    const [size, setSize] = useState("md");
-    const [fruit, setFruit] = useState("");
-
-    return (
-      <StorySurface className="w-[420px] space-y-4">
-        <NativeSelect
-          label="Category"
-          placeholder="Select a category..."
-          options={SAMPLE_OPTIONS}
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          description="Choose the feature category"
-        />
-
-        <NativeSelect
-          label="Size"
-          options={[
-            { label: "Small", value: "sm" },
-            { label: "Medium", value: "md" },
-            { label: "Large", value: "lg" },
-          ]}
-          value={size}
-          onChange={(e) => setSize(e.target.value)}
-        />
-
-        <NativeSelect
-          label="Favorite Fruit"
-          placeholder="Pick your favorite..."
-          options={FRUIT_OPTIONS}
-          value={fruit}
-          onChange={(e) => setFruit(e.target.value)}
-        />
-
-        <div className="p-3 bg-slate-50 dark:bg-[#161b22] rounded-lg border border-slate-200 dark:border-[#1f2937]">
-          <p className="text-xs text-slate-600 dark:text-slate-400">
-            Category: <code className="font-mono">{category || "(none)"}</code>
-            <br />
-            Size: <code className="font-mono">{size}</code>
-            <br />
-            Fruit: <code className="font-mono">{fruit || "(none)"}</code>
-          </p>
-        </div>
-      </StorySurface>
-    );
-  },
+  render: () => <CompleteExampleComponent />,
 };

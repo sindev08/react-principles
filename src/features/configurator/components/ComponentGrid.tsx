@@ -103,7 +103,7 @@ export function ComponentGrid({
         >
           All ({components.length})
         </button>
-        {Object.entries(categories).map(([category, comps]) => {
+        {Object.entries(categories).map(([category, _comps]) => {
           const count = getCategoryCount(category);
           const isActive = selectedCategory === category;
 

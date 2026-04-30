@@ -47,15 +47,6 @@ function PercentIcon() {
   );
 }
 
-function GlobeIcon() {
-  return (
-    <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M2 8h12M8 2v12" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
 // ─── Stories ───────────────────────────────────────────────────────────────────
 
 const meta = {

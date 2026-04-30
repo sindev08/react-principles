@@ -1,11 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
-import { Button } from "@/ui/Button";
 import { Progress } from "@/ui/Progress";
+import { Button } from "@/ui/Button";
 
 const TOC_ITEMS = [
   { label: "Live Demo", href: "#demo" },

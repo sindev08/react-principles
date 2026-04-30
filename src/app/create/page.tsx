@@ -136,7 +136,7 @@ export default function CreatePage() {
         <div className="lg:hidden animate-stagger-3">
           <Tabs
             value={currentStep}
-            onChange={(value) => setCurrentStep(value as any)}
+            onChange={(value) => setCurrentStep(value as typeof STEPS[number]["id"])}
             variant="pills"
             className="mb-6"
           >

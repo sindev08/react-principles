@@ -93,7 +93,7 @@ describe("preset-encode", () => {
     it("handles URL-safe encoding correctly", () => {
       const encoded = encodePreset(sampleConfig);
       // Manually replace -_ with +/ to test URL-safe restoration
-      const standardBase64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
+      const _standardBase64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
       const decoded = decodePreset(encoded);
       expect(decoded).toEqual(sampleConfig);
     });

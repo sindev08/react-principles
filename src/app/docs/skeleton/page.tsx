@@ -1,11 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Skeleton } from "@/ui/Skeleton";
 import type { SkeletonVariant } from "@/ui/Skeleton";
-import { Button } from "@/ui/Button";
 
 const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },

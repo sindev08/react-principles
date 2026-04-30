@@ -1,10 +1,10 @@
 "use client";
 
-import { Card } from "@/ui/Card";
 import { Label } from "@/ui/Label";
 import { Input } from "@/ui/Input";
 import { Select } from "@/ui/Select";
 import { useWizardStore } from "../stores/useWizardStore";
+import type { RadiusOption } from "../data";
 import { getPopularFonts, getAllIconSets } from "../lib";
 import { StyleCard } from "./StyleCard";
 import { ColorPaletteGrid } from "./ColorPaletteGrid";
@@ -193,7 +193,7 @@ export function Step1VisualPreset() {
       {/* Border Radius */}
       <section>
         <h3 className="text-lg font-semibold mb-4">Border Radius</h3>
-        <RadiusSelector value={radius} onChange={(val) => setRadius(val as any)} />
+        <RadiusSelector value={radius} onChange={(val) => setRadius(val as RadiusOption)} />
       </section>
 
       {/* Components */}
