@@ -18,7 +18,7 @@
 
 ## What is this?
 
-React Principles is a reference implementation for modern React development. Not just a component library — a full production codebase with real patterns, real architecture decisions, and real tradeoffs documented.
+React Principles is a reference implementation for modern React development. Not just a component library — a full production codebase with patterns, architecture decisions, and tradeoffs documented.
 
 **Three things in one:**
 
@@ -36,6 +36,8 @@ React Principles is a reference implementation for modern React development. Not
 
 ```
 https://reactprinciples.dev/nextjs/cookbook
+// or 
+https://reactprinciples.dev/vitejs/cookbook
 ```
 
 ### Install components via CLI
@@ -55,6 +57,8 @@ Or configure interactively at [reactprinciples.dev/create](https://reactprincipl
 ---
 
 ## Beyond components
+
+React Principles covers what most UI libraries stop short of:
 
 - **Patterns, not just components** — how to structure server state, manage forms at scale, handle optimistic updates, build data tables
 - **Full architecture reference** — feature-sliced structure, query key factories, typed API client, store patterns
@@ -112,7 +116,7 @@ react-principles/
 │   ├── app/              # Next.js App Router routes
 │   ├── features/         # Feature modules (landing, docs, cookbook, configurator)
 │   ├── shared/           # Shared hooks, stores, types, utils
-│   ├── ui/               # 33 UI component primitives
+│   ├── ui/               # 30+ UI component primitives
 │   └── lib/              # API client, query client, mock data
 └── scripts/              # Build helpers
 ```
