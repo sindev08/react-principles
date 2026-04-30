@@ -36,7 +36,7 @@ React Principles is a reference implementation for modern React development. Not
 
 ```
 https://reactprinciples.dev/nextjs/cookbook
-// or 
+# or
 https://reactprinciples.dev/vitejs/cookbook
 ```
 
