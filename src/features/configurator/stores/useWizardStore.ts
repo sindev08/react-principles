@@ -5,10 +5,6 @@ import { persist } from "zustand/middleware";
 import type { PresetConfig, RadiusOption, FrameworkOption } from "../data";
 
 interface WizardState {
-  // Current step
-  currentStep: "visual" | "stack" | "generate";
-  setCurrentStep: (step: "visual" | "stack" | "generate") => void;
-
   // Visual preset state
   style: PresetConfig["style"];
   setStyle: (style: PresetConfig["style"]) => void;
@@ -50,6 +46,7 @@ interface WizardState {
 
   // Get complete PresetConfig
   getPresetConfig: () => PresetConfig;
+  hydrateFromPreset: (preset: PresetConfig) => void;
 
   // Reset
   resetVisual: () => void;
@@ -85,10 +82,6 @@ export const useWizardStore = create<WizardState>()(
     (set, get) => ({
       // Initial state
       ...defaultState,
-      currentStep: "visual",
-
-      // Step navigation
-      setCurrentStep: (step) => set({ currentStep: step }),
 
       // Visual preset setters
       setStyle: (style) => set({ style }),
@@ -142,6 +135,22 @@ export const useWizardStore = create<WizardState>()(
           version: 1,
         };
       },
+
+      hydrateFromPreset: (preset) =>
+        set({
+          style: preset.style,
+          colors: preset.colors,
+          fonts: preset.fonts,
+          iconSet: preset.iconSet,
+          radius: preset.radius,
+          components: preset.components,
+          framework: preset.stack.framework,
+          stateManagement: preset.stack.stateManagement,
+          dataFetching: preset.stack.dataFetching,
+          forms: preset.stack.forms,
+          monorepo: preset.stack.monorepo,
+          rtl: preset.stack.rtl,
+        }),
 
       // Reset functions
       resetVisual: () =>

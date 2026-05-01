@@ -44,7 +44,6 @@ export function Step3Generate() {
 
   const handleStartOver = () => {
     wizardState.resetAll();
-    wizardState.setCurrentStep("visual");
   };
 
   return (
