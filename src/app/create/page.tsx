@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useQueryState } from "nuqs";
 import { DocsHeader } from "@/features/docs/components/DocsHeader";
 import { ConfiguratorSidebar } from "@/features/configurator/components/ConfiguratorSidebar";
@@ -13,6 +13,14 @@ import { Button } from "@/ui/Button";
 import { Drawer } from "@/ui/Drawer";
 
 export default function CreatePage() {
+  return (
+    <Suspense fallback={<CreatePageFallback />}>
+      <CreatePageContent />
+    </Suspense>
+  );
+}
+
+function CreatePageContent() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [presetParam, setPresetParam] = useQueryState("preset", {
@@ -99,6 +107,19 @@ export default function CreatePage() {
       </Drawer>
 
       <CreateProjectModal open={createModalOpen} onClose={() => setCreateModalOpen(false)} />
+    </div>
+  );
+}
+
+function CreatePageFallback() {
+  return (
+    <div className="min-h-screen bg-white text-slate-900 dark:bg-[#0b0e14] dark:text-white">
+      <DocsHeader />
+      <main className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center bg-slate-50/80 dark:bg-[#0d1117]">
+        <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-500 dark:border-[#1f2937] dark:bg-[#161b22] dark:text-slate-400">
+          Loading configurator...
+        </div>
+      </main>
     </div>
   );
 }

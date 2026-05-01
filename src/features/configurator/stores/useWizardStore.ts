@@ -2,7 +2,14 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { DEFAULT_PRESET } from "../data";
 import type { PresetConfig, RadiusOption, FrameworkOption } from "../data";
+
+const HEX_COLOR_PATTERN = /^#[0-9A-Fa-f]{6}$/;
+
+function ensureHexColor(value: string, fallback: string): string {
+  return HEX_COLOR_PATTERN.test(value) ? value : fallback;
+}
 
 interface WizardState {
   // Visual preset state
@@ -119,7 +126,12 @@ export const useWizardStore = create<WizardState>()(
         const state = get();
         return {
           style: state.style,
-          colors: state.colors,
+          colors: {
+            base: ensureHexColor(state.colors.base, DEFAULT_PRESET.colors.base),
+            brand: ensureHexColor(state.colors.brand, DEFAULT_PRESET.colors.brand),
+            accent: ensureHexColor(state.colors.accent, DEFAULT_PRESET.colors.accent),
+            chart: ensureHexColor(state.colors.chart, DEFAULT_PRESET.colors.chart),
+          },
           fonts: state.fonts,
           iconSet: state.iconSet,
           radius: state.radius,
