@@ -3,6 +3,7 @@ import { Command } from "commander";
 import pc from "picocolors";
 import { init } from "./commands/init";
 import { add } from "./commands/add";
+import { create } from "./commands/create";
 import { getAll } from "./registry";
 
 const program = new Command();
@@ -26,6 +27,15 @@ program
   .option("--all", "Install all available components")
   .action(async (components: string[], opts: { all?: boolean }) => {
     await add(opts.all ? ["--all"] : components, process.cwd());
+  });
+
+program
+  .command("create [app-name]")
+  .description("Scaffold a new React project from a preset")
+  .option("--preset <encoded>", "Encoded preset string from reactprinciples.dev/create")
+  .option("--dry-run", "Print dependencies without installing or writing files")
+  .action(async (appName: string | undefined, opts: { preset?: string; dryRun?: boolean }) => {
+    await create(appName, opts);
   });
 
 program
