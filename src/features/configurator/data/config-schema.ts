@@ -9,7 +9,7 @@ import { z } from "zod";
 export type StylePreset = "arc" | "edge" | "soleil";
 
 // Radius options
-export type RadiusOption = "none" | "sm" | "md" | "lg" | "full";
+export type RadiusOption = "none" | "sm" | "md" | "lg";
 
 // Framework options
 export type FrameworkOption = "nextjs" | "vite";
@@ -80,7 +80,7 @@ export const presetConfigSchema = z.object({
   colors: presetColorsSchema,
   fonts: presetFontsSchema,
   iconSet: z.string().min(1, "Icon set is required"),
-  radius: z.enum(["none", "sm", "md", "lg", "full"]),
+  radius: z.enum(["none", "sm", "md", "lg"]),
   components: z.array(z.string()),
   stack: presetStackSchema,
   version: z.number().int().positive(),

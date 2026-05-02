@@ -117,12 +117,11 @@ describe("preset-encode", () => {
     });
 
     it("roundtrips with different radius options", () => {
-      const radii: Array<"none" | "sm" | "md" | "lg" | "full"> = [
+      const radii: Array<"none" | "sm" | "md" | "lg"> = [
         "none",
         "sm",
         "md",
         "lg",
-        "full",
       ];
       radii.forEach((radius) => {
         const config = { ...sampleConfig, radius };

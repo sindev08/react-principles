@@ -66,38 +66,6 @@
       sans-serif;
   }
 
-  /* Configurator Theme Variables */
-  .configurator-theme {
-    --bg-primary: #0a0a0a;
-    --bg-surface: #171717;
-    --bg-surface-hover: #1f1f1f;
-    --border: #333333;
-    --border-hover: #444444;
-    --accent-purple: #4628f1;
-    --accent-purple-light: #8b5cf6;
-    --accent-purple-lighter: #a78bfa;
-    --text-primary: #ededed;
-    --text-secondary: #a1a1aa;
-    --text-muted: #71717a;
-    --success: #10b981;
-    --warning: #a78bfa;
-    --error: #f43f5e;
-    --font-display: 'Space Grotesk', sans-serif;
-    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-  }
-
-  .configurator-theme.light {
-    --bg-primary: #ffffff;
-    --bg-surface: #f6f6f8;
-    --bg-surface-hover: #e8e8e8;
-    --border: #e2e8f0;
-    --border-hover: #cbd5e1;
-    --text-primary: #0f172a;
-    --text-secondary: #64748b;
-    --text-muted: #94a3b8;
-  }
-
   .material-symbols-outlined {
     font-variation-settings:
       'FILL' 0,
@@ -118,33 +86,6 @@
     background-image:
       radial-gradient(at 0% 0%, rgba(70, 40, 241, 0.15) 0px, transparent 50%),
       radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.12) 0px, transparent 50%);
-  }
-
-  /* Configurator Gradient Mesh */
-  .configurator-gradient {
-    background: linear-gradient(135deg, #0a0a0a 0%, #171717 50%, #0a0a0a 100%);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .configurator-gradient::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background:
-      radial-gradient(circle at 20% 30%, rgba(70, 40, 241, 0.08) 0%, transparent 40%),
-      radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
-      radial-gradient(circle at 50% 50%, rgba(167, 139, 250, 0.05) 0%, transparent 40%);
-    animation: gradient-shift 15s ease-in-out infinite;
-  }
-
-  @keyframes gradient-shift {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    33% { transform: translate(2%, 2%) rotate(1deg); }
-    66% { transform: translate(-1%, 1%) rotate(-1deg); }
   }
 
   .sidebar-scroll::-webkit-scrollbar {

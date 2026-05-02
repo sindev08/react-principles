@@ -2,13 +2,16 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { DEFAULT_PRESET } from "../data";
 import type { PresetConfig, RadiusOption, FrameworkOption } from "../data";
 
-interface WizardState {
-  // Current step
-  currentStep: "visual" | "stack" | "generate";
-  setCurrentStep: (step: "visual" | "stack" | "generate") => void;
+const HEX_COLOR_PATTERN = /^#[0-9A-Fa-f]{6}$/;
 
+function ensureHexColor(value: string, fallback: string): string {
+  return HEX_COLOR_PATTERN.test(value) ? value : fallback;
+}
+
+interface WizardState {
   // Visual preset state
   style: PresetConfig["style"];
   setStyle: (style: PresetConfig["style"]) => void;
@@ -50,6 +53,7 @@ interface WizardState {
 
   // Get complete PresetConfig
   getPresetConfig: () => PresetConfig;
+  hydrateFromPreset: (preset: PresetConfig) => void;
 
   // Reset
   resetVisual: () => void;
@@ -85,10 +89,6 @@ export const useWizardStore = create<WizardState>()(
     (set, get) => ({
       // Initial state
       ...defaultState,
-      currentStep: "visual",
-
-      // Step navigation
-      setCurrentStep: (step) => set({ currentStep: step }),
 
       // Visual preset setters
       setStyle: (style) => set({ style }),
@@ -126,7 +126,12 @@ export const useWizardStore = create<WizardState>()(
         const state = get();
         return {
           style: state.style,
-          colors: state.colors,
+          colors: {
+            base: ensureHexColor(state.colors.base, DEFAULT_PRESET.colors.base),
+            brand: ensureHexColor(state.colors.brand, DEFAULT_PRESET.colors.brand),
+            accent: ensureHexColor(state.colors.accent, DEFAULT_PRESET.colors.accent),
+            chart: ensureHexColor(state.colors.chart, DEFAULT_PRESET.colors.chart),
+          },
           fonts: state.fonts,
           iconSet: state.iconSet,
           radius: state.radius,
@@ -142,6 +147,22 @@ export const useWizardStore = create<WizardState>()(
           version: 1,
         };
       },
+
+      hydrateFromPreset: (preset) =>
+        set({
+          style: preset.style,
+          colors: preset.colors,
+          fonts: preset.fonts,
+          iconSet: preset.iconSet,
+          radius: preset.radius,
+          components: preset.components,
+          framework: preset.stack.framework,
+          stateManagement: preset.stack.stateManagement,
+          dataFetching: preset.stack.dataFetching,
+          forms: preset.stack.forms,
+          monorepo: preset.stack.monorepo,
+          rtl: preset.stack.rtl,
+        }),
 
       // Reset functions
       resetVisual: () =>
