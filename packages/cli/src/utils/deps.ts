@@ -61,9 +61,9 @@ export function resolvePresetDependencies(preset: CliPreset): ResolvedDeps {
   }
 
   // Stack deps
-  if (preset.stack.stateManagement) STACK_DEPS.stateManagement.forEach(add);
-  if (preset.stack.dataFetching) STACK_DEPS.dataFetching.forEach(add);
-  if (preset.stack.forms) STACK_DEPS.forms.forEach(add);
+  if (preset.stack.stateManagement) STACK_DEPS["stateManagement"]?.forEach(add);
+  if (preset.stack.dataFetching) STACK_DEPS["dataFetching"]?.forEach(add);
+  if (preset.stack.forms) STACK_DEPS["forms"]?.forEach(add);
 
   const all = Array.from(seen.values());
   const fmt = (p: PackageEntry) => p.version ? `${p.name}@${p.version}` : p.name;

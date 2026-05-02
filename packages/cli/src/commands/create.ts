@@ -52,7 +52,7 @@ const RADIUS_VALUES: Record<string, string> = {
 // ── File generators ───────────────────────────────────────────────────────
 
 function buildCssVars(preset: CliPreset): string {
-  const vars: Record<string, string> = STYLE_VARS[preset.style] ?? STYLE_VARS.arc;
+  const vars: Record<string, string> = STYLE_VARS[preset.style] ?? STYLE_VARS["arc"] ?? {};
   const radius = RADIUS_VALUES[preset.radius] ?? "0.5rem";
 
   const entries = [
