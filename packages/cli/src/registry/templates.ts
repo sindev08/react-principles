@@ -581,11 +581,11 @@ Avatar.Image = function AvatarImage({ className, onError, alt, ...props }: ImgHT
   );
 }
 
-Avatar.Fallback = function AvatarFallback({ className, children }: { className?: string; children: ReactNode }) {
+Avatar.Fallback = function AvatarFallback({ className, style, children }: { className?: string; style?: React.CSSProperties; children: ReactNode }) {
   const { hasImageError } = useAvatarContext();
   if (!hasImageError) return null;
 
-  return <span className={cn("font-semibold uppercase", className)}>{children}</span>;
+  return <span className={cn("font-semibold uppercase", className)} style={style}>{children}</span>;
 }`,
   "Badge": `import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -1967,12 +1967,7 @@ Carousel.Next = function CarouselNext({
 };`,
   "Chart": `"use client";
 
-import {
-  createContext,
-  useContext,
-  type CSSProperties,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import {
   ResponsiveContainer,
@@ -1982,8 +1977,7 @@ import {
   LineChart,
   AreaChart,
   PieChart,
-  type TooltipProps,
-  type LegendProps,
+  type TooltipContentProps,
 } from "recharts";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -2029,7 +2023,7 @@ export function ChartContainer({
 }: ChartContainerProps) {
   return (
     <ChartContext.Provider value={config}>
-      <div className={cn("w-full", className)}>
+      <div className={cn("h-full w-full", className)}>
         <ResponsiveContainer width="100%" height="100%">
           {children}
         </ResponsiveContainer>
@@ -2044,9 +2038,10 @@ export function ChartTooltipContent({
   active,
   payload,
   label,
-}: TooltipProps<number, string>) {
-  if (!active || !payload?.length) return null;
+}: TooltipContentProps) {
   const config = useChartConfig();
+
+  if (!active || !payload?.length) return null;
 
   return (
     <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-lg dark:border-[#1f2937] dark:bg-[#0d1117]">
@@ -2054,7 +2049,7 @@ export function ChartTooltipContent({
         {label}
       </p>
       {payload.map((entry, i) => {
-        const key = entry.dataKey as string;
+        const key = String(entry.dataKey ?? i);
         const item = config[key];
         const color = item?.color ?? CHART_COLORS[i % CHART_COLORS.length];
         const entryLabel = item?.label ?? key;
@@ -2073,7 +2068,7 @@ export function ChartTooltipContent({
             <span className="text-xs font-semibold text-slate-900 dark:text-white">
               {typeof entry.value === "number"
                 ? entry.value.toLocaleString()
-                : String(entry.value)}
+                : String(entry.value ?? "")}
             </span>
           </div>
         );
@@ -2082,21 +2077,21 @@ export function ChartTooltipContent({
   );
 }
 
-export function ChartTooltip(props?: Partial<TooltipProps<number, string>>) {
-  return (
-    <RechartsTooltip
-      content={<ChartTooltipContent />}
-      cursor={false}
-      {...props}
-    />
-  );
+export function ChartTooltip() {
+  return <RechartsTooltip content={ChartTooltipContent} cursor={false} />;
 }
 
 // ─── ChartLegend ───────────────────────────────────────────────────────────────
 
 export function ChartLegendContent({
   payload,
-}: LegendProps) {
+}: {
+  payload?: ReadonlyArray<{
+    value?: string;
+    color?: string;
+    dataKey?: unknown;
+  }>;
+}) {
   const config = useChartConfig();
 
   if (!payload?.length) return null;
@@ -2104,10 +2099,10 @@ export function ChartLegendContent({
   return (
     <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
       {payload.map((entry, i) => {
-        const key = entry.value as string;
+        const key = String(entry.value ?? i);
         const item = config[key];
         const color = item?.color ?? entry.color ?? CHART_COLORS[i % CHART_COLORS.length];
-        const entryLabel = item?.label ?? entry.value;
+        const entryLabel = item?.label ?? entry.value ?? key;
 
         return (
           <div key={key} className="flex items-center gap-1.5">
@@ -2125,13 +2120,8 @@ export function ChartLegendContent({
   );
 }
 
-export function ChartLegend(props?: Partial<LegendProps>) {
-  return (
-    <RechartsLegend
-      content={<ChartLegendContent />}
-      {...props}
-    />
-  );
+export function ChartLegend() {
+  return <RechartsLegend content={<ChartLegendContent />} />;
 }
 
 // ─── Re-exports ────────────────────────────────────────────────────────────────
