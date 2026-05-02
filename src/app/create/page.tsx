@@ -29,6 +29,9 @@ function CreatePageContent() {
   });
 
   const { hydrateFromPreset, getPresetConfig } = useWizardStore();
+  // Delay render until URL preset is hydrated to prevent flash of stale localStorage state.
+  // If there's no preset in the URL, we're immediately ready.
+  const [ready, setReady] = useState(!presetParam);
 
   const didHydrateFromUrlRef = useRef(false);
   const skipNextUrlWriteRef = useRef(false);
@@ -43,6 +46,7 @@ function CreatePageContent() {
     }
 
     didHydrateFromUrlRef.current = true;
+    setReady(true);
   }, [hydrateFromPreset, presetParam]);
 
   const encodedPreset = encodePreset(getPresetConfig());
@@ -66,6 +70,8 @@ function CreatePageContent() {
     setMobileSidebarOpen(false);
   };
 
+  if (!ready) return <CreatePageFallback />;
+
   return (
     <div className="min-h-screen bg-white text-slate-900 dark:bg-[#0b0e14] dark:text-white">
       <DocsHeader />
@@ -87,16 +93,7 @@ function CreatePageContent() {
             </Button>
           </div>
 
-          <div className="mx-auto w-full max-w-[1280px] p-4 sm:p-6 lg:p-8">
-            <div className="mb-6 hidden lg:block">
-              <p className="text-xs font-bold uppercase tracking-wider text-primary">Configurator</p>
-              <h1 className="mt-2 text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-                Create Project
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm text-slate-500 dark:text-slate-400">
-                Tune the visual system freely, preview it in context, then generate a CLI preset when it feels right.
-              </p>
-            </div>
+          <div className="p-4 sm:p-6">
             <LivePreviewPanel />
           </div>
         </section>

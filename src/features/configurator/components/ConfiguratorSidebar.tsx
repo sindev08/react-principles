@@ -15,19 +15,29 @@ export interface ConfiguratorSidebarProps {
   className?: string;
 }
 
-const STYLE_OPTIONS: Array<{ value: PresetConfig["style"]; label: string }> = [
-  { value: "arc", label: "Arc" },
-  { value: "edge", label: "Edge" },
-  { value: "soleil", label: "Soleil" },
+const STYLE_OPTIONS: Array<{
+  value: PresetConfig["style"];
+  label: string;
+  hint: string;
+  previewColor: string;
+  previewRadius: string;
+}> = [
+  { value: "arc",    label: "Arc",    hint: "Rounded", previewColor: "#3b82f6", previewRadius: "0.5rem" },
+  { value: "edge",   label: "Edge",   hint: "Sharp",   previewColor: "#0f172a", previewRadius: "0" },
+  { value: "soleil", label: "Soleil", hint: "Warm",    previewColor: "#f59e0b", previewRadius: "0.375rem" },
 ];
 
-const RADIUS_OPTIONS: RadiusOption[] = ["none", "sm", "md", "lg", "full"];
+const RADIUS_OPTIONS: RadiusOption[] = ["none", "sm", "md", "lg"];
 
-const COLOR_PRESETS = [
-  { base: "#0f172a", brand: "#3b82f6", accent: "#8b5cf6", chart: "#10b981" },
-  { base: "#111827", brand: "#f97316", accent: "#ec4899", chart: "#06b6d4" },
-  { base: "#1f2937", brand: "#14b8a6", accent: "#f59e0b", chart: "#6366f1" },
-  { base: "#18181b", brand: "#84cc16", accent: "#22c55e", chart: "#0ea5e9" },
+const COLOR_PALETTES = [
+  { name: "Ocean",   base: "#0f172a", brand: "#3b82f6", accent: "#8b5cf6", chart: "#10b981" },
+  { name: "Sunset",  base: "#111827", brand: "#f97316", accent: "#ec4899", chart: "#06b6d4" },
+  { name: "Forest",  base: "#1f2937", brand: "#14b8a6", accent: "#f59e0b", chart: "#6366f1" },
+  { name: "Lime",    base: "#18181b", brand: "#84cc16", accent: "#22c55e", chart: "#0ea5e9" },
+  { name: "Crimson", base: "#0f172a", brand: "#ef4444", accent: "#f59e0b", chart: "#8b5cf6" },
+  { name: "Violet",  base: "#1e1b4b", brand: "#7c3aed", accent: "#ec4899", chart: "#06b6d4" },
+  { name: "Sand",    base: "#1c1917", brand: "#d97706", accent: "#b45309", chart: "#65a30d" },
+  { name: "Slate",   base: "#0f172a", brand: "#64748b", accent: "#475569", chart: "#22d3ee" },
 ];
 
 const ALL_COMPONENTS = [
@@ -108,7 +118,7 @@ export function ConfiguratorSidebar({ onOpenCreateModal, className }: Configurat
 
   const shuffleVisualConfig = () => {
     const nextStyle = pickRandom(STYLE_OPTIONS).value;
-    const nextColors = pickRandom(COLOR_PRESETS);
+    const nextColors = pickRandom(COLOR_PALETTES);
     const nextHeaderFont = pickRandom(fontOptions).value;
     const nextBodyFont = pickRandom(fontOptions).value;
     const nextIconSet = pickRandom(iconOptions).value;
@@ -157,19 +167,69 @@ export function ConfiguratorSidebar({ onOpenCreateModal, className }: Configurat
                   type="button"
                   onClick={() => setStyle(option.value)}
                   className={cn(
-                    "rounded-lg border px-3 py-2 text-xs font-bold transition-colors",
+                    "flex flex-col items-start gap-2.5 rounded-xl border p-3 transition-colors",
                     style === option.value
-                      ? "border-primary bg-primary text-white"
-                      : "border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-[#1f2937] dark:text-slate-300 dark:hover:bg-[#161b22]",
+                      ? "border-primary bg-primary/5"
+                      : "border-slate-200 hover:bg-slate-50 dark:border-[#1f2937] dark:hover:bg-[#161b22]",
                   )}
                 >
-                  {option.label}
+                  <div
+                    className="h-9 w-full border"
+                    style={{
+                      borderRadius: option.previewRadius === "0" ? "0" : `calc(${option.previewRadius} * 1.5)`,
+                      backgroundColor: option.previewColor + "15",
+                      borderColor: option.previewColor + "35",
+                    }}
+                  >
+                    <div
+                      className="mx-2 mt-2 h-1.5"
+                      style={{ borderRadius: option.previewRadius, backgroundColor: option.previewColor, opacity: 0.85 }}
+                    />
+                    <div
+                      className="mx-2 mt-1.5 h-1.5 w-2/3"
+                      style={{ borderRadius: option.previewRadius, backgroundColor: option.previewColor, opacity: 0.35 }}
+                    />
+                  </div>
+                  <div>
+                    <p className={cn("text-xs font-bold", style === option.value ? "text-primary" : "text-slate-700 dark:text-slate-300")}>
+                      {option.label}
+                    </p>
+                    <p className="text-[10px] text-slate-400">{option.hint}</p>
+                  </div>
                 </button>
               ))}
             </div>
           </SidebarSection>
 
           <SidebarSection title="Colors">
+            <div className="mb-4 grid grid-cols-4 gap-1.5">
+              {COLOR_PALETTES.map((palette) => {
+                const isActive = colors.brand === palette.brand && colors.accent === palette.accent;
+                return (
+                  <button
+                    key={palette.name}
+                    type="button"
+                    onClick={() => setColors(palette)}
+                    title={palette.name}
+                    className={cn(
+                      "flex flex-col gap-1.5 rounded-lg border p-1.5 transition-colors",
+                      isActive
+                        ? "border-primary ring-1 ring-primary/20"
+                        : "border-slate-200 hover:border-slate-300 dark:border-[#1f2937] dark:hover:border-[#374151]",
+                    )}
+                  >
+                    <div className="flex h-5 w-full overflow-hidden rounded-sm">
+                      <div className="flex-1" style={{ backgroundColor: palette.brand }} />
+                      <div className="flex-1" style={{ backgroundColor: palette.accent }} />
+                      <div className="flex-1" style={{ backgroundColor: palette.chart }} />
+                    </div>
+                    <span className="block text-center text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                      {palette.name}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
             <div className="space-y-3">
               <ColorControl label="Base" value={colors.base} onChange={(base) => setColors({ ...colors, base })} />
               <ColorControl label="Brand" value={colors.brand} onChange={(brand) => setColors({ ...colors, brand })} />

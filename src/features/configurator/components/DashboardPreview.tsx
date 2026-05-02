@@ -5,6 +5,7 @@ import { Card } from "@/ui/Card";
 import { Input } from "@/ui/Input";
 import { Badge } from "@/ui/Badge";
 import { useWizardStore } from "../stores/useWizardStore";
+import { IconPreview } from "./IconPreview";
 
 const TABLE_ROWS = [
   { name: "Ava Thompson", email: "ava@example.com", status: "Active", date: "May 1" },
@@ -15,14 +16,29 @@ const TABLE_ROWS = [
 ];
 
 const STATS = [
-  { label: "Total Users", value: "24.8k", trend: "+12%" },
-  { label: "Revenue", value: "$82.4k", trend: "+8%" },
-  { label: "Orders", value: "1,284", trend: "+18%" },
-  { label: "Conversion", value: "7.2%", trend: "+3%" },
+  { label: "Total Users", value: "24.8k", trend: "+12%", index: 0 as const },
+  { label: "Revenue", value: "$82.4k", trend: "+8%", index: 1 as const },
+  { label: "Orders", value: "1,284", trend: "+18%", index: 2 as const },
+  { label: "Conversion", value: "7.2%", trend: "+3%", index: 3 as const },
 ];
 
+// Icon names per stat slot per icon set
+const STAT_ICONS: Record<string, [string, string, string, string]> = {
+  "material-symbols": ["people", "payments", "shopping_cart", "trending_up"],
+  "lucide":           ["users", "credit-card", "shopping-cart", "trending-up"],
+  "ph":               ["users", "credit-card", "shopping-cart", "trend-up"],
+  "heroicons":        ["users", "credit-card", "shopping-cart", "arrow-trending-up"],
+  "tabler":           ["users", "credit-card", "shopping-cart", "trending-up"],
+  "fa":               ["users", "credit-card", "shopping-cart", "chart-line"],
+  "feather":          ["users", "credit-card", "shopping-cart", "trending-up"],
+  "flowbite":         ["users-group-solid", "cash-solid", "shopping-bag-solid", "chart-mixed-dollar-solid"],
+};
+
+const DEFAULT_STAT_ICONS: [string, string, string, string] = ["people", "payments", "shopping_cart", "trending_up"];
+
 export function DashboardPreview() {
-  const { colors, style, components } = useWizardStore();
+  const { colors, style, components, iconSet } = useWizardStore();
+  const statIcons = STAT_ICONS[iconSet] ?? DEFAULT_STAT_ICONS;
 
   return (
     <div className="space-y-5">
@@ -44,12 +60,16 @@ export function DashboardPreview() {
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {STATS.map((stat) => (
           <Card key={stat.label} className="p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">{stat.label}</p>
-                <p className="mt-2 text-2xl font-black text-slate-900 dark:text-white">{stat.value}</p>
+            <div className="mb-3 flex items-start justify-between gap-2">
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">{stat.label}</p>
+              <div className="shrink-0 rounded-lg p-2" style={{ backgroundColor: `${colors.brand}18` }}>
+                <IconPreview iconSet={iconSet} name={statIcons[stat.index]} size={20} color={colors.brand} />
               </div>
+            </div>
+            <p className="text-2xl font-black text-slate-900 dark:text-white">{stat.value}</p>
+            <div className="mt-2 flex items-center gap-1.5">
               <Badge variant="success">{stat.trend}</Badge>
+              <span className="text-[11px] text-slate-400">vs last period</span>
             </div>
           </Card>
         ))}
