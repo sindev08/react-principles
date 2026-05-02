@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Providers } from "./providers";
 import "./globals.css";
 import "@material-symbols/font-400/outlined.css";
@@ -135,7 +136,9 @@ export default function RootLayout({
                 {process.env.NODE_ENV === "production" && (
           <Script src="https://analytics.sindev.my.id/track.js" data-api-key="4744f6b200cecd79c9241430f5049e3e5c1f65478888e82542469a170d6c6e7c" />
         )}
-        <Providers>{children}</Providers>
+        <NuqsAdapter>
+          <Providers>{children}</Providers>
+        </NuqsAdapter>
       </body>
     </html>
   );

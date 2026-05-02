@@ -196,28 +196,74 @@ export function ComponentShowcaseSection() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col items-start justify-between gap-4 rounded-3xl border border-primary/15 bg-primary/5 p-6 md:flex-row md:items-center dark:border-primary/20 dark:bg-primary/10">
-          <div>
+        <div className="mt-12 rounded-3xl border border-primary/15 bg-primary/5 p-8 dark:border-primary/20 dark:bg-primary/10">
+          <div className="mb-8">
             <h3 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
               Ready to go deeper?
             </h3>
             <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-              Jump into the docs for API detail or browse the cookbook to see the same primitives inside larger product
-              flows.
+              Jump into the docs for API detail or browse the cookbook to see the same primitives inside larger product flows.
             </p>
           </div>
-          <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+          <div className="grid gap-4 sm:grid-cols-3">
             <Link
               href="/docs/introduction"
-              className="inline-flex items-center justify-center rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-primary/90"
+              className="group flex flex-col gap-3 rounded-2xl border border-primary/20 bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 dark:bg-slate-900 dark:hover:bg-slate-800"
             >
-              Browse docs
+              <div className="flex items-center justify-between">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <span className="material-symbols-outlined text-[20px]">description</span>
+                </span>
+                <span className="material-symbols-outlined text-[16px] text-slate-300 transition-colors group-hover:text-primary dark:text-slate-600">
+                  arrow_forward
+                </span>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-900 dark:text-white">Browse Docs</p>
+                <p className="mt-0.5 text-xs leading-5 text-slate-500 dark:text-slate-400">
+                  Full API reference, props tables, and usage examples.
+                </p>
+              </div>
             </Link>
+
+            <Link
+              href="/docs/playground"
+              className="group flex flex-col gap-3 rounded-2xl border border-primary/20 bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 dark:bg-slate-900 dark:hover:bg-slate-800"
+            >
+              <div className="flex items-center justify-between">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <span className="material-symbols-outlined text-[20px]">play_circle</span>
+                </span>
+                <span className="material-symbols-outlined text-[16px] text-slate-300 transition-colors group-hover:text-primary dark:text-slate-600">
+                  arrow_forward
+                </span>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-900 dark:text-white">Launch Playground</p>
+                <p className="mt-0.5 text-xs leading-5 text-slate-500 dark:text-slate-400">
+                  Edit components live and see changes in real time.
+                </p>
+              </div>
+            </Link>
+
             <Link
               href="/nextjs/cookbook"
-              className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-900 transition-colors hover:border-slate-400 hover:bg-slate-50 dark:border-white/10 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800"
+              className="group flex flex-col gap-3 rounded-2xl border border-primary/20 bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 dark:bg-slate-900 dark:hover:bg-slate-800"
             >
-              Open cookbook
+              <div className="flex items-center justify-between">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <span className="material-symbols-outlined text-[20px]">menu_book</span>
+                </span>
+                <span className="material-symbols-outlined text-[16px] text-slate-300 transition-colors group-hover:text-primary dark:text-slate-600">
+                  arrow_forward
+                </span>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-900 dark:text-white">Open Cookbook</p>
+                <p className="mt-0.5 text-xs leading-5 text-slate-500 dark:text-slate-400">
+                  Production patterns using these primitives in real flows.
+                </p>
+              </div>
             </Link>
           </div>
         </div>

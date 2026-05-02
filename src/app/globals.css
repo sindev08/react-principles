@@ -1,15 +1,20 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap") layer(base);
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap") layer(base);
 
 @import 'tailwindcss';
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-primary: #4628f1;
+  /* Bold Editorial Theme - Dark First */
+  --color-primary: #4628f1; /* Purple - brand color */
+  --color-secondary: #8b5cf6; /* Light purple */
+  --color-accent: #a78bfa; /* Lighter purple */
   --color-background-light: #f6f6f8;
-  --color-background-dark: #020617;
+  --color-background-dark: #0a0a0a;
 
-  --font-display: Inter, sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
 /*
@@ -34,15 +39,21 @@
   animation: fade-in 200ms ease-out both;
 }
 
+@utility animate-nudge {
+  animation: nudge 1.6s ease-in-out infinite;
+}
+
 @layer utilities {
   :root {
+    /* Light Theme */
     --background: #f6f6f8;
     --foreground: #0f172a;
   }
 
   .dark {
-    --background: #020617;
-    --foreground: #e2e8f0;
+    /* Dark Theme - Default */
+    --background: #0a0a0a;
+    --foreground: #ededed;
   }
 
   body {
@@ -66,15 +77,15 @@
   .mesh-gradient {
     background-color: #f6f6f8;
     background-image:
-      radial-gradient(at 0% 0%, rgba(19, 73, 236, 0.05) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(19, 73, 236, 0.08) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, rgba(70, 40, 241, 0.08) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.08) 0px, transparent 50%);
   }
 
   .dark .mesh-gradient {
-    background-color: #020617;
+    background-color: #0a0a0a;
     background-image:
       radial-gradient(at 0% 0%, rgba(70, 40, 241, 0.15) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(70, 40, 241, 0.1) 0px, transparent 50%);
+      radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.12) 0px, transparent 50%);
   }
 
   .sidebar-scroll::-webkit-scrollbar {
@@ -91,6 +102,21 @@
     background: #1f2937;
   }
 
+  .scrollarea-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollarea-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollarea-scrollbar::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+  }
+  .dark .scrollarea-scrollbar::-webkit-scrollbar-thumb {
+    background: #1f2937;
+  }
+
   /* ─── Animations ──────────────────────────────────────────────────────────── */
 
   @keyframes fade-in {
@@ -103,4 +129,80 @@
       transform: translateY(0);
     }
   }
+
+  @keyframes nudge {
+    0%, 100% { transform: translateX(-2px); opacity: 0.3; }
+    50% { transform: translateX(2px); opacity: 0.6; }
+  }
+
+  /* Configurator Animations */
+  @keyframes stagger-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slide-in-left {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes glow-pulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(255, 107, 107, 0.3); }
+    50% { box-shadow: 0 0 40px rgba(255, 107, 107, 0.5); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  /* Animation utilities */
+  .animate-stagger-1 { animation: stagger-reveal 0.6s ease-out 0.1s both; }
+  .animate-stagger-2 { animation: stagger-reveal 0.6s ease-out 0.2s both; }
+  .animate-stagger-3 { animation: stagger-reveal 0.6s ease-out 0.3s both; }
+  .animate-stagger-4 { animation: stagger-reveal 0.6s ease-out 0.4s both; }
+  .animate-stagger-5 { animation: stagger-reveal 0.6s ease-out 0.5s both; }
+  .animate-scale-in { animation: scale-in 0.5s ease-out both; }
+  .animate-slide-left { animation: slide-in-left 0.6s ease-out both; }
+  .animate-slide-right { animation: slide-in-right 0.6s ease-out both; }
+  .animate-float { animation: float 3s ease-in-out infinite; }
 }

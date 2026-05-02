@@ -8,6 +8,4 @@ build
 *.tsbuildinfo
 *.tgz
 
-# Internal task tracking
-.tasks/
 .vercel

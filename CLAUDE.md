@@ -129,3 +129,4 @@ See `CONTRIBUTING.md` → **Docs Page Standard** for the full spec. Summary:
 - Do not commit `.env` or `.env.local` files
 - Do not add co-author attribution (e.g., `Co-Authored-By`) in any commit or file
 - Do not add "Generated with" or similar AI attribution tags in PRs, issues, or code
+- **Do NOT commit or push changes without explicit user approval** — wait for user instruction before running git commit/push commands

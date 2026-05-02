@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
@@ -169,20 +168,28 @@ export default function PageProgressDocPage() {
         <CliInstallBlock name="page-progress" />
 
         <section id="demo" className="mb-16">
-          <div className="mb-6 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
-                <span className="text-sm font-bold">01</span>
-              </div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
+          <div className="mb-4 flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">01</span>
             </div>
-            <Button asChild variant="ghost" size="sm" className="shrink-0">
-              <Link href={STORYBOOK_HREF} target="_blank" rel="noopener noreferrer">
-                Open in Storybook
-                <span className="material-symbols-outlined text-[16px]">open_in_new</span>
-              </Link>
-            </Button>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
           </div>
+          <a
+            href={STORYBOOK_HREF}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="animate-fade-in mb-4 flex w-full items-center gap-3 rounded-lg border border-[#FF4785]/20 bg-[#FF4785]/5 px-4 py-3 transition-opacity hover:opacity-80"
+          >
+            <span className="relative flex h-2 w-2 shrink-0">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#FF4785] opacity-75"></span>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#FF4785]"></span>
+            </span>
+            <p className="flex-1 text-xs text-slate-500 dark:text-slate-400">Explore all variants and interactive states in Storybook.</p>
+            <span className="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-[#FF4785]">
+              Open Storybook
+              <span className="material-symbols-outlined text-[13px]">open_in_new</span>
+            </span>
+          </a>
           <p className="mb-6 leading-relaxed text-slate-600 dark:text-slate-400">
             This demo wires the component to <code className="font-mono">useProgressBar</code> so
             you can replay a route transition and observe the bar animating at the top of the

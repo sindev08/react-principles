@@ -52,6 +52,7 @@ export function DocsHeader() {
   const { savedSlugs } = useSavedStore();
   const isDocsActive = pathname.startsWith("/docs");
   const isCookbookActive = pathname.startsWith("/nextjs/cookbook") || pathname.startsWith("/vitejs/cookbook");
+  const isCreateActive = pathname.startsWith("/create");
   const activeFramework = pathname.startsWith("/vitejs/") ? "vitejs" : "nextjs";
 
   const switchFramework = (fw: "nextjs" | "vitejs") => {
@@ -91,12 +92,14 @@ export function DocsHeader() {
                 height={32}
                 className="hidden dark:block"
               />
-              <h2 className="text-base font-extrabold leading-tight tracking-tight text-primary">
-                react-principles
+              <h2 className="text-base tracking-tight leading-tight">
+                <span className="font-medium text-slate-600 dark:text-slate-300">React</span>
+                {" "}
+                <span className="font-black text-primary">Principles</span>
               </h2>
             </Link>
             <nav className="items-center hidden gap-6 md:flex">
-              <Link href="/" className={navLinkClass(!isDocsActive && !isCookbookActive)}>
+              <Link href="/" className={navLinkClass(!isDocsActive && !isCookbookActive && !isCreateActive)}>
                 Home
               </Link>
               <Link href="/docs/introduction" className={navLinkClass(isDocsActive)}>
@@ -104,6 +107,9 @@ export function DocsHeader() {
               </Link>
               <Link href="/nextjs/cookbook" className={navLinkClass(isCookbookActive)}>
                 Cookbook
+              </Link>
+              <Link href="/create" className={navLinkClass(isCreateActive)}>
+                Create
               </Link>
             </nav>
           </div>

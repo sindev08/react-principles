@@ -477,6 +477,40 @@ export function AlertDialog({
 
   return createPortal(panel, document.body);
 }`,
+  "AspectRatio": `import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface AspectRatioProps {
+  ratio: number | string;
+  children: React.ReactNode;
+  className?: string;
+}
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+function parseRatio(ratio: number | string): string {
+  if (typeof ratio === "number") {
+    return \`\${ratio} / 1\`;
+  }
+  // String format like "16/9" is valid CSS
+  return ratio;
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export function AspectRatio({ ratio, children, className }: AspectRatioProps) {
+  const aspectRatio = parseRatio(ratio);
+
+  return (
+    <div
+      className={cn("relative w-full overflow-hidden", className)}
+      style={{ aspectRatio }}
+    >
+      {children}
+    </div>
+  );
+}`,
   "Avatar": `"use client";
 /* eslint-disable @next/next/no-img-element */
 
@@ -547,11 +581,11 @@ Avatar.Image = function AvatarImage({ className, onError, alt, ...props }: ImgHT
   );
 }
 
-Avatar.Fallback = function AvatarFallback({ className, children }: { className?: string; children: ReactNode }) {
+Avatar.Fallback = function AvatarFallback({ className, style, children }: { className?: string; style?: React.CSSProperties; children: ReactNode }) {
   const { hasImageError } = useAvatarContext();
   if (!hasImageError) return null;
 
-  return <span className={cn("font-semibold uppercase", className)}>{children}</span>;
+  return <span className={cn("font-semibold uppercase", className)} style={style}>{children}</span>;
 }`,
   "Badge": `import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -716,6 +750,636 @@ export function Button({
     </button>
   );
 }`,
+  "ButtonGroup": `import {
+  Children,
+  cloneElement,
+  isValidElement,
+  type HTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+} from "react";
+import { cn } from "@/lib/utils";
+import type { ButtonProps } from "./Button";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type ButtonGroupOrientation = "horizontal" | "vertical";
+export type ButtonGroupVariant = "default" | "outline";
+export type ButtonGroupSize = "sm" | "md" | "lg";
+
+export interface ButtonGroupProps extends HTMLAttributes<HTMLDivElement> {
+  /** Layout direction of the button group. */
+  orientation?: ButtonGroupOrientation;
+  /** Variant applied to all child Buttons. "default" maps to primary, "outline" maps to outline. */
+  variant?: ButtonGroupVariant;
+  /** Size applied to all child Buttons. */
+  size?: ButtonGroupSize;
+  /** Disable all child Buttons. */
+  disabled?: boolean;
+  children: ReactNode;
+}
+
+// ─── Variant mapping ──────────────────────────────────────────────────────────
+
+const VARIANT_MAP: Record<ButtonGroupVariant, ButtonProps["variant"]> = {
+  default: "primary",
+  outline: "outline",
+};
+
+// ─── Border-radius helpers ───────────────────────────────────────────────────
+
+function getGroupedRadiusClass(
+  index: number,
+  total: number,
+  isVertical: boolean,
+): string {
+  if (total <= 1) return "";
+
+  const isFirst = index === 0;
+  const isLast = index === total - 1;
+
+  if (isVertical) {
+    if (isFirst) return "rounded-b-none";
+    if (isLast) return "rounded-t-none";
+    return "rounded-none";
+  }
+
+  if (isFirst) return "rounded-r-none";
+  if (isLast) return "rounded-l-none";
+  return "rounded-none";
+}
+
+// ─── Component ───────────────────────────────────────────────────────────────
+
+export function ButtonGroup({
+  orientation = "horizontal",
+  variant = "default",
+  size = "md",
+  disabled = false,
+  children,
+  className,
+  ...props
+}: ButtonGroupProps) {
+  const isVertical = orientation === "vertical";
+  const mappedVariant = VARIANT_MAP[variant];
+  const count = Children.count(children);
+
+  return (
+    <div
+      role="group"
+      className={cn(
+        isVertical ? "inline-flex flex-col" : "inline-flex items-center",
+        className,
+      )}
+      {...props}
+    >
+      {Children.map(children, (child, index) => {
+        if (!isValidElement(child)) return child;
+
+        const childProps = child.props as Partial<ButtonProps>;
+        const radiusClass = getGroupedRadiusClass(index, count, isVertical);
+        const spacingClass = isVertical
+          ? "not-first:-mt-px"
+          : "not-first:-ml-px";
+
+        return cloneElement(child as ReactElement<ButtonProps>, {
+          variant: childProps.variant ?? mappedVariant,
+          size: childProps.size ?? size,
+          disabled: childProps.disabled ?? disabled,
+          className: cn(radiusClass, spacingClass, childProps.className),
+        });
+      })}
+    </div>
+  );
+}`,
+  "Calendar": `"use client";
+
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type HTMLAttributes,
+} from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type CalendarMode = "single" | "range" | "multiple";
+
+export interface DateRange {
+  from: Date;
+  to?: Date;
+}
+
+export type CalendarSelected = Date | DateRange | Date[];
+
+type DisabledDate = Date | ((date: Date) => boolean);
+
+export interface CalendarProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, "onSelect"> {
+  mode?: CalendarMode;
+  selected?: CalendarSelected;
+  defaultSelected?: CalendarSelected;
+  onSelect?: (date: CalendarSelected) => void;
+  defaultMonth?: Date;
+  disabled?: DisabledDate | DisabledDate[];
+  fromDate?: Date;
+  toDate?: Date;
+  showOutsideDays?: boolean;
+}
+
+// ─── Date Utilities ───────────────────────────────────────────────────────────
+
+function normalizeDate(d: Date): Date {
+  const result = new Date(d);
+  result.setHours(0, 0, 0, 0);
+  return result;
+}
+
+function isSameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
+function isBefore(a: Date, b: Date): boolean {
+  return normalizeDate(a).getTime() < normalizeDate(b).getTime();
+}
+
+function isAfter(a: Date, b: Date): boolean {
+  return isBefore(b, a);
+}
+
+function addMonths(date: Date, months: number): Date {
+  const result = new Date(date);
+  result.setMonth(result.getMonth() + months);
+  return normalizeDate(result);
+}
+
+function startOfMonth(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function endOfMonth(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+}
+
+// ─── Grid Types ───────────────────────────────────────────────────────────────
+
+interface CalendarDay {
+  date: Date;
+  dayOfMonth: number;
+  isCurrentMonth: boolean;
+  isSelected: boolean;
+  isToday: boolean;
+  isDisabled: boolean;
+  isInRange: boolean;
+  isRangeStart: boolean;
+  isRangeEnd: boolean;
+}
+
+type RangeState = "none" | "start" | "end";
+
+const WEEKDAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"] as const;
+
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+] as const;
+
+// ─── Grid Builder ─────────────────────────────────────────────────────────────
+
+function buildCalendarGrid(
+  viewMonth: Date,
+  mode: CalendarMode,
+  selected: CalendarSelected | undefined,
+  disabledDates: DisabledDate[],
+  fromDate: Date | undefined,
+  toDate: Date | undefined,
+  showOutsideDays: boolean,
+): CalendarDay[] {
+  const today = normalizeDate(new Date());
+  const first = startOfMonth(viewMonth);
+  const startDow = first.getDay();
+
+  const gridStart = new Date(first);
+  gridStart.setDate(gridStart.getDate() - startDow);
+
+  const days: CalendarDay[] = [];
+  const totalCells = 42; // 6 rows × 7 cols for consistent height
+
+  for (let i = 0; i < totalCells; i++) {
+    const date = new Date(gridStart);
+    date.setDate(date.getDate() + i);
+    const normalized = normalizeDate(date);
+    const isCurrentMonth =
+      date.getMonth() === viewMonth.getMonth() &&
+      date.getFullYear() === viewMonth.getFullYear();
+
+    if (!showOutsideDays && !isCurrentMonth) continue;
+
+    // Selection state
+    let isSelected = false;
+    let isInRange = false;
+    let isRangeStart = false;
+    let isRangeEnd = false;
+
+    if (mode === "single" && selected instanceof Date) {
+      isSelected = isSameDay(normalized, selected);
+    } else if (
+      mode === "range" &&
+      selected !== undefined &&
+      selected !== null &&
+      typeof selected === "object" &&
+      "from" in selected
+    ) {
+      const range = selected;
+      const from = normalizeDate(range.from);
+      const to = range.to ? normalizeDate(range.to) : undefined;
+      isRangeStart = isSameDay(normalized, from);
+      isRangeEnd = to !== undefined && isSameDay(normalized, to);
+      isSelected = isRangeStart || isRangeEnd;
+      if (to !== undefined) {
+        isInRange = isAfter(normalized, from) && isBefore(normalized, to);
+      }
+    } else if (mode === "multiple" && Array.isArray(selected)) {
+      isSelected = selected.some((d) => isSameDay(normalized, d));
+    }
+
+    // Disabled state
+    let isDisabled = false;
+    if (fromDate && isBefore(normalized, fromDate)) isDisabled = true;
+    if (toDate && isAfter(normalized, toDate)) isDisabled = true;
+    for (const dd of disabledDates) {
+      if (typeof dd === "function") {
+        if (dd(normalized)) {
+          isDisabled = true;
+          break;
+        }
+      } else if (isSameDay(normalized, dd)) {
+        isDisabled = true;
+        break;
+      }
+    }
+
+    days.push({
+      date: normalized,
+      dayOfMonth: normalized.getDate(),
+      isCurrentMonth,
+      isSelected,
+      isToday: isSameDay(normalized, today),
+      isDisabled,
+      isInRange,
+      isRangeStart,
+      isRangeEnd,
+    });
+  }
+
+  return days;
+}
+
+// ─── Selection Handlers ───────────────────────────────────────────────────────
+
+function handleSingleClick(date: Date): Date {
+  return date;
+}
+
+function handleMultipleClick(
+  date: Date,
+  current: CalendarSelected | undefined,
+): Date[] {
+  const arr = Array.isArray(current) ? [...current] : [];
+  const idx = arr.findIndex((d) => isSameDay(d, date));
+  if (idx >= 0) {
+    arr.splice(idx, 1);
+  } else {
+    arr.push(date);
+    arr.sort((a, b) => a.getTime() - b.getTime());
+  }
+  return arr;
+}
+
+function handleRangeClick(
+  date: Date,
+  current: CalendarSelected | undefined,
+  rangeState: RangeState,
+): { next: DateRange; newState: RangeState } {
+  if (rangeState === "none" || rangeState === "end") {
+    return { next: { from: date }, newState: "start" };
+  }
+  // Completing the range
+  const range = current as DateRange;
+  const from = normalizeDate(range.from);
+  const to = normalizeDate(date);
+  if (isBefore(to, from)) {
+    return { next: { from: to, to: from }, newState: "end" };
+  }
+  return { next: { from, to }, newState: "end" };
+}
+
+// ─── Keyboard Navigation ──────────────────────────────────────────────────────
+
+function moveFocus(
+  e: React.KeyboardEvent,
+  focusedDate: Date,
+  viewMonth: Date,
+  setFocusedDate: (d: Date) => void,
+  setViewMonth: (d: Date) => void,
+  handleSelectDay: (day: CalendarDay) => void,
+  days: CalendarDay[],
+): void {
+  let nextDate = new Date(focusedDate);
+  let handled = true;
+
+  switch (e.key) {
+    case "ArrowRight":
+      nextDate.setDate(nextDate.getDate() + 1);
+      break;
+    case "ArrowLeft":
+      nextDate.setDate(nextDate.getDate() - 1);
+      break;
+    case "ArrowDown":
+      nextDate.setDate(nextDate.getDate() + 7);
+      break;
+    case "ArrowUp":
+      nextDate.setDate(nextDate.getDate() - 7);
+      break;
+    case "PageDown":
+      nextDate = addMonths(nextDate, 1);
+      setViewMonth(addMonths(viewMonth, 1));
+      break;
+    case "PageUp":
+      nextDate = addMonths(nextDate, -1);
+      setViewMonth(addMonths(viewMonth, -1));
+      break;
+    case "Home":
+      nextDate = startOfMonth(viewMonth);
+      break;
+    case "End":
+      nextDate = endOfMonth(viewMonth);
+      break;
+    case "Enter":
+    case " ": {
+      e.preventDefault();
+      const day = days.find((d) => isSameDay(d.date, focusedDate));
+      if (day && !day.isDisabled) handleSelectDay(day);
+      return;
+    }
+    default:
+      handled = false;
+  }
+
+  if (!handled) return;
+  e.preventDefault();
+
+  nextDate = normalizeDate(nextDate);
+  setFocusedDate(nextDate);
+
+  // If focus moved outside the current view month, update the view
+  if (
+    nextDate.getMonth() !== viewMonth.getMonth() ||
+    nextDate.getFullYear() !== viewMonth.getFullYear()
+  ) {
+    setViewMonth(startOfMonth(nextDate));
+  }
+
+  // Focus the new day cell
+  const key = \`\${nextDate.getFullYear()}-\${nextDate.getMonth()}-\${nextDate.getDate()}\`;
+  const el = document.querySelector<HTMLElement>(
+    \`[data-calendar-day="\${key}"]\`,
+  );
+  el?.focus();
+}
+
+// ─── Calendar Component ───────────────────────────────────────────────────────
+
+export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
+  function Calendar(
+    {
+      mode = "single",
+      selected: controlledSelected,
+      defaultSelected,
+      onSelect,
+      defaultMonth,
+      disabled,
+      fromDate,
+      toDate,
+      showOutsideDays = true,
+      className,
+      ...props
+    },
+    ref,
+  ) {
+    const [viewMonth, setViewMonth] = useState<Date>(
+      () => (defaultMonth ? normalizeDate(defaultMonth) : normalizeDate(new Date())),
+    );
+    const [internalSelected, setInternalSelected] = useState<
+      CalendarSelected | undefined
+    >(defaultSelected);
+    const [focusedDate, setFocusedDate] = useState<Date>(
+      () => (defaultMonth ? normalizeDate(defaultMonth) : normalizeDate(new Date())),
+    );
+    const [rangeState, setRangeState] = useState<RangeState>("none");
+
+    const isControlled = controlledSelected !== undefined;
+    const currentSelected = isControlled ? controlledSelected : internalSelected;
+
+    const disabledDates: DisabledDate[] = useMemo(() => {
+      if (!disabled) return [];
+      return Array.isArray(disabled) ? disabled : [disabled];
+    }, [disabled]);
+
+    const days = useMemo(
+      () =>
+        buildCalendarGrid(
+          viewMonth,
+          mode,
+          currentSelected,
+          disabledDates,
+          fromDate,
+          toDate,
+          showOutsideDays,
+        ),
+      [viewMonth, mode, currentSelected, disabledDates, fromDate, toDate, showOutsideDays],
+    );
+
+    // Sync focused date when selected changes externally
+    const prevSelectedRef = useRef(currentSelected);
+    useEffect(() => {
+      if (prevSelectedRef.current === currentSelected) return;
+      prevSelectedRef.current = currentSelected;
+      if (mode === "single" && currentSelected instanceof Date) {
+        setFocusedDate(normalizeDate(currentSelected));
+      }
+    }, [currentSelected, mode]);
+
+    const goToPreviousMonth = useCallback(() => {
+      setViewMonth((prev) => addMonths(prev, -1));
+    }, []);
+
+    const goToNextMonth = useCallback(() => {
+      setViewMonth((prev) => addMonths(prev, 1));
+    }, []);
+
+    const handleDayClick = useCallback(
+      (day: CalendarDay) => {
+        if (day.isDisabled) return;
+
+        let next: CalendarSelected;
+        if (mode === "single") {
+          next = handleSingleClick(day.date);
+        } else if (mode === "multiple") {
+          next = handleMultipleClick(day.date, currentSelected);
+        } else {
+          const result = handleRangeClick(day.date, currentSelected, rangeState);
+          setRangeState(result.newState);
+          next = result.next;
+        }
+
+        if (!isControlled) setInternalSelected(next);
+        onSelect?.(next);
+        setFocusedDate(day.date);
+      },
+      [mode, currentSelected, rangeState, isControlled, onSelect],
+    );
+
+    const handleKeyDown = useCallback(
+      (e: React.KeyboardEvent) => {
+        moveFocus(
+          e,
+          focusedDate,
+          viewMonth,
+          setFocusedDate,
+          setViewMonth,
+          handleDayClick,
+          days,
+        );
+      },
+      [focusedDate, viewMonth, handleDayClick, days],
+    );
+
+    const monthLabel = \`\${MONTH_NAMES[viewMonth.getMonth()]} \${viewMonth.getFullYear()}\`;
+
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "inline-flex flex-col rounded-xl border border-slate-200 bg-white p-4",
+          "dark:border-[#1f2937] dark:bg-[#161b22]",
+          className,
+        )}
+        {...props}
+      >
+        {/* Header: Month/Year + Navigation */}
+        <div className="mb-4 flex items-center justify-between">
+          <button
+            type="button"
+            onClick={goToPreviousMonth}
+            className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-[#1f2937]"
+            aria-label="Previous month"
+          >
+            <span className="material-symbols-outlined text-[20px]">
+              chevron_left
+            </span>
+          </button>
+          <span className="text-sm font-semibold text-slate-900 dark:text-white">
+            {monthLabel}
+          </span>
+          <button
+            type="button"
+            onClick={goToNextMonth}
+            className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-[#1f2937]"
+            aria-label="Next month"
+          >
+            <span className="material-symbols-outlined text-[20px]">
+              chevron_right
+            </span>
+          </button>
+        </div>
+
+        {/* Weekday Headers */}
+        <div className="mb-2 grid grid-cols-7">
+          {WEEKDAYS.map((day) => (
+            <div
+              key={day}
+              className="flex h-8 items-center justify-center text-xs font-medium text-slate-500 dark:text-slate-400"
+            >
+              {day}
+            </div>
+          ))}
+        </div>
+
+        {/* Day Grid */}
+        <div
+          role="grid"
+          className="grid grid-cols-7"
+          onKeyDown={handleKeyDown}
+        >
+          {days.map((day) => (
+            <button
+              key={day.date.toISOString()}
+              type="button"
+              role="gridcell"
+              data-calendar-day={\`\${day.date.getFullYear()}-\${day.date.getMonth()}-\${day.date.getDate()}\`}
+              tabIndex={isSameDay(day.date, focusedDate) ? 0 : -1}
+              disabled={day.isDisabled}
+              onClick={() => handleDayClick(day)}
+              aria-selected={day.isSelected || day.isInRange || undefined}
+              className={cn(
+                "relative flex h-9 w-full items-center justify-center rounded-lg text-sm font-medium transition-colors",
+                "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40",
+                // Outside days
+                !day.isCurrentMonth &&
+                  !day.isSelected &&
+                  "text-slate-300 dark:text-slate-600",
+                // Normal days
+                day.isCurrentMonth &&
+                  !day.isSelected &&
+                  !day.isInRange &&
+                  !day.isDisabled &&
+                  "text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-[#1f2937]",
+                // Today
+                day.isToday &&
+                  !day.isSelected &&
+                  "font-bold text-primary",
+                // Selected (single / range endpoints)
+                day.isSelected &&
+                  "bg-primary text-white hover:bg-primary/90",
+                // Range in-between
+                day.isInRange &&
+                  !day.isSelected &&
+                  "bg-primary/10 dark:bg-primary/20",
+                // Disabled
+                day.isDisabled &&
+                  "cursor-not-allowed text-slate-300 opacity-50 dark:text-slate-600",
+              )}
+            >
+              {day.dayOfMonth}
+              {day.isToday && !day.isSelected && (
+                <span className="absolute bottom-1 left-1/2 h-0.5 w-1 -translate-x-1/2 rounded-full bg-primary" />
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  },
+);`,
   "Card": `import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
@@ -778,6 +1442,691 @@ Card.Footer = function CardFooter({ className, children, ...props }: HTMLAttribu
     </div>
   );
 }`,
+  "Carousel": `"use client";
+
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ButtonHTMLAttributes,
+  type HTMLAttributes,
+  type ReactNode,
+} from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type CarouselOrientation = "horizontal" | "vertical";
+
+export interface CarouselOptions {
+  loop?: boolean;
+  align?: "start" | "center";
+}
+
+export interface CarouselApi {
+  scrollPrev: () => void;
+  scrollNext: () => void;
+  scrollTo: (index: number) => void;
+  canScrollPrev: () => boolean;
+  canScrollNext: () => boolean;
+  getCurrentIndex: () => number;
+  getItemCount: () => number;
+}
+
+export interface CarouselProps {
+  orientation?: CarouselOrientation;
+  opts?: CarouselOptions;
+  setApi?: (api: CarouselApi) => void;
+  children: ReactNode;
+  className?: string;
+}
+
+export type CarouselContentProps = HTMLAttributes<HTMLDivElement>;
+
+export type CarouselItemProps = HTMLAttributes<HTMLDivElement>;
+
+export interface CarouselButtonProps
+  extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children?: ReactNode;
+}
+
+// ─── Context ──────────────────────────────────────────────────────────────────
+
+interface CarouselContextValue {
+  currentIndex: number;
+  orientation: CarouselOrientation;
+  loop: boolean;
+  itemCount: number;
+  containerSize: number;
+  registerItem: () => void;
+  unregisterItem: () => void;
+  scrollPrev: () => void;
+  scrollNext: () => void;
+  scrollTo: (index: number) => void;
+  canScrollPrev: boolean;
+  canScrollNext: boolean;
+  api: CarouselApi;
+}
+
+const CarouselContext = createContext<CarouselContextValue | null>(null);
+
+function useCarouselContext(): CarouselContextValue {
+  const ctx = useContext(CarouselContext);
+  if (!ctx) {
+    throw new Error("Carousel sub-components must be used within <Carousel>");
+  }
+  return ctx;
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const DRAG_THRESHOLD = 30;
+const RUBBER_BAND_FACTOR = 0.3;
+const TRANSITION_DURATION = 300;
+
+// ─── Carousel (root) ─────────────────────────────────────────────────────────
+
+export function Carousel({
+  orientation = "horizontal",
+  opts,
+  setApi,
+  children,
+  className,
+}: CarouselProps) {
+  const loop = opts?.loop ?? false;
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [itemCount, setItemCount] = useState(0);
+  const [containerSize, setContainerSize] = useState(0);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const itemCountRef = useRef(0);
+  const currentIndexRef = useRef(0);
+
+  // Keep refs in sync
+  useEffect(() => {
+    itemCountRef.current = itemCount;
+    currentIndexRef.current = currentIndex;
+  }, [itemCount, currentIndex]);
+
+  // Measure container size
+  const measure = useCallback(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    if (orientation === "horizontal") {
+      setContainerSize(el.offsetWidth);
+    } else {
+      setContainerSize(el.offsetHeight);
+    }
+  }, [orientation]);
+
+  useLayoutEffect(() => {
+    measure();
+  }, [measure]);
+
+  useEffect(() => {
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [measure]);
+
+  // Navigation logic
+  const canScrollPrev = loop ? true : currentIndex > 0;
+  const canScrollNext = loop ? true : currentIndex < itemCount - 1;
+
+  const scrollTo = useCallback(
+    (index: number) => {
+      const count = itemCountRef.current;
+      if (count === 0) return;
+      const clamped = loop
+        ? ((index % count) + count) % count
+        : Math.max(0, Math.min(index, count - 1));
+      setCurrentIndex(clamped);
+    },
+    [loop],
+  );
+
+  const scrollPrev = useCallback(() => {
+    scrollTo(currentIndexRef.current - 1);
+  }, [scrollTo]);
+
+  const scrollNext = useCallback(() => {
+    scrollTo(currentIndexRef.current + 1);
+  }, [scrollTo]);
+
+  // Keyboard navigation
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      const isHorizontal = orientation === "horizontal";
+      const prevKey = isHorizontal ? "ArrowLeft" : "ArrowUp";
+      const nextKey = isHorizontal ? "ArrowRight" : "ArrowDown";
+
+      if (e.key === prevKey) {
+        e.preventDefault();
+        scrollPrev();
+      } else if (e.key === nextKey) {
+        e.preventDefault();
+        scrollNext();
+      } else if (e.key === "Home") {
+        e.preventDefault();
+        scrollTo(0);
+      } else if (e.key === "End") {
+        e.preventDefault();
+        scrollTo(itemCountRef.current - 1);
+      }
+    },
+    [orientation, scrollPrev, scrollNext, scrollTo],
+  );
+
+  // Build stable API
+  const [api, setApiState] = useState<CarouselApi>(() => ({
+    scrollPrev,
+    scrollNext,
+    scrollTo,
+    canScrollPrev: () => canScrollPrev,
+    canScrollNext: () => canScrollNext,
+    getCurrentIndex: () => currentIndexRef.current,
+    getItemCount: () => itemCountRef.current,
+  }));
+
+  useEffect(() => {
+    setApiState({
+      scrollPrev,
+      scrollNext,
+      scrollTo,
+      canScrollPrev: () => canScrollPrev,
+      canScrollNext: () => canScrollNext,
+      getCurrentIndex: () => currentIndexRef.current,
+      getItemCount: () => itemCountRef.current,
+    });
+  }, [scrollPrev, scrollNext, scrollTo, canScrollPrev, canScrollNext]);
+
+  useEffect(() => {
+    if (setApi) setApi(api);
+  }, [setApi, api]);
+
+  // Item registration
+  const registerItem = useCallback(() => {
+    setItemCount((prev) => prev + 1);
+  }, []);
+
+  const unregisterItem = useCallback(() => {
+    setItemCount((prev) => Math.max(0, prev - 1));
+  }, []);
+
+  const contextValue: CarouselContextValue = {
+    currentIndex,
+    orientation,
+    loop,
+    itemCount,
+    containerSize,
+    registerItem,
+    unregisterItem,
+    scrollPrev,
+    scrollNext,
+    scrollTo,
+    canScrollPrev,
+    canScrollNext,
+    api,
+  };
+
+  return (
+    <CarouselContext.Provider value={contextValue}>
+      <div
+        ref={containerRef}
+        role="region"
+        aria-roledescription="carousel"
+        aria-label="Carousel"
+        tabIndex={0}
+        className={cn("relative overflow-hidden", className)}
+        onKeyDown={handleKeyDown}
+      >
+        {children}
+      </div>
+    </CarouselContext.Provider>
+  );
+}
+
+// ─── CarouselContent (track) ─────────────────────────────────────────────────
+
+Carousel.Content = function CarouselContent({
+  children,
+  className,
+  ...props
+}: CarouselContentProps) {
+  const {
+    currentIndex,
+    orientation,
+    loop,
+    itemCount,
+    containerSize,
+    scrollPrev,
+    scrollNext,
+  } = useCarouselContext();
+
+  const trackRef = useRef<HTMLDivElement>(null);
+
+  // Drag state refs (use refs to avoid re-renders during drag)
+  const isDraggingRef = useRef(false);
+  const startClientRef = useRef(0);
+  const dragOffsetRef = useRef(0);
+  const pointerIdRef = useRef<number | null>(null);
+  const startTimeRef = useRef(0);
+  const startTranslateRef = useRef(0);
+
+  // Expose drag helpers to prev/next buttons
+  const triggerPrev = useCallback(() => scrollPrev(), [scrollPrev]);
+  const triggerNext = useCallback(() => scrollNext(), [scrollNext]);
+
+  // We need a state for render-triggered translate (snap position)
+  const [snapTranslate, setSnapTranslate] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Compute snap translate when currentIndex or containerSize changes
+  useEffect(() => {
+    setSnapTranslate(-currentIndex * containerSize);
+  }, [currentIndex, containerSize]);
+
+  // Combine snap + drag offset for the final transform
+  const translateValue = isDragging
+    ? startTranslateRef.current + dragOffsetRef.current
+    : snapTranslate;
+
+  const axis = orientation === "horizontal" ? "X" : "Y";
+
+  // Pointer event handlers
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+
+      e.preventDefault();
+      const track = trackRef.current;
+      if (!track) return;
+
+      track.setPointerCapture(e.pointerId);
+      pointerIdRef.current = e.pointerId;
+      isDraggingRef.current = true;
+      setIsDragging(true);
+      startTimeRef.current = Date.now();
+
+      const clientPos =
+        orientation === "horizontal" ? e.clientX : e.clientY;
+      startClientRef.current = clientPos;
+      dragOffsetRef.current = 0;
+      startTranslateRef.current = snapTranslate;
+    },
+    [orientation, snapTranslate],
+  );
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      if (!isDraggingRef.current) return;
+      e.preventDefault();
+
+      const clientPos =
+        orientation === "horizontal" ? e.clientX : e.clientY;
+      const delta = clientPos - startClientRef.current;
+
+      // Apply rubber-band at edges when not looping
+      if (!loop && itemCount > 0) {
+        const atStart = currentIndex <= 0 && delta > 0;
+        const atEnd = currentIndex >= itemCount - 1 && delta < 0;
+        if (atStart || atEnd) {
+          dragOffsetRef.current = delta * RUBBER_BAND_FACTOR;
+        } else {
+          dragOffsetRef.current = delta;
+        }
+      } else {
+        dragOffsetRef.current = delta;
+      }
+    },
+    [orientation, loop, currentIndex, itemCount],
+  );
+
+  const handlePointerUp = useCallback(
+    (_e: React.PointerEvent<HTMLDivElement>) => {
+      if (!isDraggingRef.current) return;
+
+      isDraggingRef.current = false;
+      setIsDragging(false);
+
+      const track = trackRef.current;
+      if (track && pointerIdRef.current !== null) {
+        try {
+          track.releasePointerCapture(pointerIdRef.current);
+        } catch {
+          // Pointer may already be released
+        }
+      }
+      pointerIdRef.current = null;
+
+      const elapsed = Date.now() - startTimeRef.current;
+      const velocity = Math.abs(dragOffsetRef.current) / Math.max(elapsed, 1);
+
+      const exceededThreshold =
+        Math.abs(dragOffsetRef.current) > DRAG_THRESHOLD;
+      const fastSwipe = velocity > 0.3 && elapsed < 500;
+
+      if (exceededThreshold || fastSwipe) {
+        if (dragOffsetRef.current < 0) {
+          triggerNext();
+        } else if (dragOffsetRef.current > 0) {
+          triggerPrev();
+        }
+      }
+
+      dragOffsetRef.current = 0;
+    },
+    [triggerPrev, triggerNext],
+  );
+
+  const handlePointerCancel = useCallback(() => {
+    isDraggingRef.current = false;
+    setIsDragging(false);
+    pointerIdRef.current = null;
+    dragOffsetRef.current = 0;
+  }, []);
+
+  return (
+    <div
+      ref={trackRef}
+      className={cn(
+        "flex",
+        orientation === "horizontal" ? "flex-row" : "flex-col",
+        isDragging ? "select-none" : "",
+        className,
+      )}
+      style={{
+        transform: \`translate\${axis}(\${translateValue}px)\`,
+        transition: isDragging ? "none" : \`transform \${TRANSITION_DURATION}ms ease-out\`,
+        touchAction: "none",
+      }}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerCancel}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
+
+// ─── CarouselItem ────────────────────────────────────────────────────────────
+
+Carousel.Item = function CarouselItem({
+  children,
+  className,
+  ...props
+}: CarouselItemProps) {
+  const { registerItem, unregisterItem } = useCarouselContext();
+
+  useEffect(() => {
+    registerItem();
+    return () => unregisterItem();
+  }, [registerItem, unregisterItem]);
+
+  return (
+    <div
+      role="group"
+      aria-roledescription="slide"
+      className={cn("flex-shrink-0", className)}
+      style={{
+        flexBasis: "100%",
+        minHeight: 0,
+        minWidth: 0,
+      }}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
+
+// ─── CarouselPrevious ────────────────────────────────────────────────────────
+
+Carousel.Previous = function CarouselPrevious({
+  children,
+  className,
+  disabled: externalDisabled,
+  ...props
+}: CarouselButtonProps) {
+  const { scrollPrev, canScrollPrev, orientation } = useCarouselContext();
+
+  const isHorizontal = orientation === "horizontal";
+  const iconName = isHorizontal ? "chevron_left" : "expand_less";
+
+  const disabled = externalDisabled ?? !canScrollPrev;
+
+  return (
+    <button
+      type="button"
+      onClick={scrollPrev}
+      disabled={disabled}
+      aria-label="Previous slide"
+      className={cn(
+        "absolute z-10 flex h-8 w-8 items-center justify-center rounded-full",
+        "bg-white/80 text-slate-700 shadow-xs backdrop-blur-sm transition-all",
+        "hover:bg-white dark:bg-[#0d1117]/80 dark:text-slate-300 dark:hover:bg-[#0d1117]",
+        "disabled:pointer-events-none disabled:opacity-50",
+        isHorizontal
+          ? "left-2 top-1/2 -translate-y-1/2"
+          : "top-2 left-1/2 -translate-x-1/2",
+        className,
+      )}
+      {...props}
+    >
+      {children ?? (
+        <span className="material-symbols-outlined text-[20px]">{iconName}</span>
+      )}
+    </button>
+  );
+};
+
+// ─── CarouselNext ────────────────────────────────────────────────────────────
+
+Carousel.Next = function CarouselNext({
+  children,
+  className,
+  disabled: externalDisabled,
+  ...props
+}: CarouselButtonProps) {
+  const { scrollNext, canScrollNext, orientation } = useCarouselContext();
+
+  const isHorizontal = orientation === "horizontal";
+  const iconName = isHorizontal ? "chevron_right" : "expand_more";
+
+  const disabled = externalDisabled ?? !canScrollNext;
+
+  return (
+    <button
+      type="button"
+      onClick={scrollNext}
+      disabled={disabled}
+      aria-label="Next slide"
+      className={cn(
+        "absolute z-10 flex h-8 w-8 items-center justify-center rounded-full",
+        "bg-white/80 text-slate-700 shadow-xs backdrop-blur-sm transition-all",
+        "hover:bg-white dark:bg-[#0d1117]/80 dark:text-slate-300 dark:hover:bg-[#0d1117]",
+        "disabled:pointer-events-none disabled:opacity-50",
+        isHorizontal
+          ? "right-2 top-1/2 -translate-y-1/2"
+          : "bottom-2 left-1/2 -translate-x-1/2",
+        className,
+      )}
+      {...props}
+    >
+      {children ?? (
+        <span className="material-symbols-outlined text-[20px]">{iconName}</span>
+      )}
+    </button>
+  );
+};`,
+  "Chart": `"use client";
+
+import { createContext, useContext, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
+import {
+  ResponsiveContainer,
+  Tooltip as RechartsTooltip,
+  Legend as RechartsLegend,
+  BarChart,
+  LineChart,
+  AreaChart,
+  PieChart,
+  type TooltipContentProps,
+} from "recharts";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface ChartConfigItem {
+  label: string;
+  color: string;
+}
+
+export type ChartConfig = Record<string, ChartConfigItem>;
+
+export interface ChartContainerProps {
+  config: ChartConfig;
+  children: ReactNode;
+  className?: string;
+}
+
+// ─── Context ──────────────────────────────────────────────────────────────────
+
+const ChartContext = createContext<ChartConfig>({});
+
+function useChartConfig(): ChartConfig {
+  return useContext(ChartContext);
+}
+
+// ─── Default Colors ───────────────────────────────────────────────────────────
+
+export const CHART_COLORS = [
+  "#4628F1",
+  "#06B6D4",
+  "#22C55E",
+  "#F59E0B",
+  "#EF4444",
+  "#8B5CF6",
+] as const;
+
+// ─── ChartContainer ───────────────────────────────────────────────────────────
+
+export function ChartContainer({
+  config,
+  children,
+  className,
+}: ChartContainerProps) {
+  return (
+    <ChartContext.Provider value={config}>
+      <div className={cn("h-full w-full", className)}>
+        <ResponsiveContainer width="100%" height="100%">
+          {children}
+        </ResponsiveContainer>
+      </div>
+    </ChartContext.Provider>
+  );
+}
+
+// ─── ChartTooltip ─────────────────────────────────────────────────────────────
+
+export function ChartTooltipContent({
+  active,
+  payload,
+  label,
+}: TooltipContentProps) {
+  const config = useChartConfig();
+
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-lg dark:border-[#1f2937] dark:bg-[#0d1117]">
+      <p className="mb-1 text-xs font-semibold text-slate-900 dark:text-white">
+        {label}
+      </p>
+      {payload.map((entry, i) => {
+        const key = String(entry.dataKey ?? i);
+        const item = config[key];
+        const color = item?.color ?? CHART_COLORS[i % CHART_COLORS.length];
+        const entryLabel = item?.label ?? key;
+
+        return (
+          <div key={key} className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <span
+                className="h-2.5 w-2.5 shrink-0 rounded-full"
+                style={{ backgroundColor: color }}
+              />
+              <span className="text-xs text-slate-600 dark:text-slate-400">
+                {entryLabel}
+              </span>
+            </div>
+            <span className="text-xs font-semibold text-slate-900 dark:text-white">
+              {typeof entry.value === "number"
+                ? entry.value.toLocaleString()
+                : String(entry.value ?? "")}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export function ChartTooltip() {
+  return <RechartsTooltip content={ChartTooltipContent} cursor={false} />;
+}
+
+// ─── ChartLegend ───────────────────────────────────────────────────────────────
+
+export function ChartLegendContent({
+  payload,
+}: {
+  payload?: ReadonlyArray<{
+    value?: string;
+    color?: string;
+    dataKey?: unknown;
+  }>;
+}) {
+  const config = useChartConfig();
+
+  if (!payload?.length) return null;
+
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+      {payload.map((entry, i) => {
+        const key = String(entry.value ?? i);
+        const item = config[key];
+        const color = item?.color ?? entry.color ?? CHART_COLORS[i % CHART_COLORS.length];
+        const entryLabel = item?.label ?? entry.value ?? key;
+
+        return (
+          <div key={key} className="flex items-center gap-1.5">
+            <span
+              className="h-2.5 w-2.5 rounded-full"
+              style={{ backgroundColor: color }}
+            />
+            <span className="text-xs text-slate-600 dark:text-slate-400">
+              {entryLabel}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export function ChartLegend() {
+  return <RechartsLegend content={<ChartLegendContent />} />;
+}
+
+// ─── Re-exports ────────────────────────────────────────────────────────────────
+
+export { BarChart, LineChart, AreaChart, PieChart };`,
   "Checkbox": `import { useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
@@ -907,6 +2256,127 @@ export function Checkbox({
     </label>
   );
 }`,
+  "Collapsible": `"use client";
+
+import React, { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface CollapsibleProps {
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  disabled?: boolean;
+  children: ReactNode;
+  className?: string;
+}
+
+export interface CollapsibleTriggerProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export interface CollapsibleContentProps {
+  children: ReactNode;
+  className?: string;
+}
+
+// ─── Context ───────────────────────────────────────────────────────────────────
+
+interface CollapsibleContextValue {
+  open: boolean;
+  toggle: () => void;
+  disabled: boolean;
+}
+
+const CollapsibleContext = createContext<CollapsibleContextValue | null>(null);
+
+function useCollapsibleContext() {
+  const context = useContext(CollapsibleContext);
+  if (!context) {
+    throw new Error("Collapsible sub-components must be used inside <Collapsible>");
+  }
+  return context;
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+export function Collapsible({
+  open: controlledOpen,
+  defaultOpen = false,
+  onOpenChange,
+  disabled = false,
+  children,
+  className,
+}: CollapsibleProps) {
+  const [internalOpen, setInternalOpen] = useState(defaultOpen);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+
+  const toggle = useCallback(() => {
+    if (disabled) return;
+
+    const next = !open;
+    if (!isControlled) {
+      setInternalOpen(next);
+    }
+    if (onOpenChange) {
+      onOpenChange(next);
+    }
+  }, [open, isControlled, disabled, onOpenChange]);
+
+  return (
+    <CollapsibleContext.Provider value={{ open, toggle, disabled }}>
+      <div className={className}>{children}</div>
+    </CollapsibleContext.Provider>
+  );
+}
+
+// ─── Trigger Sub-Component ─────────────────────────────────────────────────────
+
+Collapsible.Trigger = function CollapsibleTrigger({ children, className }: CollapsibleTriggerProps) {
+  const { open, toggle, disabled } = useCollapsibleContext();
+
+  return (
+    <button
+      type="button"
+      aria-expanded={open}
+      aria-disabled={disabled}
+      disabled={disabled}
+      onClick={toggle}
+      className={cn(
+        "flex w-full items-center justify-between",
+        "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40",
+        disabled && "opacity-50 cursor-not-allowed",
+        !disabled && "cursor-pointer",
+        className
+      )}
+    >
+      {children}
+    </button>
+  );
+};
+
+// ─── Content Sub-Component ─────────────────────────────────────────────────────
+
+Collapsible.Content = function CollapsibleContent({ children, className }: CollapsibleContentProps) {
+  const { open } = useCollapsibleContext();
+
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateRows: open ? "1fr" : "0fr",
+        transition: "grid-template-rows 0.2s ease",
+      }}
+    >
+      <div style={{ overflow: "hidden" }}>
+        <div className={className}>{children}</div>
+      </div>
+    </div>
+  );
+};`,
   "Combobox": `import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -1082,7 +2552,7 @@ export function Combobox({
     </div>
   );
 }`,
-  "Command": `import { createContext, useContext, useMemo, useState, type HTMLAttributes, type InputHTMLAttributes, type ReactNode } from "react";
+  "Command": `import { createContext, useContext, useEffect, useMemo, useState, type HTMLAttributes, type InputHTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface CommandContextValue {
@@ -1092,14 +2562,22 @@ interface CommandContextValue {
 
 const CommandContext = createContext<CommandContextValue | null>(null);
 
+export interface CommandProps extends HTMLAttributes<HTMLDivElement> {
+  initialQuery?: string;
+}
+
 function useCommandContext() {
   const context = useContext(CommandContext);
   if (!context) throw new Error("Command sub-components must be used inside <Command>");
   return context;
 }
 
-export function Command({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  const [query, setQuery] = useState("");
+export function Command({ className, initialQuery = "", ...props }: CommandProps) {
+  const [query, setQuery] = useState(initialQuery);
+
+  useEffect(() => {
+    setQuery(initialQuery);
+  }, [initialQuery]);
 
   return (
     <CommandContext.Provider value={{ query, setQuery }}>
@@ -1191,45 +2669,996 @@ Command.Label = function CommandLabel({ className, ...props }: HTMLAttributes<HT
 Command.Separator = function CommandSeparator({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("my-1 h-px bg-slate-200 dark:bg-[#1f2937]", className)} {...props} />;
 }`,
-  "DatePicker": `import { forwardRef, type InputHTMLAttributes } from "react";
+  "ContextMenu": `"use client";
+
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ButtonHTMLAttributes,
+  type HTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+} from "react";
 import { cn } from "@/lib/utils";
 
-export interface DatePickerProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface ContextMenuProps {
+  children: ReactNode;
+}
+
+export interface ContextMenuTriggerProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export interface ContextMenuContentProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+
+export interface ContextMenuItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+  onSelect?: () => void;
+  disabled?: boolean;
+  inset?: boolean;
+}
+
+export interface ContextMenuCheckboxItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+  checked?: boolean;
+  defaultChecked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+  disabled?: boolean;
+}
+
+export interface ContextMenuRadioGroupProps {
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+  children: ReactNode;
+  className?: string;
+}
+
+export interface ContextMenuRadioItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  value: string;
+  children: ReactNode;
+  disabled?: boolean;
+}
+
+export interface ContextMenuSeparatorProps extends HTMLAttributes<HTMLDivElement> {
+  className?: string;
+}
+
+export interface ContextMenuSubProps {
+  children: ReactNode;
+  className?: string;
+  defaultOpen?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export interface ContextMenuSubTriggerProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+}
+
+export interface ContextMenuShortcutProps extends HTMLAttributes<HTMLSpanElement> {
+  children: ReactNode;
+}
+
+// ─── Injected Props ──────────────────────────────────────────────────────────
+
+interface InjectedContentProps {
+  isSubmenu?: boolean;
+  onClose?: () => void;
+}
+
+interface InjectedSubTriggerProps {
+  isOpen?: boolean;
+  onToggle?: () => void;
+}
+
+// ─── Context ───────────────────────────────────────────────────────────────────
+
+interface ContextMenuContextValue {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  closeAll: () => void;
+  position: React.MutableRefObject<{ x: number; y: number }>;
+}
+
+const ContextMenuContext = createContext<ContextMenuContextValue | null>(null);
+
+function useContextMenuContext() {
+  const context = useContext(ContextMenuContext);
+  if (!context) {
+    throw new Error("ContextMenu sub-components must be used inside <ContextMenu>");
+  }
+  return context;
+}
+
+// ─── Radio Context ────────────────────────────────────────────────────────────
+
+interface ContextMenuRadioContextValue {
+  value: string;
+  setValue: (value: string) => void;
+}
+
+const ContextMenuRadioContext = createContext<ContextMenuRadioContextValue | null>(null);
+
+function useContextMenuRadioContext() {
+  const context = useContext(ContextMenuRadioContext);
+  if (!context) {
+    throw new Error("ContextMenuRadioItem must be used inside <ContextMenuRadioGroup>");
+  }
+  return context;
+}
+
+// ─── Content Focus Context ────────────────────────────────────────────────────
+
+interface ContentFocusContextValue {
+  registerItem: (el: HTMLButtonElement | null) => void;
+}
+
+const ContentFocusContext = createContext<ContentFocusContextValue | null>(null);
+
+function useContentFocusContext() {
+  return useContext(ContentFocusContext);
+}
+
+// ─── Root Component ───────────────────────────────────────────────────────────
+
+export function ContextMenu({ children }: ContextMenuProps) {
+  const [open, setOpen] = useState(false);
+  const position = useRef({ x: 0, y: 0 });
+  const closeAll = useCallback(() => setOpen(false), []);
+
+  return (
+    <ContextMenuContext.Provider value={{ open, setOpen, closeAll, position }}>
+      {children}
+    </ContextMenuContext.Provider>
+  );
+}
+
+// ─── Trigger ─────────────────────────────────────────────────────────────────
+
+ContextMenu.Trigger = function ContextMenuTrigger({ children, className }: ContextMenuTriggerProps) {
+  const { setOpen, position } = useContextMenuContext();
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    position.current = { x: e.clientX, y: e.clientY };
+    setOpen(true);
+  };
+
+  return (
+    <div className={cn("inline-block", className)} onContextMenu={handleContextMenu}>
+      {children}
+    </div>
+  );
+};
+
+// ─── Content ──────────────────────────────────────────────────────────────────
+
+ContextMenu.Content = function ContextMenuContent({
+  children,
+  className,
+  isSubmenu,
+  onClose: injectedOnClose,
+  ...props
+}: ContextMenuContentProps & InjectedContentProps) {
+  const { open, closeAll, position } = useContextMenuContext();
+  const isOpen = isSubmenu ? (injectedOnClose !== undefined) : open;
+  const onClose = injectedOnClose ?? closeAll;
+  const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const focusedIndex = useRef(-1);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const registerItem = useCallback((el: HTMLButtonElement | null) => {
+    if (el) itemRefs.current.push(el);
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      itemRefs.current = [];
+      focusedIndex.current = -1;
+      requestAnimationFrame(() => {
+        // Adjust position so content stays within viewport
+        if (contentRef.current) {
+          const rect = contentRef.current.getBoundingClientRect();
+          const pos = isSubmenu ? { ...position.current } : { x: position.current.x, y: position.current.y };
+          const vw = window.innerWidth;
+          const vh = window.innerHeight;
+          if (pos.x + rect.width > vw) pos.x = vw - rect.width - 8;
+          if (pos.y + rect.height > vh) pos.y = vh - rect.height - 8;
+          if (pos.x < 4) pos.x = 4;
+          if (pos.y < 4) pos.y = 4;
+          contentRef.current.style.left = \`\${pos.x}px\`;
+          contentRef.current.style.top = \`\${pos.y}px\`;
+        }
+        itemRefs.current[0]?.focus();
+        focusedIndex.current = 0;
+      });
+    }
+  }, [isOpen, position, isSubmenu]);
+
+  const getFocusableItems = useCallback(() => {
+    return itemRefs.current.filter((el) => el && !el.disabled);
+  }, []);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    const items = getFocusableItems();
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      const next = Math.min(focusedIndex.current + 1, items.length - 1);
+      focusedIndex.current = next;
+      items[next]?.focus();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      const prev = Math.max(focusedIndex.current - 1, 0);
+      focusedIndex.current = prev;
+      items[prev]?.focus();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      onClose?.();
+    }
+  };
+
+  // Close on outside click
+  const justOpenedRef = useRef(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      justOpenedRef.current = true;
+      requestAnimationFrame(() => {
+        justOpenedRef.current = false;
+      });
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handlePointerDown = (e: MouseEvent) => {
+      if (justOpenedRef.current) return;
+      const target = e.target as HTMLElement;
+      if (contentRef.current?.contains(target)) return;
+      onClose?.();
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  return (
+    <ContentFocusContext.Provider value={{ registerItem }}>
+      <div
+        ref={contentRef}
+        className={cn(
+          "z-50 min-w-[200px] p-1",
+          "bg-white dark:bg-[#161b22]",
+          "border border-slate-200 dark:border-[#1f2937]",
+          "rounded-lg shadow-lg",
+          "fixed",
+          isSubmenu ? "left-full top-0 ml-1" : "",
+          className
+        )}
+        role="menu"
+        aria-orientation="vertical"
+        onKeyDown={handleKeyDown}
+        {...props}
+      >
+        {children}
+      </div>
+    </ContentFocusContext.Provider>
+  );
+};
+
+// ─── Item ──────────────────────────────────────────────────────────────────────
+
+ContextMenu.Item = function ContextMenuItem({
+  children, className, onSelect, disabled, inset, onClick, ...props
+}: ContextMenuItemProps) {
+  const { closeAll } = useContextMenuContext();
+  const focusContext = useContentFocusContext();
+  const itemRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (focusContext && itemRef.current) focusContext.registerItem(itemRef.current);
+  }, [focusContext]);
+
+  return (
+    <button
+      ref={itemRef} type="button" role="menuitem" disabled={disabled}
+      onClick={(e) => {
+        onClick?.(e);
+        if (disabled) return;
+        onSelect?.();
+        closeAll();
+      }}
+      className={cn(
+        "relative flex w-full items-center rounded-sm px-2 py-1.5 text-sm",
+        "outline-none transition-colors cursor-default",
+        "text-slate-700 dark:text-slate-300",
+        "focus:bg-slate-100 focus:text-slate-900",
+        "dark:focus:bg-[#1f2937] dark:focus:text-white",
+        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        inset && "pl-8", className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+
+// ─── Checkbox Item ────────────────────────────────────────────────────────────
+
+ContextMenu.CheckboxItem = function ContextMenuCheckboxItem({
+  children, className, checked, defaultChecked, onCheckedChange, disabled, onClick, ...props
+}: ContextMenuCheckboxItemProps) {
+  const { closeAll } = useContextMenuContext();
+  const focusContext = useContentFocusContext();
+  const itemRef = useRef<HTMLButtonElement>(null);
+
+  const [internalChecked, setInternalChecked] = useState(defaultChecked ?? false);
+  const isControlled = checked !== undefined;
+  const isChecked = isControlled ? checked : internalChecked;
+
+  useEffect(() => {
+    if (focusContext && itemRef.current) focusContext.registerItem(itemRef.current);
+  }, [focusContext]);
+
+  const toggle = () => {
+    const next = !isChecked;
+    if (!isControlled) setInternalChecked(next);
+    onCheckedChange?.(next);
+    closeAll();
+  };
+
+  return (
+    <button
+      ref={itemRef} type="button" role="menuitemcheckbox"
+      aria-checked={isChecked} disabled={disabled}
+      onClick={(e) => {
+        onClick?.(e);
+        if (disabled) return;
+        toggle();
+      }}
+      className={cn(
+        "relative flex w-full items-center rounded-sm px-2 py-1.5 text-sm",
+        "outline-none transition-colors cursor-default",
+        "text-slate-700 dark:text-slate-300",
+        "focus:bg-slate-100 focus:text-slate-900",
+        "dark:focus:bg-[#1f2937] dark:focus:text-white",
+        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        className
+      )}
+      {...props}
+    >
+      <span className="mr-2 flex h-4 w-4 items-center justify-center">
+        {isChecked && (
+          <svg className="h-4 w-4" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 6L5 8.5L9.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+      </span>
+      {children}
+    </button>
+  );
+};
+
+// ─── Radio Group ──────────────────────────────────────────────────────────────
+
+ContextMenu.RadioGroup = function ContextMenuRadioGroup({
+  value, defaultValue = "", onValueChange, children, className
+}: ContextMenuRadioGroupProps) {
+  const [internalValue, setInternalValue] = useState(defaultValue);
+  const isControlled = value !== undefined;
+  const active = isControlled ? value : internalValue;
+
+  const setValue = (next: string) => {
+    if (!isControlled) setInternalValue(next);
+    onValueChange?.(next);
+  };
+
+  return (
+    <ContextMenuRadioContext.Provider value={{ value: active, setValue }}>
+      <div className={cn("py-1", className)} role="group">{children}</div>
+    </ContextMenuRadioContext.Provider>
+  );
+};
+
+// ─── Radio Item ───────────────────────────────────────────────────────────────
+
+ContextMenu.RadioItem = function ContextMenuRadioItem({
+  value: itemValue, children, className, disabled, onClick, ...props
+}: ContextMenuRadioItemProps) {
+  const { value, setValue } = useContextMenuRadioContext();
+  const { closeAll } = useContextMenuContext();
+  const focusContext = useContentFocusContext();
+  const itemRef = useRef<HTMLButtonElement>(null);
+  const isChecked = value === itemValue;
+
+  useEffect(() => {
+    if (focusContext && itemRef.current) focusContext.registerItem(itemRef.current);
+  }, [focusContext]);
+
+  return (
+    <button
+      ref={itemRef} type="button" role="menuitemradio"
+      aria-checked={isChecked} disabled={disabled}
+      onClick={(e) => {
+        onClick?.(e);
+        if (disabled) return;
+        setValue(itemValue);
+        closeAll();
+      }}
+      className={cn(
+        "relative flex w-full items-center rounded-sm px-2 py-1.5 text-sm",
+        "outline-none transition-colors cursor-default",
+        "text-slate-700 dark:text-slate-300",
+        "focus:bg-slate-100 focus:text-slate-900",
+        "dark:focus:bg-[#1f2937] dark:focus:text-white",
+        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        className
+      )}
+      {...props}
+    >
+      <span className="mr-2 flex h-4 w-4 items-center justify-center">
+        {isChecked && <span className="h-2 w-2 rounded-full bg-current" />}
+      </span>
+      {children}
+    </button>
+  );
+};
+
+// ─── Separator ──────────────────────────────────────────────────────────────────
+
+ContextMenu.Separator = function ContextMenuSeparator({ className, ...props }: ContextMenuSeparatorProps) {
+  return (
+    <div
+      className={cn("-mx-1 my-1 h-px bg-slate-200 dark:bg-[#1f2937]", className)}
+      role="separator" aria-orientation="horizontal" {...props}
+    />
+  );
+};
+
+// ─── Sub ─────────────────────────────────────────────────────────────────────────
+
+ContextMenu.Sub = function ContextMenuSub({
+  children, className, defaultOpen = false, open, onOpenChange
+}: ContextMenuSubProps) {
+  const [internalOpen, setInternalOpen] = useState(defaultOpen);
+  const isControlled = open !== undefined;
+  const isOpen = isControlled ? open : internalOpen;
+
+  const setOpen = (next: boolean) => {
+    if (!isControlled) setInternalOpen(next);
+    onOpenChange?.(next);
+  };
+
+  return (
+    <div className={cn("relative", className)} onMouseLeave={() => setOpen(false)}>
+      {React.Children.map(children, (child) => {
+        if (!React.isValidElement(child)) return child;
+        if (child.type === ContextMenu.SubTrigger) {
+          const triggerChild = child as ReactElement<ContextMenuSubTriggerProps & InjectedSubTriggerProps>;
+          return React.cloneElement(triggerChild, { isOpen, onToggle: () => setOpen(!isOpen) });
+        }
+        if (child.type === ContextMenu.Content) {
+          const contentChild = child as ReactElement<ContextMenuContentProps & InjectedContentProps>;
+          return React.cloneElement(contentChild, { onClose: () => setOpen(false), isSubmenu: true });
+        }
+        return child;
+      })}
+    </div>
+  );
+};
+
+// ─── SubTrigger ───────────────────────────────────────────────────────────────
+
+ContextMenu.SubTrigger = function ContextMenuSubTrigger({
+  children, className, isOpen, onToggle, onClick, ...props
+}: ContextMenuSubTriggerProps & InjectedSubTriggerProps) {
+  const focusContext = useContentFocusContext();
+  const itemRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (focusContext && itemRef.current) focusContext.registerItem(itemRef.current);
+  }, [focusContext]);
+
+  return (
+    <button
+      ref={itemRef} type="button" role="menuitem"
+      aria-expanded={isOpen} aria-haspopup="true"
+      onClick={(e) => { onClick?.(e); onToggle?.(); }}
+      onKeyDown={(e) => {
+        if (e.key === "ArrowRight") { e.preventDefault(); onToggle?.(); }
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggle?.(); }
+      }}
+      className={cn(
+        "relative flex w-full items-center rounded-sm px-2 py-1.5 text-sm",
+        "outline-none transition-colors cursor-default",
+        "text-slate-700 dark:text-slate-300",
+        "hover:bg-slate-100 hover:text-slate-900",
+        "dark:hover:bg-[#1f2937] dark:hover:text-white",
+        "focus:bg-slate-100 focus:text-slate-900",
+        "dark:focus:bg-[#1f2937] dark:focus:text-white",
+        className
+      )}
+      {...props}
+    >
+      {children}
+      <svg className="ml-auto h-4 w-4" viewBox="0 0 16 16" fill="none">
+        <path d="M6 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </button>
+  );
+};
+
+// ─── Shortcut ─────────────────────────────────────────────────────────────────
+
+ContextMenu.Shortcut = function ContextMenuShortcut({ children, className, ...props }: ContextMenuShortcutProps) {
+  return (
+    <span className={cn("ml-auto text-xs tracking-widest text-slate-500 dark:text-slate-400", className)} {...props}>
+      {children}
+    </span>
+  );
+};`,
+  "DataTable": `"use client";
+
+import { useState, type ReactNode } from "react";
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  flexRender,
+  type ColumnDef,
+  type SortingState,
+  type PaginationState,
+  type OnChangeFn,
+} from "@tanstack/react-table";
+import { cn } from "@/lib/utils";
+import { Table } from "./Table";
+import { Button } from "./Button";
+import { Skeleton } from "./Skeleton";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface DataTableProps<TData> {
+  /** TanStack Table column definitions. */
+  columns: Array<ColumnDef<TData>>;
+  /** Row data array. */
+  data: TData[];
+  /** Controlled sorting state. */
+  sorting?: SortingState;
+  /** Controlled sorting state change handler. */
+  onSortingChange?: OnChangeFn<SortingState>;
+  /** Controlled global filter string. */
+  globalFilter?: string;
+  /** Controlled global filter change handler. */
+  onGlobalFilterChange?: OnChangeFn<string>;
+  /** Controlled pagination state. */
+  pagination?: PaginationState;
+  /** Controlled pagination change handler. */
+  onPaginationChange?: OnChangeFn<PaginationState>;
+  /** Initial page size (uncontrolled mode). */
+  pageSize?: number;
+  /** Shows skeleton rows while true. */
+  isLoading?: boolean;
+  /** Custom content rendered when no rows match the filter. */
+  emptyState?: ReactNode;
+  /** Placeholder text for the filter input. */
+  filterPlaceholder?: string;
+  /** Extra classes on the wrapper div. */
+  className?: string;
+}
+
+// ─── Sort indicator ──────────────────────────────────────────────────────────
+
+function SortIcon({ direction }: { direction: false | "asc" | "desc" }) {
+  if (!direction) return null;
+  return (
+    <span className="material-symbols-outlined text-[14px]">
+      {direction === "asc" ? "arrow_upward" : "arrow_downward"}
+    </span>
+  );
+}
+
+// ─── Skeleton rows ────────────────────────────────────────────────────────────
+
+function DataTableSkeleton({ colCount, rowCount }: { colCount: number; rowCount: number }) {
+  return (
+    <>
+      {Array.from({ length: rowCount }).map((_, i) => (
+        <Table.Row key={i}>
+          {Array.from({ length: colCount }).map((__, j) => (
+            <Table.Cell key={j}>
+              <Skeleton variant="line" className="h-4 w-full" />
+            </Table.Cell>
+          ))}
+        </Table.Row>
+      ))}
+    </>
+  );
+}
+
+// ─── Component ───────────────────────────────────────────────────────────────
+
+export function DataTable<TData>({
+  columns,
+  data,
+  sorting: controlledSorting,
+  onSortingChange,
+  globalFilter: controlledFilter,
+  onGlobalFilterChange,
+  pagination: controlledPagination,
+  onPaginationChange,
+  pageSize = 10,
+  isLoading = false,
+  emptyState,
+  filterPlaceholder = "Filter all columns...",
+  className,
+}: DataTableProps<TData>) {
+  const [internalSorting, setInternalSorting] = useState<SortingState>([]);
+  const [internalFilter, setInternalFilter] = useState("");
+  const [internalPagination, setInternalPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize,
+  });
+
+  const sorting = controlledSorting ?? internalSorting;
+  const globalFilter = controlledFilter ?? internalFilter;
+  const pagination = controlledPagination ?? internalPagination;
+
+  const isSortingControlled = controlledSorting !== undefined;
+  const isFilterControlled = controlledFilter !== undefined;
+  const isPaginationControlled = controlledPagination !== undefined;
+
+  const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
+    const next = typeof updater === "function" ? updater(sorting) : updater;
+    if (!isSortingControlled) setInternalSorting(next);
+    onSortingChange?.(updater);
+  };
+
+  const handleFilterChange: OnChangeFn<string> = (updater) => {
+    const next = typeof updater === "function" ? updater(globalFilter) : updater;
+    if (!isFilterControlled) setInternalFilter(next);
+    onGlobalFilterChange?.(updater);
+  };
+
+  const handlePaginationChange: OnChangeFn<PaginationState> = (updater) => {
+    const next = typeof updater === "function" ? updater(pagination) : updater;
+    if (!isPaginationControlled) setInternalPagination(next);
+    onPaginationChange?.(updater);
+  };
+
+  const table = useReactTable({
+    data,
+    columns,
+    state: { sorting, globalFilter, pagination },
+    onSortingChange: handleSortingChange,
+    onGlobalFilterChange: handleFilterChange,
+    onPaginationChange: handlePaginationChange,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
+
+  const isEmpty = !isLoading && table.getRowModel().rows.length === 0;
+
+  return (
+    <div className={cn("space-y-4", className)}>
+      {/* Filter input */}
+      <div className="relative">
+        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[18px] text-slate-400">
+          search
+        </span>
+        <input
+          type="text"
+          value={globalFilter}
+          onChange={(e) => handleFilterChange(e.target.value)}
+          placeholder={filterPlaceholder}
+          className={cn(
+            "h-10 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-4 text-sm text-slate-900 outline-hidden transition-all",
+            "hover:border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20",
+            "dark:border-[#1f2937] dark:bg-[#0d1117] dark:text-white dark:hover:border-slate-600",
+          )}
+        />
+      </div>
+
+      {/* Table */}
+      <Table>
+        <Table.Header>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <Table.Row key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <Table.Head
+                  key={header.id}
+                  className={cn(
+                    header.column.getCanSort() && "cursor-pointer select-none",
+                  )}
+                  onClick={header.column.getToggleSortingHandler()}
+                >
+                  <div className="flex items-center gap-1">
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
+                    <SortIcon direction={header.column.getIsSorted()} />
+                  </div>
+                </Table.Head>
+              ))}
+            </Table.Row>
+          ))}
+        </Table.Header>
+        <Table.Body>
+          {isLoading ? (
+            <DataTableSkeleton
+              colCount={columns.length}
+              rowCount={pagination.pageSize}
+            />
+          ) : isEmpty ? (
+            <Table.Row>
+              <Table.Cell
+                colSpan={columns.length}
+                className="h-48 text-center"
+              >
+                {emptyState ?? (
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    No results found.
+                  </p>
+                )}
+              </Table.Cell>
+            </Table.Row>
+          ) : (
+            table.getRowModel().rows.map((row) => (
+              <Table.Row key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <Table.Cell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </Table.Cell>
+                ))}
+              </Table.Row>
+            ))
+          )}
+        </Table.Body>
+      </Table>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Page {pagination.pageIndex + 1} of {table.getPageCount()}{" "}
+          ({table.getFilteredRowModel().rows.length} rows)
+        </p>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}`,
+  "DatePicker": `"use client";
+
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type InputHTMLAttributes,
+} from "react";
+import { cn } from "@/lib/utils";
+import { Calendar } from "./Calendar";
+import type { CalendarMode, CalendarSelected } from "./Calendar";
+
+export interface DatePickerProps
+  extends Omit<
+    InputHTMLAttributes<HTMLInputElement>,
+    "type" | "value" | "onChange" | "defaultValue"
+  > {
   label?: string;
   description?: string;
   error?: string;
+  value?: string;
+  defaultValue?: string;
+  onChange?: (value: string) => void;
+  mode?: CalendarMode;
+  placeholder?: string;
 }
 
-export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(function DatePickerRoot(
-  { label, description, error, className, id, ...props },
-  ref
-) {
-  const inputId = id ?? (label ? label.toLowerCase().replace(/\\s+/g, "-") : undefined);
+function formatDate(dateStr: string): string {
+  if (!dateStr) return "";
+  const parts = dateStr.split("-").map(Number);
+  const y = parts[0] ?? 0;
+  const m = parts[1] ?? 1;
+  const d = parts[2] ?? 1;
+  const date = new Date(y, m - 1, d);
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
 
-  return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
-      {label && (
-        <label htmlFor={inputId} className="text-sm font-medium text-slate-700 dark:text-slate-300">
-          {label}
-        </label>
-      )}
-      <input
-        ref={ref}
-        id={inputId}
-        type="date"
-        className={cn(
-          "h-10 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-sm text-slate-900 outline-hidden transition-all",
-          "hover:border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20",
-          "dark:border-[#1f2937] dark:bg-[#0d1117] dark:text-white dark:hover:border-slate-600",
-          error && "border-red-400 focus:border-red-400 focus:ring-red-400/20 dark:border-red-500"
+function toDate(dateStr: string): Date {
+  const parts = dateStr.split("-").map(Number);
+  const y = parts[0] ?? 0;
+  const m = parts[1] ?? 1;
+  const d = parts[2] ?? 1;
+  return new Date(y, m - 1, d);
+}
+
+function dateToString(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return \`\${y}-\${m}-\${d}\`;
+}
+
+export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
+  function DatePickerRoot(
+    {
+      label,
+      description,
+      error,
+      value,
+      defaultValue,
+      onChange,
+      mode = "single",
+      placeholder = "Pick a date",
+      className,
+      id,
+      ...props
+    },
+    ref,
+  ) {
+    const [open, setOpen] = useState(false);
+    const [internalValue, setInternalValue] = useState(defaultValue ?? "");
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const isControlled = value !== undefined;
+    const currentValue = isControlled ? value : internalValue;
+
+    const calendarSelected: CalendarSelected | undefined = currentValue
+      ? toDate(currentValue)
+      : undefined;
+
+    const handleSelect = useCallback(
+      (selected: CalendarSelected) => {
+        let dateStr = "";
+
+        if (mode === "single" && selected instanceof Date) {
+          dateStr = dateToString(selected);
+        } else if (
+          mode === "range" &&
+          selected !== null &&
+          typeof selected === "object" &&
+          "from" in selected
+        ) {
+          const range = selected as { from: Date; to?: Date };
+          if (range.to) {
+            dateStr = \`\${dateToString(range.from)} → \${dateToString(range.to)}\`;
+          } else {
+            dateStr = dateToString(range.from);
+          }
+        } else if (mode === "multiple" && Array.isArray(selected)) {
+          dateStr = selected.map(dateToString).join(", ");
+        }
+
+        if (!isControlled) setInternalValue(dateStr);
+        onChange?.(dateStr);
+        if (mode === "single") setOpen(false);
+      },
+      [mode, isControlled, onChange],
+    );
+
+    // Click outside to close
+    useEffect(() => {
+      if (!open) return;
+      const onPointerDown = (event: MouseEvent) => {
+        if (
+          !containerRef.current?.contains(event.target as Node)
+        ) {
+          setOpen(false);
+        }
+      };
+      window.addEventListener("mousedown", onPointerDown);
+      return () => window.removeEventListener("mousedown", onPointerDown);
+    }, [open]);
+
+    const inputId =
+      id ?? (label ? label.toLowerCase().replace(/\\s+/g, "-") : undefined);
+
+    return (
+      <div className={cn("flex flex-col gap-1.5", className)}>
+        {label && (
+          <label
+            htmlFor={inputId}
+            className="text-sm font-medium text-slate-700 dark:text-slate-300"
+          >
+            {label}
+          </label>
         )}
-        {...props}
-      />
-      {description && !error && <p className="text-xs text-slate-500 dark:text-slate-400">{description}</p>}
-      {error && <p className="text-xs text-red-500 dark:text-red-400">{error}</p>}
-    </div>
-  );
-});`,
+        <div ref={containerRef} className="relative">
+          <button
+            type="button"
+            onClick={() => setOpen(!open)}
+            className={cn(
+              "h-10 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-left text-sm text-slate-900 outline-hidden transition-all",
+              "hover:border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20",
+              "dark:border-[#1f2937] dark:bg-[#0d1117] dark:text-white dark:hover:border-slate-600",
+              error &&
+                "border-red-400 focus:border-red-400 focus:ring-red-400/20 dark:border-red-500",
+              !currentValue && "text-slate-400 dark:text-slate-500",
+            )}
+          >
+            <span className="flex items-center justify-between gap-2">
+              {currentValue ? formatDate(currentValue) : placeholder}
+              <span className="material-symbols-outlined text-[18px] text-slate-400">
+                calendar_month
+              </span>
+            </span>
+          </button>
+
+          {/* Hidden input for form compatibility + ref forwarding */}
+          <input
+            ref={ref}
+            id={inputId}
+            type="hidden"
+            value={currentValue}
+            name={props.name}
+          />
+
+          {/* Calendar dropdown */}
+          {open && (
+            <div className="absolute z-40 mt-2 left-0 w-full">
+              <Calendar
+                mode={mode}
+                selected={calendarSelected}
+                onSelect={handleSelect}
+                className="w-full"
+              />
+            </div>
+          )}
+        </div>
+        {description && !error && (
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            {description}
+          </p>
+        )}
+        {error && (
+          <p className="text-xs text-red-500 dark:text-red-400">{error}</p>
+        )}
+      </div>
+    );
+  },
+);`,
   "Dialog": `"use client";
 
 import { useEffect, useRef, type HTMLAttributes, type ReactNode } from "react";
@@ -1714,476 +4143,539 @@ DropdownMenu.Item = function DropdownMenuItem({ inset = false, onSelect, onClick
     />
   );
 }`,
-  "FloatingLines": `import { useEffect, useRef } from "react";
-import {
-  Scene,
-  OrthographicCamera,
-  WebGLRenderer,
-  PlaneGeometry,
-  Mesh,
-  ShaderMaterial,
-  Vector3,
-  Vector2,
-  Clock,
-} from "three";
+  "Field": `import { cloneElement, forwardRef, type ReactNode, type HTMLAttributes } from "react";
+import { Label } from "./Label";
+import { cn } from "@/lib/utils";
 
-const vertexShader = \`
-precision highp float;
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-void main() {
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-}
-\`;
-
-const fragmentShader = \`
-precision highp float;
-
-uniform float iTime;
-uniform vec3 iResolution;
-uniform float animationSpeed;
-
-uniform bool enableTop;
-uniform bool enableMiddle;
-uniform bool enableBottom;
-
-uniform int topLineCount;
-uniform int middleLineCount;
-uniform int bottomLineCount;
-
-uniform float topLineDistance;
-uniform float middleLineDistance;
-uniform float bottomLineDistance;
-
-uniform vec3 topWavePosition;
-uniform vec3 middleWavePosition;
-uniform vec3 bottomWavePosition;
-
-uniform vec2 iMouse;
-uniform bool interactive;
-uniform float bendRadius;
-uniform float bendStrength;
-uniform float bendInfluence;
-
-uniform bool parallax;
-uniform float parallaxStrength;
-uniform vec2 parallaxOffset;
-
-uniform vec3 lineGradient[8];
-uniform int lineGradientCount;
-
-const vec3 BLACK = vec3(0.0);
-const vec3 PINK = vec3(233.0, 71.0, 245.0) / 255.0;
-const vec3 BLUE = vec3(47.0, 75.0, 162.0) / 255.0;
-
-mat2 rotate(float r) {
-  return mat2(cos(r), sin(r), -sin(r), cos(r));
+export interface FieldProps extends HTMLAttributes<HTMLDivElement> {
+  label?: string;
+  helperText?: string;
+  errorMessage?: string;
+  required?: boolean;
+  disabled?: boolean;
+  id?: string;
+  children: ReactNode;
 }
 
-vec3 background_color(vec2 uv) {
-  vec3 col = vec3(0.0);
-  float y = sin(uv.x - 0.2) * 0.3 - 0.1;
-  float m = uv.y - y;
-  col += mix(BLUE, BLACK, smoothstep(0.0, 1.0, abs(m)));
-  col += mix(PINK, BLACK, smoothstep(0.0, 1.0, abs(m - 0.8)));
-  return col * 0.5;
-}
+// ─── Component ────────────────────────────────────────────────────────────────
 
-vec3 getLineColor(float t, vec3 baseColor) {
-  if (lineGradientCount <= 0) return baseColor;
+export const Field = forwardRef<HTMLDivElement, FieldProps>(function FieldRoot(
+  {
+    label,
+    helperText,
+    errorMessage,
+    required,
+    disabled,
+    id,
+    className,
+    children,
+    ...rest
+  },
+  ref
+) {
+  // Auto-generate ID from label if not provided
+  const fieldId = id ?? (label ? label.toLowerCase().replace(/\\s+/g, "-") : undefined);
+  const descriptionId = fieldId ? \`\${fieldId}-description\` : undefined;
 
-  vec3 gradientColor;
-  if (lineGradientCount == 1) {
-    gradientColor = lineGradient[0];
-  } else {
-    float clampedT = clamp(t, 0.0, 0.9999);
-    float scaled = clampedT * float(lineGradientCount - 1);
-    int idx = int(floor(scaled));
-    float f = fract(scaled);
-    int idx2 = min(idx + 1, lineGradientCount - 1);
-    vec3 c1 = lineGradient[idx];
-    vec3 c2 = lineGradient[idx2];
-    gradientColor = mix(c1, c2, f);
-  }
-  return gradientColor * 0.5;
-}
+  // Clone child element and inject accessibility props
+  const child = cloneElement(children as React.ReactElement, {
+    id: fieldId,
+    "aria-describedby": descriptionId,
+    "aria-invalid": !!errorMessage,
+  } as Record<string, unknown>);
 
-float wave(vec2 uv, float offset, vec2 screenUv, vec2 mouseUv, bool shouldBend) {
-  float time = iTime * animationSpeed;
-  float x_offset = offset;
-  float x_movement = time * 0.1;
-  float amp = sin(offset + time * 0.2) * 0.3;
-  float y = sin(uv.x + x_offset + x_movement) * amp;
+  return (
+    <div
+      ref={ref}
+      className={cn("flex flex-col gap-1.5", disabled && "opacity-50", className)}
+      {...rest}
+    >
+      {label && (
+        <Label htmlFor={fieldId} required={required}>
+          {label}
+        </Label>
+      )}
 
-  if (shouldBend) {
-    vec2 d = screenUv - mouseUv;
-    float influence = exp(-dot(d, d) * bendRadius);
-    float bendOffset = (mouseUv.y - screenUv.y) * influence * bendStrength * bendInfluence;
-    y += bendOffset;
-  }
+      {child}
 
-  float m = uv.y - y;
-  return 0.0175 / max(abs(m) + 0.01, 1e-3) + 0.01;
-}
+      {(helperText || errorMessage) && descriptionId && (
+        <p
+          id={descriptionId}
+          className={cn(
+            "text-xs",
+            errorMessage
+              ? "text-red-500 dark:text-red-400"
+              : "text-slate-500 dark:text-slate-400"
+          )}
+        >
+          {errorMessage || helperText}
+        </p>
+      )}
+    </div>
+  );
+});`,
+  "Grainient": `"use client";
 
-void mainImage(out vec4 fragColor, in vec2 fragCoord) {
-  vec2 baseUv = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
-  baseUv.y *= -1.0;
+import { useEffect, useRef } from "react";
+import { Renderer, Program, Mesh, Triangle } from "ogl";
+import { cn } from "@/lib/utils";
 
-  if (parallax) baseUv += parallaxOffset;
-
-  vec3 col = vec3(0.0);
-  vec3 b = lineGradientCount > 0 ? vec3(0.0) : background_color(baseUv);
-
-  vec2 mouseUv = vec2(0.0);
-  if (interactive) {
-    mouseUv = (2.0 * iMouse - iResolution.xy) / iResolution.y;
-    mouseUv.y *= -1.0;
-  }
-
-  if (enableBottom) {
-    for (int i = 0; i < bottomLineCount; ++i) {
-      float fi = float(i);
-      float t = fi / max(float(bottomLineCount - 1), 1.0);
-      vec3 lineCol = getLineColor(t, b);
-      float angle = bottomWavePosition.z * log(length(baseUv) + 1.0);
-      vec2 ruv = baseUv * rotate(angle);
-      col += lineCol * wave(
-        ruv + vec2(bottomLineDistance * fi + bottomWavePosition.x, bottomWavePosition.y),
-        1.5 + 0.2 * fi, baseUv, mouseUv, interactive
-      ) * 0.2;
-    }
-  }
-
-  if (enableMiddle) {
-    for (int i = 0; i < middleLineCount; ++i) {
-      float fi = float(i);
-      float t = fi / max(float(middleLineCount - 1), 1.0);
-      vec3 lineCol = getLineColor(t, b);
-      float angle = middleWavePosition.z * log(length(baseUv) + 1.0);
-      vec2 ruv = baseUv * rotate(angle);
-      col += lineCol * wave(
-        ruv + vec2(middleLineDistance * fi + middleWavePosition.x, middleWavePosition.y),
-        2.0 + 0.15 * fi, baseUv, mouseUv, interactive
-      );
-    }
-  }
-
-  if (enableTop) {
-    for (int i = 0; i < topLineCount; ++i) {
-      float fi = float(i);
-      float t = fi / max(float(topLineCount - 1), 1.0);
-      vec3 lineCol = getLineColor(t, b);
-      float angle = topWavePosition.z * log(length(baseUv) + 1.0);
-      vec2 ruv = baseUv * rotate(angle);
-      ruv.x *= -1.0;
-      col += lineCol * wave(
-        ruv + vec2(topLineDistance * fi + topWavePosition.x, topWavePosition.y),
-        1.0 + 0.2 * fi, baseUv, mouseUv, interactive
-      ) * 0.1;
-    }
-  }
-
-  fragColor = vec4(col, 1.0);
-}
-
-void main() {
-  vec4 color = vec4(0.0);
-  mainImage(color, gl_FragCoord.xy);
-  gl_FragColor = color;
-}
-\`;
-
-const MAX_GRADIENT_STOPS = 8;
-
-function hexToVec3(hex: string): Vector3 {
-  const value = hex.trim().replace(/^#/, "");
-  let r = 255, g = 255, b = 255;
-
-  if (value.length === 3) {
-    r = parseInt((value[0] ?? "f") + (value[0] ?? "f"), 16);
-    g = parseInt((value[1] ?? "f") + (value[1] ?? "f"), 16);
-    b = parseInt((value[2] ?? "f") + (value[2] ?? "f"), 16);
-  } else if (value.length === 6) {
-    r = parseInt(value.slice(0, 2), 16);
-    g = parseInt(value.slice(2, 4), 16);
-    b = parseInt(value.slice(4, 6), 16);
-  }
-
-  return new Vector3(r / 255, g / 255, b / 255);
-}
-
-export interface WavePosition {
-  x?: number;
-  y?: number;
-  rotate?: number;
-}
-
-export interface FloatingLinesProps {
-  linesGradient?: string[];
-  enabledWaves?: Array<"top" | "middle" | "bottom">;
-  lineCount?: number | number[];
-  lineDistance?: number | number[];
-  topWavePosition?: WavePosition;
-  middleWavePosition?: WavePosition;
-  bottomWavePosition?: WavePosition;
-  animationSpeed?: number;
-  interactive?: boolean;
-  bendRadius?: number;
-  bendStrength?: number;
-  mouseDamping?: number;
-  parallax?: boolean;
-  parallaxStrength?: number;
-  mixBlendMode?: React.CSSProperties["mixBlendMode"];
+export interface GrainientProps {
+  timeSpeed?: number;
+  colorBalance?: number;
+  warpStrength?: number;
+  warpFrequency?: number;
+  warpSpeed?: number;
+  warpAmplitude?: number;
+  blendAngle?: number;
+  blendSoftness?: number;
+  rotationAmount?: number;
+  noiseScale?: number;
+  grainAmount?: number;
+  grainScale?: number;
+  grainAnimated?: boolean;
+  contrast?: number;
+  gamma?: number;
+  saturation?: number;
+  centerX?: number;
+  centerY?: number;
+  zoom?: number;
+  color1?: string;
+  color2?: string;
+  color3?: string;
   className?: string;
 }
 
-type WaveType = "top" | "middle" | "bottom";
+function hexToRgb(hex: string): [number, number, number] {
+  const result = /^#?([a-f\\d]{2})([a-f\\d]{2})([a-f\\d]{2})$/i.exec(hex);
+  if (!result) return [1, 1, 1];
+  return [
+    parseInt(result[1] ?? "ff", 16) / 255,
+    parseInt(result[2] ?? "ff", 16) / 255,
+    parseInt(result[3] ?? "ff", 16) / 255,
+  ];
+}
 
-export function FloatingLines({
-  linesGradient,
-  enabledWaves = ["top", "middle", "bottom"],
-  lineCount = 6,
-  lineDistance = 5,
-  topWavePosition,
-  middleWavePosition,
-  bottomWavePosition = { x: 2.0, y: -0.7, rotate: -1 },
-  animationSpeed = 1,
-  interactive = true,
-  bendRadius = 5.0,
-  bendStrength = -0.5,
-  mouseDamping = 0.05,
-  parallax = true,
-  parallaxStrength = 0.2,
-  mixBlendMode = "screen",
+const vertex = \`#version 300 es
+in vec2 position;
+void main() {
+  gl_Position = vec4(position, 0.0, 1.0);
+}
+\`;
+
+const fragment = \`#version 300 es
+precision highp float;
+uniform vec2 iResolution;
+uniform float iTime;
+uniform float uTimeSpeed;
+uniform float uColorBalance;
+uniform float uWarpStrength;
+uniform float uWarpFrequency;
+uniform float uWarpSpeed;
+uniform float uWarpAmplitude;
+uniform float uBlendAngle;
+uniform float uBlendSoftness;
+uniform float uRotationAmount;
+uniform float uNoiseScale;
+uniform float uGrainAmount;
+uniform float uGrainScale;
+uniform float uGrainAnimated;
+uniform float uContrast;
+uniform float uGamma;
+uniform float uSaturation;
+uniform vec2 uCenterOffset;
+uniform float uZoom;
+uniform vec3 uColor1;
+uniform vec3 uColor2;
+uniform vec3 uColor3;
+out vec4 fragColor;
+#define S(a,b,t) smoothstep(a,b,t)
+mat2 Rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}
+vec2 hash(vec2 p){p=vec2(dot(p,vec2(2127.1,81.17)),dot(p,vec2(1269.5,283.37)));return fract(sin(p)*43758.5453);}
+float noise(vec2 p){vec2 i=floor(p),f=fract(p),u=f*f*(3.0-2.0*f);float n=mix(mix(dot(-1.0+2.0*hash(i+vec2(0.0,0.0)),f-vec2(0.0,0.0)),dot(-1.0+2.0*hash(i+vec2(1.0,0.0)),f-vec2(1.0,0.0)),u.x),mix(dot(-1.0+2.0*hash(i+vec2(0.0,1.0)),f-vec2(0.0,1.0)),dot(-1.0+2.0*hash(i+vec2(1.0,1.0)),f-vec2(1.0,1.0)),u.x),u.y);return 0.5+0.5*n;}
+void mainImage(out vec4 o, vec2 C){
+  float t=iTime*uTimeSpeed;
+  vec2 uv=C/iResolution.xy;
+  float ratio=iResolution.x/iResolution.y;
+  vec2 tuv=uv-0.5+uCenterOffset;
+  tuv/=max(uZoom,0.001);
+
+  float degree=noise(vec2(t*0.1,tuv.x*tuv.y)*uNoiseScale);
+  tuv.y*=1.0/ratio;
+  tuv*=Rot(radians((degree-0.5)*uRotationAmount+180.0));
+  tuv.y*=ratio;
+
+  float frequency=uWarpFrequency;
+  float ws=max(uWarpStrength,0.001);
+  float amplitude=uWarpAmplitude/ws;
+  float warpTime=t*uWarpSpeed;
+  tuv.x+=sin(tuv.y*frequency+warpTime)/amplitude;
+  tuv.y+=sin(tuv.x*(frequency*1.5)+warpTime)/(amplitude*0.5);
+
+  vec3 colLav=uColor1;
+  vec3 colOrg=uColor2;
+  vec3 colDark=uColor3;
+  float b=uColorBalance;
+  float s=max(uBlendSoftness,0.0);
+  mat2 blendRot=Rot(radians(uBlendAngle));
+  float blendX=(tuv*blendRot).x;
+  float edge0=-0.3-b-s;
+  float edge1=0.2-b+s;
+  float v0=0.5-b+s;
+  float v1=-0.3-b-s;
+  vec3 layer1=mix(colDark,colOrg,S(edge0,edge1,blendX));
+  vec3 layer2=mix(colOrg,colLav,S(edge0,edge1,blendX));
+  vec3 col=mix(layer1,layer2,S(v0,v1,tuv.y));
+
+  vec2 grainUv=uv*max(uGrainScale,0.001);
+  if(uGrainAnimated>0.5){grainUv+=vec2(iTime*0.05);}
+  float grain=fract(sin(dot(grainUv,vec2(12.9898,78.233)))*43758.5453);
+  col+=(grain-0.5)*uGrainAmount;
+
+  col=(col-0.5)*uContrast+0.5;
+  float luma=dot(col,vec3(0.2126,0.7152,0.0722));
+  col=mix(vec3(luma),col,uSaturation);
+  col=pow(max(col,0.0),vec3(1.0/max(uGamma,0.001)));
+  col=clamp(col,0.0,1.0);
+
+  o=vec4(col,1.0);
+}
+void main(){
+  vec4 o=vec4(0.0);
+  mainImage(o,gl_FragCoord.xy);
+  fragColor=o;
+}
+\`;
+
+export function Grainient({
+  timeSpeed = 0.25,
+  colorBalance = 0.0,
+  warpStrength = 1.0,
+  warpFrequency = 5.0,
+  warpSpeed = 2.0,
+  warpAmplitude = 50.0,
+  blendAngle = 0.0,
+  blendSoftness = 0.05,
+  rotationAmount = 500.0,
+  noiseScale = 2.0,
+  grainAmount = 0.1,
+  grainScale = 2.0,
+  grainAnimated = false,
+  contrast = 1.5,
+  gamma = 1.0,
+  saturation = 1.0,
+  centerX = 0.0,
+  centerY = 0.0,
+  zoom = 0.9,
+  color1 = "#FF9FFC",
+  color2 = "#5227FF",
+  color3 = "#B19EEF",
   className,
-}: FloatingLinesProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const targetMouseRef = useRef(new Vector2(-1000, -1000));
-  const currentMouseRef = useRef(new Vector2(-1000, -1000));
-  const targetInfluenceRef = useRef(0);
-  const currentInfluenceRef = useRef(0);
-  const targetParallaxRef = useRef(new Vector2(0, 0));
-  const currentParallaxRef = useRef(new Vector2(0, 0));
-
-  const getLineCount = (waveType: WaveType): number => {
-    if (typeof lineCount === "number") return lineCount;
-    if (!enabledWaves.includes(waveType)) return 0;
-    const index = enabledWaves.indexOf(waveType);
-    return lineCount[index] ?? 6;
-  };
-
-  const getLineDistance = (waveType: WaveType): number => {
-    if (typeof lineDistance === "number") return lineDistance;
-    if (!enabledWaves.includes(waveType)) return 0.1;
-    const index = enabledWaves.indexOf(waveType);
-    return lineDistance[index] ?? 0.1;
-  };
-
-  const topLineCount = enabledWaves.includes("top") ? getLineCount("top") : 0;
-  const middleLineCount = enabledWaves.includes("middle") ? getLineCount("middle") : 0;
-  const bottomLineCount = enabledWaves.includes("bottom") ? getLineCount("bottom") : 0;
-
-  const topLineDistance = enabledWaves.includes("top") ? getLineDistance("top") * 0.01 : 0.01;
-  const middleLineDistance = enabledWaves.includes("middle") ? getLineDistance("middle") * 0.01 : 0.01;
-  const bottomLineDistance = enabledWaves.includes("bottom") ? getLineDistance("bottom") * 0.01 : 0.01;
+}: GrainientProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
 
-    const scene = new Scene();
-    const camera = new OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    camera.position.z = 1;
+    const renderer = new Renderer({
+      webgl: 2,
+      alpha: true,
+      antialias: false,
+      dpr: Math.min(window.devicePixelRatio || 1, 2),
+    });
 
-    const renderer = new WebGLRenderer({ antialias: true, alpha: false });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.domElement.style.width = "100%";
-    renderer.domElement.style.height = "100%";
-    containerRef.current.appendChild(renderer.domElement);
+    const gl = renderer.gl;
+    const canvas = gl.canvas as HTMLCanvasElement;
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.style.display = "block";
 
-    const uniforms = {
-      iTime: { value: 0 },
-      iResolution: { value: new Vector3(1, 1, 1) },
-      animationSpeed: { value: animationSpeed },
+    const container = containerRef.current;
+    container.appendChild(canvas);
 
-      enableTop: { value: enabledWaves.includes("top") },
-      enableMiddle: { value: enabledWaves.includes("middle") },
-      enableBottom: { value: enabledWaves.includes("bottom") },
-
-      topLineCount: { value: topLineCount },
-      middleLineCount: { value: middleLineCount },
-      bottomLineCount: { value: bottomLineCount },
-
-      topLineDistance: { value: topLineDistance },
-      middleLineDistance: { value: middleLineDistance },
-      bottomLineDistance: { value: bottomLineDistance },
-
-      topWavePosition: {
-        value: new Vector3(
-          topWavePosition?.x ?? 10.0,
-          topWavePosition?.y ?? 0.5,
-          topWavePosition?.rotate ?? -0.4,
-        ),
+    const geometry = new Triangle(gl);
+    const program = new Program(gl, {
+      vertex,
+      fragment,
+      uniforms: {
+        iTime: { value: 0 },
+        iResolution: { value: new Float32Array([1, 1]) },
+        uTimeSpeed: { value: timeSpeed },
+        uColorBalance: { value: colorBalance },
+        uWarpStrength: { value: warpStrength },
+        uWarpFrequency: { value: warpFrequency },
+        uWarpSpeed: { value: warpSpeed },
+        uWarpAmplitude: { value: warpAmplitude },
+        uBlendAngle: { value: blendAngle },
+        uBlendSoftness: { value: blendSoftness },
+        uRotationAmount: { value: rotationAmount },
+        uNoiseScale: { value: noiseScale },
+        uGrainAmount: { value: grainAmount },
+        uGrainScale: { value: grainScale },
+        uGrainAnimated: { value: grainAnimated ? 1.0 : 0.0 },
+        uContrast: { value: contrast },
+        uGamma: { value: gamma },
+        uSaturation: { value: saturation },
+        uCenterOffset: { value: new Float32Array([centerX, centerY]) },
+        uZoom: { value: zoom },
+        uColor1: { value: new Float32Array(hexToRgb(color1)) },
+        uColor2: { value: new Float32Array(hexToRgb(color2)) },
+        uColor3: { value: new Float32Array(hexToRgb(color3)) },
       },
-      middleWavePosition: {
-        value: new Vector3(
-          middleWavePosition?.x ?? 5.0,
-          middleWavePosition?.y ?? 0.0,
-          middleWavePosition?.rotate ?? 0.2,
-        ),
-      },
-      bottomWavePosition: {
-        value: new Vector3(
-          bottomWavePosition?.x ?? 2.0,
-          bottomWavePosition?.y ?? -0.7,
-          bottomWavePosition?.rotate ?? 0.4,
-        ),
-      },
+    });
 
-      iMouse: { value: new Vector2(-1000, -1000) },
-      interactive: { value: interactive },
-      bendRadius: { value: bendRadius },
-      bendStrength: { value: bendStrength },
-      bendInfluence: { value: 0 },
-
-      parallax: { value: parallax },
-      parallaxStrength: { value: parallaxStrength },
-      parallaxOffset: { value: new Vector2(0, 0) },
-
-      lineGradient: {
-        value: Array.from({ length: MAX_GRADIENT_STOPS }, () => new Vector3(1, 1, 1)),
-      },
-      lineGradientCount: { value: 0 },
-    };
-
-    if (linesGradient && linesGradient.length > 0) {
-      const stops = linesGradient.slice(0, MAX_GRADIENT_STOPS);
-      uniforms.lineGradientCount.value = stops.length;
-      stops.forEach((hex, i) => {
-        const color = hexToVec3(hex);
-        const gradientEntry = uniforms.lineGradient.value[i];
-        if (gradientEntry) gradientEntry.set(color.x, color.y, color.z);
-      });
-    }
-
-    const material = new ShaderMaterial({ uniforms, vertexShader, fragmentShader });
-    const geometry = new PlaneGeometry(2, 2);
-    const mesh = new Mesh(geometry, material);
-    scene.add(mesh);
-
-    const clock = new Clock();
+    const mesh = new Mesh(gl, { geometry, program });
 
     const setSize = () => {
-      const el = containerRef.current;
-      if (!el) return;
-      const width = el.clientWidth || 1;
-      const height = el.clientHeight || 1;
-      renderer.setSize(width, height, false);
-      const cw = renderer.domElement.width;
-      const ch = renderer.domElement.height;
-      uniforms.iResolution.value.set(cw, ch, 1);
+      const rect = container.getBoundingClientRect();
+      const width = Math.max(1, Math.floor(rect.width));
+      const height = Math.max(1, Math.floor(rect.height));
+      renderer.setSize(width, height);
+      const res = (program.uniforms.iResolution as { value: Float32Array }).value;
+      res[0] = gl.drawingBufferWidth;
+      res[1] = gl.drawingBufferHeight;
     };
 
+    const ro = new ResizeObserver(setSize);
+    ro.observe(container);
     setSize();
 
-    const ro = typeof ResizeObserver !== "undefined" ? new ResizeObserver(setSize) : null;
-    if (ro && containerRef.current) ro.observe(containerRef.current);
-
-    const handlePointerMove = (event: PointerEvent) => {
-      const rect = renderer.domElement.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      const dpr = renderer.getPixelRatio();
-      targetMouseRef.current.set(x * dpr, (rect.height - y) * dpr);
-      targetInfluenceRef.current = 1.0;
-
-      if (parallax) {
-        const cx = rect.width / 2;
-        const cy = rect.height / 2;
-        targetParallaxRef.current.set(
-          ((x - cx) / rect.width) * parallaxStrength,
-          (-(y - cy) / rect.height) * parallaxStrength,
-        );
-      }
-    };
-
-    const handlePointerLeave = () => {
-      targetInfluenceRef.current = 0.0;
-    };
-
-    if (interactive) {
-      renderer.domElement.addEventListener("pointermove", handlePointerMove);
-      renderer.domElement.addEventListener("pointerleave", handlePointerLeave);
-    }
-
     let raf = 0;
-    const renderLoop = () => {
-      uniforms.iTime.value = clock.getElapsedTime();
-
-      if (interactive) {
-        currentMouseRef.current.lerp(targetMouseRef.current, mouseDamping);
-        uniforms.iMouse.value.copy(currentMouseRef.current);
-        currentInfluenceRef.current +=
-          (targetInfluenceRef.current - currentInfluenceRef.current) * mouseDamping;
-        uniforms.bendInfluence.value = currentInfluenceRef.current;
-      }
-
-      if (parallax) {
-        currentParallaxRef.current.lerp(targetParallaxRef.current, mouseDamping);
-        uniforms.parallaxOffset.value.copy(currentParallaxRef.current);
-      }
-
-      renderer.render(scene, camera);
-      raf = requestAnimationFrame(renderLoop);
+    const t0 = performance.now();
+    const loop = (t: number) => {
+      (program.uniforms.iTime as { value: number }).value = (t - t0) * 0.001;
+      renderer.render({ scene: mesh });
+      raf = requestAnimationFrame(loop);
     };
-    renderLoop();
+    raf = requestAnimationFrame(loop);
 
     return () => {
       cancelAnimationFrame(raf);
-      ro?.disconnect();
-
-      if (interactive) {
-        renderer.domElement.removeEventListener("pointermove", handlePointerMove);
-        renderer.domElement.removeEventListener("pointerleave", handlePointerLeave);
-      }
-
-      geometry.dispose();
-      material.dispose();
-      renderer.dispose();
-      if (renderer.domElement.parentElement) {
-        renderer.domElement.parentElement.removeChild(renderer.domElement);
+      ro.disconnect();
+      try {
+        container.removeChild(canvas);
+      } catch {
+        // canvas already removed
       }
     };
   }, [
-    linesGradient,
-    enabledWaves,
-    lineCount,
-    lineDistance,
-    topWavePosition,
-    middleWavePosition,
-    bottomWavePosition,
-    animationSpeed,
-    interactive,
-    bendRadius,
-    bendStrength,
-    mouseDamping,
-    parallax,
-    parallaxStrength,
-    topLineCount,
-    middleLineCount,
-    bottomLineCount,
-    topLineDistance,
-    middleLineDistance,
-    bottomLineDistance,
+    timeSpeed,
+    colorBalance,
+    warpStrength,
+    warpFrequency,
+    warpSpeed,
+    warpAmplitude,
+    blendAngle,
+    blendSoftness,
+    rotationAmount,
+    noiseScale,
+    grainAmount,
+    grainScale,
+    grainAnimated,
+    contrast,
+    gamma,
+    saturation,
+    centerX,
+    centerY,
+    zoom,
+    color1,
+    color2,
+    color3,
   ]);
 
   return (
     <div
       ref={containerRef}
-      className={className}
-      style={{ mixBlendMode, position: "absolute", inset: 0, width: "100%", height: "100%" }}
+      className={cn("relative h-full w-full overflow-hidden", className)}
     />
   );
 }`,
+  "HoverCard": `"use client";
+
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type HTMLAttributes,
+  type ReactNode,
+} from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type HoverCardSide = "top" | "right" | "bottom" | "left";
+export type HoverCardAlign = "start" | "center" | "end";
+
+export interface HoverCardProps {
+  open?: boolean;
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  openDelay?: number;
+  closeDelay?: number;
+  side?: HoverCardSide;
+  align?: HoverCardAlign;
+  children: ReactNode;
+  className?: string;
+}
+
+export interface HoverCardTriggerProps extends HTMLAttributes<HTMLSpanElement> {
+  children: ReactNode;
+}
+
+export interface HoverCardContentProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+
+// ─── Context ──────────────────────────────────────────────────────────────────
+
+interface HoverCardContextValue {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  openDelay: number;
+  closeDelay: number;
+  side: HoverCardSide;
+  align: HoverCardAlign;
+}
+
+const HoverCardContext = createContext<HoverCardContextValue | null>(null);
+
+function useHoverCardContext() {
+  const context = useContext(HoverCardContext);
+  if (!context) {
+    throw new Error("HoverCard sub-components must be used inside <HoverCard>");
+  }
+  return context;
+}
+
+// ─── Root ─────────────────────────────────────────────────────────────────────
+
+export function HoverCard({
+  open,
+  defaultOpen = false,
+  onOpenChange,
+  openDelay = 700,
+  closeDelay = 300,
+  side = "bottom",
+  align = "start",
+  children,
+  className,
+}: HoverCardProps) {
+  const [internalOpen, setInternalOpen] = useState(defaultOpen);
+  const isControlled = open !== undefined;
+  const isOpen = isControlled ? open : internalOpen;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const openTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const setOpen = useCallback((next: boolean) => {
+    if (!isControlled) setInternalOpen(next);
+    onOpenChange?.(next);
+  }, [isControlled, onOpenChange]);
+
+  const handleMouseEnter = useCallback(() => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    if (isOpen) return;
+    openTimerRef.current = setTimeout(() => {
+      setOpen(true);
+      openTimerRef.current = null;
+    }, openDelay);
+  }, [isOpen, openDelay, setOpen]);
+
+  const handleMouseLeave = useCallback(() => {
+    if (openTimerRef.current) {
+      clearTimeout(openTimerRef.current);
+      openTimerRef.current = null;
+    }
+    if (!isOpen) return;
+    closeTimerRef.current = setTimeout(() => {
+      setOpen(false);
+      closeTimerRef.current = null;
+    }, closeDelay);
+  }, [isOpen, closeDelay, setOpen]);
+
+  useEffect(() => {
+    return () => {
+      if (openTimerRef.current) clearTimeout(openTimerRef.current);
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    };
+  }, []);
+
+  return (
+    <HoverCardContext.Provider value={{ open: isOpen, setOpen, openDelay, closeDelay, side, align }}>
+      <div
+        ref={containerRef}
+        className={cn("relative inline-flex", className)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {children}
+      </div>
+    </HoverCardContext.Provider>
+  );
+}
+
+// ─── Trigger ─────────────────────────────────────────────────────────────────
+
+HoverCard.Trigger = function HoverCardTrigger({ children, className, ...props }: HoverCardTriggerProps) {
+  return (
+    <span className={cn("inline-flex", className)} {...props}>
+      {children}
+    </span>
+  );
+};
+
+// ─── Content ──────────────────────────────────────────────────────────────────
+
+const SIDE_CLASS: Record<HoverCardSide, string> = {
+  top: "bottom-[calc(100%+8px)]",
+  bottom: "top-[calc(100%+8px)]",
+  left: "right-[calc(100%+8px)]",
+  right: "left-[calc(100%+8px)]",
+};
+
+const ALIGN_CLASS: Record<HoverCardAlign, string> = {
+  start: "left-0",
+  center: "left-1/2 -translate-x-1/2",
+  end: "right-0",
+};
+
+// For left/right sides, align maps to vertical alignment
+const VERTICAL_ALIGN_CLASS: Record<HoverCardAlign, string> = {
+  start: "top-0",
+  center: "top-1/2 -translate-y-1/2",
+  end: "bottom-0",
+};
+
+HoverCard.Content = function HoverCardContent({ children, className, ...props }: HoverCardContentProps) {
+  const { open, side, align } = useHoverCardContext();
+
+  if (!open) return null;
+
+  const isHorizontal = side === "left" || side === "right";
+
+  return (
+    <div
+      className={cn(
+        "absolute z-50 w-80 rounded-lg border border-slate-200 bg-white p-4 shadow-lg",
+        "dark:border-[#1f2937] dark:bg-[#161b22]",
+        SIDE_CLASS[side],
+        isHorizontal ? VERTICAL_ALIGN_CLASS[align] : ALIGN_CLASS[align],
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};`,
   "Input": `import { forwardRef, type InputHTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -2307,6 +4799,1724 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function InputRoot
     </div>
   );
 });`,
+  "InputGroup": `import { forwardRef, type ReactNode, type InputHTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type InputGroupSize = "sm" | "md" | "lg";
+export type InputGroupVariant = "default" | "filled" | "ghost";
+
+export interface InputGroupProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "prefix"> {
+  label?: string;
+  description?: string;
+  error?: string;
+  size?: InputGroupSize;
+  variant?: InputGroupVariant;
+  prefix?: ReactNode;
+  suffix?: ReactNode;
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const SIZE_CLASSES: Record<
+  InputGroupSize,
+  { input: string; label: string; prefix: string; suffix: string }
+> = {
+  sm: {
+    input: "h-8 text-xs",
+    label: "text-xs",
+    prefix: "pl-3 pr-2 text-xs",
+    suffix: "pl-2 pr-3 text-xs",
+  },
+  md: {
+    input: "h-10 text-sm",
+    label: "text-sm",
+    prefix: "pl-3.5 pr-3 text-sm",
+    suffix: "pl-3 pr-3.5 text-sm",
+  },
+  lg: {
+    input: "h-12 text-base",
+    label: "text-sm",
+    prefix: "pl-4 pr-3 text-base",
+    suffix: "pl-3 pr-4 text-base",
+  },
+};
+
+const VARIANT_BASE: Record<InputGroupVariant, string> = {
+  default:
+    "border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#0d1117] " +
+    "hover:border-slate-300 dark:hover:border-slate-600 " +
+    "focus-within:border-primary dark:focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20",
+  filled:
+    "border border-transparent bg-slate-100 dark:bg-[#161b22] " +
+    "hover:bg-slate-150 dark:hover:bg-[#1f2937] " +
+    "focus-within:border-primary dark:focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 focus-within:bg-white dark:focus-within:bg-[#0d1117]",
+  ghost:
+    "border border-transparent bg-transparent " +
+    "hover:bg-slate-50 dark:hover:bg-[#161b22] " +
+    "focus-within:border-primary dark:focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20",
+};
+
+const ERROR_OVERRIDE =
+  "border-red-400 dark:border-red-500 focus-within:border-red-400 dark:focus-within:border-red-500 focus-within:ring-red-400/20";
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(
+  function InputGroupRoot(
+    {
+      label,
+      description,
+      error,
+      size = "md",
+      variant = "default",
+      prefix,
+      suffix,
+      disabled,
+      className,
+      id,
+      ...rest
+    },
+    ref
+  ) {
+    const s = SIZE_CLASSES[size];
+    const inputId = id ?? (label ? label.toLowerCase().replace(/\\s+/g, "-") : undefined);
+
+    // Calculate padding based on slots
+    const getInputPadding = () => {
+      if (prefix && suffix) return "p-0";
+      if (prefix) return size === "sm" ? "pr-2" : size === "lg" ? "pr-3" : "pr-3";
+      if (suffix) return size === "sm" ? "pl-2" : size === "lg" ? "pl-3" : "pl-3";
+      return size === "sm" ? "px-3" : size === "lg" ? "px-4" : "px-3.5";
+    };
+
+    const inputPadding = cn(
+      "bg-transparent outline-hidden border-0 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500",
+      s.input,
+      getInputPadding()
+    );
+
+    return (
+      <div className={cn("flex flex-col gap-1.5", className)}>
+        {label && (
+          <label
+            htmlFor={inputId}
+            className={cn(
+              "font-medium text-slate-700 dark:text-slate-300",
+              s.label,
+              disabled && "opacity-50"
+            )}
+          >
+            {label}
+          </label>
+        )}
+
+        <div
+          className={cn(
+            "relative flex items-center rounded-lg transition-all",
+            VARIANT_BASE[variant],
+            error && ERROR_OVERRIDE,
+            disabled && "opacity-50 cursor-not-allowed pointer-events-none"
+          )}
+        >
+          {prefix && (
+            <span className={cn("flex shrink-0 items-center text-slate-500 dark:text-slate-400", s.prefix)}>
+              {prefix}
+            </span>
+          )}
+
+          <input
+            ref={ref}
+            id={inputId}
+            disabled={disabled}
+            className={cn(inputPadding, "w-full")}
+            {...rest}
+          />
+
+          {suffix && (
+            <span className={cn("flex shrink-0 items-center text-slate-500 dark:text-slate-400", s.suffix)}>
+              {suffix}
+            </span>
+          )}
+        </div>
+
+        {description && !error && (
+          <p className="text-xs text-slate-500 dark:text-slate-400">{description}</p>
+        )}
+        {error && (
+          <p className="text-xs text-red-500 dark:text-red-400">{error}</p>
+        )}
+      </div>
+    );
+  }
+);`,
+  "InputOTP": `import { useRef, useEffect, type KeyboardEvent } from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface InputOTPProps {
+  length?: number;
+  value: string[];
+  onChange: (value: string[]) => void;
+  onComplete?: (value: string) => void;
+  disabled?: boolean;
+  error?: string;
+  autoFocus?: boolean;
+  id?: string;
+  className?: string;
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export function InputOTP({
+  length = 6,
+  value,
+  onChange,
+  onComplete,
+  disabled = false,
+  error,
+  autoFocus = false,
+  id,
+  className,
+}: InputOTPProps) {
+  const inputRefs = useRef<HTMLInputElement[]>([]);
+
+  // Focus management
+  const focusInput = (index: number) => {
+    if (inputRefs.current[index]) {
+      inputRefs.current[index]?.focus();
+    }
+  };
+
+  const focusNext = (index: number) => {
+    const nextIndex = Math.min(index + 1, length - 1);
+    focusInput(nextIndex);
+  };
+
+  const focusPrevious = (index: number) => {
+    const prevIndex = Math.max(index - 1, 0);
+    focusInput(prevIndex);
+  };
+
+  // Handle digit input
+  const handleChange = (index: number, inputValue: string) => {
+    const digit = inputValue.slice(-1); // Take last character
+    if (!/^\\d$/.test(digit)) return; // Only allow digits
+
+    const newValue = [...value];
+    newValue[index] = digit;
+
+    onChange(newValue);
+
+    // Auto-advance to next slot if digit was entered
+    if (digit && index < length - 1) {
+      focusNext(index);
+    }
+
+    // Check if all slots are filled
+    const code = newValue.join("");
+    if (code.length === length && onComplete) {
+      onComplete(code);
+    }
+  };
+
+  // Handle keyboard navigation
+  const handleKeyDown = (index: number, e: KeyboardEvent) => {
+    switch (e.key) {
+      case "Backspace":
+        if (!value[index]) {
+          // Current slot is empty, go back
+          e.preventDefault();
+          focusPrevious(index);
+        }
+        break;
+
+      case "ArrowLeft":
+        e.preventDefault();
+        if (index > 0) {
+          focusPrevious(index);
+        }
+        break;
+
+      case "ArrowRight":
+        e.preventDefault();
+        if (index < length - 1) {
+          focusNext(index);
+        }
+        break;
+
+      case "Home":
+        e.preventDefault();
+        focusInput(0);
+        break;
+
+      case "End":
+        e.preventDefault();
+        focusInput(length - 1);
+        break;
+
+      case "Delete":
+        // Clear current slot
+        const newValue = [...value];
+        newValue[index] = "";
+        onChange(newValue);
+        break;
+    }
+  };
+
+  // Handle paste
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pasteData = e.clipboardData.getData("text");
+    const digits = pasteData.slice(0, length).split("").filter((d) => /^\\d$/.test(d));
+
+    // Create new value array with pasted digits
+    const newValue = [...digits, ...Array(length - digits.length).fill("")];
+    onChange(newValue);
+
+    // Check if complete
+    const code = newValue.join("");
+    if (code.length === length && onComplete) {
+      onComplete(code);
+    }
+  };
+
+  // Auto-focus on mount
+  useEffect(() => {
+    if (autoFocus) {
+      focusInput(0);
+    }
+  }, [autoFocus]);
+
+  const errorId = id ? \`\${id}-error\` : undefined;
+
+  return (
+    <div className={cn("flex flex-col gap-1.5", className)}>
+      {/* Hidden input for accessibility - announces full OTP to screen readers */}
+      <input
+        type="text"
+        value={value.join("")}
+        onChange={() => {}}
+        className="sr-only"
+        aria-hidden="true"
+        tabIndex={-1}
+      />
+
+      <div
+        role="group"
+        aria-label="One-time password"
+        aria-describedby={error ? errorId : undefined}
+        className="flex items-center gap-2"
+      >
+        {value.map((digit, index) => (
+          <input
+            key={index}
+            ref={(el) => {
+              if (el) inputRefs.current[index] = el;
+            }}
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            maxLength={1}
+            value={digit}
+            disabled={disabled}
+            autoFocus={index === 0 && autoFocus}
+            aria-label={\`Digit \${index + 1}\`}
+            className={cn(
+              "w-full h-12 text-center text-lg rounded-lg border border-slate-200 dark:border-[#1f2937]",
+              "bg-white dark:bg-[#0d1117]",
+              "text-slate-900 dark:text-white",
+              "placeholder:text-slate-400 dark:placeholder:text-slate-500",
+              "focus:outline-none",
+              "focus:border-primary dark:focus:border-primary",
+              "focus:ring-2 focus:ring-primary/20",
+              "disabled:opacity-50 disabled:cursor-not-allowed",
+              error && "border-red-400 dark:border-red-500"
+            )}
+            onChange={(e) => handleChange(index, e.target.value)}
+            onKeyDown={(e) => handleKeyDown(index, e)}
+            onPaste={handlePaste}
+          />
+        ))}
+      </div>
+
+      {error && (
+        <p id={errorId} className="text-xs text-red-500 dark:text-red-400">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}`,
+  "Item": `import {
+  type HTMLAttributes,
+  type ReactNode,
+} from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface ItemProps extends HTMLAttributes<HTMLDivElement> {
+  /** Leading icon slot. */
+  icon?: ReactNode;
+  /** Primary text content. */
+  label: string;
+  /** Secondary text below the label. */
+  description?: string;
+  /** Trailing slot (badge, shortcut, action button). */
+  trailing?: ReactNode;
+  /** Active/selected state. */
+  active?: boolean;
+  /** Prevents interaction and reduces opacity. */
+  disabled?: boolean;
+}
+
+// ─── Component ───────────────────────────────────────────────────────────────
+
+export function Item({
+  icon,
+  label,
+  description,
+  trailing,
+  active = false,
+  disabled = false,
+  className,
+  ...props
+}: ItemProps) {
+  return (
+    <div
+      role="option"
+      aria-selected={active || undefined}
+      aria-disabled={disabled || undefined}
+      className={cn(
+        "flex items-center gap-3 rounded-lg px-3 py-2 transition-colors",
+        !disabled && "cursor-pointer",
+        active && "bg-primary/10",
+        !active && !disabled && "hover:bg-slate-100 dark:hover:bg-slate-800/50",
+        disabled && "opacity-50 cursor-not-allowed pointer-events-none",
+        className,
+      )}
+      {...props}
+    >
+      {icon && (
+        <span className="shrink-0 text-slate-500 dark:text-slate-400">
+          {icon}
+        </span>
+      )}
+      <span className="min-w-0 flex-1">
+        <span
+          className={cn(
+            "block truncate text-sm font-medium",
+            active
+              ? "text-primary"
+              : "text-slate-900 dark:text-white",
+          )}
+        >
+          {label}
+        </span>
+        {description && (
+          <span className="mt-0.5 block truncate text-xs text-slate-500 dark:text-slate-400">
+            {description}
+          </span>
+        )}
+      </span>
+      {trailing && (
+        <span className="ml-auto shrink-0">{trailing}</span>
+      )}
+    </div>
+  );
+}`,
+  "Kbd": `import { forwardRef, type HTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type KbdSize = "sm" | "md";
+
+export interface KbdProps extends HTMLAttributes<HTMLElement> {
+  size?: KbdSize;
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const SIZE_CLASSES: Record<KbdSize, string> = {
+  sm: "text-[10px] px-1.5 py-0.5 font-medium",
+  md: "text-xs px-2 py-1 font-medium",
+};
+
+const BASE_CLASSES =
+  "inline-flex items-center justify-center " +
+  "rounded-sm " +
+  "border border-slate-200 dark:border-[#1f2937] " +
+  "bg-white dark:bg-[#0d1117] " +
+  "text-slate-700 dark:text-slate-300 " +
+  "font-mono " +
+  "transition-colors";
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export const Kbd = forwardRef<HTMLElement, KbdProps>(
+  function KbdRoot({ size = "md", className, children, ...rest }, ref) {
+    return (
+      <kbd
+        ref={ref}
+        className={cn(BASE_CLASSES, SIZE_CLASSES[size], className)}
+        {...rest}
+      >
+        {children}
+      </kbd>
+    );
+  }
+);`,
+  "Label": `import { forwardRef, type LabelHTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface LabelProps extends LabelHTMLAttributes<HTMLLabelElement> {
+  required?: boolean;
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export const Label = forwardRef<HTMLLabelElement, LabelProps>(function LabelRoot(
+  { required, className, children, ...rest },
+  ref
+) {
+  return (
+    <label
+      ref={ref}
+      className={cn(
+        "font-medium text-slate-700 dark:text-slate-300 text-sm",
+        className
+      )}
+      {...rest}
+    >
+      {children}
+      {required && <span className="text-red-500 dark:text-red-400 ml-1">*</span>}
+    </label>
+  );
+});`,
+  "Menubar": `"use client";
+
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ButtonHTMLAttributes,
+  type HTMLAttributes,
+  type ReactElement,
+  type ReactNode,
+} from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface MenubarProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export interface MenubarMenuProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export interface MenubarTriggerProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+}
+
+export interface MenubarContentProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+
+export interface MenubarItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+  onSelect?: () => void;
+  disabled?: boolean;
+  inset?: boolean;
+}
+
+export interface MenubarCheckboxItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+  checked?: boolean;
+  defaultChecked?: boolean;
+  onCheckedChange?: (checked: boolean) => void;
+  disabled?: boolean;
+}
+
+export interface MenubarRadioGroupProps {
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+  children: ReactNode;
+  className?: string;
+}
+
+export interface MenubarRadioItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  value: string;
+  children: ReactNode;
+  disabled?: boolean;
+}
+
+export interface MenubarSeparatorProps extends HTMLAttributes<HTMLDivElement> {
+  className?: string;
+}
+
+export interface MenubarSubProps {
+  children: ReactNode;
+  className?: string;
+  defaultOpen?: boolean;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export interface MenubarSubTriggerProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+}
+
+export interface MenubarShortcutProps extends HTMLAttributes<HTMLSpanElement> {
+  children: ReactNode;
+}
+
+// ─── Injected Props Interfaces ────────────────────────────────────────────────
+
+interface InjectedTriggerProps {
+  isOpen?: boolean;
+  onToggle?: () => void;
+  hasContent?: boolean;
+  menuValue?: string;
+}
+
+interface InjectedContentProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+  isSubmenu?: boolean;
+}
+
+interface InjectedSubTriggerProps {
+  isOpen?: boolean;
+  onToggle?: () => void;
+}
+
+// ─── Menubar Context ──────────────────────────────────────────────────────────
+
+interface MenubarContextValue {
+  openMenu: string | null;
+  setOpenMenu: (value: string | null) => void;
+  closeAll: () => void;
+  registerTrigger: (value: string, el: HTMLButtonElement | null) => void;
+  focusTrigger: (value: string) => void;
+  triggerValues: React.MutableRefObject<string[]>;
+}
+
+const MenubarContext = createContext<MenubarContextValue | null>(null);
+
+function useMenubarContext() {
+  const context = useContext(MenubarContext);
+  if (!context) {
+    throw new Error("Menubar sub-components must be used inside <Menubar>");
+  }
+  return context;
+}
+
+// ─── Radio Context ────────────────────────────────────────────────────────────
+
+interface MenubarRadioContextValue {
+  value: string;
+  setValue: (value: string) => void;
+}
+
+const MenubarRadioContext = createContext<MenubarRadioContextValue | null>(null);
+
+function useMenubarRadioContext() {
+  const context = useContext(MenubarRadioContext);
+  if (!context) {
+    throw new Error("MenubarRadioItem must be used inside <MenubarRadioGroup>");
+  }
+  return context;
+}
+
+// ─── Content Focus Context ────────────────────────────────────────────────────
+
+interface MenubarContentFocusContextValue {
+  registerItem: (el: HTMLButtonElement | null) => void;
+}
+
+const MenubarContentFocusContext = createContext<MenubarContentFocusContextValue | null>(null);
+
+function useMenubarContentFocusContext() {
+  return useContext(MenubarContentFocusContext);
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+export function Menubar({ children, className }: MenubarProps) {
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const triggerRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const triggerValues = useRef<string[]>([]);
+
+  const closeAll = useCallback(() => setOpenMenu(null), []);
+  const setOpen = useCallback((value: string | null) => setOpenMenu(value), []);
+
+  const registerTrigger = useCallback((value: string, el: HTMLButtonElement | null) => {
+    if (el) {
+      triggerRefs.current.set(value, el);
+      if (!triggerValues.current.includes(value)) {
+        triggerValues.current.push(value);
+      }
+    } else {
+      triggerRefs.current.delete(value);
+    }
+  }, []);
+
+  const focusTrigger = useCallback((value: string) => {
+    triggerRefs.current.get(value)?.focus();
+  }, []);
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!openMenu) return;
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpenMenu(null);
+        // Refocus the trigger that was open
+        requestAnimationFrame(() => {
+          triggerRefs.current.get(openMenu)?.focus();
+        });
+      }
+    };
+
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [openMenu]);
+
+  // Close when clicking outside
+  useEffect(() => {
+    const handlePointerDown = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const menu = target.closest("[data-menubar]");
+      if (!menu && openMenu) setOpenMenu(null);
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [openMenu]);
+
+  return (
+    <MenubarContext.Provider value={{ openMenu, setOpenMenu: setOpen, closeAll, registerTrigger, focusTrigger, triggerValues }}>
+      <nav className={cn("flex items-center gap-0.5", className)} data-menubar role="menubar">
+        {children}
+      </nav>
+    </MenubarContext.Provider>
+  );
+}
+
+// ─── Menu Sub-Component ───────────────────────────────────────────────────────
+
+Menubar.Menu = function MenubarMenu({ children, className }: MenubarMenuProps) {
+  const { openMenu, setOpenMenu } = useMenubarContext();
+  const menuValue = React.useId();
+  const isOpen = openMenu === menuValue;
+  const hasContent = React.Children.toArray(children).some(
+    (child) => React.isValidElement(child) && child.type === Menubar.Content
+  );
+
+  return (
+    <div className={cn("relative", className)}>
+      {React.Children.map(children, (child) => {
+        if (!React.isValidElement(child)) return child;
+
+        if (child.type === Menubar.Trigger) {
+          const triggerChild = child as ReactElement<MenubarTriggerProps & InjectedTriggerProps>;
+          return React.cloneElement(triggerChild, {
+            isOpen,
+            onToggle: () => setOpenMenu(isOpen ? null : menuValue),
+            hasContent,
+            menuValue,
+          });
+        }
+
+        if (child.type === Menubar.Content) {
+          const contentChild = child as ReactElement<MenubarContentProps & InjectedContentProps>;
+          return React.cloneElement(contentChild, {
+            isOpen,
+            onClose: () => setOpenMenu(null),
+          });
+        }
+
+        return child;
+      })}
+    </div>
+  );
+};
+
+// ─── Trigger Sub-Component ─────────────────────────────────────────────────────
+
+Menubar.Trigger = function MenubarTrigger({
+  children,
+  className,
+  isOpen,
+  onToggle,
+  hasContent,
+  menuValue,
+  ...props
+}: MenubarTriggerProps & InjectedTriggerProps) {
+  const { registerTrigger, focusTrigger, triggerValues, openMenu, setOpenMenu } = useMenubarContext();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  // Register this trigger for keyboard navigation
+  useEffect(() => {
+    if (menuValue) {
+      registerTrigger(menuValue, triggerRef.current);
+      return () => registerTrigger(menuValue, null);
+    }
+  }, [menuValue, registerTrigger]);
+
+  const handleClick = () => {
+    onToggle?.();
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!menuValue || !openMenu) return;
+
+    const values = triggerValues.current;
+    const currentIndex = values.indexOf(menuValue);
+
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      const nextIndex = currentIndex < values.length - 1 ? currentIndex + 1 : 0;
+      const nextValue = values[nextIndex];
+      if (nextValue) {
+        setOpenMenu(nextValue);
+        focusTrigger(nextValue);
+      }
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      const prevIndex = currentIndex > 0 ? currentIndex - 1 : values.length - 1;
+      const prevValue = values[prevIndex];
+      if (prevValue) {
+        setOpenMenu(prevValue);
+        focusTrigger(prevValue);
+      }
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      onToggle?.();
+    }
+  };
+
+  const triggerClassName = cn(
+    "inline-flex items-center justify-center rounded-sm px-3 py-1.5 text-sm font-medium",
+    "transition-colors cursor-pointer select-none",
+    "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40",
+    isOpen
+      ? "bg-slate-100 dark:bg-[#1f2937] text-slate-900 dark:text-white"
+      : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1f2937]",
+    className
+  );
+
+  return (
+    <button
+      ref={triggerRef}
+      type="button"
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+      className={triggerClassName}
+      aria-expanded={isOpen ?? false}
+      aria-haspopup={hasContent ? true : undefined}
+      role="menuitem"
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+
+// ─── Content Sub-Component ───────────────────────────────────────────────────
+
+Menubar.Content = function MenubarContent({
+  children,
+  className,
+  isOpen,
+  onClose,
+  isSubmenu,
+  ...props
+}: MenubarContentProps & InjectedContentProps) {
+  const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const focusedIndex = useRef(-1);
+
+  const registerItem = useCallback((el: HTMLButtonElement | null) => {
+    if (el) {
+      itemRefs.current.push(el);
+    }
+  }, []);
+
+  // Reset refs when content opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      itemRefs.current = [];
+      focusedIndex.current = -1;
+      // Auto-focus first item
+      requestAnimationFrame(() => {
+        itemRefs.current[0]?.focus();
+        focusedIndex.current = 0;
+      });
+    }
+  }, [isOpen]);
+
+  const getFocusableItems = useCallback(() => {
+    return itemRefs.current.filter((el) => el && !el.disabled);
+  }, []);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    const items = getFocusableItems();
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      const next = Math.min(focusedIndex.current + 1, items.length - 1);
+      focusedIndex.current = next;
+      items[next]?.focus();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      const prev = Math.max(focusedIndex.current - 1, 0);
+      focusedIndex.current = prev;
+      items[prev]?.focus();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      onClose?.();
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <MenubarContentFocusContext.Provider value={{ registerItem }}>
+      <div
+        className={cn(
+          "z-50 min-w-[200px] p-1",
+          "bg-white dark:bg-[#161b22]",
+          "border border-slate-200 dark:border-[#1f2937]",
+          "rounded-lg shadow-lg",
+          isSubmenu ? "absolute left-full top-0 ml-1" : "absolute top-full left-0 mt-1",
+          className
+        )}
+        role="menu"
+        aria-orientation="vertical"
+        onKeyDown={handleKeyDown}
+        {...props}
+      >
+        {children}
+      </div>
+    </MenubarContentFocusContext.Provider>
+  );
+};
+
+// ─── Item Sub-Component ───────────────────────────────────────────────────────
+
+Menubar.Item = function MenubarItem({
+  children,
+  className,
+  onSelect,
+  disabled,
+  inset,
+  onClick,
+  ...props
+}: MenubarItemProps) {
+  const { closeAll } = useMenubarContext();
+  const focusContext = useMenubarContentFocusContext();
+  const itemRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (focusContext && itemRef.current) {
+      focusContext.registerItem(itemRef.current);
+    }
+  }, [focusContext]);
+
+  return (
+    <button
+      ref={itemRef}
+      type="button"
+      role="menuitem"
+      disabled={disabled}
+      onClick={(e) => {
+        onClick?.(e);
+        if (disabled) return;
+        onSelect?.();
+        closeAll();
+      }}
+      className={cn(
+        "relative flex w-full items-center rounded-sm px-2 py-1.5 text-sm",
+        "outline-none transition-colors cursor-default",
+        "text-slate-700 dark:text-slate-300",
+        "focus:bg-slate-100 focus:text-slate-900",
+        "dark:focus:bg-[#1f2937] dark:focus:text-white",
+        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        inset && "pl-8",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+
+// ─── Checkbox Item Sub-Component ──────────────────────────────────────────────
+
+Menubar.CheckboxItem = function MenubarCheckboxItem({
+  children,
+  className,
+  checked,
+  defaultChecked,
+  onCheckedChange,
+  disabled,
+  onClick,
+  ...props
+}: MenubarCheckboxItemProps) {
+  const { closeAll } = useMenubarContext();
+  const focusContext = useMenubarContentFocusContext();
+  const itemRef = useRef<HTMLButtonElement>(null);
+
+  const [internalChecked, setInternalChecked] = useState(defaultChecked ?? false);
+  const isControlled = checked !== undefined;
+  const isChecked = isControlled ? checked : internalChecked;
+
+  useEffect(() => {
+    if (focusContext && itemRef.current) {
+      focusContext.registerItem(itemRef.current);
+    }
+  }, [focusContext]);
+
+  const toggle = () => {
+    const next = !isChecked;
+    if (!isControlled) setInternalChecked(next);
+    onCheckedChange?.(next);
+    closeAll();
+  };
+
+  return (
+    <button
+      ref={itemRef}
+      type="button"
+      role="menuitemcheckbox"
+      aria-checked={isChecked}
+      disabled={disabled}
+      onClick={(e) => {
+        onClick?.(e);
+        if (disabled) return;
+        toggle();
+      }}
+      className={cn(
+        "relative flex w-full items-center rounded-sm px-2 py-1.5 text-sm",
+        "outline-none transition-colors cursor-default",
+        "text-slate-700 dark:text-slate-300",
+        "focus:bg-slate-100 focus:text-slate-900",
+        "dark:focus:bg-[#1f2937] dark:focus:text-white",
+        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        className
+      )}
+      {...props}
+    >
+      <span className="mr-2 flex h-4 w-4 items-center justify-center">
+        {isChecked && (
+          <svg className="h-4 w-4" viewBox="0 0 12 12" fill="none">
+            <path
+              d="M2.5 6L5 8.5L9.5 3.5"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        )}
+      </span>
+      {children}
+    </button>
+  );
+};
+
+// ─── Radio Group Sub-Component ────────────────────────────────────────────────
+
+Menubar.RadioGroup = function MenubarRadioGroup({
+  value,
+  defaultValue = "",
+  onValueChange,
+  children,
+  className,
+}: MenubarRadioGroupProps) {
+  const [internalValue, setInternalValue] = useState(defaultValue);
+  const isControlled = value !== undefined;
+  const active = isControlled ? value : internalValue;
+
+  const setValue = (next: string) => {
+    if (!isControlled) setInternalValue(next);
+    onValueChange?.(next);
+  };
+
+  return (
+    <MenubarRadioContext.Provider value={{ value: active, setValue }}>
+      <div className={cn("py-1", className)} role="group">
+        {children}
+      </div>
+    </MenubarRadioContext.Provider>
+  );
+};
+
+// ─── Radio Item Sub-Component ─────────────────────────────────────────────────
+
+Menubar.RadioItem = function MenubarRadioItem({
+  value: itemValue,
+  children,
+  className,
+  disabled,
+  onClick,
+  ...props
+}: MenubarRadioItemProps) {
+  const { value, setValue } = useMenubarRadioContext();
+  const { closeAll } = useMenubarContext();
+  const focusContext = useMenubarContentFocusContext();
+  const itemRef = useRef<HTMLButtonElement>(null);
+  const isChecked = value === itemValue;
+
+  useEffect(() => {
+    if (focusContext && itemRef.current) {
+      focusContext.registerItem(itemRef.current);
+    }
+  }, [focusContext]);
+
+  return (
+    <button
+      ref={itemRef}
+      type="button"
+      role="menuitemradio"
+      aria-checked={isChecked}
+      disabled={disabled}
+      onClick={(e) => {
+        onClick?.(e);
+        if (disabled) return;
+        setValue(itemValue);
+        closeAll();
+      }}
+      className={cn(
+        "relative flex w-full items-center rounded-sm px-2 py-1.5 text-sm",
+        "outline-none transition-colors cursor-default",
+        "text-slate-700 dark:text-slate-300",
+        "focus:bg-slate-100 focus:text-slate-900",
+        "dark:focus:bg-[#1f2937] dark:focus:text-white",
+        "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        className
+      )}
+      {...props}
+    >
+      <span className="mr-2 flex h-4 w-4 items-center justify-center">
+        {isChecked && (
+          <span className="h-2 w-2 rounded-full bg-current" />
+        )}
+      </span>
+      {children}
+    </button>
+  );
+};
+
+// ─── Separator Sub-Component ──────────────────────────────────────────────────
+
+Menubar.Separator = function MenubarSeparator({ className, ...props }: MenubarSeparatorProps) {
+  return (
+    <div
+      className={cn("-mx-1 my-1 h-px bg-slate-200 dark:bg-[#1f2937]", className)}
+      role="separator"
+      aria-orientation="horizontal"
+      {...props}
+    />
+  );
+};
+
+// ─── Sub Sub-Component ────────────────────────────────────────────────────────
+
+Menubar.Sub = function MenubarSub({
+  children,
+  className,
+  defaultOpen = false,
+  open,
+  onOpenChange,
+}: MenubarSubProps) {
+  const [internalOpen, setInternalOpen] = useState(defaultOpen);
+  const isControlled = open !== undefined;
+  const isOpen = isControlled ? open : internalOpen;
+
+  const setOpen = (next: boolean) => {
+    if (!isControlled) setInternalOpen(next);
+    onOpenChange?.(next);
+  };
+
+  return (
+    <div className={cn("relative", className)} onMouseLeave={() => setOpen(false)}>
+      {React.Children.map(children, (child) => {
+        if (!React.isValidElement(child)) return child;
+
+        if (child.type === Menubar.SubTrigger) {
+          const triggerChild = child as ReactElement<MenubarSubTriggerProps & InjectedSubTriggerProps>;
+          return React.cloneElement(triggerChild, {
+            isOpen,
+            onToggle: () => setOpen(!isOpen),
+          });
+        }
+
+        if (child.type === Menubar.Content) {
+          const contentChild = child as ReactElement<MenubarContentProps & InjectedContentProps>;
+          return React.cloneElement(contentChild, {
+            isOpen,
+            onClose: () => setOpen(false),
+            isSubmenu: true,
+          });
+        }
+
+        return child;
+      })}
+    </div>
+  );
+};
+
+// ─── SubTrigger Sub-Component ─────────────────────────────────────────────────
+
+Menubar.SubTrigger = function MenubarSubTrigger({
+  children,
+  className,
+  isOpen,
+  onToggle,
+  onClick,
+  ...props
+}: MenubarSubTriggerProps & InjectedSubTriggerProps) {
+  const focusContext = useMenubarContentFocusContext();
+  const itemRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (focusContext && itemRef.current) {
+      focusContext.registerItem(itemRef.current);
+    }
+  }, [focusContext]);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      onToggle?.();
+    } else if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onToggle?.();
+    }
+  };
+
+  return (
+    <button
+      ref={itemRef}
+      type="button"
+      role="menuitem"
+      aria-expanded={isOpen}
+      aria-haspopup="true"
+      onClick={(e) => {
+        onClick?.(e);
+        onToggle?.();
+      }}
+      onKeyDown={handleKeyDown}
+      className={cn(
+        "relative flex w-full items-center rounded-sm px-2 py-1.5 text-sm",
+        "outline-none transition-colors cursor-default",
+        "text-slate-700 dark:text-slate-300",
+        "hover:bg-slate-100 hover:text-slate-900",
+        "dark:hover:bg-[#1f2937] dark:hover:text-white",
+        "focus:bg-slate-100 focus:text-slate-900",
+        "dark:focus:bg-[#1f2937] dark:focus:text-white",
+        className
+      )}
+      {...props}
+    >
+      {children}
+      <svg
+        className="ml-auto h-4 w-4"
+        viewBox="0 0 16 16"
+        fill="none"
+      >
+        <path
+          d="M6 4l4 4-4 4"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </button>
+  );
+};
+
+// ─── Shortcut Sub-Component ───────────────────────────────────────────────────
+
+Menubar.Shortcut = function MenubarShortcut({ children, className, ...props }: MenubarShortcutProps) {
+  return (
+    <span
+      className={cn("ml-auto text-xs tracking-widest text-slate-500 dark:text-slate-400", className)}
+      {...props}
+    >
+      {children}
+    </span>
+  );
+};`,
+  "NativeSelect": `import { forwardRef, type SelectHTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type NativeSelectSize = "sm" | "md" | "lg";
+
+export interface NativeSelectOption {
+  label: string;
+  value: string;
+  disabled?: boolean;
+}
+
+export interface NativeSelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, "size"> {
+  label?: string;
+  description?: string;
+  error?: string;
+  size?: NativeSelectSize;
+  options?: NativeSelectOption[];
+  placeholder?: string;
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const SIZE_CLASSES: Record<NativeSelectSize, string> = {
+  sm: "h-8 px-3 pr-9 text-xs",
+  md: "h-10 px-3.5 pr-10 text-sm",
+  lg: "h-12 px-4 pr-11 text-base",
+};
+
+const BASE_CLASSES =
+  "appearance-none w-full rounded-lg border border-slate-200 dark:border-[#1f2937] " +
+  "bg-white dark:bg-[#0d1117] " +
+  "text-slate-900 dark:text-white " +
+  "placeholder:text-slate-400 dark:placeholder:text-slate-500 " +
+  "focus:border-primary dark:focus:border-primary " +
+  "focus:outline-none " +
+  "focus:ring-2 focus:ring-primary/20 " +
+  "disabled:opacity-50 disabled:cursor-not-allowed " +
+  "transition-colors";
+
+const ERROR_CLASSES =
+  "border-red-400 dark:border-red-500 " +
+  "focus:border-red-400 dark:focus:border-red-500 " +
+  "focus:ring-red-400/20";
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
+  function NativeSelectRoot(
+    {
+      label,
+      description,
+      error,
+      size = "md",
+      options,
+      placeholder,
+      disabled,
+      className,
+      id,
+      children,
+      ...rest
+    },
+    ref
+  ) {
+    const selectId = id ?? (label ? label.toLowerCase().replace(/\\s+/g, "-") : undefined);
+    const descriptionId = id ? \`\${id}-description\` : undefined;
+    const errorId = id ? \`\${id}-error\` : undefined;
+
+    return (
+      <div className={cn("flex flex-col gap-1.5", className)}>
+        {label && (
+          <label
+            htmlFor={selectId}
+            className={cn(
+              "font-medium text-slate-700 dark:text-slate-300 text-sm",
+              disabled && "opacity-50"
+            )}
+          >
+            {label}
+          </label>
+        )}
+
+        <div className="relative">
+          <select
+            ref={ref}
+            id={selectId}
+            disabled={disabled}
+            aria-describedby={error ? errorId : description ? descriptionId : undefined}
+            aria-invalid={!!error}
+            className={cn(
+              BASE_CLASSES,
+              SIZE_CLASSES[size],
+              error && ERROR_CLASSES
+            )}
+            {...rest}
+          >
+            {placeholder && (
+              <option value="" disabled>
+                {placeholder}
+              </option>
+            )}
+            {options?.map((option) => (
+              <option
+                key={option.value}
+                value={option.value}
+                disabled={option.disabled}
+              >
+                {option.label}
+              </option>
+            ))}
+            {children}
+          </select>
+
+          {/* Dropdown Icon */}
+          <svg
+            className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 dark:text-slate-400"
+            width="12"
+            height="12"
+            viewBox="0 0 12 12"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M3 4.5L6 7.5L9 4.5"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+
+        {description && !error && (
+          <p id={descriptionId} className="text-xs text-slate-500 dark:text-slate-400">
+            {description}
+          </p>
+        )}
+        {error && (
+          <p id={errorId} className="text-xs text-red-500 dark:text-red-400">
+            {error}
+          </p>
+        )}
+      </div>
+    );
+  }
+);`,
+  "NavigationMenu": `"use client";
+
+import React, { createContext, useContext, useEffect, useState, type ReactElement, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface NavigationMenuProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export interface NavigationMenuListProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export interface NavigationMenuItemProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export interface NavigationMenuTriggerProps {
+  children: ReactNode;
+  asChild?: boolean;
+  className?: string;
+}
+
+export interface NavigationMenuContentProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export interface NavigationMenuLinkProps {
+  href?: string;
+  children: ReactNode;
+  asChild?: boolean;
+  className?: string;
+}
+
+// ─── Context ────────────────────────────────────────────────────────────────────
+
+interface NavigationMenuContextValue {
+  open: string | null;
+  setOpen: (value: string | null) => void;
+}
+
+const NavigationMenuContext = createContext<NavigationMenuContextValue | null>(null);
+
+function useNavigationMenuContext() {
+  const context = useContext(NavigationMenuContext);
+  if (!context) {
+    throw new Error("NavigationMenu sub-components must be used inside <NavigationMenu>");
+  }
+  return context;
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+export function NavigationMenu({ children, className }: NavigationMenuProps) {
+  const [open, setOpen] = useState<string | null>(null);
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(null);
+    };
+
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [open]);
+
+  // Close when clicking outside
+  useEffect(() => {
+    const handlePointerDown = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const menu = target.closest("[data-navigation-menu]");
+      if (!menu && open) setOpen(null);
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    return () => document.removeEventListener("pointerdown", handlePointerDown);
+  }, [open]);
+
+  return (
+    <NavigationMenuContext.Provider value={{ open, setOpen }}>
+      <nav className={className} data-navigation-menu>
+        {children}
+      </nav>
+    </NavigationMenuContext.Provider>
+  );
+}
+
+// ─── List Sub-Component ───────────────────────────────────────────────────────
+
+NavigationMenu.List = function NavigationMenuList({ children, className }: NavigationMenuListProps) {
+  return (
+    <ul className={cn("flex items-center gap-1", className)} role="menubar">
+      {children}
+    </ul>
+  );
+};
+
+// ─── Item Sub-Component ───────────────────────────────────────────────────────
+
+NavigationMenu.Item = function NavigationMenuItem({
+  children,
+  className,
+}: NavigationMenuItemProps) {
+  const { open, setOpen } = useNavigationMenuContext();
+  // Generate a unique ID for this item
+  const itemId = React.useId();
+  const itemValue = itemId;
+  const isOpen = open === itemValue;
+  const hasContent = React.Children.toArray(children).some(
+    (child) => React.isValidElement(child) && child.type === NavigationMenu.Content
+  );
+
+  return (
+    <li className={cn("relative", className)} role="none">
+      {React.Children.map(children, (child) => {
+        if (!React.isValidElement(child)) return child;
+
+        if (child.type === NavigationMenu.Trigger) {
+          const triggerChild = child as ReactElement<{
+            isOpen?: boolean;
+            onToggle?: () => void;
+            hasContent?: boolean;
+          }>;
+          return React.cloneElement(triggerChild, {
+            isOpen,
+            onToggle: () => setOpen(isOpen ? null : itemValue),
+            hasContent,
+          });
+        }
+
+        if (child.type === NavigationMenu.Content) {
+          const contentChild = child as ReactElement<{
+            isOpen?: boolean;
+            onClose?: () => void;
+          }>;
+          return React.cloneElement(contentChild, {
+            isOpen,
+            onClose: () => setOpen(null),
+          });
+        }
+
+        return child;
+      })}
+    </li>
+  );
+};
+
+// ─── Trigger Sub-Component ─────────────────────────────────────────────────────
+
+NavigationMenu.Trigger = function NavigationMenuTrigger({
+  asChild = false,
+  children,
+  className,
+  isOpen,
+  onToggle,
+  hasContent,
+}: NavigationMenuTriggerProps & {
+  isOpen?: boolean;
+  onToggle?: () => void;
+  hasContent?: boolean;
+}) {
+  // Handle hover for desktop
+  const handleMouseEnter = () => {
+    if (hasContent && onToggle) {
+      onToggle();
+    }
+  };
+
+  // Handle click for touch/mobile
+  const handleClick = () => {
+    if (onToggle) {
+      onToggle();
+    }
+  };
+
+  const triggerClassName = cn(
+    "inline-flex items-center justify-center rounded-sm px-4 py-2 text-sm font-medium",
+    "transition-colors",
+    "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40",
+    "cursor-pointer",
+    isOpen
+      ? "bg-slate-100 dark:bg-[#1f2937] text-slate-900 dark:text-white"
+      : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#1f2937]",
+    className
+  );
+
+  if (asChild && React.isValidElement(children)) {
+    const child = children as ReactElement<{
+      className?: string;
+      onMouseEnter?: () => void;
+      onClick?: () => void;
+      'aria-expanded'?: boolean;
+      'aria-haspopup'?: boolean;
+    }>;
+    return React.cloneElement(child, {
+      onMouseEnter: handleMouseEnter,
+      onClick: handleClick,
+      className: cn(triggerClassName, child.props.className),
+      'aria-expanded': isOpen,
+      'aria-haspopup': hasContent,
+    });
+  }
+
+  return (
+    <button
+      type="button"
+      onMouseEnter={handleMouseEnter}
+      onClick={handleClick}
+      className={triggerClassName}
+      aria-expanded={isOpen}
+      aria-haspopup={hasContent}
+    >
+      {children}
+      {/* Chevron indicator */}
+      {hasContent && (
+        <svg
+          className={cn(
+            "ml-2 h-4 w-4 transition-transform duration-200",
+            isOpen ? "rotate-180" : ""
+          )}
+          viewBox="0 0 16 16"
+          fill="none"
+        >
+          <path
+            d="M4 6l4 4 4-4"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      )}
+    </button>
+  );
+};
+
+// ─── Content Sub-Component ───────────────────────────────────────────────────
+
+NavigationMenu.Content = function NavigationMenuContent({
+  children,
+  className,
+  isOpen,
+  onClose,
+}: NavigationMenuContentProps & {
+  isOpen?: boolean;
+  onClose?: () => void;
+}) {
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className={cn(
+        "absolute top-full left-0 mt-2 min-w-[200px] p-2",
+        "bg-white dark:bg-[#161b22]",
+        "border border-slate-200 dark:border-[#1f2937]",
+        "rounded-lg shadow-lg",
+        "z-50",
+        className
+      )}
+      onMouseLeave={onClose}
+    >
+      {children}
+    </div>
+  );
+};
+
+// ─── Link Sub-Component ────────────────────────────────────────────────────────
+
+NavigationMenu.Link = function NavigationMenuLink({
+  href,
+  asChild = false,
+  children,
+  className,
+}: NavigationMenuLinkProps) {
+  const linkClassName = cn(
+    "block rounded-sm px-4 py-2 text-sm font-medium",
+    "text-slate-700 dark:text-slate-300",
+    "hover:bg-slate-100 dark:hover:bg-[#1f2937] hover:text-slate-900 dark:hover:text-white",
+    "transition-colors",
+    "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40",
+    className
+  );
+
+  if (asChild && React.isValidElement(children)) {
+    const child = children as ReactElement<{ className?: string }>;
+    return React.cloneElement(child, {
+      className: cn(linkClassName, child.props.className),
+    });
+  }
+
+  return (
+    <a href={href} className={linkClassName}>
+      {children}
+    </a>
+  );
+};`,
   "PageProgress": `import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -2745,6 +6955,368 @@ RadioGroup.Item = function RadioGroupItem({
     </button>
   );
 }`,
+  "Resizable": `"use client";
+
+import React, { useRef, useState, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type ResizableDirection = "horizontal" | "vertical";
+
+export interface ResizableProps {
+  direction: ResizableDirection;
+  children: ReactNode;
+  className?: string;
+}
+
+export interface ResizablePanelProps {
+  defaultSize?: number;
+  minSize?: number;
+  maxSize?: number;
+  children: ReactNode;
+  className?: string;
+}
+
+export interface ResizableHandleProps {
+  withHandle?: boolean;
+  disabled?: boolean;
+  className?: string;
+}
+
+// ─── Internal Props (passed via cloneElement) ───────────────────────────────
+
+interface ResizablePanelInternalProps {
+  index?: number;
+  sizes?: number[];
+  setSizes?: React.Dispatch<React.SetStateAction<number[]>>;
+  containerRef?: React.RefObject<HTMLDivElement>;
+  direction?: ResizableDirection;
+  activeHandle?: number | null;
+  setActiveHandle?: React.Dispatch<React.SetStateAction<number | null>>;
+}
+
+interface ResizableHandleInternalProps {
+  index?: number;
+  sizes?: number[];
+  setSizes?: React.Dispatch<React.SetStateAction<number[]>>;
+  containerRef?: React.RefObject<HTMLDivElement>;
+  direction?: ResizableDirection;
+  activeHandle?: number | null;
+  setActiveHandle?: React.Dispatch<React.SetStateAction<number | null>>;
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+export function Resizable({ direction, children, className }: ResizableProps) {
+  const [sizes, setSizes] = useState<number[]>([]);
+  const [activeHandle, setActiveHandle] = useState<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Count panels and assign indices to children
+  let panelCount = 0;
+  const childrenWithProps = React.Children.map(children, (child) => {
+    if (!React.isValidElement(child)) return child;
+
+    if (child.type === Resizable.Panel) {
+      const index = panelCount++;
+
+      // Initialize size if not set
+      if (sizes[index] === undefined) {
+        setSizes((prev) => {
+          const next = [...prev];
+          next[index] = (child.props as ResizablePanelProps).defaultSize || 50;
+          return next;
+        });
+      }
+
+      return React.cloneElement(child, {
+        index,
+        sizes,
+        setSizes,
+        containerRef,
+        direction,
+        activeHandle,
+        setActiveHandle,
+      } as ResizablePanelInternalProps);
+    }
+
+    if (child.type === Resizable.Handle) {
+      const handleIndex = panelCount - 1;
+
+      return React.cloneElement(child, {
+        index: handleIndex,
+        sizes,
+        setSizes,
+        containerRef,
+        direction,
+        activeHandle,
+        setActiveHandle,
+      } as ResizableHandleInternalProps);
+    }
+
+    return child;
+  });
+
+  return (
+    <div
+      ref={containerRef}
+      className={cn("flex", direction === "horizontal" ? "flex-row" : "flex-col", className)}
+    >
+      {childrenWithProps}
+    </div>
+  );
+}
+
+// ─── Panel Sub-Component ───────────────────────────────────────────────────────
+
+Resizable.Panel = function ResizablePanel({
+  defaultSize = 50,
+  children,
+  className,
+  index,
+  sizes,
+}: ResizablePanelProps & ResizablePanelInternalProps) {
+  const size = index !== undefined && sizes?.[index] !== undefined ? sizes[index] : defaultSize;
+
+  return (
+    <div
+      className={cn("flex-shrink-0", className)}
+      style={{
+        flexBasis: \`\${size}%\`,
+        flexShrink: 0,
+        minWidth: 0,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+// ─── Handle Sub-Component ───────────────────────────────────────────────────────────
+
+Resizable.Handle = function ResizableHandle({
+  withHandle = false,
+  disabled = false,
+  className,
+  index,
+  sizes,
+  setSizes,
+  containerRef,
+  activeHandle,
+  setActiveHandle,
+}: ResizableHandleProps & ResizableHandleInternalProps) {
+  const direction = "horizontal"; // Hardcode for now
+  const isHorizontal = direction === "horizontal";
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (disabled || index === undefined || !setActiveHandle) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const container = containerRef?.current;
+    if (!container || !setSizes) return;
+
+    const startX = e.clientX;
+    const initialSizes = [...(sizes || [])];
+
+    setActiveHandle(index);
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const containerWidth = container.offsetWidth;
+      if (containerWidth === 0) return;
+
+      const deltaX = moveEvent.clientX - startX;
+      const deltaPercent = (deltaX / containerWidth) * 100;
+
+      if (index === undefined) return;
+
+      const initialPanelSize = initialSizes[index] || 50;
+      const initialNextPanelSize = initialSizes[index + 1] || 50;
+
+      let newPanelSize = initialPanelSize + deltaPercent;
+      newPanelSize = Math.max(10, Math.min(90, newPanelSize));
+
+      const actualDelta = newPanelSize - initialPanelSize;
+      const newNextPanelSize = initialNextPanelSize - actualDelta;
+
+      if (newNextPanelSize >= 10 && newNextPanelSize <= 90 && index + 1 < initialSizes.length) {
+        setSizes((prev: number[]) => {
+          const next = [...prev];
+          next[index] = newPanelSize;
+          next[index + 1] = newNextPanelSize;
+          return next;
+        });
+      }
+    };
+
+    const handleMouseUp = () => {
+      setActiveHandle?.(null);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+  };
+
+  return (
+    <div
+      tabIndex={disabled ? -1 : 0}
+      role="separator"
+      aria-orientation={direction}
+      className={cn(
+        "flex-shrink-0 bg-slate-200 dark:bg-[#1f2937]",
+        "transition-colors hover:bg-primary/20",
+        disabled && "opacity-50 cursor-not-allowed",
+        !disabled && "select-none",
+        !disabled && (isHorizontal ? "cursor-col-resize" : "cursor-row-resize"),
+        isHorizontal ? "w-1" : "h-1",
+        activeHandle === index && !disabled && "bg-primary",
+        className
+      )}
+      onMouseDown={handleMouseDown}
+    >
+      {withHandle && (
+        <div className={cn("flex items-center justify-center", isHorizontal ? "h-full w-4" : "w-full h-4")}>
+          <div className={cn("bg-slate-400 dark:bg-slate-600 rounded-full", isHorizontal ? "w-1 h-8" : "w-8 h-1")} />
+        </div>
+      )}
+    </div>
+  );
+};`,
+  "ScrollArea": `"use client";
+
+import { useEffect, useRef, type HTMLAttributes, type KeyboardEvent as ReactKeyboardEvent, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type ScrollAreaOrientation = "vertical" | "horizontal" | "both";
+export type ScrollAreaType = "auto" | "always" | "scroll" | "hover";
+
+export interface ScrollAreaProps extends HTMLAttributes<HTMLDivElement> {
+  orientation?: ScrollAreaOrientation;
+  type?: ScrollAreaType;
+  children: ReactNode;
+  className?: string;
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const ORIENTATION_CLASSES: Record<ScrollAreaOrientation, string> = {
+  vertical: "overflow-y-auto overflow-x-hidden",
+  horizontal: "overflow-x-auto overflow-y-hidden",
+  both: "overflow-auto",
+};
+
+const TYPE_MODIFIERS: Record<ScrollAreaType, string> = {
+  auto: "",
+  always: "",
+  scroll: "",
+  hover: "overflow-hidden hover:overflow-auto",
+};
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export function ScrollArea({
+  orientation = "vertical",
+  type = "auto",
+  children,
+  className,
+  onKeyDown,
+  ...props
+}: ScrollAreaProps) {
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const element = scrollAreaRef.current;
+    if (!element) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const scrollAmount = 64;
+      const pageAmount = element.clientHeight * 0.9;
+
+      switch (e.key) {
+        case "ArrowDown":
+          if (orientation === "vertical" || orientation === "both") {
+            e.preventDefault();
+            element.scrollBy({ top: scrollAmount, behavior: "smooth" });
+          }
+          break;
+        case "ArrowUp":
+          if (orientation === "vertical" || orientation === "both") {
+            e.preventDefault();
+            element.scrollBy({ top: -scrollAmount, behavior: "smooth" });
+          }
+          break;
+        case "ArrowRight":
+          if (orientation === "horizontal" || orientation === "both") {
+            e.preventDefault();
+            element.scrollBy({ left: scrollAmount, behavior: "smooth" });
+          }
+          break;
+        case "ArrowLeft":
+          if (orientation === "horizontal" || orientation === "both") {
+            e.preventDefault();
+            element.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+          }
+          break;
+        case "PageDown":
+          if (orientation === "vertical" || orientation === "both") {
+            e.preventDefault();
+            element.scrollBy({ top: pageAmount, behavior: "smooth" });
+          }
+          break;
+        case "PageUp":
+          if (orientation === "vertical" || orientation === "both") {
+            e.preventDefault();
+            element.scrollBy({ top: -pageAmount, behavior: "smooth" });
+          }
+          break;
+        case "Home":
+          if (orientation === "vertical" || orientation === "both") {
+            e.preventDefault();
+            element.scrollTo({ top: 0, behavior: "smooth" });
+          }
+          break;
+        case "End":
+          if (orientation === "vertical" || orientation === "both") {
+            e.preventDefault();
+            element.scrollTo({ top: element.scrollHeight, behavior: "smooth" });
+          }
+          break;
+      }
+
+      if (onKeyDown) {
+        const reactEvent = e as unknown as ReactKeyboardEvent<HTMLDivElement>;
+        onKeyDown(reactEvent);
+      }
+    };
+
+    element.addEventListener("keydown", handleKeyDown);
+    return () => element.removeEventListener("keydown", handleKeyDown);
+  }, [orientation, onKeyDown]);
+
+  return (
+    <div
+      ref={scrollAreaRef}
+      tabIndex={0}
+      role="region"
+      aria-orientation={orientation === "both" ? "vertical" : orientation}
+      className={cn(
+        "scrollarea-scrollbar",
+        ORIENTATION_CLASSES[orientation],
+        TYPE_MODIFIERS[type],
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}`,
   "SearchDialog": `import { useEffect, useRef, useState } from "react";
 import { useAnimatedMount } from "@/hooks/use-animated-mount";
 import { cn } from "@/lib/utils";
@@ -2764,9 +7336,17 @@ interface SearchDialogProps {
   onClose: () => void;
   onNavigate: (href: string) => void;
   savedSlugs?: string[];
+  initialQuery?: string;
 }
 
-export function SearchDialog({ open, items, onClose, onNavigate, savedSlugs = [] }: SearchDialogProps) {
+export function SearchDialog({
+  open,
+  items,
+  onClose,
+  onNavigate,
+  savedSlugs = [],
+  initialQuery = "",
+}: SearchDialogProps) {
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -2786,11 +7366,11 @@ export function SearchDialog({ open, items, onClose, onNavigate, savedSlugs = []
   // Focus input and reset state on open
   useEffect(() => {
     if (open) {
-      setQuery("");
+      setQuery(initialQuery);
       setActiveIndex(0);
       setTimeout(() => inputRef.current?.focus(), 50);
     }
-  }, [open]);
+  }, [initialQuery, open]);
 
   // Reset active index when results change
   useEffect(() => {
@@ -3147,6 +7727,264 @@ export function Separator({
     />
   );
 }`,
+  "Sheet": `"use client";
+
+import { createContext, useContext, useEffect, type HTMLAttributes, type ReactNode } from "react";
+import { createPortal } from "react-dom";
+import { cn } from "@/lib/utils";
+import { useAnimatedMount } from "@/hooks/use-animated-mount";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type SheetSide = "top" | "right" | "bottom" | "left";
+export type SheetSize = "sm" | "md" | "lg" | "xl" | "full" | "content";
+
+export interface SheetProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  side?: SheetSide;
+  size?: SheetSize;
+  children: ReactNode;
+  className?: string;
+}
+
+export interface SheetTriggerProps extends HTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+}
+
+export interface SheetContentProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+
+export interface SheetHeaderProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+
+export interface SheetTitleProps extends HTMLAttributes<HTMLHeadingElement> {
+  children: ReactNode;
+}
+
+export interface SheetDescriptionProps extends HTMLAttributes<HTMLParagraphElement> {
+  children: ReactNode;
+}
+
+export interface SheetFooterProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+
+export interface SheetCloseProps extends HTMLAttributes<HTMLButtonElement> {
+  children?: ReactNode;
+}
+
+// ─── Context ───────────────────────────────────────────────────────────────────
+
+interface SheetContextValue {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+const SheetContext = createContext<SheetContextValue | null>(null);
+
+function useSheetContext() {
+  const context = useContext(SheetContext);
+  if (!context) {
+    throw new Error("Sheet sub-components must be used inside <Sheet>");
+  }
+  return context;
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const WIDTH_CLASSES: Record<SheetSize, string> = {
+  sm: "w-80",
+  md: "w-96",
+  lg: "w-[512px]",
+  xl: "w-[576px]",
+  full: "w-full",
+  content: "w-auto",
+};
+
+const HEIGHT_CLASSES: Record<SheetSize, string> = {
+  sm: "h-[50vh]",
+  md: "h-[70vh]",
+  lg: "h-[85vh]",
+  xl: "h-[90vh]",
+  full: "h-full",
+  content: "h-auto",
+};
+
+const SIDE_CLASSES: Record<SheetSide, { panel: string; hidden: string }> = {
+  right: { panel: "right-0 inset-y-0", hidden: "translate-x-full" },
+  left: { panel: "left-0 inset-y-0", hidden: "-translate-x-full" },
+  top: { panel: "top-0 inset-x-0", hidden: "-translate-y-full" },
+  bottom: { panel: "bottom-0 inset-x-0", hidden: "translate-y-full" },
+};
+
+// ─── Sub-components ───────────────────────────────────────────────────────────
+
+Sheet.Trigger = function SheetTrigger({ children, className, ...props }: SheetTriggerProps) {
+  const { open, onOpenChange } = useSheetContext();
+
+  return (
+    <button
+      type="button"
+      onClick={() => onOpenChange(!open)}
+      className={cn(
+        "inline-flex items-center justify-center rounded-sm px-4 py-2 text-sm font-medium",
+        "bg-primary text-white hover:bg-primary/90",
+        "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40",
+        "disabled:opacity-50 disabled:cursor-not-allowed",
+        "transition-colors",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
+
+Sheet.Content = function SheetContent({ children, className, ...props }: SheetContentProps) {
+  return (
+    <div className={cn("flex-1 overflow-y-auto px-6 py-4", className)} {...props}>
+      {children}
+    </div>
+  );
+};
+
+Sheet.Header = function SheetHeader({ children, className, ...props }: SheetHeaderProps) {
+  return (
+    <div className={cn("px-6 pt-6 pb-4 border-b border-slate-100 dark:border-[#1f2937]", className)} {...props}>
+      {children}
+    </div>
+  );
+};
+
+Sheet.Title = function SheetTitle({ children, className, ...props }: SheetTitleProps) {
+  return (
+    <h2 className={cn("text-lg font-semibold text-slate-900 dark:text-white pr-8", className)} {...props}>
+      {children}
+    </h2>
+  );
+};
+
+Sheet.Description = function SheetDescription({ children, className, ...props }: SheetDescriptionProps) {
+  return (
+    <p className={cn("mt-1 text-sm text-slate-500 dark:text-slate-400 leading-relaxed", className)} {...props}>
+      {children}
+    </p>
+  );
+};
+
+Sheet.Footer = function SheetFooter({ children, className, ...props }: SheetFooterProps) {
+  return (
+    <div className={cn("px-6 py-4 border-t border-slate-100 dark:border-[#1f2937] flex items-center justify-end gap-3 shrink-0", className)} {...props}>
+      {children}
+    </div>
+  );
+};
+
+Sheet.Close = function SheetClose({ children, className, ...props }: SheetCloseProps) {
+  const { onOpenChange } = useSheetContext();
+
+  return (
+    <button
+      type="button"
+      onClick={() => onOpenChange(false)}
+      className={cn(
+        "inline-flex items-center justify-center rounded-sm px-4 py-2 text-sm font-medium",
+        "bg-slate-100 dark:bg-[#1f2937] text-slate-900 dark:text-white",
+        "hover:bg-slate-200 dark:hover:bg-[#161b22]",
+        "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary/40",
+        "transition-colors",
+        className
+      )}
+      {...props}
+    >
+      {children || "Close"}
+    </button>
+  );
+};
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+export function Sheet({ open, onOpenChange, side = "right", size = "md", children, className }: SheetProps) {
+  const { mounted, visible } = useAnimatedMount(open, 300);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onOpenChange(false);
+    };
+
+    document.addEventListener("keydown", handleKey);
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.removeEventListener("keydown", handleKey);
+      document.body.style.overflow = "";
+    };
+  }, [open, onOpenChange]);
+
+  if (!mounted) return null;
+
+  const { panel, hidden } = SIDE_CLASSES[side];
+
+  const sheet = (
+    <SheetContext.Provider value={{ open, onOpenChange }}>
+      <div className="fixed inset-0 z-50 flex">
+        {/* Backdrop */}
+        <div
+          className={cn(
+            "absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300",
+            visible ? "opacity-100" : "opacity-0"
+          )}
+          onClick={() => onOpenChange(false)}
+        />
+
+        {/* Panel */}
+        <div
+          role="dialog"
+          aria-modal="true"
+          className={cn(
+            "absolute flex flex-col bg-white dark:bg-[#161b22]",
+            "border-slate-200 dark:border-[#1f2937]",
+            side === "right" && "border-l",
+            side === "left" && "border-r",
+            side === "top" && "border-b",
+            side === "bottom" && "border-t",
+            "shadow-2xl shadow-black/20",
+            "transition-transform duration-300 ease-in-out",
+            // For top/bottom: size controls height, width is full
+            // For left/right: size controls width, height is full
+            side === "top" || side === "bottom"
+              ? \`w-full \${HEIGHT_CLASSES[size]}\`
+              : \`h-full \${WIDTH_CLASSES[size]}\`,
+            panel,
+            visible ? "translate-x-0 translate-y-0" : hidden,
+            className
+          )}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => onOpenChange(false)}
+            className="absolute right-4 top-4 z-10 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1f2937] hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            aria-label="Close sheet"
+          >
+            <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none">
+              <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+
+          {children}
+        </div>
+      </div>
+    </SheetContext.Provider>
+  );
+
+  return createPortal(sheet, document.body);
+}`,
   "Skeleton": `import { cn } from "@/lib/utils";
 
 export type SkeletonVariant = "line" | "rect" | "circle";
@@ -3225,6 +8063,55 @@ export function Slider({
         }}
         className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 accent-primary dark:bg-[#1f2937]"
       />
+    </div>
+  );
+}`,
+  "Spinner": `import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type SpinnerSize = "sm" | "md" | "lg";
+export type SpinnerVariant = "default" | "muted";
+
+export interface SpinnerProps {
+  size?: SpinnerSize;
+  variant?: SpinnerVariant;
+  label?: string;
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const SIZE_CLASSES: Record<SpinnerSize, string> = {
+  sm: "w-4 h-4",
+  md: "w-5 h-5",
+  lg: "w-6 h-6",
+};
+
+const VARIANT_CLASSES: Record<SpinnerVariant, string> = {
+  default: "text-primary",
+  muted: "text-slate-400 dark:text-slate-600",
+};
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export function Spinner({ size = "md", variant = "default", label }: SpinnerProps) {
+  return (
+    <div role="status" aria-live="polite" className="inline-flex">
+      <svg
+        aria-hidden="true"
+        className={cn("animate-spin", SIZE_CLASSES[size], VARIANT_CLASSES[variant])}
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+        />
+      </svg>
+      <span className="sr-only">{label || "Loading..."}</span>
     </div>
   );
 }`,
@@ -3319,6 +8206,206 @@ export function Switch({
     </div>
   );
 }`,
+  "Table": `import {
+  type HTMLAttributes,
+  type TdHTMLAttributes,
+  type ThHTMLAttributes,
+  type ReactNode,
+} from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export interface TableProps extends HTMLAttributes<HTMLDivElement> {
+  children: ReactNode;
+}
+
+export interface TableHeaderProps extends HTMLAttributes<HTMLTableSectionElement> {
+  children: ReactNode;
+}
+
+export interface TableBodyProps extends HTMLAttributes<HTMLTableSectionElement> {
+  children: ReactNode;
+}
+
+export interface TableFooterProps extends HTMLAttributes<HTMLTableSectionElement> {
+  children: ReactNode;
+}
+
+export interface TableRowProps extends HTMLAttributes<HTMLTableRowElement> {
+  children: ReactNode;
+}
+
+export interface TableHeadProps extends ThHTMLAttributes<HTMLTableCellElement> {
+  children?: ReactNode;
+}
+
+export interface TableCellProps extends TdHTMLAttributes<HTMLTableCellElement> {
+  children?: ReactNode;
+}
+
+export interface TableCaptionProps extends HTMLAttributes<HTMLTableCaptionElement> {
+  children?: ReactNode;
+}
+
+// ─── Table ───────────────────────────────────────────────────────────────────
+
+export function Table({ className, children, ...props }: TableProps) {
+  return (
+    <div
+      className={cn(
+        "w-full overflow-x-auto rounded-xl border border-slate-200 dark:border-[#1f2937]",
+        className,
+      )}
+      {...props}
+    >
+      <table className="w-full caption-top text-left text-sm">
+        {children}
+      </table>
+    </div>
+  );
+}
+
+// ─── Table.Header ─────────────────────────────────────────────────────────────
+
+Table.Header = function TableHeader({
+  className,
+  children,
+  ...props
+}: TableHeaderProps) {
+  return (
+    <thead
+      className={cn(
+        "border-b border-slate-200 bg-slate-50 dark:border-[#1f2937] dark:bg-[#161b22]",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </thead>
+  );
+};
+
+// ─── Table.Body ───────────────────────────────────────────────────────────────
+
+Table.Body = function TableBody({
+  className,
+  children,
+  ...props
+}: TableBodyProps) {
+  return (
+    <tbody
+      className={cn(
+        "divide-y divide-slate-100 dark:divide-[#1f2937]",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </tbody>
+  );
+};
+
+// ─── Table.Footer ─────────────────────────────────────────────────────────────
+
+Table.Footer = function TableFooter({
+  className,
+  children,
+  ...props
+}: TableFooterProps) {
+  return (
+    <tfoot
+      className={cn(
+        "border-t border-slate-200 bg-slate-50 font-medium dark:border-[#1f2937] dark:bg-[#161b22] dark:text-slate-300",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </tfoot>
+  );
+};
+
+// ─── Table.Row ────────────────────────────────────────────────────────────────
+
+Table.Row = function TableRow({
+  className,
+  children,
+  ...props
+}: TableRowProps) {
+  return (
+    <tr
+      className={cn(
+        "transition-colors border-b border-transparent last:border-b-0",
+        "hover:bg-slate-50 dark:hover:bg-slate-800/50",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </tr>
+  );
+};
+
+// ─── Table.Head ───────────────────────────────────────────────────────────────
+
+Table.Head = function TableHead({
+  className,
+  children,
+  ...props
+}: TableHeadProps) {
+  return (
+    <th
+      className={cn(
+        "px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </th>
+  );
+};
+
+// ─── Table.Cell ───────────────────────────────────────────────────────────────
+
+Table.Cell = function TableCell({
+  className,
+  children,
+  ...props
+}: TableCellProps) {
+  return (
+    <td
+      className={cn(
+        "px-4 py-3",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </td>
+  );
+};
+
+// ─── Table.Caption ───────────────────────────────────────────────────────────
+
+Table.Caption = function TableCaption({
+  className,
+  children,
+  ...props
+}: TableCaptionProps) {
+  return (
+    <caption
+      className={cn(
+        "px-4 py-3 text-sm text-slate-500 dark:text-slate-400",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </caption>
+  );
+};`,
   "Tabs": `import {
   createContext,
   useContext,
@@ -3690,6 +8777,314 @@ Toast.Close = function ToastClose({ className, onClick, children = "Dismiss", ..
 Toast.Footer = function ToastFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("mt-3 flex items-center justify-end gap-2", className)} {...props} />;
 }`,
+  "Toggle": `import { useState, type ButtonHTMLAttributes, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
+
+export type ToggleVariant = "default" | "outline";
+export type ToggleSize = "sm" | "md" | "lg";
+
+export interface ToggleProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  pressed?: boolean;
+  defaultPressed?: boolean;
+  onPressedChange?: (pressed: boolean) => void;
+  variant?: ToggleVariant;
+  size?: ToggleSize;
+  disabled?: boolean;
+  children: ReactNode;
+}
+
+const VARIANT_CLASSES: Record<ToggleVariant, Record<"on" | "off", string>> = {
+  default: {
+    on: "bg-primary text-white hover:bg-primary/90 focus-visible:ring-primary/40",
+    off: "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700 focus-visible:ring-slate-400/40",
+  },
+  outline: {
+    on: "bg-slate-100 text-slate-900 border border-slate-300 dark:bg-slate-800 dark:text-white dark:border-slate-600 focus-visible:ring-slate-400/40",
+    off: "border border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800/50 focus-visible:ring-slate-400/40",
+  },
+};
+
+const SIZE_CLASSES: Record<ToggleSize, string> = {
+  sm: "text-xs px-3 py-1.5 h-7 gap-1.5",
+  md: "text-sm px-4 py-2 h-9 gap-2",
+  lg: "text-base px-6 py-2.5 h-11 gap-2",
+};
+
+export function Toggle({
+  pressed,
+  defaultPressed = false,
+  onPressedChange,
+  variant = "default",
+  size = "md",
+  disabled = false,
+  children,
+  className,
+  onClick,
+  ...props
+}: ToggleProps) {
+  const [internal, setInternal] = useState(defaultPressed);
+  const isControlled = pressed !== undefined;
+  const isOn = isControlled ? pressed : internal;
+
+  const toggle = () => {
+    if (disabled) return;
+    const next = !isOn;
+    if (!isControlled) setInternal(next);
+    onPressedChange?.(next);
+  };
+
+  const stateClasses = isOn
+    ? VARIANT_CLASSES[variant].on
+    : VARIANT_CLASSES[variant].off;
+
+  return (
+    <button
+      type="button"
+      aria-pressed={isOn}
+      disabled={disabled}
+      onClick={(e) => {
+        onClick?.(e);
+        toggle();
+      }}
+      className={cn(
+        "inline-flex items-center justify-center font-semibold rounded-lg transition-all",
+        "focus-visible:outline-hidden focus-visible:ring-2",
+        "disabled:opacity-50 disabled:cursor-not-allowed",
+        stateClasses,
+        SIZE_CLASSES[size],
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}`,
+  "ToggleGroup": `import {
+  createContext,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+  type ButtonHTMLAttributes,
+  type HTMLAttributes,
+  type ReactNode,
+} from "react";
+import { cn } from "@/lib/utils";
+import type { ToggleSize, ToggleVariant } from "./Toggle";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type ToggleGroupType = "single" | "multiple";
+
+export interface ToggleGroupProps extends HTMLAttributes<HTMLDivElement> {
+  type?: ToggleGroupType;
+  value?: string;
+  defaultValue?: string;
+  onValueChange?: (value: string) => void;
+  variant?: ToggleVariant;
+  size?: ToggleSize;
+  disabled?: boolean;
+  children: ReactNode;
+}
+
+export interface ToggleGroupItemProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  value: string;
+  disabled?: boolean;
+  children: ReactNode;
+}
+
+// ─── Context ──────────────────────────────────────────────────────────────────
+
+interface ToggleGroupContextValue {
+  value: string;
+  variant: ToggleVariant;
+  size: ToggleSize;
+  type: ToggleGroupType;
+  disabled: boolean;
+  onItemChange: (itemValue: string) => void;
+}
+
+const ToggleGroupContext = createContext<ToggleGroupContextValue | null>(null);
+
+function useToggleGroupContext() {
+  const ctx = useContext(ToggleGroupContext);
+  if (!ctx) {
+    throw new Error("ToggleGroupItem must be used inside <ToggleGroup>");
+  }
+  return ctx;
+}
+
+// ─── Style Maps ───────────────────────────────────────────────────────────────
+
+const VARIANT_CLASSES: Record<ToggleVariant, Record<"on" | "off", string>> = {
+  default: {
+    on: "bg-primary text-white hover:bg-primary/90 focus-visible:ring-primary/40",
+    off: "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700 focus-visible:ring-slate-400/40",
+  },
+  outline: {
+    on: "bg-slate-100 text-slate-900 border border-slate-300 dark:bg-slate-800 dark:text-white dark:border-slate-600 focus-visible:ring-slate-400/40",
+    off: "border border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800/50 focus-visible:ring-slate-400/40",
+  },
+};
+
+const SIZE_CLASSES: Record<ToggleSize, string> = {
+  sm: "text-xs px-3 py-1.5 h-7 gap-1.5",
+  md: "text-sm px-4 py-2 h-9 gap-2",
+  lg: "text-base px-6 py-2.5 h-11 gap-2",
+};
+
+// ─── Helper ───────────────────────────────────────────────────────────────────
+
+function parseValue(val: string): string[] {
+  if (!val) return [];
+  return val.split(",");
+}
+
+function serializeValue(arr: string[]): string {
+  return arr.join(",");
+}
+
+// ─── ToggleGroup ──────────────────────────────────────────────────────────────
+
+export function ToggleGroup({
+  type = "single",
+  value,
+  defaultValue = "",
+  onValueChange,
+  variant = "default",
+  size = "md",
+  disabled = false,
+  children,
+  className,
+  ...props
+}: ToggleGroupProps) {
+  const [internalValue, setInternalValue] = useState(defaultValue);
+  const isControlled = value !== undefined;
+  const active = isControlled ? value : internalValue;
+
+  const onItemChange = useCallback(
+    (itemValue: string) => {
+      if (type === "single") {
+        const current = parseValue(active);
+        const next = current.includes(itemValue) && current.length === 1
+          ? ""
+          : itemValue;
+        if (!isControlled) setInternalValue(next);
+        onValueChange?.(next);
+      } else {
+        const current = parseValue(active);
+        const next = current.includes(itemValue)
+          ? current.filter((v) => v !== itemValue)
+          : [...current, itemValue];
+        const serialized = serializeValue(next);
+        if (!isControlled) setInternalValue(serialized);
+        onValueChange?.(serialized);
+      }
+    },
+    [type, active, isControlled, onValueChange]
+  );
+
+  return (
+    <ToggleGroupContext.Provider
+      value={{ value: active, variant, size, type, disabled, onItemChange }}
+    >
+      <div
+        role="group"
+        className={cn("inline-flex items-center", className)}
+        {...props}
+      >
+        {children}
+      </div>
+    </ToggleGroupContext.Provider>
+  );
+}
+
+// ─── ToggleGroupItem ─────────────────────────────────────────────────────────
+
+ToggleGroup.Item = function ToggleGroupItem({
+  value: itemValue,
+  disabled: itemDisabled = false,
+  children,
+  className,
+  onClick,
+  ...props
+}: ToggleGroupItemProps) {
+  const { value, variant, size, disabled: groupDisabled, onItemChange } =
+    useToggleGroupContext();
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const isActive = parseValue(value).includes(itemValue);
+  const isDisabled = groupDisabled || itemDisabled;
+
+  // Arrow key navigation between siblings
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    const group = buttonRef.current?.parentElement;
+    if (!group) return;
+
+    const items = Array.from(
+      group.querySelectorAll<HTMLButtonElement>("[data-toggle-group-item]:not([disabled])")
+    );
+    const currentEl = buttonRef.current;
+    const currentIndex = currentEl ? items.indexOf(currentEl) : -1;
+
+    let nextIndex = currentIndex;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+      e.preventDefault();
+      nextIndex = currentIndex < items.length - 1 ? currentIndex + 1 : 0;
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+      e.preventDefault();
+      nextIndex = currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      nextIndex = 0;
+    } else if (e.key === "End") {
+      e.preventDefault();
+      nextIndex = items.length - 1;
+    }
+
+    if (nextIndex !== currentIndex) {
+      items[nextIndex]?.focus();
+    }
+  };
+
+  const handleClick = () => {
+    if (isDisabled) return;
+    onItemChange(itemValue);
+  };
+
+  const stateClasses = isActive
+    ? VARIANT_CLASSES[variant].on
+    : VARIANT_CLASSES[variant].off;
+
+  return (
+    <button
+      ref={buttonRef}
+      type="button"
+      data-toggle-group-item
+      aria-pressed={isActive}
+      disabled={isDisabled}
+      onClick={(e) => {
+        onClick?.(e);
+        handleClick();
+      }}
+      onKeyDown={handleKeyDown}
+      className={cn(
+        "inline-flex items-center justify-center font-semibold transition-all",
+        "focus-visible:outline-hidden focus-visible:ring-2",
+        "disabled:opacity-50 disabled:cursor-not-allowed",
+        stateClasses,
+        SIZE_CLASSES[size],
+        // Connected group styling: collapse borders between items
+        "first:rounded-l-lg first:rounded-r-none last:rounded-r-lg last:rounded-l-none",
+        "not-first:-ml-px",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};`,
   "Tooltip": `import { createContext, useContext, useState, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -3784,13 +9179,87 @@ Tooltip.Content = function TooltipContent({ children, className, ...props }: Too
     </div>
   );
 }`,
+  "Typography": `import { forwardRef, type HTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type TypographyVariant =
+  | "h1"
+  | "h2"
+  | "h3"
+  | "h4"
+  | "p"
+  | "lead"
+  | "muted"
+  | "small"
+  | "blockquote"
+  | "code"
+  | "list";
+
+export interface TypographyProps extends Omit<HTMLAttributes<HTMLElement>, "as"> {
+  variant?: TypographyVariant;
+  as?: React.ElementType;
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const VARIANT_STYLES: Record<TypographyVariant, string> = {
+  h1: "text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl",
+  h2: "text-2xl font-bold text-slate-900 dark:text-white",
+  h3: "text-xl font-bold text-slate-900 dark:text-white",
+  h4: "text-lg font-semibold text-slate-900 dark:text-white",
+  p: "text-sm leading-relaxed text-slate-600 dark:text-slate-400",
+  lead: "text-lg leading-relaxed text-slate-700 dark:text-slate-300",
+  muted: "text-sm text-slate-500 dark:text-slate-400",
+  small: "text-xs text-slate-500 dark:text-slate-400",
+  blockquote: "border-l-4 border-primary pl-4 italic text-slate-700 dark:text-slate-300",
+  code: "font-mono text-xs bg-slate-100 dark:bg-[#1f2937] px-1.5 py-0.5 rounded text-slate-900 dark:text-white",
+  list: "list-disc pl-4 space-y-1 text-sm text-slate-600 dark:text-slate-400",
+};
+
+const DEFAULT_ELEMENTS: Record<TypographyVariant, string> = {
+  h1: "h1",
+  h2: "h2",
+  h3: "h3",
+  h4: "h4",
+  p: "p",
+  lead: "p",
+  muted: "p",
+  small: "small",
+  blockquote: "blockquote",
+  code: "code",
+  list: "ul",
+};
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export const Typography = forwardRef<HTMLElement, TypographyProps>(
+  function TypographyRoot({ variant = "p", as, className, children, ...rest }, ref) {
+    const Component = as || DEFAULT_ELEMENTS[variant];
+    const variantStyle = VARIANT_STYLES[variant];
+
+    return (
+      <Component ref={ref} className={cn(variantStyle, className)} {...rest}>
+        {children}
+      </Component>
+    );
+  }
+);`,
   "storybook-utils": `import { useState, type PropsWithChildren, type ReactNode } from "react";
 
-export const SAMPLE_OPTIONS = [
+type SampleOption = {
+  label: string;
+  value: string;
+  description: string;
+  disabled?: boolean;
+};
+
+export const SAMPLE_OPTIONS: SampleOption[] = [
   { label: "Design System", value: "design-system", description: "Reusable UI building blocks" },
   { label: "Cookbook", value: "cookbook", description: "Production-ready React patterns" },
   { label: "CLI", value: "cli", description: "Copy-paste component installer" },
-  { label: "Playground", value: "playground", description: "Interactive configuration", disabled: true },
+  { label: "Playground", value: "playground", description: "Interactive configuration" },
 ];
 
 export const SEARCH_ITEMS = [

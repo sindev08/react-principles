@@ -68,10 +68,10 @@ Avatar.Image = function AvatarImage({ className, onError, alt, ...props }: ImgHT
   );
 }
 
-Avatar.Fallback = function AvatarFallback({ className, children }: { className?: string; children: ReactNode }) {
+Avatar.Fallback = function AvatarFallback({ className, style, children }: { className?: string; style?: React.CSSProperties; children: ReactNode }) {
   const { hasImageError } = useAvatarContext();
   if (!hasImageError) return null;
 
-  return <span className={cn("font-semibold uppercase", className)}>{children}</span>;
+  return <span className={cn("font-semibold uppercase", className)} style={style}>{children}</span>;
 }
 
