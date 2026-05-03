@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
 import Image from "next/image";
+import { cn } from "@/shared/utils/cn";
 
 const NAV_LINKS = [
   { href: "/docs/introduction", label: "Docs" },
@@ -24,8 +25,8 @@ export function Navbar() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background-light/80 dark:bg-background-dark/80 border-primary/10 dark:border-white/5 backdrop-blur-md">
-      <div className="grid grid-cols-3 items-center h-16 px-6 mx-auto max-w-7xl">
-        <div className="flex items-center gap-2">
+      <div className="flex h-16 items-center justify-between px-6 mx-auto max-w-7xl md:grid md:grid-cols-3">
+        <div className="flex min-w-0 items-center gap-2">
           <Image
             src="/logo-icon.svg"
             alt="React Principles logo"
@@ -40,7 +41,7 @@ export function Navbar() {
             height={32}
             className="hidden dark:block"
           />
-          <span className="text-lg tracking-tight">
+          <span className="whitespace-nowrap text-lg tracking-tight">
             <span className="font-medium text-slate-600 dark:text-slate-300">React</span>
             {" "}
             <span className="font-black text-primary">Principles</span>
@@ -59,7 +60,7 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="flex items-center justify-end gap-3">
+        <div className="flex shrink-0 items-center justify-end gap-3">
           <ThemeToggle />
           <a
             href="https://github.com/sindev08/react-principles"
@@ -83,9 +84,10 @@ export function Navbar() {
       </div>
 
       <div
-        className={`md:hidden overflow-hidden border-primary/10 dark:border-white/5 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md transition-all duration-300 ease-in-out ${
-          isOpen ? "max-h-96 opacity-100 border-t" : "max-h-0 opacity-0"
-        }`}
+        className={cn(
+          "md:hidden overflow-hidden border-primary/10 dark:border-white/5 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md transition-all duration-300 ease-in-out",
+          isOpen ? "max-h-96 opacity-100 border-t" : "max-h-0 opacity-0",
+        )}
       >
         <nav className="flex flex-col gap-1 px-6 py-4">
           {NAV_LINKS.map((link) => (
