@@ -75,9 +75,9 @@ export function DocsHeader() {
   return (
     <>
       <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-[#1f2937] bg-white/80 dark:bg-[#0b0e14]/80 backdrop-blur-md">
-        <div className="relative mx-auto flex h-14 max-w-[1440px] items-center justify-between px-6 lg:px-10">
-          <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center gap-2">
+        <div className="relative mx-auto flex h-14 max-w-[1440px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-10">
+          <div className="flex min-w-0 items-center gap-8">
+            <Link href="/" className="flex min-w-0 items-center gap-2">
               <Image
                 src="/logo-icon.svg"
                 alt="React Principles logo"
@@ -92,7 +92,7 @@ export function DocsHeader() {
                 height={32}
                 className="hidden dark:block"
               />
-              <h2 className="text-base tracking-tight leading-tight">
+              <h2 className="truncate text-base tracking-tight leading-tight">
                 <span className="font-medium text-slate-600 dark:text-slate-300">React</span>
                 {" "}
                 <span className="font-black text-primary">Principles</span>
@@ -113,7 +113,7 @@ export function DocsHeader() {
               </Link>
             </nav>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             {/* Framework switcher — cookbook only */}
             {isCookbookActive && (
               <div className="hidden items-center gap-0.5 rounded-lg border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] p-1 sm:flex">
@@ -165,7 +165,7 @@ export function DocsHeader() {
               className="flex items-center gap-2 rounded-lg bg-primary px-4 py-1.5 text-[11px] font-bold text-white transition-colors hover:bg-primary/90"
             >
               <GithubIcon />
-              GitHub
+                <span className="hidden sm:inline">GitHub</span>
             </a>
           </div>
         </div>
