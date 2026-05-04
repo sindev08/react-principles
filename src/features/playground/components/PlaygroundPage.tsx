@@ -817,10 +817,10 @@ export function PlaygroundPage() {
   }
 
   return (
-    <div className="font-display min-h-screen bg-white text-slate-900 antialiased dark:bg-[#0b0e14] dark:text-[#e2e8f0]">
+    <div className="font-display min-h-screen overflow-x-hidden bg-white text-slate-900 antialiased dark:bg-[#0b0e14] dark:text-[#e2e8f0]">
       <DocsHeader />
-      <main className="mx-auto max-w-[1680px] px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-        <div className="mx-auto max-w-[1540px]">
+      <main className="mx-auto w-full max-w-[1680px] px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+        <div className="mx-auto min-w-0 max-w-[1540px]">
         <div className="mb-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/8 px-4 py-2 text-sm font-semibold text-primary">
@@ -836,7 +836,7 @@ export function PlaygroundPage() {
             </p>
           </div>
 
-          <div className="grid gap-3 rounded-3xl border border-slate-200 bg-slate-50/90 p-4 backdrop-blur dark:border-white/10 dark:bg-slate-950/70 lg:grid-cols-3">
+          <div className="grid w-full min-w-0 gap-3 rounded-3xl border border-slate-200 bg-slate-50/90 p-4 backdrop-blur dark:border-white/10 dark:bg-slate-950/70 lg:grid-cols-3">
             <Select
               label="Framework"
               options={FRAMEWORK_OPTIONS}
@@ -861,9 +861,9 @@ export function PlaygroundPage() {
           </div>
         </div>
 
-        <div className="grid gap-6 2xl:grid-cols-[320px_minmax(0,1fr)]">
-          <section className="space-y-4 xl:sticky xl:top-20 xl:self-start">
-            <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-slate-950">
+        <div className="grid min-w-0 gap-6 2xl:grid-cols-[320px_minmax(0,1fr)]">
+          <section className="min-w-0 space-y-4 xl:sticky xl:top-20 xl:self-start">
+            <div className="min-w-0 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-slate-950">
               <Input
                 label="Search components"
                 placeholder="Button, overlay, forms..."
@@ -876,7 +876,7 @@ export function PlaygroundPage() {
               </div>
             </div>
 
-            <div className="grid gap-3 md:grid-cols-2 2xl:grid-cols-1 2xl:max-h-[calc(100vh-15rem)] 2xl:overflow-y-auto 2xl:pr-1">
+            <div className="grid min-w-0 gap-3 md:grid-cols-2 2xl:grid-cols-1 2xl:max-h-[calc(100vh-15rem)] 2xl:overflow-y-auto 2xl:pr-1">
               {filteredEntries.map((entry) => {
                 const isActive = selectedEntry?.slug === entry.slug;
 
@@ -892,15 +892,15 @@ export function PlaygroundPage() {
                       });
                     }}
                     className={cn(
-                      "w-full rounded-3xl border p-4 text-left transition-all",
+                      "w-full min-w-0 rounded-3xl border p-4 text-left transition-all",
                       isActive
                         ? "border-primary bg-primary/6 shadow-lg shadow-primary/10"
                         : "border-slate-200 bg-white hover:-translate-y-0.5 hover:border-slate-300 dark:border-white/10 dark:bg-slate-950 dark:hover:border-white/20",
                     )}
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="break-words text-xs font-semibold uppercase tracking-[0.22em] text-primary">
                           {entry.category}
                         </p>
                         <h2 className="mt-2 text-lg font-black tracking-tight text-slate-900 dark:text-white">
@@ -913,7 +913,7 @@ export function PlaygroundPage() {
                         </span>
                       )}
                     </div>
-                    <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                    <p className="mt-3 break-words text-sm leading-6 text-slate-600 dark:text-slate-400">
                       {entry.description}
                     </p>
                     <div className="mt-4 flex flex-wrap gap-2">
@@ -939,7 +939,7 @@ export function PlaygroundPage() {
           </section>
 
           {selectedEntry && (
-            <div className="space-y-8">
+            <div className="min-w-0 space-y-8">
               <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
                 <div className="space-y-4">
                   <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-slate-950">

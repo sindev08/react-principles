@@ -154,8 +154,8 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
   return (
     <div className="max-w-3xl">
       {/* Breadcrumb */}
-      <nav className="mb-6 flex items-center justify-between gap-2 text-sm font-medium text-slate-500">
-        <div className="flex items-center gap-2">
+      <nav className="mb-6 flex flex-col items-start gap-2 text-sm font-medium text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
           <Link href={`/${framework}/cookbook`} className="hover:text-primary transition-colors">
             Cookbook
           </Link>
@@ -164,9 +164,9 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
             {detail.breadcrumbCategory}
           </span>
           <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-          <span className="text-slate-900 dark:text-white">{detail.title}</span>
+          <span className="break-words text-slate-900 dark:text-white">{detail.title}</span>
         </div>
-        <span className="shrink-0 text-xs text-slate-400">Updated {detail.lastUpdated}</span>
+        <span className="text-xs text-slate-400 sm:shrink-0">Updated {detail.lastUpdated}</span>
       </nav>
 
       {/* Page Header */}
