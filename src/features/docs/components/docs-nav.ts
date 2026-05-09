@@ -15,7 +15,6 @@ export const DOCS_NAV: NavGroup[] = [
     items: [
       { label: "Introduction", href: "/docs/introduction" },
       { label: "Installation", href: "/docs/installation" },
-      { label: "Playground", href: "/docs/playground" },
       { label: "Theming", href: "/docs/theming" },
       { label: "Dark Mode", href: "/docs/dark-mode" },
     ],

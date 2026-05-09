@@ -227,21 +227,21 @@ export function ComponentShowcaseSection() {
             </Link>
 
             <Link
-              href="/docs/playground"
+              href="/create"
               className="group flex flex-col gap-3 rounded-2xl border border-primary/20 bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 dark:bg-slate-900 dark:hover:bg-slate-800"
             >
               <div className="flex items-center justify-between">
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <span className="material-symbols-outlined text-[20px]">play_circle</span>
+                  <span className="material-symbols-outlined text-[20px]">tune</span>
                 </span>
                 <span className="material-symbols-outlined text-[16px] text-slate-300 transition-colors group-hover:text-primary dark:text-slate-600">
                   arrow_forward
                 </span>
               </div>
               <div>
-                <p className="text-sm font-bold text-slate-900 dark:text-white">Launch Playground</p>
+                <p className="text-sm font-bold text-slate-900 dark:text-white">Configure Project</p>
                 <p className="mt-0.5 text-xs leading-5 text-slate-500 dark:text-slate-400">
-                  Edit components live and see changes in real time.
+                  Pick your stack, components, and style — then scaffold instantly.
                 </p>
               </div>
             </Link>
