@@ -27,10 +27,15 @@ import {
 import type { User } from '@/shared/types/user';
 
 const columns: ColumnDef<User>[] = [
-  { accessorKey: 'name',   header: 'Name' },
+  {
+    id: 'name',
+    header: 'Name',
+    // accessorFn combines two fields into one sortable, filterable column
+    accessorFn: (row) => \`\${row.firstName} \${row.lastName}\`,
+  },
   { accessorKey: 'email',  header: 'Email' },
-  { accessorKey: 'role',   header: 'Role' },
-  { accessorKey: 'status', header: 'Status' },
+  { accessorKey: 'age',    header: 'Age' },
+  { accessorKey: 'gender', header: 'Gender' },
 ];
 
 export function UserTable({ data }: { data: User[] }) {
@@ -105,16 +110,16 @@ export function UserTable({ data }: { data: User[] }) {
         "In Next.js, prefetch user data in a Server Component and hydrate it via HydrationBoundary. The table renders immediately with cached data while staying reactive to updates.",
       filename: "app/users/page.tsx",
       code: `import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { getQueryClient } from '@/lib/get-query-client';
+import { getQueryClient } from '@/lib/query-client';
 import { queryKeys } from '@/lib/query-keys';
-import { getUsers } from '@/services/users';
-import { UserTable } from '@/components/UserTable';
+import { usersService } from '@/lib/services/users';
+import { UserTable } from '@/features/users';
 
 export default async function UsersPage() {
   const queryClient = getQueryClient();
   await queryClient.prefetchQuery({
     queryKey: queryKeys.users.all,
-    queryFn: () => getUsers({ page: 1, limit: 100 }),
+    queryFn: () => usersService.getAll({ limit: 100 }),
   });
 
   return (
@@ -128,8 +133,7 @@ export default async function UsersPage() {
       description:
         "In Vite, fetch data via a React Query hook and pass it to the table. DummyJSON returns users under data.users. For datasets under 1,000 rows, all filtering and sorting can stay client-side.",
       filename: "pages/UsersPage.tsx",
-      code: `import { useUsers } from '@/hooks/queries/useUsers';
-import { UserTable } from '@/components/UserTable';
+      code: `import { useUsers, UserTable } from '@/features/users';
 
 export function UsersPage() {
   const { data, isLoading } = useUsers({ limit: 100 });
@@ -140,7 +144,11 @@ export function UsersPage() {
 }`,
     },
   },
-  lastUpdated: "Feb 26, 2026",
+  lastUpdated: "May 10, 2026",
   contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
   demoKey: "table",
+  starterLink: {
+    label: "View UserTable in starter",
+    href: "https://github.com/sindev08/react-principles-nextjs/blob/main/src/features/users/components/UserTable.tsx",
+  },
 };
