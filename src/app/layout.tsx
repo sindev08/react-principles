@@ -19,13 +19,17 @@ export const metadata: Metadata = {
   },
   description: DESCRIPTION,
   keywords: [
+    "React principles",
     "React",
+    "React patterns",
+    "React best practices",
+    "React design patterns",
+    "React architecture",
+    "React cookbook",
     "Next.js",
     "TanStack Query",
     "Zustand",
     "TypeScript",
-    "React patterns",
-    "React cookbook",
     "React Hook Form",
     "Tailwind CSS",
   ],
@@ -91,17 +95,35 @@ export default function RootLayout({
 }) {
   const structuredData = {
     "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: TITLE,
-    url: BASE_URL,
-    description: DESCRIPTION,
-    inLanguage: "en-US",
-    publisher: {
-      "@type": "Organization",
-      name: TITLE,
-      url: BASE_URL,
-      logo: `${BASE_URL}/android-chrome-512x512.png`,
-    },
+    "@graph": [
+      {
+        "@type": "WebSite",
+        name: TITLE,
+        url: BASE_URL,
+        description: DESCRIPTION,
+        inLanguage: "en-US",
+        publisher: {
+          "@type": "Organization",
+          name: TITLE,
+          url: BASE_URL,
+          logo: `${BASE_URL}/android-chrome-512x512.png`,
+        },
+      },
+      {
+        "@type": "SoftwareApplication",
+        name: TITLE,
+        url: BASE_URL,
+        description: DESCRIPTION,
+        applicationCategory: "DeveloperApplication",
+        operatingSystem: "Web",
+        inLanguage: "en-US",
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "USD",
+        },
+      },
+    ],
   };
 
   return (

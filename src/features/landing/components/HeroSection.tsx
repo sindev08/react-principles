@@ -174,8 +174,9 @@ export function HeroSection() {
         </Badge>
 
         <h1 className="mb-8 text-5xl font-black leading-[1.1] tracking-tight text-slate-900 md:text-7xl dark:text-white">
-          The Living Cookbook <br />
-          <span className="text-primary">for Modern React</span>
+          <span className="text-primary">React Principles</span>
+          <br />
+          The Living Cookbook for Modern React
         </h1>
 
         <p className="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-slate-600 dark:text-slate-200">

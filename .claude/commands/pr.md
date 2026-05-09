@@ -8,13 +8,7 @@ Then create a pull request following these rules:
 
 ## Target branch
 
-Always PR to `development` — never directly to `main`.
-
-```
-feature branch → development → main
-```
-
-`main` only receives releases via the release-please workflow.
+Default to `development` unless the user specifies otherwise (e.g. `to main`).
 
 ## PR title
 
@@ -46,16 +40,14 @@ Follow the same Conventional Commits format as commit messages:
 ## Workflow
 
 1. Check for uncommitted changes — if any exist, stop and ask user to commit first
-2. Confirm the branch is NOT `development` or `main`
-3. Check if branch is already pushed — if not, push with `git push -u origin <branch>`
-4. Analyze all commits on this branch vs `development`
-5. Draft the PR title and body based on the changes
-6. Create the PR using `gh pr create --base development`
-7. Return the PR URL
+2. Check if branch is already pushed — if not, push with `git push -u origin <branch>`
+3. Analyze all commits on this branch vs the target base branch
+4. Draft the PR title and body based on the changes
+5. Create the PR using `gh pr create --base <target>`
+6. Return the PR URL
 
 ## Rules
 
-- Never PR to `main` directly
 - Never include co-author attribution or AI attribution in the PR body
 - Do not push if there are uncommitted changes — resolve first
 - Stage and scope should match the actual changes, not be generic
