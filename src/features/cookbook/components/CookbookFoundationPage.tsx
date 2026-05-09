@@ -113,7 +113,7 @@ export function CookbookFoundationPage({ framework }: CookbookFoundationPageProp
             </span>
           </div>
           <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white lg:text-5xl mb-4">
-            Foundation
+            React Principles Foundation
           </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-slate-600 dark:text-slate-400">
             Before diving into recipes, here's everything you need to know about how this cookbook

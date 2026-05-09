@@ -4,7 +4,7 @@ import { CookbookListPage } from "@/features/cookbook/components/CookbookListPag
 export const metadata: Metadata = {
   title: "Cookbook",
   description: "Production-ready Next.js App Router patterns and reference architectures.",
-  keywords: ["Next.js", "React patterns", "App Router", "TanStack Query", "Zustand", "TypeScript"],
+  keywords: ["React principles", "React patterns", "React cookbook", "Next.js", "App Router", "TanStack Query", "Zustand", "TypeScript"],
   openGraph: {
     title: "React Principles — Cookbook",
     description: "Production-ready Next.js App Router patterns and reference architectures.",

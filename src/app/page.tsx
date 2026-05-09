@@ -15,14 +15,27 @@ import {
 export const metadata: Metadata = {
   title: "React Principles — A Living Cookbook of React Patterns",
   description:
-    "Production-grade React patterns with real implementations using Next.js, Vite, TanStack Query, Zustand, React Hook Form, and TypeScript.",
+    "Master React principles with production-grade patterns and real implementations. Next.js, Vite, TanStack Query, Zustand, React Hook Form, and TypeScript.",
+  keywords: [
+    "react principles",
+    "react patterns",
+    "react best practices",
+    "react cookbook",
+    "react design patterns",
+    "react architecture",
+    "Next.js patterns",
+    "TypeScript React",
+    "TanStack Query",
+    "Zustand",
+    "React Hook Form",
+  ],
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "React Principles — A Living Cookbook of React Patterns",
     description:
-      "Production-grade React patterns with real implementations using Next.js, Vite, TanStack Query, Zustand, React Hook Form, and TypeScript.",
+      "Master React principles with production-grade patterns and real implementations. Next.js, Vite, TanStack Query, Zustand, React Hook Form, and TypeScript.",
     url: "/",
     images: [
       {
@@ -37,7 +50,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "React Principles — A Living Cookbook of React Patterns",
     description:
-      "Production-grade React patterns with real implementations using Next.js, Vite, TanStack Query, Zustand, React Hook Form, and TypeScript.",
+      "Master React principles with production-grade patterns and real implementations. Next.js, Vite, TanStack Query, Zustand, React Hook Form, and TypeScript.",
     images: ["/opengraph-image"],
   },
 };

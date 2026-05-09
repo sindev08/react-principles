@@ -1,9 +1,12 @@
 import { use } from "react";
 import Link from "next/link";
+import Script from "next/script";
 import type { Metadata } from "next";
 import { DocsPageLayout } from "@/features/docs/components";
 import { CookbookDetailPage } from "@/features/cookbook/components/CookbookDetailPage";
 import { getRecipeDetail } from "@/features/cookbook/data";
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 export async function generateMetadata({
   params,
@@ -81,5 +84,62 @@ export default function NextjsCookbookDetailPage({
     );
   }
 
-  return <CookbookDetailPage detail={detail} framework="nextjs" />;
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        headline: detail.title,
+        description: detail.description,
+        dateModified: detail.lastUpdated,
+        author: {
+          "@type": "Person",
+          name: detail.contributor.name,
+          jobTitle: detail.contributor.role,
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "React Principles",
+          url: BASE_URL,
+          logo: `${BASE_URL}/android-chrome-512x512.png`,
+        },
+        inLanguage: "en-US",
+        url: `${BASE_URL}/nextjs/cookbook/${detail.slug}`,
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: BASE_URL,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Cookbook",
+            item: `${BASE_URL}/nextjs/cookbook`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: detail.title,
+            item: `${BASE_URL}/nextjs/cookbook/${detail.slug}`,
+          },
+        ],
+      },
+    ],
+  };
+
+  return (
+    <>
+      <Script
+        id={`structured-data-${detail.slug}`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <CookbookDetailPage detail={detail} framework="nextjs" />
+    </>
+  );
 }
