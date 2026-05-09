@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.1](https://github.com/sindev08/react-principles/compare/react-principles@0.1.0...react-principles@v0.1.1) (2026-05-09)
+
+
+### Bug Fixes
+
+* **cli:** improve error handling, ux, and type safety ([a8fa3ee](https://github.com/sindev08/react-principles/commit/a8fa3ee5496c75e74f7b1768d8eb2e65d4699d3b))
+* **cli:** improve error handling, ux, and type safety ([b2bd3ce](https://github.com/sindev08/react-principles/commit/b2bd3cedac10ad828f75dad119753da7045f8b30))
+* **cli:** improve error handling, ux, and type safety ([5302b77](https://github.com/sindev08/react-principles/commit/5302b77dc203e6b3685f5c81b6215729001d23e1))
+
 ## [0.1.0] - 2026-05-02
 
 ### Added
