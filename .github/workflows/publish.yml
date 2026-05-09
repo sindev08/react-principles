@@ -27,9 +27,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build CLI
-        run: pnpm build:cli
-
       - name: Publish to npm
         run: pnpm --filter ./packages/cli publish --no-git-checks --provenance
         env:
