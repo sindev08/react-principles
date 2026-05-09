@@ -11,34 +11,62 @@ Then create a commit following these rules:
 ```
 <type>(<scope>): <subject>
 
-[optional body]
+[optional body — wrap at 72 characters]
 ```
 
+> Commit messages are enforced by commitlint via Husky `commit-msg` hook.
+> Invalid format will be rejected locally.
+
 ### Types
-| Type | When to use |
-|------|-------------|
-| `feat` | New feature |
-| `fix` | Bug fix |
-| `refactor` | Code change with no behavior change |
-| `style` | Styling/CSS/code formatting changes |
-| `chore` | Deps, config, tooling updates |
-| `docs` | Documentation changes |
-| `test` | Adding or updating tests |
-| `perf` | Performance improvement |
+
+| Type | When to use | Triggers CLI version bump? |
+|---|---|---|
+| `feat` | New feature or capability | **Yes — minor bump** |
+| `fix` | Bug fix | **Yes — patch bump** |
+| `docs` | Documentation only | No |
+| `style` | CSS, classnames, formatting — no logic change | No |
+| `refactor` | Code restructure without behavior change | No |
+| `test` | Adding or updating tests | No |
+| `chore` | Deps, config, tooling, scripts | No |
+| `perf` | Performance improvement | No |
+| `revert` | Reverts a previous commit | No |
 
 ### Scope (optional, use when relevant)
-Use the app or package name: `nextjs`, `vite`, `shared`, `cookbook`, `docs`
+
+| Scope | When to use |
+|---|---|
+| `cli` | Changes in `packages/cli/` |
+| `ui` | Changes in `src/ui/` |
+| `landing` | Changes in `src/features/landing/` |
+| `cookbook` | Changes in `src/features/cookbook/` |
+| `docs` | Changes in `src/app/docs/` or `src/features/docs/` |
+| `configurator` | Changes in `src/features/configurator/` |
+| `shared` | Changes in `src/shared/` |
+| `ci` | Changes in `.github/workflows/` |
 
 ### Subject rules
+
 - All lowercase
-- Imperative mood: "add", "remove", "update" — not "added", "removed", "updated"
+- Imperative mood: `add`, `fix`, `update` — not `added`, `fixed`, `updated`
 - No period at the end
 - Max 72 characters
 
 ### Body (optional)
+
 Add when you need to explain **why**, not what. Wrap at 72 characters per line.
 
+### CLI versioning impact
+
+`feat:` and `fix:` commits touching `packages/cli/` trigger an automatic
+version bump via release-please when merged to `main`. Use deliberately:
+
+- `feat(cli): add --verbose flag` → CLI minor bump ✅
+- `fix(cli): resolve path alias on Windows` → CLI patch bump ✅
+- `style(ui): update Button hover classnames` → no bump ✅
+- `chore: upgrade dependencies` → no bump ✅
+
 ## Workflow
+
 1. Analyze all changes from the git output above
 2. Determine the most appropriate type and scope
 3. Write a clear and concise subject
