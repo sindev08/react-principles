@@ -1,6 +1,6 @@
 import pc from "picocolors";
 import { readConfig, resolveOutputPath, writeFile } from "../utils/fs";
-import { getAll, getEntry, getTemplate, resolve } from "../registry";
+import { getAll, getTemplate, resolve } from "../registry";
 import { installPackages } from "../utils/pm";
 
 export async function add(names: string[], cwd: string): Promise<void> {
@@ -16,20 +16,29 @@ export async function add(names: string[], cwd: string): Promise<void> {
     ? getAll().filter((e) => e.target === "components").map((e) => e.name)
     : names;
 
-  const unknown = targets.filter((n) => !getEntry(n));
+  // Validate + resolve in one pass to avoid double lookup
+  const unknown: string[] = [];
+  const seen = new Set<string>();
+  const toInstall = targets.flatMap((n) => {
+    const entries = resolve(n);
+    if (entries.length === 0) { unknown.push(n); return []; }
+    return entries.filter((e) => {
+      if (seen.has(e.name)) return false;
+      seen.add(e.name);
+      return true;
+    });
+  });
+
   if (unknown.length > 0) {
-    console.log(pc.red(`Unknown component(s): ${unknown.join(", ")}`));
-    console.log(pc.gray("Run `npx react-principles list` to see available components."));
+    const available = getAll()
+      .filter((e) => e.target === "components")
+      .map((e) => e.name)
+      .sort()
+      .join(", ");
+    console.log(pc.red(`Unknown: ${unknown.join(", ")}`));
+    console.log(pc.gray(`Available: ${available}`));
     process.exit(1);
   }
-
-  // Resolve all entries including transitive deps, dedup
-  const seen = new Set<string>();
-  const toInstall = targets.flatMap((n) => resolve(n)).filter((e) => {
-    if (seen.has(e.name)) return false;
-    seen.add(e.name);
-    return true;
-  });
 
   const allNpmDeps = new Set<string>();
   const written: string[] = [];
@@ -65,6 +74,11 @@ export async function add(names: string[], cwd: string): Promise<void> {
   if (allNpmDeps.size > 0) {
     console.log(pc.cyan("\nInstalling dependencies..."));
     installPackages([...allNpmDeps], cwd);
+  }
+
+  if (written.length === 0 && allNpmDeps.size === 0) {
+    console.log(pc.gray("\nNo changes — all components already exist.\n"));
+    return;
   }
 
   if (written.length > 0) {

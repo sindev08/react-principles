@@ -42,6 +42,13 @@ export async function init(cwd: string, frameworkFlag?: string): Promise<void> {
   if (detectedAliases.hooks) defaults.aliases.hooks = detectedAliases.hooks;
   if (detectedAliases.lib) defaults.aliases.lib = detectedAliases.lib;
 
+  interface InitAnswers {
+    framework: Config["framework"];
+    componentsDir: string;
+    hooksDir: string;
+    libDir: string;
+  }
+
   const answers = await prompts(
     [
       {
@@ -84,22 +91,22 @@ export async function init(cwd: string, frameworkFlag?: string): Promise<void> {
         process.exit(0);
       },
     }
-  );
+  ) as InitAnswers;
 
-  const framework = answers.framework as Config["framework"];
+  const framework = answers.framework;
   const rsc = framework === "next";
 
   const config: Config = {
     framework,
     rsc,
     tsx: true,
-    componentsDir: answers.componentsDir as string,
-    hooksDir: answers.hooksDir as string,
-    libDir: answers.libDir as string,
+    componentsDir: answers.componentsDir,
+    hooksDir: answers.hooksDir,
+    libDir: answers.libDir,
     aliases: {
-      components: `@/${(answers.componentsDir as string).replace(/^src\//, "")}`,
-      hooks: `@/${(answers.hooksDir as string).replace(/^src\//, "")}`,
-      lib: `@/${(answers.libDir as string).replace(/^src\//, "")}`,
+      components: `@/${answers.componentsDir.replace(/^src\//, "")}`,
+      hooks: `@/${answers.hooksDir.replace(/^src\//, "")}`,
+      lib: `@/${answers.libDir.replace(/^src\//, "")}`,
     },
   };
 
