@@ -24,7 +24,7 @@ import {
   getFilteredRowModel, getPaginationRowModel,
   flexRender, type ColumnDef, type SortingState,
 } from '@tanstack/react-table';
-import type { User } from '@/types';
+import type { User } from '@/shared/types/user';
 
 const columns: ColumnDef<User>[] = [
   { accessorKey: 'name',   header: 'Name' },
@@ -48,25 +48,85 @@ export function UserTable({ data }: { data: User[] }) {
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
-  // render table.getHeaderGroups() and table.getRowModel().rows
+
+  return (
+    <div>
+      <input
+        value={globalFilter}
+        onChange={(e) => setGlobalFilter(e.target.value)}
+        placeholder="Filter all columns..."
+      />
+      <table>
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th
+                  key={header.id}
+                  onClick={header.column.getToggleSortingHandler()}
+                >
+                  {flexRender(header.column.columnDef.header, header.getContext())}
+                  {{ asc: ' ↑', desc: ' ↓' }[header.column.getIsSorted() as string] ?? null}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div>
+        <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+          Previous
+        </button>
+        <span>
+          Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+        </span>
+        <button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+          Next
+        </button>
+      </div>
+    </div>
+  );
 }`,
   },
   implementation: {
     nextjs: {
       description:
-        "In Next.js, prefetch the initial page of data in a Server Component and pass it as initialData. The table renders immediately without a loading state.",
+        "In Next.js, prefetch user data in a Server Component and hydrate it via HydrationBoundary. The table renders immediately with cached data while staying reactive to updates.",
       filename: "app/users/page.tsx",
-      code: `import { UserTable } from '@/components/UserTable';
+      code: `import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { getQueryClient } from '@/lib/get-query-client';
+import { queryKeys } from '@/lib/query-keys';
 import { getUsers } from '@/services/users';
+import { UserTable } from '@/components/UserTable';
 
 export default async function UsersPage() {
-  const initialData = await getUsers({ page: 1, limit: 20 });
-  return <UserTable initialData={initialData} />;
+  const queryClient = getQueryClient();
+  await queryClient.prefetchQuery({
+    queryKey: queryKeys.users.all,
+    queryFn: () => getUsers({ page: 1, limit: 100 }),
+  });
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <UserTable />
+    </HydrationBoundary>
+  );
 }`,
     },
     vite: {
       description:
-        "In Vite, fetch data via a React Query hook and pass it to the table. For datasets under 1,000 rows, all filtering and sorting can stay client-side.",
+        "In Vite, fetch data via a React Query hook and pass it to the table. DummyJSON returns users under data.users. For datasets under 1,000 rows, all filtering and sorting can stay client-side.",
       filename: "pages/UsersPage.tsx",
       code: `import { useUsers } from '@/hooks/queries/useUsers';
 import { UserTable } from '@/components/UserTable';
@@ -76,7 +136,7 @@ export function UsersPage() {
 
   if (isLoading) return <TableSkeleton />;
 
-  return <UserTable data={data?.data ?? []} />;
+  return <UserTable data={data?.users ?? []} />;
 }`,
     },
   },
