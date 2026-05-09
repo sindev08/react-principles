@@ -175,7 +175,7 @@ export const RECIPES: Recipe[] = [
     gradient: "linear-gradient(135deg, #14b8a6 0%, #0f766e 100%)",
     tags: ["Advanced", "TanStack"],
     category: "Patterns",
-    status: "coming-soon",
+    status: "published",
     order: 12,
   },
   {
@@ -214,7 +214,7 @@ export const RECIPES: Recipe[] = [
     gradient: "linear-gradient(135deg, #f43f5e 0%, #be123c 100%)",
     tags: ["Pro", "GraphQL"],
     category: "API Integration",
-    status: "coming-soon",
+    status: "published",
     order: 15,
   },
   {
