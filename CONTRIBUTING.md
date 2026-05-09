@@ -17,18 +17,59 @@
 1. Fork the repo
 2. Create a branch: `feat/recipe-name` or `fix/issue-description`
 3. Make your changes
-4. Open a PR against `main`
+4. Open a PR against `development`
 
 ## Commit Convention
 
-We use [Conventional Commits](https://www.conventionalcommits.org/):
+We use [Conventional Commits](https://www.conventionalcommits.org/). Commit messages are **enforced by commitlint** via a Husky `commit-msg` hook — invalid messages will be rejected locally.
+
+### Format
 
 ```
-feat(scope): add new thing
-fix(scope): fix broken thing
-docs(scope): update documentation
-refactor(scope): restructure without behavior change
-test(scope): add or update tests
+<type>(<scope>): <subject>
+
+[optional body — wrap at 72 characters]
+```
+
+### Types
+
+| Type | When to use | Triggers CLI version bump? |
+|---|---|---|
+| `feat` | New feature or capability | Yes — minor bump |
+| `fix` | Bug fix | Yes — patch bump |
+| `docs` | Documentation only | No |
+| `style` | CSS, formatting, classnames — no logic change | No |
+| `refactor` | Code restructure without behavior change | No |
+| `test` | Adding or updating tests | No |
+| `chore` | Deps, config, tooling, scripts | No |
+| `perf` | Performance improvement | No |
+| `revert` | Reverts a previous commit | No |
+
+### Subject rules
+
+- All lowercase
+- Imperative mood: `add`, `fix`, `update` — not `added`, `fixed`, `updated`
+- No period at the end
+- Max 72 characters
+
+### CLI versioning impact
+
+`feat:` and `fix:` commits that touch `packages/cli/` will trigger an automatic version bump via release-please when merged to `main`. Use these types intentionally:
+
+- `feat(cli): add --verbose flag to add command` → minor bump
+- `fix(cli): resolve path alias on Windows` → patch bump
+- `style(ui): update Button hover classnames` → **no bump** (UI-only change)
+- `chore: update dependencies` → **no bump**
+
+### Examples
+
+```
+feat(cli): add --dry-run flag to create command
+fix(cli): correct import path transformation for pnpm workspaces
+docs(cookbook): update server-state recipe with staleTime guidance
+style(ui): refine Button focus ring classnames
+chore: upgrade tanstack-query to v5.60.0
+refactor(configurator): extract preset encoding to separate utility
 ```
 
 ## Review Process
