@@ -3,10 +3,12 @@ import {
   Navbar,
   HeroSection,
   WhySection,
+  CookbookTeaserSection,
+  DocsSection,
   ComponentShowcaseSection,
+  ConfiguratorTeaserSection,
   TechStackSection,
   ProjectStructureSection,
-  DocsSection,
   Footer,
 } from "@/features/landing/components";
 
@@ -47,10 +49,12 @@ export default function LandingPage() {
       <main>
         <HeroSection />
         <WhySection />
+        <CookbookTeaserSection />
+        <DocsSection />
         <ComponentShowcaseSection />
+        <ConfiguratorTeaserSection />
         <TechStackSection />
         <ProjectStructureSection />
-        <DocsSection />
       </main>
       <Footer />
     </div>
