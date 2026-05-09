@@ -98,6 +98,33 @@ See `CONTRIBUTING.md` → **Docs Page Standard** for the full spec. Summary:
 - Conditional sections: Theme Preview (only if `variant`/`size` props exist), size/variant selectors in Live Demo
 - Reference implementations: Badge, Button (full), Alert (static multi-variant)
 
+## Commit Convention
+
+All commits must follow [Conventional Commits](https://www.conventionalcommits.org/). This is enforced by `commitlint` via Husky `commit-msg` hook.
+
+### Format
+```
+<type>(<scope>): <subject>
+```
+
+### Types that trigger CLI version bump (use intentionally)
+- `feat` → minor bump in `packages/cli`
+- `fix` → patch bump in `packages/cli`
+
+### Types that do NOT trigger a version bump
+- `style` — CSS, classnames, formatting
+- `chore` — deps, config, tooling
+- `refactor` — restructure without behavior change
+- `docs` — documentation only
+- `test` — tests only
+- `perf` — performance improvement
+- `revert` — reverts a previous commit
+
+### Rules
+- Subject must be lowercase, imperative mood, no period, max 72 chars
+- Body lines max 72 chars
+- `feat:` and `fix:` on files inside `packages/cli/` will trigger a release-please version bump when merged to `main` — use these types deliberately
+
 ## Working Agreement
 
 ### For Planning Agent (Sonnet high)
@@ -130,3 +157,5 @@ See `CONTRIBUTING.md` → **Docs Page Standard** for the full spec. Summary:
 - Do not add co-author attribution (e.g., `Co-Authored-By`) in any commit or file
 - Do not add "Generated with" or similar AI attribution tags in PRs, issues, or code
 - **Do NOT commit or push changes without explicit user approval** — wait for user instruction before running git commit/push commands
+- Do not use non-conventional commit messages — all commits must follow the format `type(scope): subject` (enforced by commitlint)
+- Do not use `feat:` or `fix:` for UI-only changes (classnames, styling) — use `style:` or `chore:` to avoid unintended CLI version bumps
