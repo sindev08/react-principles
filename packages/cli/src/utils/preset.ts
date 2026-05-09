@@ -31,7 +31,13 @@ export function decodePreset(encoded: string): CliPreset | null {
     const decompressed = inflateRawSync(compressed);
     const json = decompressed.toString("utf8");
     return JSON.parse(json) as CliPreset;
-  } catch {
+  } catch (err) {
+    const reason = err instanceof SyntaxError
+      ? "invalid JSON after decompression"
+      : err instanceof Error && err.message.includes("incorrect header check")
+        ? "invalid compression format"
+        : "could not decode";
+    console.warn(`⚠ Preset decode failed (${reason}). Make sure you copied it correctly from reactprinciples.dev/create.`);
     return null;
   }
 }

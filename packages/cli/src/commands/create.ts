@@ -49,6 +49,25 @@ const RADIUS_VALUES: Record<string, string> = {
   none: "0px", sm: "0.25rem", md: "0.5rem", lg: "0.75rem",
 };
 
+// ── Shared versions ───────────────────────────────────────────────────────
+
+const VERSIONS = {
+  next: "^15.0.0",
+  react: "^19.0.0",
+  "react-dom": "^19.0.0",
+  tailwindcss: "^4.0.0",
+  "@tailwindcss/postcss": "^4.0.0",
+  "@tailwindcss/vite": "^4.0.0",
+  clsx: "^2.1.1",
+  "tailwind-merge": "^2.5.4",
+  typescript: "^5.0.0",
+  "@types/node": "^22.0.0",
+  "@types/react": "^19.0.0",
+  "@types/react-dom": "^19.0.0",
+  "@vitejs/plugin-react": "^4.0.0",
+  vite: "^6.0.0",
+};
+
 // ── File generators ───────────────────────────────────────────────────────
 
 function buildCssVars(preset: CliPreset): string {
@@ -89,21 +108,25 @@ h1, h2, h3, h4, h5, h6 {
 `;
 }
 
+/** Parses "pkg@version" or "@scoped/pkg@version" safely using lastIndexOf. */
+function parseDep(dep: string): [name: string, version: string] {
+  const at = dep.lastIndexOf("@");
+  return at > 0 ? [dep.slice(0, at), dep.slice(at + 1)] : [dep, "latest"];
+}
+
 function buildNextPackageJson(appName: string, preset: CliPreset, extraDeps: string[]): string {
   const deps: Record<string, string> = {
-    "next": "^15.0.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "tailwindcss": "^4.0.0",
-    "@tailwindcss/postcss": "^4.0.0",
-    "clsx": "^2.1.1",
-    "tailwind-merge": "^2.5.4",
+    "next": VERSIONS.next,
+    "react": VERSIONS.react,
+    "react-dom": VERSIONS["react-dom"],
+    "tailwindcss": VERSIONS.tailwindcss,
+    "@tailwindcss/postcss": VERSIONS["@tailwindcss/postcss"],
+    "clsx": VERSIONS.clsx,
+    "tailwind-merge": VERSIONS["tailwind-merge"],
   };
 
   for (const dep of extraDeps) {
-    const [name, version] = dep.split("@").length > 1
-      ? [dep.slice(0, dep.lastIndexOf("@")), dep.slice(dep.lastIndexOf("@") + 1)]
-      : [dep, "latest"];
+    const [name, version] = parseDep(dep);
     deps[name] = version;
   }
 
@@ -114,10 +137,10 @@ function buildNextPackageJson(appName: string, preset: CliPreset, extraDeps: str
     scripts: { dev: "next dev", build: "next build", start: "next start", lint: "next lint" },
     dependencies: deps,
     devDependencies: {
-      typescript: "^5.0.0",
-      "@types/node": "^22.0.0",
-      "@types/react": "^19.0.0",
-      "@types/react-dom": "^19.0.0",
+      typescript: VERSIONS.typescript,
+      "@types/node": VERSIONS["@types/node"],
+      "@types/react": VERSIONS["@types/react"],
+      "@types/react-dom": VERSIONS["@types/react-dom"],
     },
   };
 
@@ -126,16 +149,14 @@ function buildNextPackageJson(appName: string, preset: CliPreset, extraDeps: str
 
 function buildVitePackageJson(appName: string, preset: CliPreset, extraDeps: string[]): string {
   const deps: Record<string, string> = {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "clsx": "^2.1.1",
-    "tailwind-merge": "^2.5.4",
+    "react": VERSIONS.react,
+    "react-dom": VERSIONS["react-dom"],
+    "clsx": VERSIONS.clsx,
+    "tailwind-merge": VERSIONS["tailwind-merge"],
   };
 
   for (const dep of extraDeps) {
-    const at = dep.lastIndexOf("@");
-    const name = at > 0 ? dep.slice(0, at) : dep;
-    const version = at > 0 ? dep.slice(at + 1) : "latest";
+    const [name, version] = parseDep(dep);
     deps[name] = version;
   }
 
@@ -146,13 +167,13 @@ function buildVitePackageJson(appName: string, preset: CliPreset, extraDeps: str
     scripts: { dev: "vite", build: "tsc -b && vite build", preview: "vite preview" },
     dependencies: deps,
     devDependencies: {
-      typescript: "^5.0.0",
-      "@types/react": "^19.0.0",
-      "@types/react-dom": "^19.0.0",
-      "@vitejs/plugin-react": "^4.0.0",
-      "vite": "^6.0.0",
-      "tailwindcss": "^4.0.0",
-      "@tailwindcss/vite": "^4.0.0",
+      typescript: VERSIONS.typescript,
+      "@types/react": VERSIONS["@types/react"],
+      "@types/react-dom": VERSIONS["@types/react-dom"],
+      "@vitejs/plugin-react": VERSIONS["@vitejs/plugin-react"],
+      "vite": VERSIONS.vite,
+      "tailwindcss": VERSIONS.tailwindcss,
+      "@tailwindcss/vite": VERSIONS["@tailwindcss/vite"],
     },
   };
 
@@ -299,8 +320,12 @@ export function cn(...inputs: ClassValue[]) {
 
 function write(dir: string, file: string, content: string): void {
   const fullPath = join(dir, file);
-  mkdirSync(join(dir, file, ".."), { recursive: true });
-  writeFileSync(fullPath, content, "utf8");
+  try {
+    mkdirSync(join(dir, file, ".."), { recursive: true });
+    writeFileSync(fullPath, content, "utf8");
+  } catch (err) {
+    throw new Error(`Failed to write ${fullPath}: ${err instanceof Error ? err.message : String(err)}`);
+  }
 }
 
 function step(msg: string) {
@@ -347,7 +372,7 @@ export async function create(
   if (opts.preset) {
     preset = decodePreset(opts.preset);
     if (!preset) {
-      console.log(pc.yellow("⚠ Could not decode preset — using defaults (Next.js, Arc style)."));
+      console.log(pc.yellow("⚠ Using defaults (Next.js, Arc style) instead.\n"));
     }
   }
 

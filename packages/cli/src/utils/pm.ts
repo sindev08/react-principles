@@ -17,5 +17,9 @@ export function installPackages(deps: string[], cwd: string): void {
   const cmd = pm === "yarn" ? "yarn add" : `${pm} install`;
   const list = deps.join(" ");
 
-  execSync(`${cmd} ${list}`, { cwd, stdio: "inherit" });
+  try {
+    execSync(`${cmd} ${list}`, { cwd, stdio: "inherit" });
+  } catch {
+    throw new Error(`Failed to install packages with ${pm}. Run manually: ${cmd} ${list}`);
+  }
 }

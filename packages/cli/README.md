@@ -163,7 +163,7 @@ npx react-principles add --all
 2. Resolves transitive dependencies automatically (e.g. adding `dialog` also installs `utils` and `use-animated-mount`)
 3. Writes component files to the configured directory
 4. Skips files that already exist — your customizations are safe
-5. Installs any required npm packages using your detected package manager (pnpm / yarn / npm)
+5. Installs any required npm packages using your detected package manager
 
 **Example output**
 
@@ -175,6 +175,8 @@ npx react-principles add --all
 
 Done!
 ```
+
+> If you pass an unknown component name, the CLI will show all available components inline so you don't need to run `list` separately.
 
 ---
 
@@ -191,9 +193,9 @@ npx react-principles list
 ```
 Available components:
 
-  accordion              Collapsible content sections
-  alert                  Inline status messages
-  alert-dialog           Confirmation dialog with destructive actions
+  accordion            Collapsible content sections
+  alert                Inline status messages
+  alert-dialog         Confirmation dialog with destructive actions
   ...
 ```
 
@@ -219,11 +221,11 @@ Available components:
 
 ## Available Components
 
-Run `npx react-principles list` to see all components. Below is the full reference:
+Run `npx react-principles list` to see all components with descriptions.
 
 ### Utilities
 
-These are installed automatically as dependencies but can also be added directly.
+Installed automatically as dependencies of any component, or added directly.
 
 | Name | Output | Description |
 |------|--------|-------------|
@@ -232,39 +234,64 @@ These are installed automatically as dependencies but can also be added directly
 
 ### Components
 
-| Name | Output | Description | Extra deps |
-|------|--------|-------------|------------|
-| `accordion` | `Accordion.tsx` | Collapsible content sections | — |
-| `alert` | `Alert.tsx` | Inline status messages | — |
-| `alert-dialog` | `AlertDialog.tsx` | Confirmation dialog with destructive actions | `use-animated-mount` |
-| `avatar` | `Avatar.tsx` | User avatar with size variants | — |
-| `badge` | `Badge.tsx` | Status and label tags | — |
-| `breadcrumb` | `Breadcrumb.tsx` | Navigation breadcrumb trail | — |
-| `button` | `Button.tsx` | Primary, secondary, ghost, outline, destructive variants | — |
-| `card` | `Card.tsx` | Content container with variants | — |
-| `checkbox` | `Checkbox.tsx` | Controlled checkbox with label | — |
-| `combobox` | `Combobox.tsx` | Searchable dropdown select | — |
-| `command` | `Command.tsx` | Command palette container | — |
-| `date-picker` | `DatePicker.tsx` | Date input | — |
-| `dialog` | `Dialog.tsx` | Modal dialog with compound sub-components | `use-animated-mount` |
-| `drawer` | `Drawer.tsx` | Slide-in panel (left/right) | `use-animated-mount` |
-| `dropdown-menu` | `DropdownMenu.tsx` | Contextual dropdown | — |
-| `input` | `Input.tsx` | Text input with variants | — |
-| `pagination` | `Pagination.tsx` | Page navigation | — |
-| `popover` | `Popover.tsx` | Floating content anchored to a trigger | — |
-| `progress` | `Progress.tsx` | Linear progress bar | — |
-| `page-progress` | `PageProgress.tsx` | Animated top progress bar tied to navigation | `use-animated-mount` |
-| `radio-group` | `RadioGroup.tsx` | Radio button group | — |
-| `search-dialog` | `SearchDialog.tsx` | Full-screen search dialog | `use-animated-mount` |
-| `select` | `Select.tsx` | Native select with styling | — |
-| `separator` | `Separator.tsx` | Horizontal/vertical divider | — |
-| `skeleton` | `Skeleton.tsx` | Loading placeholder shapes | — |
-| `slider` | `Slider.tsx` | Range input | — |
-| `switch` | `Switch.tsx` | Toggle switch | — |
-| `tabs` | `Tabs.tsx` | Tabbed content panels | — |
-| `textarea` | `Textarea.tsx` | Multi-line text input | — |
-| `toast` | `Toast.tsx` | Transient notification | `use-animated-mount` |
-| `tooltip` | `Tooltip.tsx` | Hover tooltip with positioning | — |
+| Name | Output | Extra deps |
+|------|--------|------------|
+| `accordion` | `Accordion.tsx` | — |
+| `alert` | `Alert.tsx` | — |
+| `alert-dialog` | `AlertDialog.tsx` | `use-animated-mount` |
+| `aspect-ratio` | `AspectRatio.tsx` | — |
+| `avatar` | `Avatar.tsx` | — |
+| `badge` | `Badge.tsx` | — |
+| `breadcrumb` | `Breadcrumb.tsx` | — |
+| `button` | `Button.tsx` | — |
+| `button-group` | `ButtonGroup.tsx` | — |
+| `calendar` | `Calendar.tsx` | — |
+| `card` | `Card.tsx` | — |
+| `carousel` | `Carousel.tsx` | — |
+| `chart` | `Chart.tsx` | `recharts` |
+| `checkbox` | `Checkbox.tsx` | — |
+| `collapsible` | `Collapsible.tsx` | — |
+| `combobox` | `Combobox.tsx` | — |
+| `command` | `Command.tsx` | — |
+| `context-menu` | `ContextMenu.tsx` | — |
+| `data-table` | `DataTable.tsx` | `@tanstack/react-table` |
+| `date-picker` | `DatePicker.tsx` | — |
+| `dialog` | `Dialog.tsx` | `use-animated-mount` |
+| `drawer` | `Drawer.tsx` | `use-animated-mount` |
+| `dropdown-menu` | `DropdownMenu.tsx` | — |
+| `field` | `Field.tsx` | — |
+| `hover-card` | `HoverCard.tsx` | — |
+| `input` | `Input.tsx` | — |
+| `input-group` | `InputGroup.tsx` | — |
+| `input-otp` | `InputOTP.tsx` | — |
+| `item` | `Item.tsx` | — |
+| `kbd` | `Kbd.tsx` | — |
+| `menubar` | `Menubar.tsx` | — |
+| `native-select` | `NativeSelect.tsx` | — |
+| `navigation-menu` | `NavigationMenu.tsx` | — |
+| `page-progress` | `PageProgress.tsx` | `use-animated-mount` |
+| `pagination` | `Pagination.tsx` | — |
+| `popover` | `Popover.tsx` | — |
+| `progress` | `Progress.tsx` | — |
+| `radio-group` | `RadioGroup.tsx` | — |
+| `resizable` | `Resizable.tsx` | — |
+| `scrollarea` | `ScrollArea.tsx` | — |
+| `search-dialog` | `SearchDialog.tsx` | `use-animated-mount` |
+| `select` | `Select.tsx` | — |
+| `separator` | `Separator.tsx` | — |
+| `sheet` | `Sheet.tsx` | `use-animated-mount` |
+| `skeleton` | `Skeleton.tsx` | — |
+| `slider` | `Slider.tsx` | — |
+| `spinner` | `Spinner.tsx` | — |
+| `switch` | `Switch.tsx` | — |
+| `table` | `Table.tsx` | — |
+| `tabs` | `Tabs.tsx` | — |
+| `textarea` | `Textarea.tsx` | — |
+| `toast` | `Toast.tsx` | `use-animated-mount` |
+| `toggle` | `Toggle.tsx` | — |
+| `toggle-group` | `ToggleGroup.tsx` | — |
+| `tooltip` | `Tooltip.tsx` | — |
+| `typography` | `Typography.tsx` | — |
 
 > **Note:** All components depend on `utils` (`cn()` utility). It is always installed automatically.
 
