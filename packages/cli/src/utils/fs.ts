@@ -82,7 +82,7 @@ export function detectTsconfigAliases(cwd: string): Partial<Config["aliases"]> {
 
       return aliases;
     } catch {
-      // ignore parse errors
+      console.warn(`⚠ Could not parse ${file} — using default path aliases.`);
     }
   }
 
