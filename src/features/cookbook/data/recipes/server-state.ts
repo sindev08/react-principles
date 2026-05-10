@@ -20,12 +20,12 @@ export const serverState: RecipeDetail = {
     filename: "hooks/queries/useUsers.ts",
     code: `import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
-import { getUsers, type GetUsersParams } from '@/services/users';
+import { usersService, type GetUsersParams } from '@/lib/services/users';
 
 export function useUsers(params: GetUsersParams = {}) {
   return useQuery({
     queryKey: queryKeys.users.list(params),
-    queryFn: () => getUsers(params),
+    queryFn: () => usersService.getAll(params),
     staleTime: 1000 * 60 * 5,       // 5 minutes
     placeholderData: (prev) => prev, // no layout shift on page change
   });
@@ -39,13 +39,13 @@ export function useUsers(params: GetUsersParams = {}) {
       code: `import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { getQueryClient } from '@/lib/get-query-client';
 import { queryKeys } from '@/lib/query-keys';
-import { getUsers } from '@/services/users';
+import { usersService } from '@/lib/services/users';
 
 export default async function UsersPage() {
   const qc = getQueryClient();
   await qc.prefetchQuery({
     queryKey: queryKeys.users.list({}),
-    queryFn: () => getUsers({}),
+    queryFn: () => usersService.getAll({}),
   });
   return (
     <HydrationBoundary state={dehydrate(qc)}>
@@ -62,12 +62,12 @@ export default async function UsersPage() {
 import { LoadingState } from '@/components/common/LoadingState';
 
 export function UsersPage() {
-  const { data, isLoading, isError } = useUsers({ page: 1, limit: 10 });
+  const { data, isLoading, isError } = useUsers({ limit: 10, skip: 0 });
 
   if (isLoading) return <LoadingState rows={5} />;
   if (isError) return <p>Failed to load users.</p>;
 
-  return <UserList users={data.data} meta={data.meta} />;
+  return <UserList users={data.users} total={data.total} skip={data.skip} limit={data.limit} />;
 }`,
     },
   },
