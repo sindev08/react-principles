@@ -1,4 +1,5 @@
 import type { User } from "@/shared/types/common";
+import type { CreateUserInput, UpdateUserInput } from "@/shared/types/user";
 import { createApiClient } from "@/lib/api-client";
 import { ENDPOINTS } from "@/lib/endpoints";
 
@@ -34,6 +35,14 @@ export interface SearchUsersParams {
   q: string;
   limit?: number;
   skip?: number;
+}
+
+function splitName(fullName: string): { firstName: string; lastName: string } {
+  const parts = fullName.split(" ");
+  return {
+    firstName: parts[0] ?? "",
+    lastName: parts.slice(1).join(" "),
+  };
 }
 
 function mapUser(raw: DummyJsonUser): User {
@@ -78,5 +87,45 @@ export const usersService = {
         params: { q, ...rest } as Record<string, string | number | boolean | undefined>,
       })
       .then(mapResponse);
+  },
+
+  create(data: CreateUserInput): Promise<User> {
+    const { firstName, lastName } = splitName(data.name);
+    return dummyJsonClient
+      .post<DummyJsonUser>(ENDPOINTS.users.create, {
+        firstName,
+        lastName,
+        email: data.email,
+      })
+      .then(() => ({
+        id: String(Date.now()),
+        name: data.name,
+        email: data.email,
+        role: data.role,
+        status: data.status,
+        createdAt: new Date().toISOString(),
+      }));
+  },
+
+  update(id: string, data: UpdateUserInput): Promise<User> {
+    const body: Record<string, unknown> = {};
+    if (data.name !== undefined) {
+      const { firstName, lastName } = splitName(data.name);
+      body.firstName = firstName;
+      body.lastName = lastName;
+    }
+    if (data.email !== undefined) {
+      body.email = data.email;
+    }
+    return dummyJsonClient
+      .put<DummyJsonUser>(ENDPOINTS.users.update(id), body)
+      .then((raw) => ({
+        id: String(raw.id),
+        name: data.name ?? `${raw.firstName} ${raw.lastName}`,
+        email: data.email ?? raw.email,
+        role: data.role ?? "viewer",
+        status: data.status ?? "active",
+        createdAt: new Date().toISOString(),
+      }));
   },
 };
