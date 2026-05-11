@@ -15,72 +15,124 @@ export const formValidation: RecipeDetail = {
     { title: "Omit server-generated fields", description: "Use .omit({ id: true, createdAt: true }) for create forms. The schema reflects what the user provides." },
     { title: "handleSubmit owns errors", description: "Wrap mutation calls in handleSubmit. Validation errors surface automatically without try/catch in the component." },
     { title: "Reset after success", description: "Call reset() after a successful mutation to clear all field values and dirty state." },
+    { title: "Share schemas between create and edit", description: "Define a base schema, then derive create and edit variants with .omit() or .partial(). Single source of truth for all validation rules." },
   ],
   pattern: {
-    filename: "components/UserForm.tsx",
-    code: `import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+    filename: "lib/schemas/user.ts",
+    code: `import { z } from 'zod';
 
-const createUserSchema = z.object({
-  name:   z.string().min(1, 'Name is required'),
-  email:  z.string().email('Enter a valid email address'),
-  role:   z.enum(['viewer', 'editor', 'admin']),
-  status: z.enum(['active', 'inactive']),
+// Base schema matching DummyJSON user payload
+const baseUserSchema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  lastName:  z.string().min(1, 'Last name is required'),
+  email:     z.string().email('Enter a valid email address'),
+  role:      z.enum(['viewer', 'editor', 'admin']),
+  age:       z.number().int().min(18, 'Must be at least 18').max(120),
 });
 
-type CreateUserValues = z.infer<typeof createUserSchema>;
+// Create: user provides all fields, no id/createdAt
+export const createUserSchema = baseUserSchema;
 
-export function UserForm() {
-  const { register, handleSubmit, reset,
-    formState: { errors, isSubmitting } } = useForm<CreateUserValues>({
-    resolver: zodResolver(createUserSchema),
-    defaultValues: { name: '', email: '', role: 'viewer', status: 'active' },
-  });
+// Edit: all fields optional — partial of base
+export const editUserSchema = baseUserSchema.partial();
 
-  const onSubmit = async (data: CreateUserValues) => {
-    await createUser(data);
-    reset();
-  };
-
-  return <form onSubmit={handleSubmit(onSubmit)}>{/* fields */}</form>;
-}`,
+export type CreateUserValues = z.infer<typeof createUserSchema>;
+export type EditUserValues   = z.infer<typeof editUserSchema>;`,
   },
   implementation: {
     nextjs: {
       description:
-        "In Next.js App Router, pair the form with a Server Action for zero-client-bundle mutations. Validate with the same Zod schema on the server to prevent bypassing client validation.",
-      filename: "app/users/actions.ts",
-      code: `'use server';
+        "In Next.js App Router, pair the form with a React Query mutation. The form is a Client Component ('use client'). On success, invalidate the users list so the table refreshes automatically. Reset the form to clear dirty state.",
+      filename: "features/examples/components/UserCreateForm.tsx",
+      code: `'use client';
 
-import { createUserSchema } from '@/lib/schemas';
-import { db } from '@/lib/db';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useCreateUser } from '@/features/examples/hooks/useCreateUser';
+import { createUserSchema, type CreateUserValues } from '@/lib/schemas/user';
 
-export async function createUserAction(values: unknown) {
-  const data = createUserSchema.parse(values); // validates server-side too
-  await db.user.create({ data });
+export function UserCreateForm() {
+  const { register, handleSubmit, reset,
+    formState: { errors, isSubmitting } } = useForm<CreateUserValues>({
+    resolver: zodResolver(createUserSchema),
+    defaultValues: { firstName: '', lastName: '', email: '', role: 'viewer', age: 18 },
+  });
+
+  const createMutation = useCreateUser();
+
+  const onSubmit = async (data: CreateUserValues) => {
+    await createMutation.mutateAsync(data);
+    reset();
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register('firstName')} placeholder="First name" />
+      {errors.firstName && <p>{errors.firstName.message}</p>}
+
+      <input {...register('lastName')} placeholder="Last name" />
+      {errors.lastName && <p>{errors.lastName.message}</p>}
+
+      <input {...register('email')} placeholder="Email" />
+      {errors.email && <p>{errors.email.message}</p>}
+
+      <button type="submit" disabled={isSubmitting}>Create User</button>
+    </form>
+  );
 }`,
     },
     vite: {
       description:
-        "In Vite, pair the form with a React Query mutation. On success, invalidate the users list so the table refreshes automatically.",
-      filename: "hooks/mutations/useCreateUser.ts",
-      code: `import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createUser } from '@/services/users';
-import { queryKeys } from '@/lib/query-keys';
+        "In Vite, the pattern is identical — React Query mutation with cache invalidation. The only difference is routing: use react-router instead of Next.js file-based routing.",
+      filename: "features/examples/components/UserEditForm.tsx",
+      code: `'use client';
 
-export function useCreateUser() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: createUser,
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: queryKeys.users.lists() });
-    },
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useUser } from '@/features/examples/hooks/useUser';
+import { useUpdateUser } from '@/features/examples/hooks/useUpdateUser';
+import { editUserSchema, type EditUserValues } from '@/lib/schemas/user';
+
+export function UserEditForm({ id }: { id: string }) {
+  const { data: user } = useUser(id);
+  const updateMutation = useUpdateUser(id);
+
+  const { register, handleSubmit, reset,
+    formState: { errors, isSubmitting } } = useForm<EditUserValues>({
+    resolver: zodResolver(editUserSchema),
   });
+
+  // Pre-populate form when user data loads
+  useEffect(() => {
+    if (user) {
+      reset({
+        firstName: user.name.split(' ')[0],
+        lastName:  user.name.split(' ')[1] ?? '',
+        email:     user.email,
+        role:      user.role,
+      });
+    }
+  }, [user, reset]);
+
+  const onSubmit = async (data: EditUserValues) => {
+    await updateMutation.mutateAsync(data);
+  };
+
+  if (!user) return <p>Loading...</p>;
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register('firstName')} placeholder="First name" />
+      {errors.firstName && <p>{errors.firstName.message}</p>}
+
+      <button type="submit" disabled={isSubmitting}>Save Changes</button>
+    </form>
+  );
 }`,
     },
   },
-  lastUpdated: "Feb 26, 2026",
+  lastUpdated: "May 11, 2026",
   contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
   demoKey: "forms",
 };
