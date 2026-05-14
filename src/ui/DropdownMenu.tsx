@@ -85,6 +85,8 @@ DropdownMenu.Trigger = function DropdownMenuTrigger({ children, className, onCli
   return (
     <button
       type="button"
+      aria-expanded={open}
+      aria-haspopup="menu"
       onClick={(event) => {
         onClick?.(event);
         setOpen(!open);
@@ -129,7 +131,9 @@ DropdownMenu.Label = function DropdownMenuLabel({ className, ...props }: HTMLAtt
 }
 
 DropdownMenu.Separator = function DropdownMenuSeparator({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("my-1 h-px bg-slate-200 dark:bg-[#1f2937]", className)} {...props} />;
+  return     <div
+      role="menu"
+      className={cn("my-1 h-px bg-slate-200 dark:bg-[#1f2937]", className)} {...props} />;
 }
 
 DropdownMenu.Item = function DropdownMenuItem({ inset = false, onSelect, onClick, className, disabled, ...props }: DropdownMenuItemProps) {
@@ -138,6 +142,7 @@ DropdownMenu.Item = function DropdownMenuItem({ inset = false, onSelect, onClick
   return (
     <button
       type="button"
+      role="menuitem"
       disabled={disabled}
       onClick={(event) => {
         onClick?.(event);
