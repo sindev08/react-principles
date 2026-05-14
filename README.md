@@ -4,7 +4,7 @@
 
 # React Principles
 
-**Production-grade React patterns, 30+ copy-paste UI components, and a project configurator.**
+**A cookbook of React patterns, a copy-paste UI Kit, and a project configurator.**
 
 [![Live Site](https://img.shields.io/badge/site-reactprinciples.dev-4628F1?style=flat-square)](https://reactprinciples.dev)
 [![npm](https://img.shields.io/npm/v/react-principles?style=flat-square&color=4628F1)](https://www.npmjs.com/package/react-principles)
@@ -18,15 +18,28 @@
 
 ## What is this?
 
-React Principles is a reference implementation for modern React development. Not just a component library — a full production codebase with patterns, architecture decisions, and tradeoffs documented.
+React Principles is an umbrella that contains three distinct products. Each one serves a different audience and has different boundaries.
 
-**Three things in one:**
+### Cookbook — the main product
 
-| | |
-|---|---|
-| **Cookbook** | Real-world React patterns: server state, forms, data tables, auth flows, and more. Each recipe is runnable and explained. |
-| **UI Components** | 30+ copy-paste components installable via CLI. You own the source — no dependency lock-in. |
-| **Configurator** | Web wizard at `/create` to scaffold a React project with your chosen style, stack, and components. |
+A curated, opinionated guide to modern React development. Production-grade patterns and principles organized as a progressive curriculum (Foundation → Applied → Patterns).
+
+- **For:** Mid-level React developers; AI tools that need a structured corpus of React principles.
+- **Not:** Not a beginner tutorial, not a comprehensive React reference, not framework documentation.
+
+### UI Kit — supporting product
+
+A copy-paste React component library. Production-ready components (Tailwind v4, accessibility built-in) that you own fully after install. No runtime dependency on a package.
+
+- **For:** Developers who want pre-built, accessible components they can freely customize.
+- **Not:** Not an npm package to import from. Not a CSS framework. Not a design system with a Figma kit.
+
+### Configurator — supporting tool
+
+A browser-based wizard at `/create` that generates a customized React project starter — pick style system, fonts, colors, and components, then download a ready-to-run codebase aligned with Cookbook patterns.
+
+- **For:** Developers starting a new project who want sensible defaults.
+- **Not:** Not a CLI. Not a replacement for `create-next-app`. Not for adding components to existing projects (that's UI Kit's CLI).
 
 ---
 
