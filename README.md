@@ -145,7 +145,8 @@ react-principles/
 | `/nextjs/cookbook` | Cookbook (Next.js) |
 | `/vitejs/cookbook` | Cookbook (Vite) |
 | `/docs` | Component docs |
-| `/llms.txt` | AI-readable compact cookbook (markdown) |
+| `/llms.txt` | AI-readable compact cookbook (principles + rules) |
+| `/llms-full.txt` | AI-readable full cookbook (with code examples) |
 
 ---
 
@@ -153,7 +154,8 @@ react-principles/
 
 React Principles is structured so AI assistants (Claude, Cursor, Copilot, GPT) can consume the cookbook directly:
 
-- **`/llms.txt`** — compact markdown of all published recipes (principles + rules, no code). Drop into AI context for principle-aware help.
+- **`/llms.txt`** — compact markdown (principles + rules, no code). ~5K tokens. Drop into any AI context for quick principle-aware help.
+- **`/llms-full.txt`** — full markdown with pattern code and framework-specific (Next.js + Vite) implementations. ~17K tokens. Use as RAG context, fine-tuning corpus, or long-form briefing for AI tools.
 - **AI Skills** — invocable commands like `/reactprinciples-review` and `/reactprinciples-component`. Install via [skills.sh](https://www.skills.sh):
   ```bash
   npx skills add sindev08/react-principles-skills
