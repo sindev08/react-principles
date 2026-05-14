@@ -136,7 +136,7 @@ export const RECIPES: Recipe[] = [
     gradient: "linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%)",
     tags: ["Standard", "React Query"],
     category: "Patterns",
-    status: "coming-soon",
+    status: "published",
     order: 9,
   },
   {
@@ -149,7 +149,7 @@ export const RECIPES: Recipe[] = [
     gradient: "linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)",
     tags: ["Standard", "Zustand"],
     category: "Patterns",
-    status: "coming-soon",
+    status: "published",
     order: 10,
   },
   {
@@ -162,7 +162,7 @@ export const RECIPES: Recipe[] = [
     gradient: "linear-gradient(135deg, #f97316 0%, #c2410c 100%)",
     tags: ["Standard", "Zod"],
     category: "Patterns",
-    status: "coming-soon",
+    status: "published",
     order: 11,
   },
   {
