@@ -264,7 +264,7 @@ export default function AICorpusPage() {
         </section>
 
         {/* Final CTA */}
-        <section className="rounded-2xl border border-slate-200 bg-gradient-to-br from-primary/5 to-transparent p-10 text-center dark:border-slate-800">
+        <section className="rounded-2xl border border-slate-200 bg-gradient-to-br from-primary/5 to-transparent p-6 text-center sm:p-10 dark:border-slate-800">
           <h2 className="mb-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-white lg:text-3xl">
             Ready to install?
           </h2>
@@ -272,15 +272,15 @@ export default function AICorpusPage() {
             One command. Works across Claude Code, Cursor, and any tool
             supporting Agent Skills.
           </p>
-          <pre className="mx-auto mb-4 inline-block rounded-lg bg-slate-900 px-5 py-3 text-sm text-slate-100 dark:bg-black">
+          <pre className="mb-4 overflow-x-auto rounded-lg bg-slate-900 px-4 py-3 text-left text-xs text-slate-100 sm:px-5 sm:text-center sm:text-sm dark:bg-black">
             <code>{SKILLS_INSTALL_CMD}</code>
           </pre>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <div className="mt-6 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
             <Link
               href={SKILLS_REPO_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-900 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:text-white dark:hover:bg-slate-800"
+              className="flex items-center justify-center gap-2 rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-900 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:text-white dark:hover:bg-slate-800"
             >
               View skills repo
               <span className="material-symbols-outlined text-base">
@@ -289,7 +289,7 @@ export default function AICorpusPage() {
             </Link>
             <Link
               href="/cookbook"
-              className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              className="flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
             >
               Browse the cookbook
             </Link>
