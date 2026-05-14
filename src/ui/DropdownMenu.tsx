@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/shared/utils/cn";
 

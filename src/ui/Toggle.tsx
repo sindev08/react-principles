@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/shared/utils/cn";
 
