@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ExamplesShell } from "@/features/examples/components/ExamplesShell";
 
 export const metadata: Metadata = {
   robots: {
@@ -12,5 +13,5 @@ export default function ExamplesLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return <ExamplesShell>{children}</ExamplesShell>;
 }

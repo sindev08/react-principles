@@ -1,12 +1,18 @@
 "use client";
 
+import { useShallow } from "zustand/shallow";
 import { useAppStore } from "@/shared/stores/useAppStore";
-import { useFilterStore } from "@/shared/stores/useFilterStore";
+import { UserFilters } from "@/features/examples/components/UserFilters";
 
 export default function StatePage() {
-  const { theme, sidebarOpen, toggleTheme, toggleSidebar } = useAppStore();
-  const { search, role, status, setSearch, setRole, setStatus, reset } =
-    useFilterStore();
+  const { theme, sidebarOpen, toggleTheme, toggleSidebar } = useAppStore(
+    useShallow((s) => ({
+      theme: s.theme,
+      sidebarOpen: s.sidebarOpen,
+      toggleTheme: s.toggleTheme,
+      toggleSidebar: s.toggleSidebar,
+    })),
+  );
 
   return (
     <main className="mx-auto max-w-4xl px-6 py-12">
@@ -40,12 +46,14 @@ export default function StatePage() {
             </div>
             <div className="flex gap-2 pt-2">
               <button
+                type="button"
                 onClick={toggleTheme}
                 className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-300"
               >
                 Toggle Theme
               </button>
               <button
+                type="button"
                 onClick={toggleSidebar}
                 className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
               >
@@ -58,62 +66,8 @@ export default function StatePage() {
         {/* Filter Store */}
         <section className="rounded-xl border border-gray-200 p-6 dark:border-gray-800">
           <h2 className="text-xl font-semibold">Filter Store</h2>
-          <div className="mt-4 space-y-3">
-            <div>
-              <label className="block text-sm text-gray-600 dark:text-gray-400">
-                Search
-              </label>
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search users..."
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-600 dark:text-gray-400">
-                Role
-              </label>
-              <select
-                value={role ?? ""}
-                onChange={(e) =>
-                  setRole(
-                    (e.target.value || null) as "admin" | "editor" | "viewer" | null,
-                  )
-                }
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900"
-              >
-                <option value="">All roles</option>
-                <option value="admin">Admin</option>
-                <option value="editor">Editor</option>
-                <option value="viewer">Viewer</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm text-gray-600 dark:text-gray-400">
-                Status
-              </label>
-              <select
-                value={status ?? ""}
-                onChange={(e) =>
-                  setStatus(
-                    (e.target.value || null) as "active" | "inactive" | null,
-                  )
-                }
-                className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900"
-              >
-                <option value="">All statuses</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
-            </div>
-            <button
-              onClick={reset}
-              className="mt-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium transition-colors hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
-            >
-              Reset Filters
-            </button>
+          <div className="mt-4">
+            <UserFilters />
           </div>
         </section>
       </div>
