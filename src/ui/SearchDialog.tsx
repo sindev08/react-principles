@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 import { useAnimatedMount } from "@/shared/hooks/useAnimatedMount";
 import { cn } from "@/shared/utils/cn";
