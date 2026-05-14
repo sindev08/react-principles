@@ -179,19 +179,20 @@ export function HeroSection() {
           The Living Cookbook for Modern React
         </h1>
 
-        <p className="mx-auto mb-6 max-w-2xl text-xl leading-relaxed text-slate-600 dark:text-slate-200">
+        <p className="mx-auto mb-8 max-w-2xl text-xl leading-relaxed text-slate-600 dark:text-slate-200">
           A high-end developer reference implementation for scalable React
           architectures. Isolated patterns, real-world examples, and
           production-ready code.
         </p>
 
-        <p className="mx-auto mb-10 inline-flex max-w-2xl flex-wrap items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-          <span className="material-symbols-outlined text-base text-primary">
-            auto_awesome
+        <div className="mb-10 flex justify-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-300">
+            <span className="material-symbols-outlined text-base text-primary">
+              auto_awesome
+            </span>
+            Designed for humans and AI assistants
           </span>
-          Designed for humans and AI assistants — drop into Claude, Cursor, or
-          Copilot for principle-aware code.
-        </p>
+        </div>
 
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
