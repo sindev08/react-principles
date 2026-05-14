@@ -31,7 +31,7 @@ const FEATURED_RECIPES = [
     icon: "cloud_sync",
     gradient: "linear-gradient(135deg, #0ea5e9 0%, #0369a1 100%)",
     category: "Patterns",
-    published: false,
+    published: true,
   },
   {
     slug: "form-validation",
@@ -41,7 +41,7 @@ const FEATURED_RECIPES = [
     icon: "fact_check",
     gradient: "linear-gradient(135deg, #f97316 0%, #c2410c 100%)",
     category: "Patterns",
-    published: false,
+    published: true,
   },
 ] as const;
 
