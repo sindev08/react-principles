@@ -98,9 +98,7 @@ export function UserForm() {
       description:
         "In Vite, the pattern is identical — React Query mutation with cache invalidation. The only difference is routing: use react-router instead of Next.js file-based routing.",
       filename: "features/examples/components/UserEditForm.tsx",
-      code: `'use client';
-
-import { useEffect } from 'react';
+      code: `import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type z } from 'zod';
