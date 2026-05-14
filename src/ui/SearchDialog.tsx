@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useAnimatedMount } from "@/shared/hooks/useAnimatedMount";
 import { cn } from "@/shared/utils/cn";
 
@@ -33,6 +33,8 @@ export function SearchDialog({
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const dialogId = useId();
   const { mounted, visible } = useAnimatedMount(open, 150);
 
   const results = query.trim()
@@ -60,29 +62,44 @@ export function SearchDialog({
     setActiveIndex(0);
   }, [query]);
 
-  // Keyboard navigation
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        setActiveIndex((i) => Math.min(i + 1, results.length - 1));
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        setActiveIndex((i) => Math.max(i - 1, 0));
-      } else if (e.key === "Enter") {
-        const item = results[activeIndex];
-        if (item) {
-          onNavigate(item.href);
-          onClose();
-        }
-      } else if (e.key === "Escape") {
+  // Keyboard navigation + focus trap
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((i) => Math.min(i + 1, results.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Enter") {
+      const item = results[activeIndex];
+      if (item) {
+        onNavigate(item.href);
         onClose();
       }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [open, results, activeIndex, onNavigate, onClose]);
+    } else if (e.key === "Escape") {
+      onClose();
+    } else if (e.key === "Tab" && panelRef.current) {
+      const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+        'input, button, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    }
+  }, [results, activeIndex, onNavigate, onClose]);
+
+  useEffect(() => {
+    if (!open) return;
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, handleKeyDown]);
 
   if (!mounted) return null;
 
@@ -101,6 +118,10 @@ export function SearchDialog({
 
       {/* Panel */}
       <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Search"
         className={cn(
           "relative z-10 mx-4 w-full max-w-xl rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] shadow-2xl transition-all duration-150",
           visible ? "scale-100 opacity-100" : "scale-95 opacity-0",
@@ -257,6 +278,8 @@ function ResultGroup({
         return (
           <button
             key={item.href}
+            role="option"
+            aria-selected={isActive || undefined}
             onMouseEnter={() => onHover(globalIdx)}
             onClick={() => onSelect(item.href)}
             className={cn(
