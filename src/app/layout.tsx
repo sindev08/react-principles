@@ -153,6 +153,12 @@ export default function RootLayout({
           media="(prefers-color-scheme: dark)"
         />
         <link rel="icon" href="/favicon-light.svg?v=3" type="image/svg+xml" />
+        <link
+          rel="alternate"
+          type="text/markdown"
+          href="/llms.txt"
+          title="React Principles cookbook (compact, for AI tools)"
+        />
       </head>
       <body className="min-h-screen bg-(--background) text-(--foreground) antialiased">
                 {process.env.NODE_ENV === "production" && (
