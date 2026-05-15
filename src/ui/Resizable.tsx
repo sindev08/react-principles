@@ -148,8 +148,9 @@ Resizable.Handle = function ResizableHandle({
   containerRef,
   activeHandle,
   setActiveHandle,
+  direction: dir,
 }: ResizableHandleProps & ResizableHandleInternalProps) {
-  const direction = "horizontal"; // Hardcode for now
+  const direction = dir ?? "horizontal";
   const isHorizontal = direction === "horizontal";
 
   const handleMouseDown = (e: React.MouseEvent) => {

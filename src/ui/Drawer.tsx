@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, type HTMLAttributes, type ReactNode } from "react";
+import { useEffect, useRef, type HTMLAttributes, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/shared/utils/cn";
 import { useAnimatedMount } from "@/shared/hooks/useAnimatedMount";
@@ -99,12 +99,28 @@ Drawer.Footer = function DrawerFooter({ children, className, ...props }: DrawerF
 
 export function Drawer({ open, onClose, side = "right", size = "md", children, className }: DrawerProps) {
   const { mounted, visible } = useAnimatedMount(open, 300);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
 
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
     };
 
     document.addEventListener("keydown", handleKey);
@@ -133,6 +149,7 @@ export function Drawer({ open, onClose, side = "right", size = "md", children, c
 
       {/* Panel */}
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         className={cn(

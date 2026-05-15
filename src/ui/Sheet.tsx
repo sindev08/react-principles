@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, type HTMLAttributes, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, type HTMLAttributes, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/shared/utils/cn";
 import { useAnimatedMount } from "@/shared/hooks/useAnimatedMount";
@@ -174,6 +174,30 @@ Sheet.Close = function SheetClose({ children, className, ...props }: SheetCloseP
 Sheet.Content = function SheetContent({ children, className, ...props }: SheetContentProps) {
   const { open, onOpenChange, side, size } = useSheetContext();
   const { mounted, visible } = useAnimatedMount(open, 300);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [open]);
 
   if (!mounted) return null;
 
@@ -192,6 +216,7 @@ Sheet.Content = function SheetContent({ children, className, ...props }: SheetCo
 
       {/* Panel */}
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         className={cn(

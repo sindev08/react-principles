@@ -131,9 +131,7 @@ DropdownMenu.Label = function DropdownMenuLabel({ className, ...props }: HTMLAtt
 }
 
 DropdownMenu.Separator = function DropdownMenuSeparator({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return     <div
-      role="menu"
-      className={cn("my-1 h-px bg-slate-200 dark:bg-[#1f2937]", className)} {...props} />;
+  return <div role="separator" className={cn("my-1 h-px bg-slate-200 dark:bg-[#1f2937]", className)} {...props} />;
 }
 
 DropdownMenu.Item = function DropdownMenuItem({ inset = false, onSelect, onClick, className, disabled, ...props }: DropdownMenuItemProps) {

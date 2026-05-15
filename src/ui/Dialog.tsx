@@ -92,6 +92,7 @@ Dialog.Footer = function DialogFooter({ children, className, ...props }: DialogF
 
 export function Dialog({ open, onClose, size = "md", children, className }: DialogProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const { mounted, visible } = useAnimatedMount(open, 200);
 
   useEffect(() => {
@@ -99,6 +100,21 @@ export function Dialog({ open, onClose, size = "md", children, className }: Dial
 
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
     };
 
     document.addEventListener("keydown", handleKey);
@@ -130,6 +146,7 @@ export function Dialog({ open, onClose, size = "md", children, className }: Dial
 
       {/* Panel */}
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         className={cn(

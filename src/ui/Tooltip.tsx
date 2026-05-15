@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/shared/utils/cn";
 
-type TooltipSide = "top" | "bottom" | "left" | "right";
+export type TooltipSide = "top" | "bottom" | "left" | "right";
 
 interface TooltipContextValue {
   open: boolean;
