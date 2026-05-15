@@ -12,6 +12,8 @@ const meta = {
 export default meta;
 type Story = StoryObj;
 
+export const Default: Story = {};
+
 export const Horizontal: Story = {
   render: () => (
     <StorySurface className="w-[800px]">

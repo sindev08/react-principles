@@ -3,10 +3,12 @@
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Typography } from "@/ui/Typography";
+import type { TypographyVariant } from "@/ui/Typography";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TOC_ITEMS = [
+  { label: "Theme Preview", href: "#comparison" },
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
   { label: "Copy-Paste", href: "#copy-paste" },
@@ -14,6 +16,70 @@ const TOC_ITEMS = [
 ];
 
 const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-typography--default";
+
+// ─── Forced-theme preview ─────────────────────────────────────────────────────
+
+const FORCED_TYPOGRAPHY_LIGHT: Record<TypographyVariant, string> = {
+  h1: "text-4xl font-black tracking-tight text-slate-900 md:text-5xl",
+  h2: "text-2xl font-bold text-slate-900",
+  h3: "text-xl font-bold text-slate-900",
+  h4: "text-lg font-semibold text-slate-900",
+  p: "text-sm leading-relaxed text-slate-600",
+  lead: "text-lg leading-relaxed text-slate-700",
+  muted: "text-sm text-slate-500",
+  small: "text-xs text-slate-500",
+  blockquote: "border-l-4 border-[#4628F1] pl-4 italic text-slate-700",
+  code: "font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded text-slate-900",
+  list: "list-disc pl-4 space-y-1 text-sm text-slate-600",
+};
+
+const FORCED_TYPOGRAPHY_DARK: Record<TypographyVariant, string> = {
+  h1: "text-4xl font-black tracking-tight text-white md:text-5xl",
+  h2: "text-2xl font-bold text-white",
+  h3: "text-xl font-bold text-white",
+  h4: "text-lg font-semibold text-white",
+  p: "text-sm leading-relaxed text-slate-400",
+  lead: "text-lg leading-relaxed text-slate-300",
+  muted: "text-sm text-slate-400",
+  small: "text-xs text-slate-400",
+  blockquote: "border-l-4 border-[#4628F1] pl-4 italic text-slate-300",
+  code: "font-mono text-xs bg-[#1f2937] px-1.5 py-0.5 rounded text-white",
+  list: "list-disc pl-4 space-y-1 text-sm text-slate-400",
+};
+
+function ThemedTypographyGrid({ theme }: { theme: "light" | "dark" }) {
+  const d = theme === "dark";
+  const bg = d ? "bg-[#0d1117]" : "bg-white";
+  const border = d ? "border-[#1f2937]" : "border-slate-200";
+  const forced = d ? FORCED_TYPOGRAPHY_DARK : FORCED_TYPOGRAPHY_LIGHT;
+
+  return (
+    <div className={`rounded-xl border ${border} ${bg} p-6`}>
+      <div className="space-y-4">
+        <div>
+          <h1 className={forced.h1}>Heading 1</h1>
+          <h2 className={forced.h2}>Heading 2</h2>
+          <h3 className={forced.h3}>Heading 3</h3>
+          <h4 className={forced.h4}>Heading 4</h4>
+        </div>
+        <div className="space-y-2">
+          <p className={forced.lead}>This is lead text — perfect for introductions.</p>
+          <p className={forced.p}>This is body text for regular content paragraphs.</p>
+          <p className={forced.muted}>This is muted text for secondary information.</p>
+          <small className={forced.small}>This is small text for fine print.</small>
+        </div>
+        <div className="space-y-2">
+          <blockquote className={forced.blockquote}>
+            Good typography is invisible — it lets the content shine.
+          </blockquote>
+          <code className={forced.code}>const example = "inline code";</code>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Code Snippets ────────────────────────────────────────────────────────────
 
 const CODE_SNIPPET = `import { Typography } from "@/ui/Typography";
 
@@ -128,11 +194,41 @@ export default function TypographyDocPage() {
 
         <CliInstallBlock name="typography" />
 
-        {/* 01 Live Demo */}
-        <section id="demo" className="mb-16">
+        {/* 01 Theme Preview */}
+        <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
+            </div>
+            <Typography variant="h2">Theme Preview</Typography>
+          </div>
+          <Typography variant="p" className="mb-8">
+            All typography variants across both themes — forced styling for
+            accurate side-by-side comparison.
+          </Typography>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-3 h-3 rounded-full shadow-xs bg-amber-400 shadow-amber-300" />
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Light</span>
+              </div>
+              <ThemedTypographyGrid theme="light" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-3 h-3 bg-indigo-500 rounded-full shadow-xs shadow-indigo-400" />
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Dark</span>
+              </div>
+              <ThemedTypographyGrid theme="dark" />
+            </div>
+          </div>
+        </section>
+
+        {/* 02 Live Demo */}
+        <section id="demo" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">02</span>
             </div>
             <Typography variant="h2">Live Demo</Typography>
           </div>
@@ -208,11 +304,11 @@ export default function TypographyDocPage() {
           </div>
         </section>
 
-        {/* 02 Code Snippet */}
+        {/* 03 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">02</span>
+              <span className="text-sm font-bold">03</span>
             </div>
             <Typography variant="h2">Code Snippet</Typography>
           </div>
@@ -221,11 +317,11 @@ export default function TypographyDocPage() {
           </CodeBlock>
         </section>
 
-        {/* 03 Copy-Paste */}
+        {/* 04 Copy-Paste */}
         <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">03</span>
+              <span className="text-sm font-bold">04</span>
             </div>
             <Typography variant="h2">Copy-Paste (Single File)</Typography>
           </div>
@@ -234,11 +330,11 @@ export default function TypographyDocPage() {
           </CodeBlock>
         </section>
 
-        {/* 04 Props */}
+        {/* 05 Props */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">04</span>
+              <span className="text-sm font-bold">05</span>
             </div>
             <Typography variant="h2">Props</Typography>
           </div>

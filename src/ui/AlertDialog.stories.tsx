@@ -36,6 +36,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+export const Default: Story = {};
+
 export const Destructive: Story = {};
 
 export const Warning: Story = {

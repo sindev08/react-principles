@@ -3,10 +3,12 @@
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Spinner } from "@/ui/Spinner";
+import type { SpinnerVariant, SpinnerSize } from "@/ui/Spinner";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TOC_ITEMS = [
+  { label: "Theme Preview", href: "#comparison" },
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
   { label: "Copy-Paste", href: "#copy-paste" },
@@ -14,6 +16,75 @@ const TOC_ITEMS = [
 ];
 
 const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-spinner--default";
+
+// ─── Forced-theme preview ─────────────────────────────────────────────────────
+
+const FORCED_SPINNER_LIGHT: Record<SpinnerVariant, string> = {
+  default: "text-[#4628F1]",
+  muted: "text-slate-400",
+};
+
+const FORCED_SPINNER_DARK: Record<SpinnerVariant, string> = {
+  default: "text-[#4628F1]",
+  muted: "text-slate-600",
+};
+
+const SPINNER_VARIANTS: { variant: SpinnerVariant; label: string }[] = [
+  { variant: "default", label: "Default" },
+  { variant: "muted", label: "Muted" },
+];
+
+function SpinnerSvg({ size = "md", colorClass }: { size?: SpinnerSize; colorClass: string }) {
+  const sizeMap: Record<SpinnerSize, string> = { sm: "w-4 h-4", md: "w-5 h-5", lg: "w-6 h-6" };
+  return (
+    <svg
+      aria-hidden="true"
+      className={`animate-spin ${sizeMap[size]} ${colorClass}`}
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+    </svg>
+  );
+}
+
+function ThemedSpinnerGrid({ theme }: { theme: "light" | "dark" }) {
+  const d = theme === "dark";
+  const bg = d ? "bg-[#0d1117]" : "bg-white";
+  const border = d ? "border-[#1f2937]" : "border-slate-200";
+  const forced = d ? FORCED_SPINNER_DARK : FORCED_SPINNER_LIGHT;
+
+  return (
+    <div className={`rounded-xl border ${border} ${bg} p-6`}>
+      <div className="flex flex-wrap items-center gap-6">
+        {SPINNER_VARIANTS.map(({ variant, label }) => (
+          <div key={variant} className="flex items-center gap-2">
+            <SpinnerSvg colorClass={forced[variant]} />
+            <span className={`text-xs font-medium ${d ? "text-slate-300" : "text-slate-700"}`}>{label}</span>
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-6 mt-4">
+        <div className="flex items-center gap-2">
+          <SpinnerSvg size="sm" colorClass={forced.default} />
+          <span className={`text-xs font-medium ${d ? "text-slate-300" : "text-slate-700"}`}>Small</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <SpinnerSvg size="md" colorClass={forced.default} />
+          <span className={`text-xs font-medium ${d ? "text-slate-300" : "text-slate-700"}`}>Medium</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <SpinnerSvg size="lg" colorClass={forced.default} />
+          <span className={`text-xs font-medium ${d ? "text-slate-300" : "text-slate-700"}`}>Large</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Code Snippets ────────────────────────────────────────────────────────────
 
 const CODE_SNIPPET = `import { Spinner } from "@/ui/Spinner";
 
@@ -122,11 +193,41 @@ export default function SpinnerDocPage() {
 
         <CliInstallBlock name="spinner" />
 
-        {/* 01 Live Demo */}
-        <section id="demo" className="mb-16">
+        {/* 01 Theme Preview */}
+        <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
+          </div>
+          <p className="mb-8 leading-relaxed text-slate-600 dark:text-slate-400">
+            Both variants and three sizes across both themes — forced styling for
+            accurate side-by-side comparison.
+          </p>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-3 h-3 rounded-full shadow-xs bg-amber-400 shadow-amber-300" />
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Light</span>
+              </div>
+              <ThemedSpinnerGrid theme="light" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-3 h-3 bg-indigo-500 rounded-full shadow-xs shadow-indigo-400" />
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Dark</span>
+              </div>
+              <ThemedSpinnerGrid theme="dark" />
+            </div>
+          </div>
+        </section>
+
+        {/* 02 Live Demo */}
+        <section id="demo" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">02</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
           </div>
@@ -220,11 +321,11 @@ export default function SpinnerDocPage() {
           </div>
         </section>
 
-        {/* 02 Code Snippet */}
+        {/* 03 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">02</span>
+              <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
           </div>
@@ -233,11 +334,11 @@ export default function SpinnerDocPage() {
           </CodeBlock>
         </section>
 
-        {/* 03 Copy-Paste */}
+        {/* 04 Copy-Paste */}
         <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">03</span>
+              <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
           </div>
@@ -246,11 +347,11 @@ export default function SpinnerDocPage() {
           </CodeBlock>
         </section>
 
-        {/* 04 Props */}
+        {/* 05 Props */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">04</span>
+              <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>

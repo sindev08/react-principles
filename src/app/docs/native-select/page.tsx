@@ -3,11 +3,13 @@
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { NativeSelect } from "@/ui/NativeSelect";
+import type { NativeSelectSize } from "@/ui/NativeSelect";
 import { useState } from "react";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TOC_ITEMS = [
+  { label: "Theme Preview", href: "#comparison" },
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
   { label: "Copy-Paste", href: "#copy-paste" },
@@ -15,6 +17,68 @@ const TOC_ITEMS = [
 ];
 
 const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-nativeselect--default";
+
+// ─── Forced-theme preview ─────────────────────────────────────────────────────
+
+const SELECT_BASE_LIGHT =
+  "appearance-none w-full rounded-lg border border-slate-200 bg-white text-slate-900";
+
+const SELECT_BASE_DARK =
+  "appearance-none w-full rounded-lg border border-[#1f2937] bg-[#0d1117] text-white";
+
+const SELECT_SIZE_CLASSES: Record<NativeSelectSize, string> = {
+  sm: "h-8 px-3 pr-9 text-xs",
+  md: "h-10 px-3.5 pr-10 text-sm",
+  lg: "h-12 px-4 pr-11 text-base",
+};
+
+function DropdownIcon() {
+  return (
+    <svg
+      className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500"
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M3 4.5L6 7.5L9 4.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ThemedSelectGrid({ theme }: { theme: "light" | "dark" }) {
+  const d = theme === "dark";
+  const bg = d ? "bg-[#0d1117]" : "bg-white";
+  const border = d ? "border-[#1f2937]" : "border-slate-200";
+  const base = d ? SELECT_BASE_DARK : SELECT_BASE_LIGHT;
+
+  return (
+    <div className={`rounded-xl border ${border} ${bg} p-6`}>
+      <div className="flex flex-wrap items-center gap-4">
+        {(["sm", "md", "lg"] as NativeSelectSize[]).map((size) => (
+          <div key={size} className="relative w-40">
+            <select className={`${base} ${SELECT_SIZE_CLASSES[size]}`} defaultValue="">
+              <option value="" disabled>Select size: {size}</option>
+              <option value="a">Option A</option>
+              <option value="b">Option B</option>
+              <option value="c">Option C</option>
+            </select>
+            <DropdownIcon />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Code Snippets ────────────────────────────────────────────────────────────
 
 const CODE_SNIPPET = `import { NativeSelect } from "@/ui/NativeSelect";
 
@@ -153,7 +217,7 @@ const PROPS_ROWS = [
   { prop: "options", type: "NativeSelectOption[]", default: "—", description: "Array of { label, value, disabled? } for programmatic rendering." },
   { prop: "placeholder", type: "string", default: "—", description: "Text for empty first option (renders as disabled)." },
   { prop: "size", type: '"sm" | "md" | "lg"', default: '"md"', description: "Controls select height and text size." },
-  { prop: "error", type: "string", default: "—", description: "Error message — turns border red and replaces description." },
+  { prop: "error", type: "string", default: "—", description: "Error message - turns border red and replaces description." },
   { prop: "disabled", type: "boolean", default: "false", description: "Disables interaction and reduces opacity." },
   { prop: "label", type: "string", default: "—", description: "Label text displayed above the select." },
   { prop: "description", type: "string", default: "—", description: "Helper text displayed below the select (hidden when error present)." },
@@ -205,7 +269,7 @@ export default function NativeSelectDocPage() {
             Native Select
           </h1>
           <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-400">
-            A styled native select element. Lightweight alternative to custom dropdowns — uses OS-optimized pickers on mobile devices.
+            A styled native select element. Lightweight alternative to custom dropdowns - uses OS-optimized pickers on mobile devices.
           </p>
           <div className="flex flex-wrap gap-2 mt-6">
             {["Accessible", "Dark Mode", "3 Sizes", "Mobile Optimized", "Lightweight"].map((tag) => (
@@ -218,11 +282,41 @@ export default function NativeSelectDocPage() {
 
         <CliInstallBlock name="native-select" />
 
-        {/* 01 Live Demo */}
-        <section id="demo" className="mb-16">
+        {/* 01 Theme Preview */}
+        <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
+          </div>
+          <p className="mb-8 leading-relaxed text-slate-600 dark:text-slate-400">
+            All three sizes across both themes - forced styling for
+            accurate side-by-side comparison.
+          </p>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-3 h-3 rounded-full shadow-xs bg-amber-400 shadow-amber-300" />
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Light</span>
+              </div>
+              <ThemedSelectGrid theme="light" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-3 h-3 bg-indigo-500 rounded-full shadow-xs shadow-indigo-400" />
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Dark</span>
+              </div>
+              <ThemedSelectGrid theme="dark" />
+            </div>
+          </div>
+        </section>
+
+        {/* 02 Live Demo */}
+        <section id="demo" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">02</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
           </div>
@@ -279,11 +373,11 @@ export default function NativeSelectDocPage() {
           </div>
         </section>
 
-        {/* 02 Code Snippet */}
+        {/* 03 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">02</span>
+              <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
           </div>
@@ -292,11 +386,11 @@ export default function NativeSelectDocPage() {
           </CodeBlock>
         </section>
 
-        {/* 03 Copy-Paste */}
+        {/* 04 Copy-Paste */}
         <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">03</span>
+              <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
           </div>
@@ -305,11 +399,11 @@ export default function NativeSelectDocPage() {
           </CodeBlock>
         </section>
 
-        {/* 04 Props */}
+        {/* 05 Props */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">04</span>
+              <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>
