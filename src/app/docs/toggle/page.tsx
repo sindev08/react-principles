@@ -195,6 +195,13 @@ export default function ToggleDocsPage() {
             A two-state button that persists its pressed/active state. Visually reflects
             on/off state and supports controlled and uncontrolled modes.
           </p>
+          <div className="flex flex-wrap gap-2 mt-6">
+            {["Accessible", "Dark Mode", "2 Variants", "3 Sizes", "Pressed State"].map((tag) => (
+              <span key={tag} className="rounded-full border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-400">
+                {tag}
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* CliInstallBlock */}
