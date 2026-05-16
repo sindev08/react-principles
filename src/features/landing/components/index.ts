@@ -4,6 +4,7 @@ export { HeroSection } from "./HeroSection";
 export { WhySection } from "./WhySection";
 export { ComponentShowcaseSection } from "./ComponentShowcaseSection";
 export { ConfiguratorTeaserSection } from "./ConfiguratorTeaserSection";
+export { AICorpusTeaserSection } from "./AICorpusTeaserSection";
 export { CookbookTeaserSection } from "./CookbookTeaserSection";
 export { TechStackSection } from "./TechStackSection";
 export { ProjectStructureSection } from "./ProjectStructureSection";

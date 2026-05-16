@@ -51,7 +51,7 @@ export const COMPONENT_DEPENDENCIES: Record<string, PackageEntry[]> = {
   Checkbox: [
     { name: "@radix-ui/react-checkbox", version: "^1.1.4" },
   ],
-  Radio: [
+  RadioGroup: [
     { name: "@radix-ui/react-radio-group", version: "^1.2.3" },
   ],
   Switch: [
@@ -94,7 +94,7 @@ export const COMPONENT_DEPENDENCIES: Record<string, PackageEntry[]> = {
   // Other
   Avatar: [], // No external dependencies
   Button: [], // No external dependencies
-  Dropdown: [
+  DropdownMenu: [
     { name: "@radix-ui/react-dropdown-menu", version: "^2.1.6" },
   ],
   Carousel: [

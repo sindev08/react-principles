@@ -1,7 +1,41 @@
 # React Principles
 
 ## Project Overview
-A living cookbook and UI kit for modern React development. Provides production-grade pattern examples (forms, data fetching, state management) alongside a reusable component library distributed via a CLI (`npx react-principles add`). Published at reactprinciples.dev.
+
+React Principles is an umbrella that contains three distinct products. Understanding which product a task belongs to is critical — scope, audience, and boundaries differ per product.
+
+Published at reactprinciples.dev.
+
+### 1. Cookbook (main product)
+
+The principles. Opinionated, curated guide to modern React development — production-grade patterns and principles organized as a progressive curriculum (Foundation → Applied → Patterns).
+
+- **For:** Mid-level React developers; AI tools that need a structured corpus of React principles.
+- **NOT:** Not a beginner tutorial. Not a comprehensive React reference. Not framework documentation (Next.js / Vite docs are not duplicated). Not a collection of disconnected blog posts.
+- **Output:** Knowledge — web pages (reactprinciples.dev/cookbook), AI corpus (llms.txt), invocable skills (`/reactprinciples-*`).
+
+### 2. UI Kit (supporting product)
+
+The building blocks. Copy-paste React component library — production-ready components (Tailwind v4, accessibility built-in) that developers own fully after install. No runtime dependency on a package.
+
+- **For:** React developers who want pre-built, accessible components they can freely customize.
+- **NOT:** Not an npm package to import from (no `import { Button } from 'react-principles'`). Not a CSS framework. Not a design system with Figma kit. Not opinionated about app architecture.
+- **Output:** Component files (Button.tsx, Dialog.tsx, etc.) copied to user's project via `npx react-principles add <name>`.
+
+### 3. Configurator (supporting tool)
+
+The starter generator. Browser-based wizard that generates a customized React project starter — user picks style system, fonts, colors, components, then downloads a ready-to-run codebase aligned with Cookbook patterns.
+
+- **For:** Developers starting a new project who want to skip boilerplate.
+- **NOT:** Not a CLI tool (browser-based). Not a replacement for `create-next-app`. Not for adding components to existing projects (that's UI Kit's CLI). Doesn't replace the Cookbook or UI Kit — it uses them.
+- **Output:** A downloadable project starter — codebase + pre-configured dependencies, generated client-side.
+
+### Relationships
+
+- Cookbook recipes reference UI Kit components in code examples
+- Configurator uses UI Kit internally and picks UI Kit components to include in generated starters
+- Configurator generates starter projects aligned with Cookbook patterns
+- All three live in the same monorepo but serve different audiences and have independent v1.0 milestones
 
 ## Stack
 - **Runtime:** Node.js >=18

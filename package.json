@@ -2,7 +2,7 @@
   "name": "react-principles",
   "version": "0.0.1",
   "private": true,
-  "description": "A living cookbook and UI kit for modern React development",
+  "description": "React Principles — cookbook of React patterns, copy-paste UI Kit, and project configurator",
   "author": "Singgih Budi Purnadi",
   "license": "MIT",
   "repository": {

@@ -28,6 +28,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.85,
     },
+    {
+      url: `${BASE_URL}/ai`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.85,
+    },
   ];
 
   // Docs pages (only published — skip "soon" items)
