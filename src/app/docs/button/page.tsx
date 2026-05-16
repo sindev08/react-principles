@@ -139,6 +139,7 @@ const PROPS_ROWS = [
   { prop: "size", type: '"sm" | "md" | "lg"', default: '"md"', description: "Controls height, padding, and font size." },
   { prop: "isLoading", type: "boolean", default: "false", description: "Shows a spinner and disables the button while true." },
   { prop: "disabled", type: "boolean", default: "false", description: "Disables interaction and reduces opacity." },
+  { prop: "asChild", type: "boolean", default: "false", description: "Evaluates children as the trigger element instead of rendering a <button>." },
   { prop: "children", type: "ReactNode", default: "—", description: "Button label content." },
   { prop: "className", type: "string", default: "—", description: "Extra CSS classes merged via cn()." },
 ];

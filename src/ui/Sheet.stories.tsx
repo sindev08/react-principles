@@ -14,6 +14,8 @@ const meta = {
 export default meta;
 type Story = StoryObj;
 
+export const Default: Story = {};
+
 export const RightSide: Story = {
   render: () => {
     // eslint-disable-next-line react-hooks/rules-of-hooks

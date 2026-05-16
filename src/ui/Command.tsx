@@ -1,9 +1,14 @@
-import { createContext, useContext, useEffect, useMemo, useState, type HTMLAttributes, type InputHTMLAttributes, type ReactNode } from "react";
+"use client";
+
+import { createContext, useCallback, useContext, useEffect, useId, useMemo, useState, type HTMLAttributes, type InputHTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/shared/utils/cn";
 
 interface CommandContextValue {
   query: string;
   setQuery: (query: string) => void;
+  visibleCount: number;
+  incrementVisible: () => void;
+  decrementVisible: () => void;
 }
 
 const CommandContext = createContext<CommandContextValue | null>(null);
@@ -18,22 +23,28 @@ function useCommandContext() {
   return context;
 }
 
-export function Command({ className, initialQuery = "", ...props }: CommandProps) {
+export function Command({ className, initialQuery = "", children, ...props }: CommandProps) {
   const [query, setQuery] = useState(initialQuery);
+  const [visibleCount, setVisibleCount] = useState(0);
 
   useEffect(() => {
     setQuery(initialQuery);
   }, [initialQuery]);
 
+  const incrementVisible = useCallback(() => setVisibleCount((n) => n + 1), []);
+  const decrementVisible = useCallback(() => setVisibleCount((n) => n - 1), []);
+
   return (
-    <CommandContext.Provider value={{ query, setQuery }}>
+    <CommandContext.Provider value={{ query, setQuery, visibleCount, incrementVisible, decrementVisible }}>
       <div
         className={cn(
           "rounded-xl border border-slate-200 bg-white dark:border-[#1f2937] dark:bg-[#161b22]",
           className
         )}
         {...props}
-      />
+      >
+        {children}
+      </div>
     </CommandContext.Provider>
   );
 }
@@ -58,7 +69,7 @@ Command.Input = function CommandInput({ className, ...props }: InputHTMLAttribut
 }
 
 Command.List = function CommandList({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("max-h-64 overflow-y-auto p-1", className)} {...props} />;
+  return <div role="listbox" className={cn("max-h-64 overflow-y-auto p-1", className)} {...props} />;
 }
 
 interface CommandItemProps extends HTMLAttributes<HTMLButtonElement> {
@@ -68,7 +79,7 @@ interface CommandItemProps extends HTMLAttributes<HTMLButtonElement> {
 }
 
 Command.Item = function CommandItem({ value, keywords, className, children, ...props }: CommandItemProps) {
-  const { query } = useCommandContext();
+  const { query, incrementVisible, decrementVisible } = useCommandContext();
 
   const visible = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -77,11 +88,19 @@ Command.Item = function CommandItem({ value, keywords, className, children, ...p
     return terms.includes(normalized);
   }, [query, value, keywords]);
 
+  useEffect(() => {
+    if (visible) {
+      incrementVisible();
+      return decrementVisible;
+    }
+  }, [visible, incrementVisible, decrementVisible]);
+
   if (!visible) return null;
 
   return (
     <button
       type="button"
+      role="option"
       className={cn(
         "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-[#0d1117]",
         className
@@ -94,9 +113,17 @@ Command.Item = function CommandItem({ value, keywords, className, children, ...p
 }
 
 Command.Empty = function CommandEmpty({ className, children = "No results" }: { className?: string; children?: ReactNode }) {
-  const { query } = useCommandContext();
-  if (!query.trim()) return null;
-  return <p className={cn("px-3 py-5 text-center text-xs text-slate-500 dark:text-slate-400", className)}>{children}</p>;
+  const { query, visibleCount } = useCommandContext();
+  if (!query.trim() || visibleCount > 0) return null;
+
+  return (
+    <p
+      role="presentation"
+      className={cn("px-3 py-5 text-center text-xs text-slate-500 dark:text-slate-400", className)}
+    >
+      {children}
+    </p>
+  );
 }
 
 Command.Group = function CommandGroup({ className, ...props }: HTMLAttributes<HTMLDivElement>) {

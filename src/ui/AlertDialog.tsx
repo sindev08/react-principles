@@ -1,4 +1,6 @@
-import { useEffect } from "react";
+"use client";
+
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/shared/utils/cn";
 import { useAnimatedMount } from "@/shared/hooks/useAnimatedMount";
@@ -83,12 +85,36 @@ export function AlertDialog({
   isLoading = false,
 }: AlertDialogProps) {
   const { mounted, visible } = useAnimatedMount(open, 200);
+  const panelRef = useRef<HTMLDivElement>(null);
 
-  // Scroll lock only — no Escape dismiss (by design)
+  // Scroll lock + focus trap — no Escape dismiss (by design)
   useEffect(() => {
     if (!open) return;
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", handleKey);
+    };
   }, [open]);
 
   if (!mounted) return null;
@@ -104,6 +130,7 @@ export function AlertDialog({
       />
 
       <div
+        ref={panelRef}
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="alert-title"

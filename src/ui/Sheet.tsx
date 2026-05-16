@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, type HTMLAttributes, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, type HTMLAttributes, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/shared/utils/cn";
 import { useAnimatedMount } from "@/shared/hooks/useAnimatedMount";
@@ -52,6 +52,8 @@ export interface SheetCloseProps extends HTMLAttributes<HTMLButtonElement> {
 interface SheetContextValue {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  side: SheetSide;
+  size: SheetSize;
 }
 
 const SheetContext = createContext<SheetContextValue | null>(null);
@@ -115,14 +117,6 @@ Sheet.Trigger = function SheetTrigger({ children, className, ...props }: SheetTr
   );
 };
 
-Sheet.Content = function SheetContent({ children, className, ...props }: SheetContentProps) {
-  return (
-    <div className={cn("flex-1 overflow-y-auto px-6 py-4", className)} {...props}>
-      {children}
-    </div>
-  );
-};
-
 Sheet.Header = function SheetHeader({ children, className, ...props }: SheetHeaderProps) {
   return (
     <div className={cn("px-6 pt-6 pb-4 border-b border-slate-100 dark:border-[#1f2937]", className)} {...props}>
@@ -177,11 +171,94 @@ Sheet.Close = function SheetClose({ children, className, ...props }: SheetCloseP
   );
 };
 
+Sheet.Content = function SheetContent({ children, className, ...props }: SheetContentProps) {
+  const { open, onOpenChange, side, size } = useSheetContext();
+  const { mounted, visible } = useAnimatedMount(open, 300);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [open]);
+
+  if (!mounted) return null;
+
+  const { panel, hidden } = SIDE_CLASSES[side];
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex">
+      {/* Backdrop */}
+      <div
+        className={cn(
+          "absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300",
+          visible ? "opacity-100" : "opacity-0"
+        )}
+        onClick={() => onOpenChange(false)}
+      />
+
+      {/* Panel */}
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        className={cn(
+          "absolute flex flex-col bg-white dark:bg-[#161b22]",
+          "border-slate-200 dark:border-[#1f2937]",
+          side === "right" && "border-l",
+          side === "left" && "border-r",
+          side === "top" && "border-b",
+          side === "bottom" && "border-t",
+          "shadow-2xl shadow-black/20",
+          "transition-transform duration-300 ease-in-out",
+          side === "top" || side === "bottom"
+            ? `w-full ${HEIGHT_CLASSES[size]}`
+            : `h-full ${WIDTH_CLASSES[size]}`,
+          panel,
+          visible ? "translate-x-0 translate-y-0" : hidden,
+          className
+        )}
+      >
+        {/* Close button */}
+        <button
+          onClick={() => onOpenChange(false)}
+          className="absolute right-4 top-4 z-10 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1f2937] hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+          aria-label="Close sheet"
+        >
+          <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none">
+            <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        </button>
+
+        <div className="flex-1 overflow-y-auto px-6 py-4" {...props}>
+          {children}
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+};
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export function Sheet({ open, onOpenChange, side = "right", size = "md", children, className }: SheetProps) {
-  const { mounted, visible } = useAnimatedMount(open, 300);
-
+export function Sheet({ open, onOpenChange, side = "right", size = "md", children }: SheetProps) {
   useEffect(() => {
     if (!open) return;
 
@@ -198,61 +275,9 @@ export function Sheet({ open, onOpenChange, side = "right", size = "md", childre
     };
   }, [open, onOpenChange]);
 
-  if (!mounted) return null;
-
-  const { panel, hidden } = SIDE_CLASSES[side];
-
-  const sheet = (
-    <SheetContext.Provider value={{ open, onOpenChange }}>
-      <div className="fixed inset-0 z-50 flex">
-        {/* Backdrop */}
-        <div
-          className={cn(
-            "absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300",
-            visible ? "opacity-100" : "opacity-0"
-          )}
-          onClick={() => onOpenChange(false)}
-        />
-
-        {/* Panel */}
-        <div
-          role="dialog"
-          aria-modal="true"
-          className={cn(
-            "absolute flex flex-col bg-white dark:bg-[#161b22]",
-            "border-slate-200 dark:border-[#1f2937]",
-            side === "right" && "border-l",
-            side === "left" && "border-r",
-            side === "top" && "border-b",
-            side === "bottom" && "border-t",
-            "shadow-2xl shadow-black/20",
-            "transition-transform duration-300 ease-in-out",
-            // For top/bottom: size controls height, width is full
-            // For left/right: size controls width, height is full
-            side === "top" || side === "bottom"
-              ? `w-full ${HEIGHT_CLASSES[size]}`
-              : `h-full ${WIDTH_CLASSES[size]}`,
-            panel,
-            visible ? "translate-x-0 translate-y-0" : hidden,
-            className
-          )}
-        >
-          {/* Close button */}
-          <button
-            onClick={() => onOpenChange(false)}
-            className="absolute right-4 top-4 z-10 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1f2937] hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-            aria-label="Close sheet"
-          >
-            <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none">
-              <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </button>
-
-          {children}
-        </div>
-      </div>
+  return (
+    <SheetContext.Provider value={{ open, onOpenChange, side, size }}>
+      {children}
     </SheetContext.Provider>
   );
-
-  return createPortal(sheet, document.body);
 }

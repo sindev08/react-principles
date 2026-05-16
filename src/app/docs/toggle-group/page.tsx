@@ -4,10 +4,12 @@ import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { ToggleGroup } from "@/ui/ToggleGroup";
+import type { ToggleVariant, ToggleSize } from "@/ui/Toggle";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TOC_ITEMS = [
+  { label: "Theme Preview", href: "#comparison" },
   { label: "Features", href: "#features" },
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
@@ -15,6 +17,79 @@ const TOC_ITEMS = [
   { label: "Usage Examples", href: "#examples" },
   { label: "Props", href: "#props" },
 ];
+
+// ─── Forced-theme preview ─────────────────────────────────────────────────────
+
+type ToggleThemeState = "on" | "off";
+
+const FORCED_TOGGLE_LIGHT: Record<ToggleVariant, Record<ToggleThemeState, string>> = {
+  default: {
+    on: "bg-[#4628F1] text-white",
+    off: "bg-slate-100 text-slate-700",
+  },
+  outline: {
+    on: "bg-slate-100 text-slate-900 border border-slate-300",
+    off: "border border-slate-300 text-slate-700",
+  },
+};
+
+const FORCED_TOGGLE_DARK: Record<ToggleVariant, Record<ToggleThemeState, string>> = {
+  default: {
+    on: "bg-[#4628F1] text-white",
+    off: "bg-slate-800 text-slate-100",
+  },
+  outline: {
+    on: "bg-slate-800 text-white border border-slate-600",
+    off: "border border-slate-600 text-slate-300",
+  },
+};
+
+const TOGGLE_BASE = "inline-flex items-center justify-center font-semibold transition-all";
+
+const TOGGLE_VARIANTS: { variant: ToggleVariant; label: string }[] = [
+  { variant: "default", label: "Default" },
+  { variant: "outline", label: "Outline" },
+];
+
+function ThemedToggleGroupGrid({ theme }: { theme: "light" | "dark" }) {
+  const d = theme === "dark";
+  const bg = d ? "bg-[#0d1117]" : "bg-white";
+  const border = d ? "border-[#1f2937]" : "border-slate-200";
+  const forced = d ? FORCED_TOGGLE_DARK : FORCED_TOGGLE_LIGHT;
+
+  return (
+    <div className={`rounded-xl border ${border} ${bg} p-6`}>
+      <div className="space-y-4">
+        {TOGGLE_VARIANTS.map(({ variant }) => (
+          <div key={variant} className="inline-flex items-center">
+            <button className={`${TOGGLE_BASE} ${forced[variant].on} text-sm px-4 py-2 h-9 first:rounded-l-lg first:rounded-r-none`}>
+              A
+            </button>
+            <button className={`${TOGGLE_BASE} ${forced[variant].off} text-sm px-4 py-2 h-9 rounded-none -ml-px`}>
+              B
+            </button>
+            <button className={`${TOGGLE_BASE} ${forced[variant].off} text-sm px-4 py-2 h-9 last:rounded-r-lg last:rounded-l-none rounded-none -ml-px`}>
+              C
+            </button>
+          </div>
+        ))}
+      </div>
+      <div className="inline-flex items-center mt-4">
+        <button className={`${TOGGLE_BASE} ${forced.default.on} text-xs px-3 py-1.5 h-7 first:rounded-l-lg first:rounded-r-none`}>
+          sm
+        </button>
+        <button className={`${TOGGLE_BASE} ${forced.default.on} text-xs px-3 py-1.5 h-7 rounded-none -ml-px`}>
+          sm
+        </button>
+        <button className={`${TOGGLE_BASE} ${forced.default.on} text-xs px-3 py-1.5 h-7 last:rounded-r-lg last:rounded-l-none rounded-none -ml-px`}>
+          sm
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Code Snippets ────────────────────────────────────────────────────────────
 
 const CODE_SNIPPET = `import { ToggleGroup } from "@/ui/ToggleGroup";
 
@@ -223,6 +298,13 @@ export default function ToggleGroupDocsPage() {
             A set of toggle buttons where one or multiple can be active. Supports single
             selection (segmented control) and multiple selection (toolbar) modes.
           </p>
+          <div className="flex flex-wrap gap-2 mt-6">
+            {["Accessible", "Dark Mode", "Single/Multi Select", "Keyboard Nav", "Connected Borders"].map((tag) => (
+              <span key={tag} className="rounded-full border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-400">
+                {tag}
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* CliInstallBlock */}
@@ -230,11 +312,41 @@ export default function ToggleGroupDocsPage() {
           <CliInstallBlock name="toggle-group" />
         </section>
 
-        {/* Features */}
-        <section id="features" className="mb-16">
+        {/* 01 Theme Preview */}
+        <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
+          </div>
+          <p className="mb-8 leading-relaxed text-slate-600 dark:text-slate-400">
+            Both variants and three sizes across both themes — forced styling for
+            accurate side-by-side comparison.
+          </p>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-3 h-3 rounded-full shadow-xs bg-amber-400 shadow-amber-300" />
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Light</span>
+              </div>
+              <ThemedToggleGroupGrid theme="light" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-3 h-3 bg-indigo-500 rounded-full shadow-xs shadow-indigo-400" />
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Dark</span>
+              </div>
+              <ThemedToggleGroupGrid theme="dark" />
+            </div>
+          </div>
+        </section>
+
+        {/* 02 Features */}
+        <section id="features" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">02</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Features</h2>
           </div>
@@ -272,11 +384,11 @@ export default function ToggleGroupDocsPage() {
           </ul>
         </section>
 
-        {/* Live Demo */}
+        {/* 03 Live Demo */}
         <section id="demo" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">02</span>
+              <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
           </div>
@@ -327,11 +439,11 @@ export default function ToggleGroupDocsPage() {
           </div>
         </section>
 
-        {/* Code Snippet */}
+        {/* 04 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">03</span>
+              <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
           </div>
@@ -340,11 +452,11 @@ export default function ToggleGroupDocsPage() {
           </CodeBlock>
         </section>
 
-        {/* Copy-Paste */}
+        {/* 05 Copy-Paste */}
         <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">04</span>
+              <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
           </div>
@@ -353,11 +465,11 @@ export default function ToggleGroupDocsPage() {
           </CodeBlock>
         </section>
 
-        {/* Usage Examples */}
+        {/* 06 Usage Examples */}
         <section id="examples" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">05</span>
+              <span className="text-sm font-bold">06</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Usage Examples</h2>
           </div>
@@ -445,11 +557,11 @@ export default function ToggleGroupDocsPage() {
           </div>
         </section>
 
-        {/* Props Table */}
+        {/* 07 Props Table */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">06</span>
+              <span className="text-sm font-bold">07</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>

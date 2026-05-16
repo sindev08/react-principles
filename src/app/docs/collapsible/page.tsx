@@ -204,6 +204,13 @@ export default function CollapsibleDocsPage() {
             A simpler expand/collapse primitive compared to Accordion. For single-section toggling
             without the accordion group behavior.
           </p>
+          <div className="flex flex-wrap gap-2 mt-6">
+            {["Accessible", "Dark Mode", "Controlled/Uncontrolled", "Animated", "Disabled State"].map((tag) => (
+              <span key={tag} className="rounded-full border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-400">
+                {tag}
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* CliInstallBlock */}
