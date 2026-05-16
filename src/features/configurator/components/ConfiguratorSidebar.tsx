@@ -44,6 +44,7 @@ const ALL_COMPONENTS = [
   "Alert",
   "Avatar",
   "Badge",
+  "Breadcrumb",
   "Button",
   "Calendar",
   "Card",
@@ -56,13 +57,13 @@ const ALL_COMPONENTS = [
   "DatePicker",
   "Dialog",
   "Drawer",
-  "Dropdown",
+  "DropdownMenu",
   "Input",
   "Label",
   "Pagination",
   "Popover",
   "Progress",
-  "Radio",
+  "RadioGroup",
   "Select",
   "Separator",
   "Skeleton",
@@ -76,10 +77,10 @@ const ALL_COMPONENTS = [
 ];
 
 const COMPONENT_CATEGORIES: Record<string, string[]> = {
-  Forms: ["Input", "Textarea", "Select", "Checkbox", "Radio", "Switch", "Slider", "Label"],
+  Forms: ["Input", "Textarea", "Select", "Checkbox", "RadioGroup", "Switch", "Slider", "Label"],
   Feedback: ["Alert", "Progress", "Skeleton", "Spinner", "Toast"],
   Navigation: ["Tabs", "Pagination", "Breadcrumb", "Command"],
-  Overlays: ["Dialog", "Drawer", "Popover", "Tooltip", "Dropdown"],
+  Overlays: ["Dialog", "Drawer", "Popover", "Tooltip", "DropdownMenu"],
   Data: ["DataTable", "Chart", "Calendar", "DatePicker"],
   Layout: ["Card", "Separator", "Collapsible", "Avatar", "Badge", "Carousel", "Button"],
 };
