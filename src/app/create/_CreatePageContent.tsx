@@ -11,6 +11,7 @@ import { useWizardStore } from "@/features/configurator/stores/useWizardStore";
 import { useDebounce } from "@/shared/hooks/useDebounce";
 import { Button } from "@/ui/Button";
 import { Drawer } from "@/ui/Drawer";
+import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 
 export function CreatePageContent() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -84,7 +85,9 @@ export function CreatePageContent() {
           </div>
 
           <div className="p-4 sm:p-6">
-            <LivePreviewPanel />
+            <ErrorBoundary fallback={<PreviewErrorFallback />}>
+              <LivePreviewPanel />
+            </ErrorBoundary>
           </div>
         </section>
       </main>
@@ -107,6 +110,16 @@ export function CreatePageFallback() {
           Loading configurator...
         </div>
       </main>
+    </div>
+  );
+}
+
+function PreviewErrorFallback() {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 text-center">
+      <span className="material-symbols-outlined mb-4 text-[40px] text-slate-300 dark:text-slate-600">error_outline</span>
+      <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Preview failed to render</p>
+      <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">Try changing your selections or refreshing the page.</p>
     </div>
   );
 }
