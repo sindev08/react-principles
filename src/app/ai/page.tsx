@@ -369,9 +369,12 @@ function OfferingCard({
 
 function SkillCard({ skill }: { skill: Skill }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900/50">
+    <Link
+      href={`/ai/skills/${skill.name}`}
+      className="group block rounded-xl border border-slate-200 bg-white p-5 transition-colors hover:border-primary/40 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900/50 dark:hover:border-primary/40 dark:hover:bg-slate-900"
+    >
       <div className="mb-3 flex items-start justify-between gap-3">
-        <code className="font-mono text-sm font-semibold text-slate-900 dark:text-white">
+        <code className="font-mono text-sm font-semibold text-slate-900 group-hover:text-primary dark:text-white dark:group-hover:text-primary">
           /{skill.name}
         </code>
         <span
@@ -386,7 +389,7 @@ function SkillCard({ skill }: { skill: Skill }) {
       <p className="text-sm leading-6 text-slate-600 dark:text-slate-400">
         {skill.description}
       </p>
-    </div>
+    </Link>
   );
 }
 
