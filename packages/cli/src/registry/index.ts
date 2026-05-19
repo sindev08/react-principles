@@ -406,7 +406,7 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
-    name: "scrollarea",
+    name: "scroll-area",
     description: "Scrollable container with custom scrollbar styling",
     templateKey: "ScrollArea",
     outputFile: "ScrollArea.tsx",

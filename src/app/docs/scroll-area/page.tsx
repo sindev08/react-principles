@@ -240,7 +240,7 @@ export default function ScrollAreaDocPage() {
           </div>
         </div>
 
-        <CliInstallBlock name="scrollarea" />
+        <CliInstallBlock name="scroll-area" />
 
         {/* 01 Live Demo */}
         <section id="demo" className="mb-16">
