@@ -1,10 +1,11 @@
+import { type ReactNode } from "react";
 import { cn } from "@/shared/utils/cn";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface AspectRatioProps {
   ratio: number | string;
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }
 

@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/shared/utils/cn";
 
@@ -97,6 +99,8 @@ Popover.Trigger = function PopoverTrigger({ children, className, onClick, ...pro
   return (
     <button
       type="button"
+      aria-expanded={open}
+      aria-haspopup="dialog"
       onClick={(event) => {
         onClick?.(event);
         setOpen(!open);
@@ -131,6 +135,7 @@ Popover.Content = function PopoverContent({ children, className, ...props }: Pop
 
   return (
     <div
+      role="dialog"
       className={cn(
         "absolute z-50 w-72 rounded-xl border border-slate-200 bg-white p-4 shadow-xl dark:border-[#1f2937] dark:bg-[#161b22]",
         SIDE_CLASS[side],

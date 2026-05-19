@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useId,
   useRef,
   useState,
   type HTMLAttributes,
@@ -46,6 +47,7 @@ interface HoverCardContextValue {
   closeDelay: number;
   side: HoverCardSide;
   align: HoverCardAlign;
+  tooltipId: string;
 }
 
 const HoverCardContext = createContext<HoverCardContextValue | null>(null);
@@ -77,6 +79,7 @@ export function HoverCard({
   const containerRef = useRef<HTMLDivElement>(null);
   const openTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tooltipId = useId();
 
   const setOpen = useCallback((next: boolean) => {
     if (!isControlled) setInternalOpen(next);
@@ -115,7 +118,7 @@ export function HoverCard({
   }, []);
 
   return (
-    <HoverCardContext.Provider value={{ open: isOpen, setOpen, openDelay, closeDelay, side, align }}>
+    <HoverCardContext.Provider value={{ open: isOpen, setOpen, openDelay, closeDelay, side, align, tooltipId }}>
       <div
         ref={containerRef}
         className={cn("relative inline-flex", className)}
@@ -131,8 +134,14 @@ export function HoverCard({
 // ─── Trigger ─────────────────────────────────────────────────────────────────
 
 HoverCard.Trigger = function HoverCardTrigger({ children, className, ...props }: HoverCardTriggerProps) {
+  const { open, tooltipId } = useHoverCardContext();
+
   return (
-    <span className={cn("inline-flex", className)} {...props}>
+    <span
+      className={cn("inline-flex", className)}
+      aria-describedby={open ? tooltipId : undefined}
+      {...props}
+    >
       {children}
     </span>
   );
@@ -161,7 +170,7 @@ const VERTICAL_ALIGN_CLASS: Record<HoverCardAlign, string> = {
 };
 
 HoverCard.Content = function HoverCardContent({ children, className, ...props }: HoverCardContentProps) {
-  const { open, side, align } = useHoverCardContext();
+  const { open, side, align, tooltipId } = useHoverCardContext();
 
   if (!open) return null;
 
@@ -169,6 +178,8 @@ HoverCard.Content = function HoverCardContent({ children, className, ...props }:
 
   return (
     <div
+      id={tooltipId}
+      role="tooltip"
       className={cn(
         "absolute z-50 w-80 rounded-lg border border-slate-200 bg-white p-4 shadow-lg",
         "dark:border-[#1f2937] dark:bg-[#161b22]",

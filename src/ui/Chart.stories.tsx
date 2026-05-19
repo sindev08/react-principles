@@ -86,6 +86,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+export const Default: Story = {};
+
 export const BarChartStory: Story = {
   name: "Bar Chart",
   render: () => (
