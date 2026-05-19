@@ -29,7 +29,7 @@ const FORCED_SPINNER_DARK: Record<SpinnerVariant, string> = {
   muted: "text-slate-600",
 };
 
-const SPINNER_VARIANTS: { variant: SpinnerVariant; label: string }[] = [
+const SPINNER_VARIANTS: Array<{ variant: SpinnerVariant; label: string }> = [
   { variant: "default", label: "Default" },
   { variant: "muted", label: "Muted" },
 ];

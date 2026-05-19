@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAnimatedMount } from "@/shared/hooks/useAnimatedMount";
 import { cn } from "@/shared/utils/cn";
 
@@ -34,7 +34,6 @@ export function SearchDialog({
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const dialogId = useId();
   const { mounted, visible } = useAnimatedMount(open, 150);
 
   const results = query.trim()
@@ -80,7 +79,7 @@ export function SearchDialog({
       onClose();
     } else if (e.key === "Tab" && panelRef.current) {
       const focusable = panelRef.current.querySelectorAll<HTMLElement>(
-        'input, button, [tabindex]:not([tabindex="-1"])'
+        'input:not(:disabled), button:not(:disabled), [tabindex]:not([tabindex="-1"])'
       );
       if (focusable.length === 0) return;
       const first = focusable[0];

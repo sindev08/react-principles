@@ -4,7 +4,7 @@ import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Toggle } from "@/ui/Toggle";
-import type { ToggleVariant, ToggleSize } from "@/ui/Toggle";
+import type { ToggleVariant } from "@/ui/Toggle";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -46,7 +46,7 @@ const FORCED_TOGGLE_DARK: Record<ToggleVariant, Record<ToggleThemeState, string>
 
 const TOGGLE_BASE = "inline-flex items-center justify-center font-semibold rounded-lg transition-all";
 
-const TOGGLE_VARIANTS: { variant: ToggleVariant; label: string }[] = [
+const TOGGLE_VARIANTS: Array<{ variant: ToggleVariant; label: string }> = [
   { variant: "default", label: "Default" },
   { variant: "outline", label: "Outline" },
 ];
