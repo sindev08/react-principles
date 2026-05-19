@@ -298,6 +298,15 @@ export const REGISTRY: RegistryEntry[] = [
     target: "components",
   },
   {
+    name: "label",
+    description: "Styled form label with required indicator",
+    templateKey: "Label",
+    outputFile: "Label.tsx",
+    internalDeps: ["utils"],
+    npmDeps: [],
+    target: "components",
+  },
+  {
     name: "kbd",
     description: "Keyboard shortcut and key combination display",
     templateKey: "Kbd",

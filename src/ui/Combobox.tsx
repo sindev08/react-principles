@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+"use client";
+
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { cn } from "@/shared/utils/cn";
 
 export interface ComboboxOption {
@@ -36,6 +38,8 @@ export function Combobox({
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [internalValue, setInternalValue] = useState(defaultValue ?? "");
   const containerRef = useRef<HTMLDivElement>(null);
+  const listboxId = useId();
+  const inputId = useId();
   const isControlled = value !== undefined;
   const selectedValue = isControlled ? value : internalValue;
 
@@ -80,10 +84,17 @@ export function Combobox({
 
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      {label && <label className="text-sm font-medium text-slate-700 dark:text-slate-300">{label}</label>}
+      {label && <label htmlFor={inputId} className="text-sm font-medium text-slate-700 dark:text-slate-300">{label}</label>}
 
       <div ref={containerRef} className="relative">
         <input
+          id={inputId}
+          role="combobox"
+          aria-expanded={open}
+          aria-controls={listboxId}
+          aria-activedescendant={open ? `${listboxId}-option-${highlightedIndex}` : undefined}
+          aria-autocomplete="list"
+          autoComplete="off"
           value={query}
           onChange={(event) => {
             setQuery(event.target.value);
@@ -125,7 +136,11 @@ export function Combobox({
         </span>
 
         {open && (
-          <div className="absolute z-40 mt-2 max-h-64 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-lg dark:border-[#1f2937] dark:bg-[#161b22]">
+          <div
+            id={listboxId}
+            role="listbox"
+            className="absolute z-40 mt-2 max-h-64 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-lg dark:border-[#1f2937] dark:bg-[#161b22]"
+          >
             {filtered.length === 0 && (
               <p className="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">{emptyText}</p>
             )}
@@ -135,7 +150,10 @@ export function Combobox({
               return (
                 <button
                   key={option.value}
+                  id={`${listboxId}-option-${index}`}
                   type="button"
+                  role="option"
+                  aria-selected={isSelected || undefined}
                   disabled={option.disabled}
                   onMouseEnter={() => setHighlightedIndex(index)}
                   onClick={() => !option.disabled && selectValue(option.value)}
