@@ -100,7 +100,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="flex flex-col items-center justify-between gap-4 pt-8 border-t border-slate-100 dark:border-white/5 md:flex-row">
           <p className="text-sm text-slate-400">
-            © 2026 react-principles · Early access · npm: react-principles@{CLI_VERSION}
+            © 2026 react-principles · v1.0 · npm: react-principles@{CLI_VERSION}
           </p>
         </div>
       </div>
