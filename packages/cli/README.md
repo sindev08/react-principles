@@ -275,7 +275,7 @@ Installed automatically as dependencies of any component, or added directly.
 | `progress` | `Progress.tsx` | — |
 | `radio-group` | `RadioGroup.tsx` | — |
 | `resizable` | `Resizable.tsx` | — |
-| `scrollarea` | `ScrollArea.tsx` | — |
+| `scroll-area` | `ScrollArea.tsx` | — |
 | `search-dialog` | `SearchDialog.tsx` | `use-animated-mount` |
 | `select` | `Select.tsx` | — |
 | `separator` | `Separator.tsx` | — |

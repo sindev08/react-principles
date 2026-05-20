@@ -2,7 +2,7 @@
   "name": "react-principles",
   "version": "0.0.1",
   "private": true,
-  "description": "A living cookbook and UI kit for modern React development",
+  "description": "React Principles — cookbook of React patterns, copy-paste UI Kit, and project configurator",
   "author": "Singgih Budi Purnadi",
   "license": "MIT",
   "repository": {
@@ -79,6 +79,7 @@
     "@iconify/react": "^6.0.2",
     "fflate": "^0.8.2",
     "lucide-react": "^1.9.0",
+    "marked": "^18.0.4",
     "recharts": "^3.8.1"
   }
 }

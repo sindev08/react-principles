@@ -4,6 +4,7 @@ import {
   forwardRef,
   useCallback,
   useEffect,
+  useId,
   useRef,
   useState,
   type InputHTMLAttributes,
@@ -67,6 +68,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
       onChange,
       mode = "single",
       placeholder = "Pick a date",
+      disabled,
       className,
       id,
       ...props
@@ -76,6 +78,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
     const [open, setOpen] = useState(false);
     const [internalValue, setInternalValue] = useState(defaultValue ?? "");
     const containerRef = useRef<HTMLDivElement>(null);
+    const calendarId = useId();
 
     const isControlled = value !== undefined;
     const currentValue = isControlled ? value : internalValue;
@@ -143,6 +146,10 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
         <div ref={containerRef} className="relative">
           <button
             type="button"
+            disabled={disabled}
+            aria-expanded={open}
+            aria-haspopup="dialog"
+            aria-controls={calendarId}
             onClick={() => setOpen(!open)}
             className={cn(
               "h-10 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-left text-sm text-slate-900 outline-hidden transition-all",
@@ -168,11 +175,12 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
             type="hidden"
             value={currentValue}
             name={props.name}
+            {...props}
           />
 
           {/* Calendar dropdown */}
           {open && (
-            <div className="absolute z-40 mt-2 left-0 w-full">
+            <div id={calendarId} className="absolute z-40 mt-2 left-0 w-full">
               <Calendar
                 mode={mode}
                 selected={calendarSelected}

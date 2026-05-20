@@ -472,7 +472,9 @@ export async function create(
   const skipped: string[] = [];
 
   for (const compName of preset.components) {
-    const entryName = compName.toLowerCase();
+    const entryName = compName
+      .replace(/([a-z])([A-Z])/g, "$1-$2")
+      .toLowerCase();
     const entry = getEntry(entryName);
     if (!entry) { skipped.push(compName); continue; }
 

@@ -7,6 +7,7 @@ import {
   DocsSection,
   ComponentShowcaseSection,
   ConfiguratorTeaserSection,
+  AICorpusTeaserSection,
   TechStackSection,
   ProjectStructureSection,
   Footer,
@@ -66,6 +67,7 @@ export default function LandingPage() {
         <DocsSection />
         <ComponentShowcaseSection />
         <ConfiguratorTeaserSection />
+        <AICorpusTeaserSection />
         <TechStackSection />
         <ProjectStructureSection />
       </main>

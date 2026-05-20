@@ -3,10 +3,12 @@
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
 import { Kbd } from "@/ui/Kbd";
+import type { KbdSize } from "@/ui/Kbd";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const TOC_ITEMS = [
+  { label: "Theme Preview", href: "#comparison" },
   { label: "Live Demo", href: "#demo" },
   { label: "Code Snippet", href: "#snippet" },
   { label: "Copy-Paste", href: "#copy-paste" },
@@ -14,6 +16,46 @@ const TOC_ITEMS = [
 ];
 
 const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-kbd--default";
+
+// ─── Forced-theme preview ─────────────────────────────────────────────────────
+
+const KBD_BASE_LIGHT =
+  "inline-flex items-center justify-center rounded-sm border border-slate-200 bg-white text-slate-700 font-mono transition-colors";
+
+const KBD_BASE_DARK =
+  "inline-flex items-center justify-center rounded-sm border border-[#1f2937] bg-[#0d1117] text-slate-300 font-mono transition-colors";
+
+const KBD_SIZE_CLASSES: Record<KbdSize, string> = {
+  sm: "text-[10px] px-1.5 py-0.5 font-medium",
+  md: "text-xs px-2 py-1 font-medium",
+};
+
+function ThemedKbdGrid({ theme }: { theme: "light" | "dark" }) {
+  const d = theme === "dark";
+  const bg = d ? "bg-[#0d1117]" : "bg-white";
+  const border = d ? "border-[#1f2937]" : "border-slate-200";
+  const base = d ? KBD_BASE_DARK : KBD_BASE_LIGHT;
+
+  return (
+    <div className={`rounded-xl border ${border} ${bg} p-6`}>
+      <div className="flex flex-wrap items-center gap-3">
+        <kbd className={`${base} ${KBD_SIZE_CLASSES.sm}`}>⌘</kbd>
+        <kbd className={`${base} ${KBD_SIZE_CLASSES.sm}`}>K</kbd>
+        <kbd className={`${base} ${KBD_SIZE_CLASSES.md}`}>⌘</kbd>
+        <kbd className={`${base} ${KBD_SIZE_CLASSES.md}`}>K</kbd>
+      </div>
+      <div className="flex flex-wrap items-center gap-2 mt-3">
+        <kbd className={`${base} ${KBD_SIZE_CLASSES.sm}`}>Ctrl</kbd>
+        <kbd className={`${base} ${KBD_SIZE_CLASSES.sm}`}>Shift</kbd>
+        <kbd className={`${base} ${KBD_SIZE_CLASSES.sm}`}>Alt</kbd>
+        <kbd className={`${base} ${KBD_SIZE_CLASSES.sm}`}>Esc</kbd>
+        <kbd className={`${base} ${KBD_SIZE_CLASSES.sm}`}>Enter</kbd>
+      </div>
+    </div>
+  );
+}
+
+// ─── Code Snippets ────────────────────────────────────────────────────────────
 
 const CODE_SNIPPET = `import { Kbd } from "@/ui/Kbd";
 
@@ -115,11 +157,41 @@ export default function KbdDocPage() {
 
         <CliInstallBlock name="kbd" />
 
-        {/* 01 Live Demo */}
-        <section id="demo" className="mb-16">
+        {/* 01 Theme Preview */}
+        <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
               <span className="text-sm font-bold">01</span>
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Theme Preview</h2>
+          </div>
+          <p className="mb-8 leading-relaxed text-slate-600 dark:text-slate-400">
+            Both sizes across both themes — forced styling for
+            accurate side-by-side comparison.
+          </p>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-3 h-3 rounded-full shadow-xs bg-amber-400 shadow-amber-300" />
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Light</span>
+              </div>
+              <ThemedKbdGrid theme="light" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-3 h-3 bg-indigo-500 rounded-full shadow-xs shadow-indigo-400" />
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Dark</span>
+              </div>
+              <ThemedKbdGrid theme="dark" />
+            </div>
+          </div>
+        </section>
+
+        {/* 02 Live Demo */}
+        <section id="demo" className="mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
+              <span className="text-sm font-bold">02</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Live Demo</h2>
           </div>
@@ -214,11 +286,11 @@ export default function KbdDocPage() {
           </div>
         </section>
 
-        {/* 02 Code Snippet */}
+        {/* 03 Code Snippet */}
         <section id="snippet" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">02</span>
+              <span className="text-sm font-bold">03</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
           </div>
@@ -227,11 +299,11 @@ export default function KbdDocPage() {
           </CodeBlock>
         </section>
 
-        {/* 03 Copy-Paste */}
+        {/* 04 Copy-Paste */}
         <section id="copy-paste" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">03</span>
+              <span className="text-sm font-bold">04</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
           </div>
@@ -240,11 +312,11 @@ export default function KbdDocPage() {
           </CodeBlock>
         </section>
 
-        {/* 04 Props */}
+        {/* 05 Props */}
         <section id="props" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
             <div className="flex items-center justify-center w-8 h-8 rounded-sm bg-primary/10 text-primary">
-              <span className="text-sm font-bold">04</span>
+              <span className="text-sm font-bold">05</span>
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Props</h2>
           </div>

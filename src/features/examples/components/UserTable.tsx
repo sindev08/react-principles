@@ -12,6 +12,7 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import type { User } from "@/shared/types/common";
+import { cn } from "@/shared/utils/cn";
 import { mockUsers } from "@/lib/mock-data";
 
 export function UserTable() {
@@ -47,11 +48,12 @@ export function UserTable() {
           const status = info.getValue<string>();
           return (
             <span
-              className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+              className={cn(
+                "rounded-full px-2.5 py-0.5 text-xs font-medium",
                 status === "active"
                   ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
-                  : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
-              }`}
+                  : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
+              )}
             >
               {status}
             </span>

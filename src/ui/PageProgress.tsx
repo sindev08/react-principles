@@ -22,7 +22,6 @@ export function PageProgress({ progress, visible }: PageProgressProps) {
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={progress}
-      aria-hidden="true"
       className={cn(
         "pointer-events-none fixed left-0 top-0 z-200 h-0.5 bg-primary",
         // Glow effect matching the primary color

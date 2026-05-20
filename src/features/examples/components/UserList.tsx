@@ -2,19 +2,28 @@
 
 import { useState } from "react";
 import { useUsers } from "@/features/examples/hooks/useUsers";
+import { useSearchUsers } from "@/features/examples/hooks/useSearchUsers";
 import { LoadingState } from "@/shared/components/LoadingState";
 import { EmptyState } from "@/shared/components/EmptyState";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
+import { cn } from "@/shared/utils/cn";
+
+const LIMIT = 5;
 
 function UserListInner() {
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
+  const [skip, setSkip] = useState(0);
 
-  const { data, isLoading, isError, error } = useUsers({
-    search,
-    page,
-    limit: 5,
-  });
+  const isSearching = search.length > 0;
+
+  const listQuery = useUsers({ skip, limit: LIMIT });
+  const searchQuery = useSearchUsers(search);
+
+  const { data, isLoading, isError, error } = isSearching ? searchQuery : listQuery;
+
+  const users = data?.users ?? [];
+  const totalPages = data ? Math.ceil(data.total / LIMIT) : 0;
+  const currentPage = data ? Math.floor(data.skip / LIMIT) + 1 : 1;
 
   if (isLoading) {
     return <LoadingState rows={5} message="Loading users..." />;
@@ -24,14 +33,11 @@ function UserListInner() {
     return (
       <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-900 dark:bg-red-950">
         <p className="text-sm text-red-600 dark:text-red-400">
-          Failed to load users: {error.message}
+          Failed to load users: {error instanceof Error ? error.message : "Unknown error"}
         </p>
       </div>
     );
   }
-
-  const users = data?.data ?? [];
-  const meta = data?.meta;
 
   return (
     <div className="space-y-4">
@@ -41,7 +47,7 @@ function UserListInner() {
         value={search}
         onChange={(e) => {
           setSearch(e.target.value);
-          setPage(1);
+          setSkip(0);
         }}
         placeholder="Search by name or email..."
         className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-hidden focus:ring-1 focus:ring-blue-500 dark:border-gray-700 dark:bg-gray-900"
@@ -71,11 +77,12 @@ function UserListInner() {
                   {user.role}
                 </span>
                 <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                  className={cn(
+                    "rounded-full px-2.5 py-0.5 text-xs font-medium",
                     user.status === "active"
                       ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
-                      : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
-                  }`}
+                      : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
+                  )}
                 >
                   {user.status}
                 </span>
@@ -85,23 +92,23 @@ function UserListInner() {
         </ul>
       )}
 
-      {/* Pagination */}
-      {meta && meta.totalPages > 1 && (
+      {/* Pagination — hidden when searching */}
+      {!isSearching && totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Page {meta.page} of {meta.totalPages} ({meta.total} total)
+            Page {currentPage} of {totalPages} ({data?.total ?? 0} total)
           </p>
           <div className="flex gap-2">
             <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page <= 1}
+              onClick={() => setSkip((s) => Math.max(0, s - LIMIT))}
+              disabled={skip <= 0}
               className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:hover:bg-gray-800"
             >
               Previous
             </button>
             <button
-              onClick={() => setPage((p) => Math.min(meta.totalPages, p + 1))}
-              disabled={page >= meta.totalPages}
+              onClick={() => setSkip((s) => s + LIMIT)}
+              disabled={currentPage >= totalPages}
               className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:hover:bg-gray-800"
             >
               Next

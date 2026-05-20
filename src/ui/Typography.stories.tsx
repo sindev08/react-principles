@@ -12,6 +12,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+export const Default: Story = {};
+
 export const Headings: Story = {
   render: () => (
     <StorySurface className="w-[600px] space-y-4">

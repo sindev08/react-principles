@@ -146,7 +146,7 @@ export function DataTable<TData>({
   return (
     <div className={cn("space-y-4", className)}>
       {/* Filter input */}
-      <div className="relative">
+      <div className="relative" role="search">
         <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[18px] text-slate-400">
           search
         </span>
@@ -155,6 +155,7 @@ export function DataTable<TData>({
           value={globalFilter}
           onChange={(e) => handleFilterChange(e.target.value)}
           placeholder={filterPlaceholder}
+          aria-label={filterPlaceholder}
           className={cn(
             "h-10 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-4 text-sm text-slate-900 outline-hidden transition-all",
             "hover:border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20",
@@ -168,9 +169,16 @@ export function DataTable<TData>({
         <Table.Header>
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.Row key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
+              {headerGroup.headers.map((header) => {
+                const sortDir = header.column.getIsSorted();
+                return (
                 <Table.Head
                   key={header.id}
+                  aria-sort={
+                    sortDir === "asc" ? "ascending" :
+                    sortDir === "desc" ? "descending" :
+                    header.column.getCanSort() ? "none" : undefined
+                  }
                   className={cn(
                     header.column.getCanSort() && "cursor-pointer select-none",
                   )}
@@ -181,10 +189,11 @@ export function DataTable<TData>({
                       header.column.columnDef.header,
                       header.getContext(),
                     )}
-                    <SortIcon direction={header.column.getIsSorted()} />
+                    <SortIcon direction={sortDir} />
                   </div>
                 </Table.Head>
-              ))}
+                );
+              })}
             </Table.Row>
           ))}
         </Table.Header>
@@ -222,6 +231,7 @@ export function DataTable<TData>({
       </Table>
 
       {/* Pagination */}
+      {!isEmpty && !isLoading && (
       <div className="flex items-center justify-between">
         <p className="text-sm text-slate-500 dark:text-slate-400">
           Page {pagination.pageIndex + 1} of {table.getPageCount()}{" "}
@@ -246,6 +256,7 @@ export function DataTable<TData>({
           </Button>
         </div>
       </div>
+      )}
     </div>
   );
 }

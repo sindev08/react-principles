@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { DocsPageLayout } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
@@ -131,8 +131,13 @@ function SectionBadge({ n }: { n: number }) {
 
 function DetailContent({ detail, framework }: { detail: RecipeDetail; framework: Framework }) {
   const [copied, setCopied] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { isSaved, toggleSaved } = useSavedStore();
-  const saved = isSaved(detail.slug);
+  const saved = mounted && isSaved(detail.slug);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const activeImpl =
     framework === "nextjs"

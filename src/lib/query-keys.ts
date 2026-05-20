@@ -6,5 +6,7 @@ export const queryKeys = {
       [...queryKeys.users.lists(), params] as const,
     details: () => [...queryKeys.users.all, "detail"] as const,
     detail: (id: string) => [...queryKeys.users.details(), id] as const,
+    searches: () => [...queryKeys.users.all, "search"] as const,
+    search: (query: string) => [...queryKeys.users.searches(), query] as const,
   },
 };

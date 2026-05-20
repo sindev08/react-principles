@@ -16,7 +16,7 @@ const COMPONENT_DEPS: Record<string, PackageEntry[]> = {
   Toast:       [{ name: "sonner", version: "^2.0.0" }],
   Select:      [{ name: "@radix-ui/react-select", version: "^2.1.6" }],
   Checkbox:    [{ name: "@radix-ui/react-checkbox", version: "^1.1.4" }],
-  Radio:       [{ name: "@radix-ui/react-radio-group", version: "^1.2.3" }],
+  RadioGroup:   [{ name: "@radix-ui/react-radio-group", version: "^1.2.3" }],
   Switch:      [{ name: "@radix-ui/react-switch", version: "^1.1.3" }],
   Slider:      [{ name: "@radix-ui/react-slider", version: "^1.2.3" }],
   Tabs:        [{ name: "@radix-ui/react-tabs", version: "^1.1.3" }],
@@ -26,7 +26,7 @@ const COMPONENT_DEPS: Record<string, PackageEntry[]> = {
   Drawer:      [{ name: "@radix-ui/react-dialog", version: "^1.1.6" }],
   Separator:   [{ name: "@radix-ui/react-separator", version: "^1.1.2" }],
   Collapsible: [{ name: "@radix-ui/react-collapsible", version: "^1.1.3" }],
-  Dropdown:    [{ name: "@radix-ui/react-dropdown-menu", version: "^2.1.6" }],
+  DropdownMenu: [{ name: "@radix-ui/react-dropdown-menu", version: "^2.1.6" }],
   Carousel:    [{ name: "embla-carousel-react", version: "^8.5.0" }],
 };
 
