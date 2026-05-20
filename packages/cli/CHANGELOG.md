@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.0.0](https://github.com/sindev08/react-principles/compare/react-principles@v0.1.1...react-principles@v1.0.0) (2026-05-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* **cli:** 'npx react-principles add scrollarea' no longer resolves. Use 'npx react-principles add scroll-area' instead.
+
+### Bug Fixes
+
+* **cli:** add label to registry (missing dependency for field) ([0c3e96c](https://github.com/sindev08/react-principles/commit/0c3e96c609b3ce636210806e85a5d13d73a9f836))
+* **cli:** rename scrollarea registry entry to scroll-area ([b22794c](https://github.com/sindev08/react-principles/commit/b22794c972df8e44060a7f60f21903b05b4d1da5))
+* **cli:** rename scrollarea registry entry to scroll-area ([bce5ce4](https://github.com/sindev08/react-principles/commit/bce5ce4d8cf0a1502eb55d9bd75d4b8cfac799f1))
+* **configurator:** Configurator v1.0 audit — fixes for component names and error handling ([80d94e6](https://github.com/sindev08/react-principles/commit/80d94e67d28ed45d9de083136a278676eae824dc))
+* **configurator:** fix component name mismatches in deps and cli ([39d6b66](https://github.com/sindev08/react-principles/commit/39d6b66a66b90f2dcbaf8b4016f7f3ad044775d8))
+* **ui:** UI Kit v1.0 audit — fixes for 57 components ([649215f](https://github.com/sindev08/react-principles/commit/649215f460ec56a77d43da1c735bbc091e0d6900))
+
+
+### Miscellaneous Chores
+
+* **cli:** trigger v1.0.0 release via release-please ([935a36a](https://github.com/sindev08/react-principles/commit/935a36a7bec6fc06db0c34811992de7bf54b8a4e))
+
 ## [0.1.1](https://github.com/sindev08/react-principles/compare/react-principles@0.1.0...react-principles@v0.1.1) (2026-05-09)
 
 
