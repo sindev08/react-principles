@@ -53,19 +53,55 @@ const PROPS_ROWS = [
   { prop: "className", type: "string", default: "—", description: "Additional classes merged into the root wrapper." },
 ];
 
+type ForceTheme = "light" | "dark";
+
+const FORCED_STYLES: Record<ForceTheme, {
+  shell: string;
+  label: string;
+  desc: string;
+  text: string;
+  variants: Record<TextareaVariant, string>;
+}> = {
+  light: {
+    shell: "border-slate-200 bg-white",
+    label: "text-slate-700",
+    desc: "text-slate-500",
+    text: "text-slate-900",
+    variants: {
+      default: "border border-slate-200 bg-white",
+      filled: "border border-transparent bg-slate-100",
+      ghost: "border border-transparent bg-transparent",
+    },
+  },
+  dark: {
+    shell: "border-[#1f2937] bg-[#0d1117]",
+    label: "text-slate-300",
+    desc: "text-slate-400",
+    text: "text-white",
+    variants: {
+      default: "border border-[#1f2937] bg-[#0d1117]",
+      filled: "border border-transparent bg-[#161b22]",
+      ghost: "border border-transparent bg-transparent",
+    },
+  },
+};
+
 function ThemedTextareaPanel({ dark }: { dark: boolean }) {
-  const shell = dark ? "border-[#1f2937] bg-[#0d1117]" : "border-slate-200 bg-white";
+  const theme: ForceTheme = dark ? "dark" : "light";
+  const s = FORCED_STYLES[theme];
 
   return (
-    <div className={`rounded-xl border p-6 space-y-4 ${shell}`}>
+    <div className={`rounded-xl border p-6 space-y-4 ${s.shell}`}>
       {VARIANTS.map((variant) => (
-        <Textarea
-          key={variant}
-          label={`${variant} variant`}
-          variant={variant}
-          defaultValue="Document the migration steps and rollout notes."
-          description="Theme preview"
-        />
+        <div key={variant} className="flex flex-col gap-1.5">
+          <label className={`text-sm font-medium ${s.label}`}>{variant} variant</label>
+          <div className={`rounded-lg ${s.variants[variant]}`}>
+            <p className={`min-h-24 px-3.5 py-2.5 text-sm ${s.text}`}>
+              Document the migration steps and rollout notes.
+            </p>
+          </div>
+          <p className={`text-xs ${s.desc}`}>Theme preview</p>
+        </div>
       ))}
     </div>
   );

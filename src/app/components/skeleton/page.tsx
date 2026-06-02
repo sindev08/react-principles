@@ -50,17 +50,18 @@ const PROPS_ROWS = [
 function ThemedSkeletonPanel({ theme }: { theme: "light" | "dark" }) {
   const dark = theme === "dark";
   const shell = dark ? "border-[#1f2937] bg-[#0d1117]" : "border-slate-200 bg-white";
+  const bone = dark ? "bg-[#1f2937]" : "bg-slate-200";
 
   return (
     <div className={`rounded-xl border p-6 space-y-4 ${shell}`}>
-      <Skeleton variant="line" width="70%" />
-      <Skeleton variant="line" width="45%" />
-      <Skeleton variant="rect" className="h-24" />
+      <span className={`inline-block animate-pulse h-4 rounded-md ${bone}`} style={{ width: "70%" }} />
+      <span className={`inline-block animate-pulse h-4 rounded-md ${bone}`} style={{ width: "45%" }} />
+      <span className={`inline-block animate-pulse h-24 w-full rounded-xl ${bone}`} />
       <div className="flex items-center gap-3">
-        <Skeleton variant="circle" />
+        <span className={`inline-block animate-pulse h-10 w-10 shrink-0 rounded-full ${bone}`} />
         <div className="flex-1 space-y-2">
-          <Skeleton variant="line" width="50%" />
-          <Skeleton variant="line" width="35%" />
+          <span className={`inline-block animate-pulse h-4 rounded-md ${bone}`} style={{ width: "50%" }} />
+          <span className={`inline-block animate-pulse h-4 rounded-md ${bone}`} style={{ width: "35%" }} />
         </div>
       </div>
     </div>
