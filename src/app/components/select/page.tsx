@@ -65,19 +65,50 @@ const PROPS_ROWS = [
   { prop: "className", type: "string", default: "—", description: "Additional classes merged into the root wrapper." },
 ];
 
+type ForceTheme = "light" | "dark";
+
+const FORCED_STYLES: Record<ForceTheme, { shell: string; label: string; select: string }> = {
+  light: {
+    shell: "border-slate-200 bg-white",
+    label: "text-slate-700",
+    select: "border-slate-200 bg-white text-slate-900",
+  },
+  dark: {
+    shell: "border-[#1f2937] bg-[#0d1117]",
+    label: "text-slate-300",
+    select: "border-[#1f2937] bg-[#0d1117] text-white",
+  },
+};
+
+const FORCED_SIZE_CLASSES: Record<SelectSize, string> = {
+  sm: "h-8 px-3 pr-9 text-xs",
+  md: "h-10 px-3.5 pr-10 text-sm",
+  lg: "h-12 px-4 pr-11 text-base",
+};
+
 function ThemedSelectPanel({ dark }: { dark: boolean }) {
-  const shell = dark ? "border-[#1f2937] bg-[#0d1117]" : "border-slate-200 bg-white";
+  const theme: ForceTheme = dark ? "dark" : "light";
+  const s = FORCED_STYLES[theme];
 
   return (
-    <div className={`rounded-xl border p-6 space-y-4 ${shell}`}>
+    <div className={`rounded-xl border p-6 space-y-4 ${s.shell}`}>
       {SIZES.map((size) => (
-        <Select
-          key={size}
-          label={`Size ${size}`}
-          size={size}
-          options={OPTIONS}
-          defaultValue="next"
-        />
+        <div key={size} className="flex flex-col gap-1.5">
+          <label className={`text-sm font-medium ${s.label}`}>Size {size}</label>
+          <div className="relative">
+            <select
+              defaultValue="next"
+              className={`w-full appearance-none rounded-lg border outline-hidden transition-all ${FORCED_SIZE_CLASSES[size]} ${s.select}`}
+            >
+              {OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+            <span className="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[18px] text-slate-400">
+              expand_more
+            </span>
+          </div>
+        </div>
       ))}
     </div>
   );
