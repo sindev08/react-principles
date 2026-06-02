@@ -8,7 +8,7 @@ import { cn } from "@/shared/utils/cn";
 
 const NAV_LINKS = [
   { href: "/nextjs/cookbook", label: "Cookbook" },
-  { href: "/docs/introduction", label: "Components" },
+  { href: "/components/introduction", label: "Components" },
   { href: "/create", label: "Create" },
   { href: "/ai", label: "AI" },
 ] as const;

@@ -17,7 +17,7 @@ export const SAMPLE_OPTIONS: SampleOption[] = [
 export const SEARCH_ITEMS = [
   {
     title: "Button",
-    href: "/docs/button",
+    href: "/components/button",
     group: "Docs" as const,
     section: "Components",
     description: "Primary, outline, and ghost actions",
@@ -31,7 +31,7 @@ export const SEARCH_ITEMS = [
   },
   {
     title: "Tabs",
-    href: "/docs/tabs",
+    href: "/components/tabs",
     group: "Docs" as const,
     section: "Components",
     description: "Underline and pill variants",

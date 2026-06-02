@@ -70,7 +70,7 @@ export default function ThemingPage() {
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-3xl">
         <nav className="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
-          <Link href="/docs/installation" className="cursor-pointer transition-colors hover:text-primary">
+          <Link href="/components/installation" className="cursor-pointer transition-colors hover:text-primary">
             Installation
           </Link>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
@@ -147,7 +147,7 @@ export default function ThemingPage() {
             <code className="font-mono text-xs text-primary">dark</code> class on{" "}
             <code className="font-mono text-xs text-primary">&lt;html&gt;</code> activates
             all <code className="font-mono text-xs text-primary">dark:</code> variants.
-            See the <Link href="/docs/dark-mode" className="text-primary hover:underline">Dark Mode</Link> page
+            See the <Link href="/components/dark-mode" className="text-primary hover:underline">Dark Mode</Link> page
             for implementation details.
           </p>
 
@@ -181,13 +181,13 @@ export default function ThemingPage() {
         </section>
 
         <div className="flex items-center justify-between border-t border-slate-200 pt-8 dark:border-[#1f2937]">
-          <Link href="/docs/installation" className="group flex flex-col gap-1 transition-colors">
+          <Link href="/components/installation" className="group flex flex-col gap-1 transition-colors">
             <span className="text-xs text-slate-400">Previous</span>
             <span className="text-sm font-medium text-slate-900 group-hover:text-primary dark:text-white">
               Installation
             </span>
           </Link>
-          <Link href="/docs/dark-mode" className="group flex flex-col items-end gap-1 transition-colors">
+          <Link href="/components/dark-mode" className="group flex flex-col items-end gap-1 transition-colors">
             <span className="text-xs text-slate-400">Next</span>
             <span className="text-sm font-medium text-slate-900 group-hover:text-primary dark:text-white">
               Dark Mode

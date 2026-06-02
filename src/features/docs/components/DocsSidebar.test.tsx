@@ -3,7 +3,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 import { DocsSidebar } from "./DocsSidebar";
 
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/docs/button",
+  usePathname: () => "/components/button",
 }));
 
 beforeAll(() => {

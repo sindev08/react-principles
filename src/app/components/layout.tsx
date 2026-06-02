@@ -12,10 +12,10 @@ export const metadata: Metadata = {
     description:
       "Reference docs for React Principles, covering architecture decisions, patterns, and implementation guides for modern React apps.",
     type: "website",
-    url: "/docs/introduction",
+    url: "/components/introduction",
     images: [
       {
-        url: "/docs/opengraph-image",
+        url: "/components/opengraph-image",
         width: 1200,
         height: 630,
         alt: "React Principles — Docs",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     title: "React Principles — Docs",
     description:
       "Reference docs for React Principles, covering architecture decisions, patterns, and implementation guides for modern React apps.",
-    images: ["/docs/opengraph-image"],
+    images: ["/components/opengraph-image"],
   },
 };
 

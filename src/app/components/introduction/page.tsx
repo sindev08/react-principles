@@ -42,7 +42,7 @@ export default function IntroductionPage() {
             your apps. Accessible. Customizable. Open Source.
           </p>
           <div className="flex flex-wrap gap-4 mt-8">
-            <Link href="/docs/installation" className="flex items-center gap-2 rounded-lg bg-slate-900 dark:bg-primary px-6 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90">
+            <Link href="/components/installation" className="flex items-center gap-2 rounded-lg bg-slate-900 dark:bg-primary px-6 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90">
               Get Started
             </Link>
             <Link href="https://github.com/sindev08/react-principles" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-lg border border-slate-200 dark:border-[#1f2937] px-6 py-2.5 text-sm font-bold text-slate-900 dark:text-white transition-colors hover:bg-slate-50 dark:hover:bg-[#161b22]">
@@ -109,7 +109,7 @@ export default function IntroductionPage() {
               Getting Started
             </span>
           </Link>
-          <Link href="/docs/installation" className="flex flex-col items-end gap-1 transition-colors group">
+          <Link href="/components/installation" className="flex flex-col items-end gap-1 transition-colors group">
             <span className="text-xs text-slate-400">Next</span>
             <span className="text-sm font-medium text-slate-900 dark:text-white group-hover:text-primary">
               Installation
