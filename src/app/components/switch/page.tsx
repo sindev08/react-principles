@@ -54,19 +54,47 @@ const PROPS_ROWS = [
   { prop: "className", type: "string", default: "—", description: "Additional classes applied to the root wrapper." },
 ];
 
+type ForceTheme = "light" | "dark";
+
+const FORCED_STYLES: Record<ForceTheme, { shell: string; trackOff: string; label: string; desc: string }> = {
+  light: { shell: "border-slate-200 bg-white",      trackOff: "bg-slate-300", label: "text-slate-900", desc: "text-slate-500" },
+  dark:  { shell: "border-[#1f2937] bg-[#0d1117]", trackOff: "bg-slate-700", label: "text-white",      desc: "text-slate-400" },
+};
+
+const FORCED_TRACK_SIZES: Record<SwitchSize, string> = {
+  sm: "h-5 w-9",
+  md: "h-6 w-11",
+  lg: "h-7 w-14",
+};
+
+const FORCED_THUMB: Record<SwitchSize, { off: string; on: string }> = {
+  sm: { off: "h-4 w-4 translate-x-0", on: "h-4 w-4 translate-x-4" },
+  md: { off: "h-5 w-5 translate-x-0", on: "h-5 w-5 translate-x-5" },
+  lg: { off: "h-6 w-6 translate-x-0", on: "h-6 w-6 translate-x-7" },
+};
+
+const PREVIEW_ITEMS: Array<{ size: SwitchSize; isOn: boolean }> = [
+  { size: "sm", isOn: false },
+  { size: "md", isOn: true },
+  { size: "lg", isOn: true },
+];
+
 function ThemedSwitchPanel({ dark }: { dark: boolean }) {
-  const shell = dark ? "border-[#1f2937] bg-[#0d1117]" : "border-slate-200 bg-white";
+  const theme: ForceTheme = dark ? "dark" : "light";
+  const s = FORCED_STYLES[theme];
 
   return (
-    <div className={`rounded-xl border p-6 space-y-4 ${shell}`}>
-      {SIZES.map((size) => (
-        <Switch
-          key={size}
-          defaultChecked={size !== "sm"}
-          size={size}
-          label={`Notifications ${size}`}
-          description={`Preview of the ${size} switch size.`}
-        />
+    <div className={`rounded-xl border p-6 space-y-4 ${s.shell}`}>
+      {PREVIEW_ITEMS.map(({ size, isOn }) => (
+        <div key={size} className="inline-flex items-start gap-3">
+          <div className={`relative shrink-0 rounded-full p-0.5 ${FORCED_TRACK_SIZES[size]} ${isOn ? "bg-primary" : s.trackOff}`}>
+            <span className={`block rounded-full bg-white shadow-sm ${FORCED_THUMB[size][isOn ? "on" : "off"]}`} />
+          </div>
+          <div className="min-w-0">
+            <p className={`text-sm font-medium ${s.label}`}>Notifications {size}</p>
+            <p className={`mt-0.5 text-xs ${s.desc}`}>Preview of the {size} switch size. ({isOn ? "enabled" : "disabled"})</p>
+          </div>
+        </div>
       ))}
     </div>
   );
