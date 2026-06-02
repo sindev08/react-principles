@@ -7,8 +7,8 @@ import Image from "next/image";
 import { cn } from "@/shared/utils/cn";
 
 const NAV_LINKS = [
-  { href: "/docs/introduction", label: "Docs" },
   { href: "/nextjs/cookbook", label: "Cookbook" },
+  { href: "/docs/introduction", label: "Components" },
   { href: "/create", label: "Create" },
   { href: "/ai", label: "AI" },
 ] as const;

@@ -52,20 +52,20 @@ const STEPS = [
   },
 ];
 
-export function DocsSection() {
+export function CookbookStructureSection() {
   return (
     <section
       className="px-6 py-24 bg-background-light dark:bg-slate-950"
-      id="docs"
+      id="cookbook-structure"
     >
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col items-end justify-between gap-6 mb-16 md:flex-row">
           <div>
             <h2 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-              Systematic Learning
+              How Every Recipe Is Built
             </h2>
             <p className="text-slate-500">
-              Every pattern follows a rigid, helpful structure.
+              Each Cookbook recipe follows the same rigid, helpful structure.
             </p>
           </div>
           <div className="flex gap-2">

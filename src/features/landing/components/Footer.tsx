@@ -3,7 +3,7 @@ import Link from "next/link";
 import { CLI_VERSION } from "@/shared/constants/versions";
 
 const RESOURCES = [
-  { label: "Documentation", href: "/docs/introduction" },
+  { label: "Components", href: "/docs/introduction" },
   { label: "Cookbook", href: "/nextjs/cookbook" },
   { label: "GitHub", href: "https://github.com/sindev08/react-principles" },
 ];

@@ -205,7 +205,7 @@ export function HeroSection() {
             href="/docs/introduction"
             className="w-full rounded-lg border border-slate-200 bg-white px-8 py-4 text-center text-lg font-bold text-slate-900 transition-all hover:bg-slate-50 sm:w-auto"
           >
-            Read the Docs
+            Browse Components
           </Link>
         </div>
 
