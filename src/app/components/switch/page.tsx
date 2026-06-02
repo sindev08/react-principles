@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
-import { Select } from "@/ui/Select";
-import type { SelectSize } from "@/ui/Select";
+import { Switch } from "@/ui/Switch";
+import type { SwitchSize } from "@/ui/Switch";
 
 const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },
@@ -14,78 +14,95 @@ const TOC_ITEMS = [
   { label: "Props", href: "#props" },
 ];
 
-const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-select--default";
+const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-switch--default";
 
-const SIZES: SelectSize[] = ["sm", "md", "lg"];
-const OPTIONS = [
-  { label: "Next.js", value: "next" },
-  { label: "Vite", value: "vite" },
-  { label: "Remix", value: "remix" },
-];
+const SIZES: SwitchSize[] = ["sm", "md", "lg"];
 
-const CODE_SNIPPET = `import { Select } from "@/ui/Select";
+const CODE_SNIPPET = `import { Switch } from "@/ui/Switch";
 
-<Select
-  label="Framework"
-  options={[
-    { label: "Next.js", value: "next" },
-    { label: "Vite", value: "vite" },
-    { label: "Remix", value: "remix" },
-  ]}
-  size="md"
+<Switch
+  checked={enabled}
+  onChange={setEnabled}
+  label="Enable analytics"
+  description="Track usage data for product insights."
 />`;
 
-const COPY_PASTE_SNIPPET = `import { forwardRef, type SelectHTMLAttributes } from "react";
+const COPY_PASTE_SNIPPET = `import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 
-export type SelectSize = "sm" | "md" | "lg";
+export type SwitchSize = "sm" | "md" | "lg";
 
-export interface SelectOption {
-  label: string;
-  value: string;
+export interface SwitchProps {
+  checked?: boolean;
+  defaultChecked?: boolean;
+  onChange?: (checked: boolean) => void;
   disabled?: boolean;
-}
-
-export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, "size"> {
+  size?: SwitchSize;
   label?: string;
   description?: string;
-  error?: string;
-  size?: SelectSize;
-  options?: SelectOption[];
-  placeholder?: string;
+  className?: string;
 }`;
 
 const PROPS_ROWS = [
-  { prop: "label", type: "string", default: "—", description: "Field label rendered above the select input." },
-  { prop: "description", type: "string", default: "—", description: "Helper text shown below the select when no error is present." },
-  { prop: "error", type: "string", default: "—", description: "Error text that replaces the description and applies error styles." },
-  { prop: "size", type: '"sm" | "md" | "lg"', default: '"md"', description: "Changes the select height, padding, and text size." },
-  { prop: "options", type: "SelectOption[]", default: "—", description: "Convenience array for rendering option elements." },
-  { prop: "placeholder", type: "string", default: "—", description: "Placeholder option label rendered with an empty value." },
-  { prop: "className", type: "string", default: "—", description: "Additional classes merged into the root wrapper." },
+  { prop: "checked", type: "boolean", default: "—", description: "Controlled on or off state." },
+  { prop: "defaultChecked", type: "boolean", default: "false", description: "Initial state when the switch is uncontrolled." },
+  { prop: "onChange", type: "(checked: boolean) => void", default: "—", description: "Called whenever the switch toggles." },
+  { prop: "disabled", type: "boolean", default: "false", description: "Prevents interaction and reduces opacity." },
+  { prop: "size", type: '"sm" | "md" | "lg"', default: '"md"', description: "Changes the track and thumb dimensions." },
+  { prop: "label", type: "string", default: "—", description: "Primary label rendered next to the control." },
+  { prop: "description", type: "string", default: "—", description: "Secondary helper text rendered below the label." },
+  { prop: "className", type: "string", default: "—", description: "Additional classes applied to the root wrapper." },
 ];
 
-function ThemedSelectPanel({ dark }: { dark: boolean }) {
-  const shell = dark ? "border-[#1f2937] bg-[#0d1117]" : "border-slate-200 bg-white";
+type ForceTheme = "light" | "dark";
+
+const FORCED_STYLES: Record<ForceTheme, { shell: string; trackOff: string; label: string; desc: string }> = {
+  light: { shell: "border-slate-200 bg-white",      trackOff: "bg-slate-300", label: "text-slate-900", desc: "text-slate-500" },
+  dark:  { shell: "border-[#1f2937] bg-[#0d1117]", trackOff: "bg-slate-700", label: "text-white",      desc: "text-slate-400" },
+};
+
+const FORCED_TRACK_SIZES: Record<SwitchSize, string> = {
+  sm: "h-5 w-9",
+  md: "h-6 w-11",
+  lg: "h-7 w-14",
+};
+
+const FORCED_THUMB: Record<SwitchSize, { off: string; on: string }> = {
+  sm: { off: "h-4 w-4 translate-x-0", on: "h-4 w-4 translate-x-4" },
+  md: { off: "h-5 w-5 translate-x-0", on: "h-5 w-5 translate-x-5" },
+  lg: { off: "h-6 w-6 translate-x-0", on: "h-6 w-6 translate-x-7" },
+};
+
+const PREVIEW_ITEMS: Array<{ size: SwitchSize; isOn: boolean }> = [
+  { size: "sm", isOn: false },
+  { size: "md", isOn: true },
+  { size: "lg", isOn: true },
+];
+
+function ThemedSwitchPanel({ dark }: { dark: boolean }) {
+  const theme: ForceTheme = dark ? "dark" : "light";
+  const s = FORCED_STYLES[theme];
 
   return (
-    <div className={`rounded-xl border p-6 space-y-4 ${shell}`}>
-      {SIZES.map((size) => (
-        <Select
-          key={size}
-          label={`Size ${size}`}
-          size={size}
-          options={OPTIONS}
-          defaultValue="next"
-        />
+    <div className={`rounded-xl border p-6 space-y-4 ${s.shell}`}>
+      {PREVIEW_ITEMS.map(({ size, isOn }) => (
+        <div key={size} className="inline-flex items-start gap-3">
+          <div className={`relative shrink-0 rounded-full p-0.5 ${FORCED_TRACK_SIZES[size]} ${isOn ? "bg-primary" : s.trackOff}`}>
+            <span className={`block rounded-full bg-white shadow-sm ${FORCED_THUMB[size][isOn ? "on" : "off"]}`} />
+          </div>
+          <div className="min-w-0">
+            <p className={`text-sm font-medium ${s.label}`}>Notifications {size}</p>
+            <p className={`mt-0.5 text-xs ${s.desc}`}>Preview of the {size} switch size. ({isOn ? "enabled" : "disabled"})</p>
+          </div>
+        </div>
       ))}
     </div>
   );
 }
 
-export default function SelectDocPage() {
-  const [framework, setFramework] = useState("next");
-  const [size, setSize] = useState<SelectSize>("md");
+export default function SwitchDocPage() {
+  const [enabled, setEnabled] = useState(true);
+  const [size, setSize] = useState<SwitchSize>("md");
 
   return (
     <DocsPageLayout tocItems={TOC_ITEMS}>
@@ -95,19 +112,19 @@ export default function SelectDocPage() {
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
           <span className="transition-colors cursor-pointer hover:text-primary">Form</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <span className="text-slate-900 dark:text-white">Select</span>
+          <span className="text-slate-900 dark:text-white">Switch</span>
         </nav>
 
         <div className="mb-12">
           <h1 className="mb-4 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">
-            Select
+            Switch
           </h1>
           <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-400">
-            Styled native select input for predictable keyboard interaction, forms, and simple
-            option lists that benefit from platform behavior.
+            Binary toggle control for settings and preferences where users need an immediate on or
+            off action with optional descriptive context.
           </p>
           <div className="flex flex-wrap gap-2 mt-6">
-            {["Accessible", "Dark Mode", "3 Sizes", "Keyboard Nav"].map((tag) => (
+            {["Accessible", "Dark Mode", "3 Sizes", "Animated", "Keyboard Nav"].map((tag) => (
               <span
                 key={tag}
                 className="rounded-full border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-400"
@@ -118,7 +135,7 @@ export default function SelectDocPage() {
           </div>
         </div>
 
-        <CliInstallBlock name="select" />
+        <CliInstallBlock name="switch" />
 
         <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
@@ -133,14 +150,14 @@ export default function SelectDocPage() {
                 <div className="w-3 h-3 rounded-full shadow-xs bg-amber-400 shadow-amber-300" />
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Light</span>
               </div>
-              <ThemedSelectPanel dark={false} />
+              <ThemedSwitchPanel dark={false} />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-3 h-3 bg-indigo-500 rounded-full shadow-xs shadow-indigo-400" />
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Dark</span>
               </div>
-              <ThemedSelectPanel dark />
+              <ThemedSwitchPanel dark />
             </div>
           </div>
         </section>
@@ -184,12 +201,12 @@ export default function SelectDocPage() {
                 ))}
               </div>
             </div>
-            <Select
-              label="Framework"
-              value={framework}
-              onChange={(event) => setFramework(event.target.value)}
-              options={OPTIONS}
+            <Switch
+              checked={enabled}
+              onChange={setEnabled}
               size={size}
+              label="Enable analytics"
+              description={enabled ? "Analytics is active" : "Analytics is disabled"}
             />
           </div>
         </section>
@@ -201,7 +218,7 @@ export default function SelectDocPage() {
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
           </div>
-          <CodeBlock filename="src/ui/Select.tsx" copyText={CODE_SNIPPET}>{CODE_SNIPPET}</CodeBlock>
+          <CodeBlock filename="src/ui/Switch.tsx" copyText={CODE_SNIPPET}>{CODE_SNIPPET}</CodeBlock>
         </section>
 
         <section id="copy-paste" className="mb-16">
@@ -211,7 +228,7 @@ export default function SelectDocPage() {
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
           </div>
-          <CodeBlock filename="Select.tsx" copyText={COPY_PASTE_SNIPPET}>{COPY_PASTE_SNIPPET}</CodeBlock>
+          <CodeBlock filename="Switch.tsx" copyText={COPY_PASTE_SNIPPET}>{COPY_PASTE_SNIPPET}</CodeBlock>
         </section>
 
         <section id="props" className="mb-16">

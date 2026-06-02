@@ -50,7 +50,7 @@ export function DocsHeader() {
   const router = useRouter();
   const { open, setOpen, toggle } = useSearchStore();
   const { savedSlugs } = useSavedStore();
-  const isDocsActive = pathname.startsWith("/docs");
+  const isDocsActive = pathname.startsWith("/components");
   const isCookbookActive = pathname.startsWith("/nextjs/cookbook") || pathname.startsWith("/vitejs/cookbook");
   const isCreateActive = pathname.startsWith("/create");
   const activeFramework = pathname.startsWith("/vitejs/") ? "vitejs" : "nextjs";
@@ -102,8 +102,8 @@ export function DocsHeader() {
               <Link href="/" className={navLinkClass(!isDocsActive && !isCookbookActive && !isCreateActive)}>
                 Home
               </Link>
-              <Link href="/docs/introduction" className={navLinkClass(isDocsActive)}>
-                Docs
+              <Link href="/components/introduction" className={navLinkClass(isDocsActive)}>
+                Components
               </Link>
               <Link href="/nextjs/cookbook" className={navLinkClass(isCookbookActive)}>
                 Cookbook

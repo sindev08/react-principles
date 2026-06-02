@@ -40,7 +40,7 @@ export default function InstallationPage() {
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-3xl">
         <nav className="flex items-center gap-2 mb-8 text-sm font-medium text-slate-500">
-          <Link href="/docs/introduction" className="transition-colors cursor-pointer hover:text-primary">
+          <Link href="/components/introduction" className="transition-colors cursor-pointer hover:text-primary">
             Getting Started
           </Link>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
@@ -124,13 +124,13 @@ export default function InstallationPage() {
         </section>
 
         <div className="flex items-center justify-between border-t border-slate-200 pt-8 dark:border-[#1f2937]">
-          <Link href="/docs/introduction" className="flex flex-col gap-1 transition-colors group">
+          <Link href="/components/introduction" className="flex flex-col gap-1 transition-colors group">
             <span className="text-xs text-slate-400">Previous</span>
             <span className="text-sm font-medium text-slate-900 group-hover:text-primary dark:text-white">
               Introduction
             </span>
           </Link>
-          <Link href="/docs/theming" className="flex flex-col items-end gap-1 transition-colors group">
+          <Link href="/components/theming" className="flex flex-col items-end gap-1 transition-colors group">
             <span className="text-xs text-slate-400">Next</span>
             <span className="text-sm font-medium text-slate-900 group-hover:text-primary dark:text-white">
               Theming

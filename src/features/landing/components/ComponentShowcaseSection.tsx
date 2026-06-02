@@ -17,7 +17,7 @@ const COMPONENT_SHOWCASES = [
     name: "Button",
     story: "Variants",
     description: "High-signal actions with strong defaults for primary, outline, ghost, and destructive flows.",
-    href: "/docs/button",
+    href: "/components/button",
     props: ['variant="primary"', 'size="md"', "isLoading"],
     preview: (
       <div className="flex flex-wrap items-center gap-3">
@@ -32,7 +32,7 @@ const COMPONENT_SHOWCASES = [
     name: "Select",
     story: "Default",
     description: "Form choices keep labels, descriptions, and validation feedback aligned in one primitive.",
-    href: "/docs/select",
+    href: "/components/select",
     props: ['label="Framework"', 'placeholder="Choose stack"', 'size="md"'],
     preview: (
       <Select
@@ -48,7 +48,7 @@ const COMPONENT_SHOWCASES = [
     name: "Checkbox",
     story: "States",
     description: "Selection controls cover checked, indeterminate, and descriptive states without extra wrappers.",
-    href: "/docs/checkbox",
+    href: "/components/checkbox",
     props: ['size="md"', "indeterminate", "description"],
     preview: (
       <div className="space-y-3">
@@ -69,7 +69,7 @@ const COMPONENT_SHOWCASES = [
     name: "Tabs",
     story: "Pills",
     description: "Navigation between overview, API, and examples mirrors the same content model shown in docs stories.",
-    href: "/docs/tabs",
+    href: "/components/tabs",
     props: ['variant="pills"', 'defaultValue="api"', "onChange"],
     preview: (
       <Tabs defaultValue="api" variant="pills">
@@ -115,11 +115,10 @@ export function ComponentShowcaseSection() {
               Component showcase
             </div>
             <h2 className="max-w-3xl text-3xl font-black tracking-tight text-slate-900 dark:text-white md:text-4xl">
-              See the UI kit in motion before you ever leave the landing page.
+              The components behind every Cookbook recipe.
             </h2>
             <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-600 dark:text-slate-400">
-              These previews mirror the same scenarios documented in Storybook, so the landing page highlights real
-              component states instead of static marketing screenshots.
+              Copy-paste components that power the Cookbook patterns — fully accessible, built with Tailwind v4, and yours to customize completely.
             </p>
           </div>
 
@@ -171,7 +170,7 @@ export function ComponentShowcaseSection() {
                   href={component.href}
                   className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700 transition-colors hover:border-primary hover:text-primary dark:border-white/10 dark:bg-slate-900 dark:text-slate-300"
                 >
-                  Docs
+                  View
                   <span className="material-symbols-outlined text-base">arrow_outward</span>
                 </Link>
               </div>
@@ -202,12 +201,12 @@ export function ComponentShowcaseSection() {
               Ready to go deeper?
             </h3>
             <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">
-              Jump into the docs for API detail or browse the cookbook to see the same primitives inside larger product flows.
+              Browse the full component reference or open the Cookbook to see these primitives inside real production flows.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
             <Link
-              href="/docs/introduction"
+              href="/components/introduction"
               className="group flex flex-col gap-3 rounded-2xl border border-primary/20 bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 dark:bg-slate-900 dark:hover:bg-slate-800"
             >
               <div className="flex items-center justify-between">
@@ -219,7 +218,7 @@ export function ComponentShowcaseSection() {
                 </span>
               </div>
               <div>
-                <p className="text-sm font-bold text-slate-900 dark:text-white">Browse Docs</p>
+                <p className="text-sm font-bold text-slate-900 dark:text-white">Browse Components</p>
                 <p className="mt-0.5 text-xs leading-5 text-slate-500 dark:text-slate-400">
                   Full API reference, props tables, and usage examples.
                 </p>

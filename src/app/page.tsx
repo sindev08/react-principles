@@ -4,7 +4,7 @@ import {
   HeroSection,
   WhySection,
   CookbookTeaserSection,
-  DocsSection,
+  CookbookStructureSection,
   ComponentShowcaseSection,
   ConfiguratorTeaserSection,
   AICorpusTeaserSection,
@@ -64,7 +64,7 @@ export default function LandingPage() {
         <HeroSection />
         <WhySection />
         <CookbookTeaserSection />
-        <DocsSection />
+        <CookbookStructureSection />
         <ComponentShowcaseSection />
         <ConfiguratorTeaserSection />
         <AICorpusTeaserSection />

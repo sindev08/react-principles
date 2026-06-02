@@ -69,7 +69,9 @@ export function useAnimatedMount(open: boolean, duration = 200): AnimatedMountRe
 
   return { mounted, visible };
 }`,
-  "Accordion": `import {
+  "Accordion": `"use client";
+
+import {
   createContext,
   useContext,
   useState,
@@ -262,10 +264,26 @@ export interface AlertProps extends HTMLAttributes<HTMLDivElement> {
 
 const VARIANT_CLASSES: Record<AlertVariant, string> = {
   default: "border-slate-200 bg-white dark:border-[#1f2937] dark:bg-[#161b22]",
-  success: "border-green-300 bg-green-50 dark:border-green-900 dark:bg-green-950/30",
-  warning: "border-amber-300 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30",
-  error: "border-red-300 bg-red-50 dark:border-red-900 dark:bg-red-950/30",
-  info: "border-blue-300 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/30",
+  success: [
+    "border-green-300 bg-green-50 dark:border-green-900 dark:bg-green-950/30",
+    "[&_.alert-title]:text-green-900 dark:[&_.alert-title]:text-white",
+    "[&_.alert-desc]:text-green-700 dark:[&_.alert-desc]:text-slate-400",
+  ].join(" "),
+  warning: [
+    "border-amber-300 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30",
+    "[&_.alert-title]:text-amber-900 dark:[&_.alert-title]:text-white",
+    "[&_.alert-desc]:text-amber-700 dark:[&_.alert-desc]:text-slate-400",
+  ].join(" "),
+  error: [
+    "border-red-300 bg-red-50 dark:border-red-900 dark:bg-red-950/30",
+    "[&_.alert-title]:text-red-900 dark:[&_.alert-title]:text-white",
+    "[&_.alert-desc]:text-red-700 dark:[&_.alert-desc]:text-slate-400",
+  ].join(" "),
+  info: [
+    "border-blue-300 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/30",
+    "[&_.alert-title]:text-blue-900 dark:[&_.alert-title]:text-white",
+    "[&_.alert-desc]:text-blue-700 dark:[&_.alert-desc]:text-slate-400",
+  ].join(" "),
 };
 
 export function Alert({ variant = "default", className, ...props }: AlertProps) {
@@ -281,7 +299,7 @@ export function Alert({ variant = "default", className, ...props }: AlertProps) 
 Alert.Title = function AlertTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h4
-      className={cn("text-sm font-semibold text-slate-900 dark:text-white", className)}
+      className={cn("alert-title text-sm font-semibold text-slate-900 dark:text-white", className)}
       {...props}
     />
   );
@@ -290,7 +308,7 @@ Alert.Title = function AlertTitle({ className, ...props }: HTMLAttributes<HTMLHe
 Alert.Description = function AlertDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={cn("mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400", className)}
+      className={cn("alert-desc mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400", className)}
       {...props}
     />
   );
@@ -317,7 +335,9 @@ Alert.Action = function AlertAction({ className, ...props }: ButtonHTMLAttribute
     />
   );
 }`,
-  "AlertDialog": `import { useEffect } from "react";
+  "AlertDialog": `"use client";
+
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { useAnimatedMount } from "@/hooks/use-animated-mount";
@@ -402,12 +422,36 @@ export function AlertDialog({
   isLoading = false,
 }: AlertDialogProps) {
   const { mounted, visible } = useAnimatedMount(open, 200);
+  const panelRef = useRef<HTMLDivElement>(null);
 
-  // Scroll lock only — no Escape dismiss (by design)
+  // Scroll lock + focus trap — no Escape dismiss (by design)
   useEffect(() => {
     if (!open) return;
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.body.style.overflow = "";
+      document.removeEventListener("keydown", handleKey);
+    };
   }, [open]);
 
   if (!mounted) return null;
@@ -423,6 +467,7 @@ export function AlertDialog({
       />
 
       <div
+        ref={panelRef}
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="alert-title"
@@ -477,13 +522,14 @@ export function AlertDialog({
 
   return createPortal(panel, document.body);
 }`,
-  "AspectRatio": `import { cn } from "@/lib/utils";
+  "AspectRatio": `import { type ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface AspectRatioProps {
   ratio: number | string;
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }
 
@@ -2127,7 +2173,9 @@ export function ChartLegend() {
 // ─── Re-exports ────────────────────────────────────────────────────────────────
 
 export { BarChart, LineChart, AreaChart, PieChart };`,
-  "Checkbox": `import { useRef, useEffect } from "react";
+  "Checkbox": `"use client";
+
+import { useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 export type CheckboxSize = "sm" | "md" | "lg";
@@ -2377,7 +2425,9 @@ Collapsible.Content = function CollapsibleContent({ children, className }: Colla
     </div>
   );
 };`,
-  "Combobox": `import { useEffect, useMemo, useRef, useState } from "react";
+  "Combobox": `"use client";
+
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export interface ComboboxOption {
@@ -2415,6 +2465,8 @@ export function Combobox({
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [internalValue, setInternalValue] = useState(defaultValue ?? "");
   const containerRef = useRef<HTMLDivElement>(null);
+  const listboxId = useId();
+  const inputId = useId();
   const isControlled = value !== undefined;
   const selectedValue = isControlled ? value : internalValue;
 
@@ -2459,10 +2511,17 @@ export function Combobox({
 
   return (
     <div className={cn("flex flex-col gap-1.5", className)}>
-      {label && <label className="text-sm font-medium text-slate-700 dark:text-slate-300">{label}</label>}
+      {label && <label htmlFor={inputId} className="text-sm font-medium text-slate-700 dark:text-slate-300">{label}</label>}
 
       <div ref={containerRef} className="relative">
         <input
+          id={inputId}
+          role="combobox"
+          aria-expanded={open}
+          aria-controls={listboxId}
+          aria-activedescendant={open ? \`\${listboxId}-option-\${highlightedIndex}\` : undefined}
+          aria-autocomplete="list"
+          autoComplete="off"
           value={query}
           onChange={(event) => {
             setQuery(event.target.value);
@@ -2504,7 +2563,11 @@ export function Combobox({
         </span>
 
         {open && (
-          <div className="absolute z-40 mt-2 max-h-64 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-lg dark:border-[#1f2937] dark:bg-[#161b22]">
+          <div
+            id={listboxId}
+            role="listbox"
+            className="absolute z-40 mt-2 max-h-64 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white p-1 shadow-lg dark:border-[#1f2937] dark:bg-[#161b22]"
+          >
             {filtered.length === 0 && (
               <p className="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">{emptyText}</p>
             )}
@@ -2514,7 +2577,10 @@ export function Combobox({
               return (
                 <button
                   key={option.value}
+                  id={\`\${listboxId}-option-\${index}\`}
                   type="button"
+                  role="option"
+                  aria-selected={isSelected || undefined}
                   disabled={option.disabled}
                   onMouseEnter={() => setHighlightedIndex(index)}
                   onClick={() => !option.disabled && selectValue(option.value)}
@@ -2552,12 +2618,17 @@ export function Combobox({
     </div>
   );
 }`,
-  "Command": `import { createContext, useContext, useEffect, useMemo, useState, type HTMLAttributes, type InputHTMLAttributes, type ReactNode } from "react";
+  "Command": `"use client";
+
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type HTMLAttributes, type InputHTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface CommandContextValue {
   query: string;
   setQuery: (query: string) => void;
+  visibleCount: number;
+  incrementVisible: () => void;
+  decrementVisible: () => void;
 }
 
 const CommandContext = createContext<CommandContextValue | null>(null);
@@ -2572,22 +2643,28 @@ function useCommandContext() {
   return context;
 }
 
-export function Command({ className, initialQuery = "", ...props }: CommandProps) {
+export function Command({ className, initialQuery = "", children, ...props }: CommandProps) {
   const [query, setQuery] = useState(initialQuery);
+  const [visibleCount, setVisibleCount] = useState(0);
 
   useEffect(() => {
     setQuery(initialQuery);
   }, [initialQuery]);
 
+  const incrementVisible = useCallback(() => setVisibleCount((n) => n + 1), []);
+  const decrementVisible = useCallback(() => setVisibleCount((n) => n - 1), []);
+
   return (
-    <CommandContext.Provider value={{ query, setQuery }}>
+    <CommandContext.Provider value={{ query, setQuery, visibleCount, incrementVisible, decrementVisible }}>
       <div
         className={cn(
           "rounded-xl border border-slate-200 bg-white dark:border-[#1f2937] dark:bg-[#161b22]",
           className
         )}
         {...props}
-      />
+      >
+        {children}
+      </div>
     </CommandContext.Provider>
   );
 }
@@ -2612,7 +2689,7 @@ Command.Input = function CommandInput({ className, ...props }: InputHTMLAttribut
 }
 
 Command.List = function CommandList({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("max-h-64 overflow-y-auto p-1", className)} {...props} />;
+  return <div role="listbox" className={cn("max-h-64 overflow-y-auto p-1", className)} {...props} />;
 }
 
 interface CommandItemProps extends HTMLAttributes<HTMLButtonElement> {
@@ -2622,7 +2699,7 @@ interface CommandItemProps extends HTMLAttributes<HTMLButtonElement> {
 }
 
 Command.Item = function CommandItem({ value, keywords, className, children, ...props }: CommandItemProps) {
-  const { query } = useCommandContext();
+  const { query, incrementVisible, decrementVisible } = useCommandContext();
 
   const visible = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -2631,11 +2708,19 @@ Command.Item = function CommandItem({ value, keywords, className, children, ...p
     return terms.includes(normalized);
   }, [query, value, keywords]);
 
+  useEffect(() => {
+    if (visible) {
+      incrementVisible();
+      return decrementVisible;
+    }
+  }, [visible, incrementVisible, decrementVisible]);
+
   if (!visible) return null;
 
   return (
     <button
       type="button"
+      role="option"
       className={cn(
         "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-[#0d1117]",
         className
@@ -2648,9 +2733,17 @@ Command.Item = function CommandItem({ value, keywords, className, children, ...p
 }
 
 Command.Empty = function CommandEmpty({ className, children = "No results" }: { className?: string; children?: ReactNode }) {
-  const { query } = useCommandContext();
-  if (!query.trim()) return null;
-  return <p className={cn("px-3 py-5 text-center text-xs text-slate-500 dark:text-slate-400", className)}>{children}</p>;
+  const { query, visibleCount } = useCommandContext();
+  if (!query.trim() || visibleCount > 0) return null;
+
+  return (
+    <p
+      role="presentation"
+      className={cn("px-3 py-5 text-center text-xs text-slate-500 dark:text-slate-400", className)}
+    >
+      {children}
+    </p>
+  );
 }
 
 Command.Group = function CommandGroup({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
@@ -3360,7 +3453,7 @@ export function DataTable<TData>({
   return (
     <div className={cn("space-y-4", className)}>
       {/* Filter input */}
-      <div className="relative">
+      <div className="relative" role="search">
         <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-[18px] text-slate-400">
           search
         </span>
@@ -3369,6 +3462,7 @@ export function DataTable<TData>({
           value={globalFilter}
           onChange={(e) => handleFilterChange(e.target.value)}
           placeholder={filterPlaceholder}
+          aria-label={filterPlaceholder}
           className={cn(
             "h-10 w-full rounded-lg border border-slate-200 bg-white pl-10 pr-4 text-sm text-slate-900 outline-hidden transition-all",
             "hover:border-slate-300 focus:border-primary focus:ring-2 focus:ring-primary/20",
@@ -3382,9 +3476,16 @@ export function DataTable<TData>({
         <Table.Header>
           {table.getHeaderGroups().map((headerGroup) => (
             <Table.Row key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
+              {headerGroup.headers.map((header) => {
+                const sortDir = header.column.getIsSorted();
+                return (
                 <Table.Head
                   key={header.id}
+                  aria-sort={
+                    sortDir === "asc" ? "ascending" :
+                    sortDir === "desc" ? "descending" :
+                    header.column.getCanSort() ? "none" : undefined
+                  }
                   className={cn(
                     header.column.getCanSort() && "cursor-pointer select-none",
                   )}
@@ -3395,10 +3496,11 @@ export function DataTable<TData>({
                       header.column.columnDef.header,
                       header.getContext(),
                     )}
-                    <SortIcon direction={header.column.getIsSorted()} />
+                    <SortIcon direction={sortDir} />
                   </div>
                 </Table.Head>
-              ))}
+                );
+              })}
             </Table.Row>
           ))}
         </Table.Header>
@@ -3436,6 +3538,7 @@ export function DataTable<TData>({
       </Table>
 
       {/* Pagination */}
+      {!isEmpty && !isLoading && (
       <div className="flex items-center justify-between">
         <p className="text-sm text-slate-500 dark:text-slate-400">
           Page {pagination.pageIndex + 1} of {table.getPageCount()}{" "}
@@ -3460,6 +3563,7 @@ export function DataTable<TData>({
           </Button>
         </div>
       </div>
+      )}
     </div>
   );
 }`,
@@ -3469,6 +3573,7 @@ import {
   forwardRef,
   useCallback,
   useEffect,
+  useId,
   useRef,
   useState,
   type InputHTMLAttributes,
@@ -3532,6 +3637,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
       onChange,
       mode = "single",
       placeholder = "Pick a date",
+      disabled,
       className,
       id,
       ...props
@@ -3541,6 +3647,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
     const [open, setOpen] = useState(false);
     const [internalValue, setInternalValue] = useState(defaultValue ?? "");
     const containerRef = useRef<HTMLDivElement>(null);
+    const calendarId = useId();
 
     const isControlled = value !== undefined;
     const currentValue = isControlled ? value : internalValue;
@@ -3608,6 +3715,10 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
         <div ref={containerRef} className="relative">
           <button
             type="button"
+            disabled={disabled}
+            aria-expanded={open}
+            aria-haspopup="dialog"
+            aria-controls={calendarId}
             onClick={() => setOpen(!open)}
             className={cn(
               "h-10 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-left text-sm text-slate-900 outline-hidden transition-all",
@@ -3633,11 +3744,12 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
             type="hidden"
             value={currentValue}
             name={props.name}
+            {...props}
           />
 
           {/* Calendar dropdown */}
           {open && (
-            <div className="absolute z-40 mt-2 left-0 w-full">
+            <div id={calendarId} className="absolute z-40 mt-2 left-0 w-full">
               <Calendar
                 mode={mode}
                 selected={calendarSelected}
@@ -3753,6 +3865,7 @@ Dialog.Footer = function DialogFooter({ children, className, ...props }: DialogF
 
 export function Dialog({ open, onClose, size = "md", children, className }: DialogProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const { mounted, visible } = useAnimatedMount(open, 200);
 
   useEffect(() => {
@@ -3760,6 +3873,21 @@ export function Dialog({ open, onClose, size = "md", children, className }: Dial
 
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
     };
 
     document.addEventListener("keydown", handleKey);
@@ -3791,6 +3919,7 @@ export function Dialog({ open, onClose, size = "md", children, className }: Dial
 
       {/* Panel */}
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         className={cn(
@@ -3822,7 +3951,7 @@ export function Dialog({ open, onClose, size = "md", children, className }: Dial
 }`,
   "Drawer": `"use client";
 
-import { useEffect, type HTMLAttributes, type ReactNode } from "react";
+import { useEffect, useRef, type HTMLAttributes, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { useAnimatedMount } from "@/hooks/use-animated-mount";
@@ -3921,12 +4050,28 @@ Drawer.Footer = function DrawerFooter({ children, className, ...props }: DrawerF
 
 export function Drawer({ open, onClose, side = "right", size = "md", children, className }: DrawerProps) {
   const { mounted, visible } = useAnimatedMount(open, 300);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
 
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
     };
 
     document.addEventListener("keydown", handleKey);
@@ -3955,6 +4100,7 @@ export function Drawer({ open, onClose, side = "right", size = "md", children, c
 
       {/* Panel */}
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         className={cn(
@@ -3987,7 +4133,9 @@ export function Drawer({ open, onClose, side = "right", size = "md", children, c
 
   return createPortal(drawer, document.body);
 }`,
-  "DropdownMenu": `import { createContext, useCallback, useContext, useEffect, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
+  "DropdownMenu": `"use client";
+
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface DropdownMenuContextValue {
@@ -4072,6 +4220,8 @@ DropdownMenu.Trigger = function DropdownMenuTrigger({ children, className, onCli
   return (
     <button
       type="button"
+      aria-expanded={open}
+      aria-haspopup="menu"
       onClick={(event) => {
         onClick?.(event);
         setOpen(!open);
@@ -4116,7 +4266,7 @@ DropdownMenu.Label = function DropdownMenuLabel({ className, ...props }: HTMLAtt
 }
 
 DropdownMenu.Separator = function DropdownMenuSeparator({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("my-1 h-px bg-slate-200 dark:bg-[#1f2937]", className)} {...props} />;
+  return <div role="separator" className={cn("my-1 h-px bg-slate-200 dark:bg-[#1f2937]", className)} {...props} />;
 }
 
 DropdownMenu.Item = function DropdownMenuItem({ inset = false, onSelect, onClick, className, disabled, ...props }: DropdownMenuItemProps) {
@@ -4125,6 +4275,7 @@ DropdownMenu.Item = function DropdownMenuItem({ inset = false, onSelect, onClick
   return (
     <button
       type="button"
+      role="menuitem"
       disabled={disabled}
       onClick={(event) => {
         onClick?.(event);
@@ -4499,6 +4650,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useId,
   useRef,
   useState,
   type HTMLAttributes,
@@ -4540,6 +4692,7 @@ interface HoverCardContextValue {
   closeDelay: number;
   side: HoverCardSide;
   align: HoverCardAlign;
+  tooltipId: string;
 }
 
 const HoverCardContext = createContext<HoverCardContextValue | null>(null);
@@ -4571,6 +4724,7 @@ export function HoverCard({
   const containerRef = useRef<HTMLDivElement>(null);
   const openTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tooltipId = useId();
 
   const setOpen = useCallback((next: boolean) => {
     if (!isControlled) setInternalOpen(next);
@@ -4609,7 +4763,7 @@ export function HoverCard({
   }, []);
 
   return (
-    <HoverCardContext.Provider value={{ open: isOpen, setOpen, openDelay, closeDelay, side, align }}>
+    <HoverCardContext.Provider value={{ open: isOpen, setOpen, openDelay, closeDelay, side, align, tooltipId }}>
       <div
         ref={containerRef}
         className={cn("relative inline-flex", className)}
@@ -4625,8 +4779,14 @@ export function HoverCard({
 // ─── Trigger ─────────────────────────────────────────────────────────────────
 
 HoverCard.Trigger = function HoverCardTrigger({ children, className, ...props }: HoverCardTriggerProps) {
+  const { open, tooltipId } = useHoverCardContext();
+
   return (
-    <span className={cn("inline-flex", className)} {...props}>
+    <span
+      className={cn("inline-flex", className)}
+      aria-describedby={open ? tooltipId : undefined}
+      {...props}
+    >
       {children}
     </span>
   );
@@ -4655,7 +4815,7 @@ const VERTICAL_ALIGN_CLASS: Record<HoverCardAlign, string> = {
 };
 
 HoverCard.Content = function HoverCardContent({ children, className, ...props }: HoverCardContentProps) {
-  const { open, side, align } = useHoverCardContext();
+  const { open, side, align, tooltipId } = useHoverCardContext();
 
   if (!open) return null;
 
@@ -4663,6 +4823,8 @@ HoverCard.Content = function HoverCardContent({ children, className, ...props }:
 
   return (
     <div
+      id={tooltipId}
+      role="tooltip"
       className={cn(
         "absolute z-50 w-80 rounded-lg border border-slate-200 bg-white p-4 shadow-lg",
         "dark:border-[#1f2937] dark:bg-[#161b22]",
@@ -4951,7 +5113,9 @@ export const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(
     );
   }
 );`,
-  "InputOTP": `import { useRef, useEffect, type KeyboardEvent } from "react";
+  "InputOTP": `"use client";
+
+import { useRef, useEffect, type KeyboardEvent } from "react";
 import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -6541,7 +6705,6 @@ export function PageProgress({ progress, visible }: PageProgressProps) {
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={progress}
-      aria-hidden="true"
       className={cn(
         "pointer-events-none fixed left-0 top-0 z-200 h-0.5 bg-primary",
         // Glow effect matching the primary color
@@ -6655,7 +6818,9 @@ export function Pagination({ page, totalPages, onPageChange, siblingCount = 1, c
     </nav>
   );
 }`,
-  "Popover": `import { createContext, useCallback, useContext, useEffect, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
+  "Popover": `"use client";
+
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type PopoverSide = "top" | "bottom";
@@ -6754,6 +6919,8 @@ Popover.Trigger = function PopoverTrigger({ children, className, onClick, ...pro
   return (
     <button
       type="button"
+      aria-expanded={open}
+      aria-haspopup="dialog"
       onClick={(event) => {
         onClick?.(event);
         setOpen(!open);
@@ -6788,6 +6955,7 @@ Popover.Content = function PopoverContent({ children, className, ...props }: Pop
 
   return (
     <div
+      role="dialog"
       className={cn(
         "absolute z-50 w-72 rounded-xl border border-slate-200 bg-white p-4 shadow-xl dark:border-[#1f2937] dark:bg-[#161b22]",
         SIDE_CLASS[side],
@@ -6847,7 +7015,9 @@ export function Progress({ value, max = 100, className, ...props }: ProgressProp
     </div>
   );
 }`,
-  "RadioGroup": `import { createContext, useContext, useId, useState, type HTMLAttributes, type ReactNode } from "react";
+  "RadioGroup": `"use client";
+
+import { createContext, useContext, useId, useState, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export interface RadioGroupProps extends HTMLAttributes<HTMLDivElement> {
@@ -7105,8 +7275,9 @@ Resizable.Handle = function ResizableHandle({
   containerRef,
   activeHandle,
   setActiveHandle,
+  direction: dir,
 }: ResizableHandleProps & ResizableHandleInternalProps) {
-  const direction = "horizontal"; // Hardcode for now
+  const direction = dir ?? "horizontal";
   const isHorizontal = direction === "horizontal";
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -7317,7 +7488,9 @@ export function ScrollArea({
     </div>
   );
 }`,
-  "SearchDialog": `import { useEffect, useRef, useState } from "react";
+  "SearchDialog": `"use client";
+
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAnimatedMount } from "@/hooks/use-animated-mount";
 import { cn } from "@/lib/utils";
 
@@ -7350,6 +7523,7 @@ export function SearchDialog({
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const { mounted, visible } = useAnimatedMount(open, 150);
 
   const results = query.trim()
@@ -7377,29 +7551,44 @@ export function SearchDialog({
     setActiveIndex(0);
   }, [query]);
 
-  // Keyboard navigation
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        setActiveIndex((i) => Math.min(i + 1, results.length - 1));
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        setActiveIndex((i) => Math.max(i - 1, 0));
-      } else if (e.key === "Enter") {
-        const item = results[activeIndex];
-        if (item) {
-          onNavigate(item.href);
-          onClose();
-        }
-      } else if (e.key === "Escape") {
+  // Keyboard navigation + focus trap
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((i) => Math.min(i + 1, results.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Enter") {
+      const item = results[activeIndex];
+      if (item) {
+        onNavigate(item.href);
         onClose();
       }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [open, results, activeIndex, onNavigate, onClose]);
+    } else if (e.key === "Escape") {
+      onClose();
+    } else if (e.key === "Tab" && panelRef.current) {
+      const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+        'input:not(:disabled), button:not(:disabled), [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last?.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first?.focus();
+      }
+    }
+  }, [results, activeIndex, onNavigate, onClose]);
+
+  useEffect(() => {
+    if (!open) return;
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, handleKeyDown]);
 
   if (!mounted) return null;
 
@@ -7418,6 +7607,10 @@ export function SearchDialog({
 
       {/* Panel */}
       <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Search"
         className={cn(
           "relative z-10 mx-4 w-full max-w-xl rounded-xl border border-slate-200 dark:border-[#1f2937] bg-white dark:bg-[#161b22] shadow-2xl transition-all duration-150",
           visible ? "scale-100 opacity-100" : "scale-95 opacity-0",
@@ -7574,6 +7767,8 @@ function ResultGroup({
         return (
           <button
             key={item.href}
+            role="option"
+            aria-selected={isActive || undefined}
             onMouseEnter={() => onHover(globalIdx)}
             onClick={() => onSelect(item.href)}
             className={cn(
@@ -7729,7 +7924,7 @@ export function Separator({
 }`,
   "Sheet": `"use client";
 
-import { createContext, useContext, useEffect, type HTMLAttributes, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, type HTMLAttributes, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { useAnimatedMount } from "@/hooks/use-animated-mount";
@@ -7781,6 +7976,8 @@ export interface SheetCloseProps extends HTMLAttributes<HTMLButtonElement> {
 interface SheetContextValue {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  side: SheetSide;
+  size: SheetSize;
 }
 
 const SheetContext = createContext<SheetContextValue | null>(null);
@@ -7844,14 +8041,6 @@ Sheet.Trigger = function SheetTrigger({ children, className, ...props }: SheetTr
   );
 };
 
-Sheet.Content = function SheetContent({ children, className, ...props }: SheetContentProps) {
-  return (
-    <div className={cn("flex-1 overflow-y-auto px-6 py-4", className)} {...props}>
-      {children}
-    </div>
-  );
-};
-
 Sheet.Header = function SheetHeader({ children, className, ...props }: SheetHeaderProps) {
   return (
     <div className={cn("px-6 pt-6 pb-4 border-b border-slate-100 dark:border-[#1f2937]", className)} {...props}>
@@ -7906,11 +8095,94 @@ Sheet.Close = function SheetClose({ children, className, ...props }: SheetCloseP
   );
 };
 
+Sheet.Content = function SheetContent({ children, className, ...props }: SheetContentProps) {
+  const { open, onOpenChange, side, size } = useSheetContext();
+  const { mounted, visible } = useAnimatedMount(open, 300);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Tab" && panelRef.current) {
+        const focusable = panelRef.current.querySelectorAll<HTMLElement>(
+          'button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [open]);
+
+  if (!mounted) return null;
+
+  const { panel, hidden } = SIDE_CLASSES[side];
+
+  return createPortal(
+    <div className="fixed inset-0 z-50 flex">
+      {/* Backdrop */}
+      <div
+        className={cn(
+          "absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300",
+          visible ? "opacity-100" : "opacity-0"
+        )}
+        onClick={() => onOpenChange(false)}
+      />
+
+      {/* Panel */}
+      <div
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        className={cn(
+          "absolute flex flex-col bg-white dark:bg-[#161b22]",
+          "border-slate-200 dark:border-[#1f2937]",
+          side === "right" && "border-l",
+          side === "left" && "border-r",
+          side === "top" && "border-b",
+          side === "bottom" && "border-t",
+          "shadow-2xl shadow-black/20",
+          "transition-transform duration-300 ease-in-out",
+          side === "top" || side === "bottom"
+            ? \`w-full \${HEIGHT_CLASSES[size]}\`
+            : \`h-full \${WIDTH_CLASSES[size]}\`,
+          panel,
+          visible ? "translate-x-0 translate-y-0" : hidden,
+          className
+        )}
+      >
+        {/* Close button */}
+        <button
+          onClick={() => onOpenChange(false)}
+          className="absolute right-4 top-4 z-10 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1f2937] hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+          aria-label="Close sheet"
+        >
+          <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none">
+            <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        </button>
+
+        <div className="flex-1 overflow-y-auto px-6 py-4" {...props}>
+          {children}
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+};
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export function Sheet({ open, onOpenChange, side = "right", size = "md", children, className }: SheetProps) {
-  const { mounted, visible } = useAnimatedMount(open, 300);
-
+export function Sheet({ open, onOpenChange, side = "right", size = "md", children }: SheetProps) {
   useEffect(() => {
     if (!open) return;
 
@@ -7927,63 +8199,11 @@ export function Sheet({ open, onOpenChange, side = "right", size = "md", childre
     };
   }, [open, onOpenChange]);
 
-  if (!mounted) return null;
-
-  const { panel, hidden } = SIDE_CLASSES[side];
-
-  const sheet = (
-    <SheetContext.Provider value={{ open, onOpenChange }}>
-      <div className="fixed inset-0 z-50 flex">
-        {/* Backdrop */}
-        <div
-          className={cn(
-            "absolute inset-0 bg-black/50 backdrop-blur-xs transition-opacity duration-300",
-            visible ? "opacity-100" : "opacity-0"
-          )}
-          onClick={() => onOpenChange(false)}
-        />
-
-        {/* Panel */}
-        <div
-          role="dialog"
-          aria-modal="true"
-          className={cn(
-            "absolute flex flex-col bg-white dark:bg-[#161b22]",
-            "border-slate-200 dark:border-[#1f2937]",
-            side === "right" && "border-l",
-            side === "left" && "border-r",
-            side === "top" && "border-b",
-            side === "bottom" && "border-t",
-            "shadow-2xl shadow-black/20",
-            "transition-transform duration-300 ease-in-out",
-            // For top/bottom: size controls height, width is full
-            // For left/right: size controls width, height is full
-            side === "top" || side === "bottom"
-              ? \`w-full \${HEIGHT_CLASSES[size]}\`
-              : \`h-full \${WIDTH_CLASSES[size]}\`,
-            panel,
-            visible ? "translate-x-0 translate-y-0" : hidden,
-            className
-          )}
-        >
-          {/* Close button */}
-          <button
-            onClick={() => onOpenChange(false)}
-            className="absolute right-4 top-4 z-10 rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-[#1f2937] hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-            aria-label="Close sheet"
-          >
-            <svg className="h-4 w-4" viewBox="0 0 16 16" fill="none">
-              <path d="M12 4L4 12M4 4l8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </button>
-
-          {children}
-        </div>
-      </div>
+  return (
+    <SheetContext.Provider value={{ open, onOpenChange, side, size }}>
+      {children}
     </SheetContext.Provider>
   );
-
-  return createPortal(sheet, document.body);
 }`,
   "Skeleton": `import { cn } from "@/lib/utils";
 
@@ -8011,7 +8231,9 @@ export function Skeleton({ variant = "line", width, height, className }: Skeleto
     />
   );
 }`,
-  "Slider": `import { useState } from "react";
+  "Slider": `"use client";
+
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 
 export interface SliderProps {
@@ -8115,7 +8337,9 @@ export function Spinner({ size = "md", variant = "default", label }: SpinnerProp
     </div>
   );
 }`,
-  "Switch": `import { useMemo, useState } from "react";
+  "Switch": `"use client";
+
+import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 
 export type SwitchSize = "sm" | "md" | "lg";
@@ -8406,7 +8630,9 @@ Table.Caption = function TableCaption({
     </caption>
   );
 };`,
-  "Tabs": `import {
+  "Tabs": `"use client";
+
+import {
   createContext,
   useContext,
   useState,
@@ -8777,7 +9003,9 @@ Toast.Close = function ToastClose({ className, onClick, children = "Dismiss", ..
 Toast.Footer = function ToastFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn("mt-3 flex items-center justify-end gap-2", className)} {...props} />;
 }`,
-  "Toggle": `import { useState, type ButtonHTMLAttributes, type ReactNode } from "react";
+  "Toggle": `"use client";
+
+import { useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export type ToggleVariant = "default" | "outline";
@@ -8860,7 +9088,9 @@ export function Toggle({
     </button>
   );
 }`,
-  "ToggleGroup": `import {
+  "ToggleGroup": `"use client";
+
+import {
   createContext,
   useCallback,
   useContext,
@@ -9085,10 +9315,12 @@ ToggleGroup.Item = function ToggleGroupItem({
     </button>
   );
 };`,
-  "Tooltip": `import { createContext, useContext, useState, type HTMLAttributes, type ReactNode } from "react";
+  "Tooltip": `"use client";
+
+import { createContext, useContext, useState, type HTMLAttributes, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type TooltipSide = "top" | "bottom" | "left" | "right";
+export type TooltipSide = "top" | "bottom" | "left" | "right";
 
 interface TooltipContextValue {
   open: boolean;
@@ -9265,7 +9497,7 @@ export const SAMPLE_OPTIONS: SampleOption[] = [
 export const SEARCH_ITEMS = [
   {
     title: "Button",
-    href: "/docs/button",
+    href: "/components/button",
     group: "Docs" as const,
     section: "Components",
     description: "Primary, outline, and ghost actions",
@@ -9279,7 +9511,7 @@ export const SEARCH_ITEMS = [
   },
   {
     title: "Tabs",
-    href: "/docs/tabs",
+    href: "/components/tabs",
     group: "Docs" as const,
     section: "Components",
     description: "Underline and pill variants",

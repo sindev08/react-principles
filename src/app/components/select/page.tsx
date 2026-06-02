@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
-import { Skeleton } from "@/ui/Skeleton";
-import type { SkeletonVariant } from "@/ui/Skeleton";
+import { Select } from "@/ui/Select";
+import type { SelectSize } from "@/ui/Select";
 
 const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },
@@ -13,82 +14,131 @@ const TOC_ITEMS = [
   { label: "Props", href: "#props" },
 ];
 
-const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-skeleton--default";
+const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-select--default";
 
-const VARIANTS: Array<{ variant: SkeletonVariant; label: string }> = [
-  { variant: "line", label: "Line" },
-  { variant: "rect", label: "Rect" },
-  { variant: "circle", label: "Circle" },
+const SIZES: SelectSize[] = ["sm", "md", "lg"];
+const OPTIONS = [
+  { label: "Next.js", value: "next" },
+  { label: "Vite", value: "vite" },
+  { label: "Remix", value: "remix" },
 ];
 
-const CODE_SNIPPET = `import { Skeleton } from "@/ui/Skeleton";
+const CODE_SNIPPET = `import { Select } from "@/ui/Select";
 
-<div className="space-y-3">
-  <Skeleton variant="line" width="70%" />
-  <Skeleton variant="line" width="45%" />
-  <Skeleton variant="rect" className="h-24" />
-</div>`;
+<Select
+  label="Framework"
+  options={[
+    { label: "Next.js", value: "next" },
+    { label: "Vite", value: "vite" },
+    { label: "Remix", value: "remix" },
+  ]}
+  size="md"
+/>`;
 
-const COPY_PASTE_SNIPPET = `import { cn } from "@/lib/utils";
+const COPY_PASTE_SNIPPET = `import { forwardRef, type SelectHTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
 
-export type SkeletonVariant = "line" | "rect" | "circle";
+export type SelectSize = "sm" | "md" | "lg";
 
-export interface SkeletonProps {
-  variant?: SkeletonVariant;
-  width?: number | string;
-  height?: number | string;
-  className?: string;
+export interface SelectOption {
+  label: string;
+  value: string;
+  disabled?: boolean;
+}
+
+export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement>, "size"> {
+  label?: string;
+  description?: string;
+  error?: string;
+  size?: SelectSize;
+  options?: SelectOption[];
+  placeholder?: string;
 }`;
 
 const PROPS_ROWS = [
-  { prop: "variant", type: '"line" | "rect" | "circle"', default: '"line"', description: "Switches between text-line, block, and circular placeholder shapes." },
-  { prop: "width", type: "number | string", default: "—", description: "Optional inline width override for the placeholder." },
-  { prop: "height", type: "number | string", default: "—", description: "Optional inline height override for the placeholder." },
-  { prop: "className", type: "string", default: "—", description: "Additional classes merged into the skeleton element." },
+  { prop: "label", type: "string", default: "—", description: "Field label rendered above the select input." },
+  { prop: "description", type: "string", default: "—", description: "Helper text shown below the select when no error is present." },
+  { prop: "error", type: "string", default: "—", description: "Error text that replaces the description and applies error styles." },
+  { prop: "size", type: '"sm" | "md" | "lg"', default: '"md"', description: "Changes the select height, padding, and text size." },
+  { prop: "options", type: "SelectOption[]", default: "—", description: "Convenience array for rendering option elements." },
+  { prop: "placeholder", type: "string", default: "—", description: "Placeholder option label rendered with an empty value." },
+  { prop: "className", type: "string", default: "—", description: "Additional classes merged into the root wrapper." },
 ];
 
-function ThemedSkeletonPanel({ theme }: { theme: "light" | "dark" }) {
-  const dark = theme === "dark";
-  const shell = dark ? "border-[#1f2937] bg-[#0d1117]" : "border-slate-200 bg-white";
+type ForceTheme = "light" | "dark";
+
+const FORCED_STYLES: Record<ForceTheme, { shell: string; label: string; select: string }> = {
+  light: {
+    shell: "border-slate-200 bg-white",
+    label: "text-slate-700",
+    select: "border-slate-200 bg-white text-slate-900",
+  },
+  dark: {
+    shell: "border-[#1f2937] bg-[#0d1117]",
+    label: "text-slate-300",
+    select: "border-[#1f2937] bg-[#0d1117] text-white",
+  },
+};
+
+const FORCED_SIZE_CLASSES: Record<SelectSize, string> = {
+  sm: "h-8 px-3 pr-9 text-xs",
+  md: "h-10 px-3.5 pr-10 text-sm",
+  lg: "h-12 px-4 pr-11 text-base",
+};
+
+function ThemedSelectPanel({ dark }: { dark: boolean }) {
+  const theme: ForceTheme = dark ? "dark" : "light";
+  const s = FORCED_STYLES[theme];
 
   return (
-    <div className={`rounded-xl border p-6 space-y-4 ${shell}`}>
-      <Skeleton variant="line" width="70%" />
-      <Skeleton variant="line" width="45%" />
-      <Skeleton variant="rect" className="h-24" />
-      <div className="flex items-center gap-3">
-        <Skeleton variant="circle" />
-        <div className="flex-1 space-y-2">
-          <Skeleton variant="line" width="50%" />
-          <Skeleton variant="line" width="35%" />
+    <div className={`rounded-xl border p-6 space-y-4 ${s.shell}`}>
+      {SIZES.map((size) => (
+        <div key={size} className="flex flex-col gap-1.5">
+          <label className={`text-sm font-medium ${s.label}`}>Size {size}</label>
+          <div className="relative">
+            <select
+              defaultValue="next"
+              className={`w-full appearance-none rounded-lg border outline-hidden transition-all ${FORCED_SIZE_CLASSES[size]} ${s.select}`}
+            >
+              {OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+            <span className="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[18px] text-slate-400">
+              expand_more
+            </span>
+          </div>
         </div>
-      </div>
+      ))}
     </div>
   );
 }
 
-export default function SkeletonDocPage() {
+export default function SelectDocPage() {
+  const [framework, setFramework] = useState("next");
+  const [size, setSize] = useState<SelectSize>("md");
+
   return (
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-4xl">
         <nav className="flex items-center gap-2 mb-8 text-sm font-medium text-slate-500">
           <span className="transition-colors cursor-pointer hover:text-primary">Components</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <span className="transition-colors cursor-pointer hover:text-primary">Feedback</span>
+          <span className="transition-colors cursor-pointer hover:text-primary">Form</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <span className="text-slate-900 dark:text-white">Skeleton</span>
+          <span className="text-slate-900 dark:text-white">Select</span>
         </nav>
 
         <div className="mb-12">
           <h1 className="mb-4 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">
-            Skeleton
+            Select
           </h1>
           <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-400">
-            Animated loading placeholder that preserves layout while content is fetching and gives
-            users a clearer sense of what is about to appear.
+            Styled native select input for predictable keyboard interaction, forms, and simple
+            option lists that benefit from platform behavior.
           </p>
           <div className="flex flex-wrap gap-2 mt-6">
-            {["Accessible", "Dark Mode", "3 Variants", "Animated"].map((tag) => (
+            {["Accessible", "Dark Mode", "3 Sizes", "Keyboard Nav"].map((tag) => (
               <span
                 key={tag}
                 className="rounded-full border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-400"
@@ -99,7 +149,7 @@ export default function SkeletonDocPage() {
           </div>
         </div>
 
-        <CliInstallBlock name="skeleton" />
+        <CliInstallBlock name="select" />
 
         <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
@@ -114,14 +164,14 @@ export default function SkeletonDocPage() {
                 <div className="w-3 h-3 rounded-full shadow-xs bg-amber-400 shadow-amber-300" />
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Light</span>
               </div>
-              <ThemedSkeletonPanel theme="light" />
+              <ThemedSelectPanel dark={false} />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-3 h-3 bg-indigo-500 rounded-full shadow-xs shadow-indigo-400" />
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Dark</span>
               </div>
-              <ThemedSkeletonPanel theme="dark" />
+              <ThemedSelectPanel dark />
             </div>
           </div>
         </section>
@@ -150,18 +200,28 @@ export default function SkeletonDocPage() {
             </span>
           </a>
           <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
-            <div className="flex items-center gap-4">
-              {VARIANTS.map(({ variant, label }) => (
-                <div key={variant} className="space-y-3 text-center">
-                  <div className="rounded-xl border border-dashed border-slate-200 p-4 dark:border-[#1f2937]">
-                    {variant === "line" ? <Skeleton variant="line" width={120} /> : null}
-                    {variant === "rect" ? <Skeleton variant="rect" className="w-32 h-24" /> : null}
-                    {variant === "circle" ? <Skeleton variant="circle" className="w-16 h-16" /> : null}
-                  </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
-                </div>
-              ))}
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">Size</span>
+              <div className="flex gap-2">
+                {SIZES.map((entry) => (
+                  <button
+                    key={entry}
+                    type="button"
+                    onClick={() => setSize(entry)}
+                    className={`rounded-lg px-3 py-1 text-xs font-semibold transition-all ${size === entry ? "bg-primary text-white" : "bg-slate-100 text-slate-600 dark:bg-[#1f2937] dark:text-slate-400"}`}
+                  >
+                    {entry}
+                  </button>
+                ))}
+              </div>
             </div>
+            <Select
+              label="Framework"
+              value={framework}
+              onChange={(event) => setFramework(event.target.value)}
+              options={OPTIONS}
+              size={size}
+            />
           </div>
         </section>
 
@@ -172,7 +232,7 @@ export default function SkeletonDocPage() {
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
           </div>
-          <CodeBlock filename="src/ui/Skeleton.tsx" copyText={CODE_SNIPPET}>{CODE_SNIPPET}</CodeBlock>
+          <CodeBlock filename="src/ui/Select.tsx" copyText={CODE_SNIPPET}>{CODE_SNIPPET}</CodeBlock>
         </section>
 
         <section id="copy-paste" className="mb-16">
@@ -182,7 +242,7 @@ export default function SkeletonDocPage() {
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
           </div>
-          <CodeBlock filename="Skeleton.tsx" copyText={COPY_PASTE_SNIPPET}>{COPY_PASTE_SNIPPET}</CodeBlock>
+          <CodeBlock filename="Select.tsx" copyText={COPY_PASTE_SNIPPET}>{COPY_PASTE_SNIPPET}</CodeBlock>
         </section>
 
         <section id="props" className="mb-16">

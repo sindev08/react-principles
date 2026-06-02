@@ -5,7 +5,7 @@ import { SearchDialog, type SearchItem } from "./SearchDialog";
 const ITEMS: SearchItem[] = [
   {
     title: "Button",
-    href: "/docs/button",
+    href: "/components/button",
     description: "Primitive action trigger",
     group: "Docs",
   },

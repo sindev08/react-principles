@@ -47,17 +47,46 @@ const PROPS_ROWS = [
   { prop: "className", type: "string", default: "—", description: "Additional classes merged into the alert container." },
 ];
 
+type ForceTheme = "light" | "dark";
+
+const FORCED_STYLES: Record<AlertVariant, Record<ForceTheme, { container: string; title: string; desc: string }>> = {
+  default: {
+    light: { container: "border-slate-200 bg-white", title: "text-slate-900", desc: "text-slate-600" },
+    dark:  { container: "border-[#1f2937] bg-[#161b22]", title: "text-white", desc: "text-slate-400" },
+  },
+  success: {
+    light: { container: "border-green-300 bg-green-50", title: "text-green-900", desc: "text-green-700" },
+    dark:  { container: "border-green-900 bg-green-950/30", title: "text-white", desc: "text-slate-400" },
+  },
+  warning: {
+    light: { container: "border-amber-300 bg-amber-50", title: "text-amber-900", desc: "text-amber-700" },
+    dark:  { container: "border-amber-900 bg-amber-950/30", title: "text-white", desc: "text-slate-400" },
+  },
+  error: {
+    light: { container: "border-red-300 bg-red-50", title: "text-red-900", desc: "text-red-700" },
+    dark:  { container: "border-red-900 bg-red-950/30", title: "text-white", desc: "text-slate-400" },
+  },
+  info: {
+    light: { container: "border-blue-300 bg-blue-50", title: "text-blue-900", desc: "text-blue-700" },
+    dark:  { container: "border-blue-900 bg-blue-950/30", title: "text-white", desc: "text-slate-400" },
+  },
+};
+
 function ThemedAlertPanel({ dark }: { dark: boolean }) {
+  const theme: ForceTheme = dark ? "dark" : "light";
   const shell = dark ? "border-[#1f2937] bg-[#0d1117]" : "border-slate-200 bg-white";
 
   return (
     <div className={`rounded-xl border p-6 space-y-3 ${shell}`}>
-      {VARIANTS.map(({ variant, title, description }) => (
-        <Alert key={variant} variant={variant}>
-          <Alert.Title>{title}</Alert.Title>
-          <Alert.Description>{description}</Alert.Description>
-        </Alert>
-      ))}
+      {VARIANTS.map(({ variant, title, description }) => {
+        const s = FORCED_STYLES[variant][theme];
+        return (
+          <div key={variant} role="alert" className={`rounded-xl border p-4 ${s.container}`}>
+            <h4 className={`text-sm font-semibold ${s.title}`}>{title}</h4>
+            <p className={`mt-1 text-xs leading-relaxed ${s.desc}`}>{description}</p>
+          </div>
+        );
+      })}
     </div>
   );
 }

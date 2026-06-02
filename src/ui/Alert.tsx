@@ -9,10 +9,26 @@ export interface AlertProps extends HTMLAttributes<HTMLDivElement> {
 
 const VARIANT_CLASSES: Record<AlertVariant, string> = {
   default: "border-slate-200 bg-white dark:border-[#1f2937] dark:bg-[#161b22]",
-  success: "border-green-300 bg-green-50 dark:border-green-900 dark:bg-green-950/30",
-  warning: "border-amber-300 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30",
-  error: "border-red-300 bg-red-50 dark:border-red-900 dark:bg-red-950/30",
-  info: "border-blue-300 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/30",
+  success: [
+    "border-green-300 bg-green-50 dark:border-green-900 dark:bg-green-950/30",
+    "[&_.alert-title]:text-green-900 dark:[&_.alert-title]:text-white",
+    "[&_.alert-desc]:text-green-700 dark:[&_.alert-desc]:text-slate-400",
+  ].join(" "),
+  warning: [
+    "border-amber-300 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/30",
+    "[&_.alert-title]:text-amber-900 dark:[&_.alert-title]:text-white",
+    "[&_.alert-desc]:text-amber-700 dark:[&_.alert-desc]:text-slate-400",
+  ].join(" "),
+  error: [
+    "border-red-300 bg-red-50 dark:border-red-900 dark:bg-red-950/30",
+    "[&_.alert-title]:text-red-900 dark:[&_.alert-title]:text-white",
+    "[&_.alert-desc]:text-red-700 dark:[&_.alert-desc]:text-slate-400",
+  ].join(" "),
+  info: [
+    "border-blue-300 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/30",
+    "[&_.alert-title]:text-blue-900 dark:[&_.alert-title]:text-white",
+    "[&_.alert-desc]:text-blue-700 dark:[&_.alert-desc]:text-slate-400",
+  ].join(" "),
 };
 
 export function Alert({ variant = "default", className, ...props }: AlertProps) {
@@ -28,7 +44,7 @@ export function Alert({ variant = "default", className, ...props }: AlertProps) 
 Alert.Title = function AlertTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h4
-      className={cn("text-sm font-semibold text-slate-900 dark:text-white", className)}
+      className={cn("alert-title text-sm font-semibold text-slate-900 dark:text-white", className)}
       {...props}
     />
   );
@@ -37,7 +53,7 @@ Alert.Title = function AlertTitle({ className, ...props }: HTMLAttributes<HTMLHe
 Alert.Description = function AlertDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={cn("mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400", className)}
+      className={cn("alert-desc mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400", className)}
       {...props}
     />
   );

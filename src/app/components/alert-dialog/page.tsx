@@ -227,15 +227,16 @@ const PROPS_ROWS = [
 // ─── Forced-theme preview ─────────────────────────────────────────────────────
 
 type ForcedVariant = {
-  iconBg: string;
+  lightIconBg: string;
+  darkIconBg: string;
   iconColor: string;
   confirmBg: string;
 };
 
 const FORCED_VARIANTS: Record<AlertDialogVariant, ForcedVariant> = {
-  destructive: { iconBg: "bg-red-100", iconColor: "text-red-500", confirmBg: "bg-red-500 text-white" },
-  warning: { iconBg: "bg-amber-100", iconColor: "text-amber-500", confirmBg: "bg-amber-500 text-white" },
-  default: { iconBg: "bg-[#ede9fe]", iconColor: "text-[#4628F1]", confirmBg: "bg-[#4628F1] text-white" },
+  destructive: { lightIconBg: "bg-red-100", darkIconBg: "bg-red-900/30", iconColor: "text-red-500", confirmBg: "bg-red-500 text-white" },
+  warning: { lightIconBg: "bg-amber-100", darkIconBg: "bg-amber-900/30", iconColor: "text-amber-500", confirmBg: "bg-amber-500 text-white" },
+  default: { lightIconBg: "bg-[#ede9fe]", darkIconBg: "bg-primary/20", iconColor: "text-[#4628F1]", confirmBg: "bg-[#4628F1] text-white" },
 };
 
 type ForcedTheme = {
@@ -298,7 +299,7 @@ function ThemedAlertPreview({ theme }: { theme: "light" | "dark" }) {
         <div className={`${c.panelBg} ${c.panelBorder} rounded-2xl shadow-lg`}>
           <div className="p-6">
             <div className="flex items-start gap-4">
-              <div className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${v.iconBg} ${v.iconColor}`}>
+              <div className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${theme === "dark" ? v.darkIconBg : v.lightIconBg} ${v.iconColor}`}>
                 {DESTRUCTIVE_SVG}
               </div>
               <div>

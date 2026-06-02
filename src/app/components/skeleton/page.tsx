@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { DocsPageLayout, CliInstallBlock } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
-import { Switch } from "@/ui/Switch";
-import type { SwitchSize } from "@/ui/Switch";
+import { Skeleton } from "@/ui/Skeleton";
+import type { SkeletonVariant } from "@/ui/Skeleton";
 
 const TOC_ITEMS = [
   { label: "Theme Preview", href: "#comparison" },
@@ -14,89 +13,83 @@ const TOC_ITEMS = [
   { label: "Props", href: "#props" },
 ];
 
-const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-switch--default";
+const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-skeleton--default";
 
-const SIZES: SwitchSize[] = ["sm", "md", "lg"];
+const VARIANTS: Array<{ variant: SkeletonVariant; label: string }> = [
+  { variant: "line", label: "Line" },
+  { variant: "rect", label: "Rect" },
+  { variant: "circle", label: "Circle" },
+];
 
-const CODE_SNIPPET = `import { Switch } from "@/ui/Switch";
+const CODE_SNIPPET = `import { Skeleton } from "@/ui/Skeleton";
 
-<Switch
-  checked={enabled}
-  onChange={setEnabled}
-  label="Enable analytics"
-  description="Track usage data for product insights."
-/>`;
+<div className="space-y-3">
+  <Skeleton variant="line" width="70%" />
+  <Skeleton variant="line" width="45%" />
+  <Skeleton variant="rect" className="h-24" />
+</div>`;
 
-const COPY_PASTE_SNIPPET = `import { useMemo, useState } from "react";
-import { cn } from "@/lib/utils";
+const COPY_PASTE_SNIPPET = `import { cn } from "@/lib/utils";
 
-export type SwitchSize = "sm" | "md" | "lg";
+export type SkeletonVariant = "line" | "rect" | "circle";
 
-export interface SwitchProps {
-  checked?: boolean;
-  defaultChecked?: boolean;
-  onChange?: (checked: boolean) => void;
-  disabled?: boolean;
-  size?: SwitchSize;
-  label?: string;
-  description?: string;
+export interface SkeletonProps {
+  variant?: SkeletonVariant;
+  width?: number | string;
+  height?: number | string;
   className?: string;
 }`;
 
 const PROPS_ROWS = [
-  { prop: "checked", type: "boolean", default: "—", description: "Controlled on or off state." },
-  { prop: "defaultChecked", type: "boolean", default: "false", description: "Initial state when the switch is uncontrolled." },
-  { prop: "onChange", type: "(checked: boolean) => void", default: "—", description: "Called whenever the switch toggles." },
-  { prop: "disabled", type: "boolean", default: "false", description: "Prevents interaction and reduces opacity." },
-  { prop: "size", type: '"sm" | "md" | "lg"', default: '"md"', description: "Changes the track and thumb dimensions." },
-  { prop: "label", type: "string", default: "—", description: "Primary label rendered next to the control." },
-  { prop: "description", type: "string", default: "—", description: "Secondary helper text rendered below the label." },
-  { prop: "className", type: "string", default: "—", description: "Additional classes applied to the root wrapper." },
+  { prop: "variant", type: '"line" | "rect" | "circle"', default: '"line"', description: "Switches between text-line, block, and circular placeholder shapes." },
+  { prop: "width", type: "number | string", default: "—", description: "Optional inline width override for the placeholder." },
+  { prop: "height", type: "number | string", default: "—", description: "Optional inline height override for the placeholder." },
+  { prop: "className", type: "string", default: "—", description: "Additional classes merged into the skeleton element." },
 ];
 
-function ThemedSwitchPanel({ dark }: { dark: boolean }) {
+function ThemedSkeletonPanel({ theme }: { theme: "light" | "dark" }) {
+  const dark = theme === "dark";
   const shell = dark ? "border-[#1f2937] bg-[#0d1117]" : "border-slate-200 bg-white";
+  const bone = dark ? "bg-[#1f2937]" : "bg-slate-200";
 
   return (
     <div className={`rounded-xl border p-6 space-y-4 ${shell}`}>
-      {SIZES.map((size) => (
-        <Switch
-          key={size}
-          defaultChecked={size !== "sm"}
-          size={size}
-          label={`Notifications ${size}`}
-          description={`Preview of the ${size} switch size.`}
-        />
-      ))}
+      <span className={`inline-block animate-pulse h-4 rounded-md ${bone}`} style={{ width: "70%" }} />
+      <span className={`inline-block animate-pulse h-4 rounded-md ${bone}`} style={{ width: "45%" }} />
+      <span className={`inline-block animate-pulse h-24 w-full rounded-xl ${bone}`} />
+      <div className="flex items-center gap-3">
+        <span className={`inline-block animate-pulse h-10 w-10 shrink-0 rounded-full ${bone}`} />
+        <div className="flex-1 space-y-2">
+          <span className={`inline-block animate-pulse h-4 rounded-md ${bone}`} style={{ width: "50%" }} />
+          <span className={`inline-block animate-pulse h-4 rounded-md ${bone}`} style={{ width: "35%" }} />
+        </div>
+      </div>
     </div>
   );
 }
 
-export default function SwitchDocPage() {
-  const [enabled, setEnabled] = useState(true);
-  const [size, setSize] = useState<SwitchSize>("md");
-
+export default function SkeletonDocPage() {
   return (
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-4xl">
         <nav className="flex items-center gap-2 mb-8 text-sm font-medium text-slate-500">
           <span className="transition-colors cursor-pointer hover:text-primary">Components</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <span className="transition-colors cursor-pointer hover:text-primary">Form</span>
+          <span className="transition-colors cursor-pointer hover:text-primary">Feedback</span>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <span className="text-slate-900 dark:text-white">Switch</span>
+          <span className="text-slate-900 dark:text-white">Skeleton</span>
         </nav>
 
         <div className="mb-12">
           <h1 className="mb-4 text-4xl font-black tracking-tight text-slate-900 dark:text-white md:text-5xl">
-            Switch
+            Skeleton
           </h1>
           <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-400">
-            Binary toggle control for settings and preferences where users need an immediate on or
-            off action with optional descriptive context.
+            Animated loading placeholder that preserves layout while content is fetching and gives
+            users a clearer sense of what is about to appear.
           </p>
           <div className="flex flex-wrap gap-2 mt-6">
-            {["Accessible", "Dark Mode", "3 Sizes", "Animated", "Keyboard Nav"].map((tag) => (
+            {["Accessible", "Dark Mode", "3 Variants", "Animated"].map((tag) => (
               <span
                 key={tag}
                 className="rounded-full border border-slate-200 dark:border-[#1f2937] bg-slate-50 dark:bg-[#161b22] px-3 py-1 text-xs font-medium text-slate-600 dark:text-slate-400"
@@ -107,7 +100,7 @@ export default function SwitchDocPage() {
           </div>
         </div>
 
-        <CliInstallBlock name="switch" />
+        <CliInstallBlock name="skeleton" />
 
         <section id="comparison" className="mb-16">
           <div className="flex items-center gap-3 mb-6">
@@ -122,14 +115,14 @@ export default function SwitchDocPage() {
                 <div className="w-3 h-3 rounded-full shadow-xs bg-amber-400 shadow-amber-300" />
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Light</span>
               </div>
-              <ThemedSwitchPanel dark={false} />
+              <ThemedSkeletonPanel theme="light" />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-3 h-3 bg-indigo-500 rounded-full shadow-xs shadow-indigo-400" />
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Dark</span>
               </div>
-              <ThemedSwitchPanel dark />
+              <ThemedSkeletonPanel theme="dark" />
             </div>
           </div>
         </section>
@@ -158,28 +151,18 @@ export default function SwitchDocPage() {
             </span>
           </a>
           <div className="space-y-4 rounded-xl border border-slate-200 bg-white p-6 dark:border-[#1f2937] dark:bg-[#161b22]">
-            <div className="flex items-center gap-3">
-              <span className="text-xs font-semibold tracking-wide uppercase text-slate-500 dark:text-slate-400">Size</span>
-              <div className="flex gap-2">
-                {SIZES.map((entry) => (
-                  <button
-                    key={entry}
-                    type="button"
-                    onClick={() => setSize(entry)}
-                    className={`rounded-lg px-3 py-1 text-xs font-semibold transition-all ${size === entry ? "bg-primary text-white" : "bg-slate-100 text-slate-600 dark:bg-[#1f2937] dark:text-slate-400"}`}
-                  >
-                    {entry}
-                  </button>
-                ))}
-              </div>
+            <div className="flex items-center gap-4">
+              {VARIANTS.map(({ variant, label }) => (
+                <div key={variant} className="space-y-3 text-center">
+                  <div className="rounded-xl border border-dashed border-slate-200 p-4 dark:border-[#1f2937]">
+                    {variant === "line" ? <Skeleton variant="line" width={120} /> : null}
+                    {variant === "rect" ? <Skeleton variant="rect" className="w-32 h-24" /> : null}
+                    {variant === "circle" ? <Skeleton variant="circle" className="w-16 h-16" /> : null}
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
+                </div>
+              ))}
             </div>
-            <Switch
-              checked={enabled}
-              onChange={setEnabled}
-              size={size}
-              label="Enable analytics"
-              description={enabled ? "Analytics is active" : "Analytics is disabled"}
-            />
           </div>
         </section>
 
@@ -190,7 +173,7 @@ export default function SwitchDocPage() {
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Code Snippet</h2>
           </div>
-          <CodeBlock filename="src/ui/Switch.tsx" copyText={CODE_SNIPPET}>{CODE_SNIPPET}</CodeBlock>
+          <CodeBlock filename="src/ui/Skeleton.tsx" copyText={CODE_SNIPPET}>{CODE_SNIPPET}</CodeBlock>
         </section>
 
         <section id="copy-paste" className="mb-16">
@@ -200,7 +183,7 @@ export default function SwitchDocPage() {
             </div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Copy-Paste (Single File)</h2>
           </div>
-          <CodeBlock filename="Switch.tsx" copyText={COPY_PASTE_SNIPPET}>{COPY_PASTE_SNIPPET}</CodeBlock>
+          <CodeBlock filename="Skeleton.tsx" copyText={COPY_PASTE_SNIPPET}>{COPY_PASTE_SNIPPET}</CodeBlock>
         </section>
 
         <section id="props" className="mb-16">

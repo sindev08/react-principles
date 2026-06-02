@@ -8,5 +8,5 @@ export { AICorpusTeaserSection } from "./AICorpusTeaserSection";
 export { CookbookTeaserSection } from "./CookbookTeaserSection";
 export { TechStackSection } from "./TechStackSection";
 export { ProjectStructureSection } from "./ProjectStructureSection";
-export { DocsSection } from "./DocsSection";
+export { CookbookStructureSection } from "./CookbookStructureSection";
 export { Footer } from "./Footer";
