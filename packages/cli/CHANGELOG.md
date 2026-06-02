@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.1](https://github.com/sindev08/react-principles/compare/react-principles@v1.0.0...react-principles@v1.0.1) (2026-06-02)
+
+
+### Bug Fixes
+
+* **cli:** remove stale radix and third-party deps from create command ([1cef2bf](https://github.com/sindev08/react-principles/commit/1cef2bf71af9e318a0b22dfa3807cee42798ffba))
+* **cli:** remove stale third-party deps from create command ([158e997](https://github.com/sindev08/react-principles/commit/158e997b8ba84bd528ba7671a476cda79fdea00b))
+
 ## [1.0.0](https://github.com/sindev08/react-principles/compare/react-principles@v0.1.1...react-principles@v1.0.0) (2026-05-20)
 
 
