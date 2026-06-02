@@ -103,7 +103,7 @@ export function DocsHeader() {
                 Home
               </Link>
               <Link href="/components/introduction" className={navLinkClass(isDocsActive)}>
-                Docs
+                Components
               </Link>
               <Link href="/nextjs/cookbook" className={navLinkClass(isCookbookActive)}>
                 Cookbook

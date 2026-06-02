@@ -46,7 +46,7 @@ export function DocsSidebar() {
     el.scrollIntoView({ block: "center", behavior: "smooth" });
   }, [pathname]);
 
-  const isDocsActive = pathname.startsWith("/docs");
+  const isDocsActive = pathname.startsWith("/components");
 
   return (
     <aside className="sidebar-scroll sticky top-14 hidden h-[calc(100vh-3.5rem)] w-64 shrink-0 overflow-y-auto border-r border-slate-200 dark:border-[#1f2937] py-8 pr-6 lg:block">

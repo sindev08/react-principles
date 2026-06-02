@@ -25,7 +25,7 @@ export default function IntroductionPage() {
       <div className="max-w-3xl">
         {/* Breadcrumb */}
         <nav className="mb-4 flex items-center gap-2 text-sm text-slate-400">
-          <span>Docs</span>
+          <span>Components</span>
           <span className="material-symbols-outlined text-[14px]">
             chevron_right
           </span>

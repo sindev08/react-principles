@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    default: "Docs",
+    default: "Components",
     template: "%s — React Principles",
   },
   description:
     "Reference docs for React Principles, covering architecture decisions, patterns, and implementation guides for modern React apps.",
   openGraph: {
-    title: "React Principles — Docs",
+    title: "React Principles — Components",
     description:
       "Reference docs for React Principles, covering architecture decisions, patterns, and implementation guides for modern React apps.",
     type: "website",
