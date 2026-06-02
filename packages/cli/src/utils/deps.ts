@@ -9,25 +9,8 @@ interface PackageEntry {
 }
 
 const COMPONENT_DEPS: Record<string, PackageEntry[]> = {
-  DataTable:   [{ name: "@tanstack/react-table", version: "^8.20.0" }],
-  Chart:       [{ name: "recharts", version: "^2.15.0" }],
-  DatePicker:  [{ name: "react-day-picker", version: "^9.1.4" }, { name: "date-fns", version: "^4.1.0" }],
-  Calendar:    [{ name: "react-day-picker", version: "^9.1.4" }, { name: "date-fns", version: "^4.1.0" }],
-  Toast:       [{ name: "sonner", version: "^2.0.0" }],
-  Select:      [{ name: "@radix-ui/react-select", version: "^2.1.6" }],
-  Checkbox:    [{ name: "@radix-ui/react-checkbox", version: "^1.1.4" }],
-  RadioGroup:   [{ name: "@radix-ui/react-radio-group", version: "^1.2.3" }],
-  Switch:      [{ name: "@radix-ui/react-switch", version: "^1.1.3" }],
-  Slider:      [{ name: "@radix-ui/react-slider", version: "^1.2.3" }],
-  Tabs:        [{ name: "@radix-ui/react-tabs", version: "^1.1.3" }],
-  Dialog:      [{ name: "@radix-ui/react-dialog", version: "^1.1.6" }],
-  Popover:     [{ name: "@radix-ui/react-popover", version: "^1.1.6" }],
-  Tooltip:     [{ name: "@radix-ui/react-tooltip", version: "^1.1.8" }],
-  Drawer:      [{ name: "@radix-ui/react-dialog", version: "^1.1.6" }],
-  Separator:   [{ name: "@radix-ui/react-separator", version: "^1.1.2" }],
-  Collapsible: [{ name: "@radix-ui/react-collapsible", version: "^1.1.3" }],
-  DropdownMenu: [{ name: "@radix-ui/react-dropdown-menu", version: "^2.1.6" }],
-  Carousel:    [{ name: "embla-carousel-react", version: "^8.5.0" }],
+  DataTable: [{ name: "@tanstack/react-table", version: "^8.20.0" }],
+  Chart:     [{ name: "recharts", version: "^2.15.0" }],
 };
 
 const STACK_DEPS: Record<string, PackageEntry[]> = {
