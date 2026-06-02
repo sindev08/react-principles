@@ -17,7 +17,7 @@ const COMPONENT_SHOWCASES = [
     name: "Button",
     story: "Variants",
     description: "High-signal actions with strong defaults for primary, outline, ghost, and destructive flows.",
-    href: "/docs/button",
+    href: "/components/button",
     props: ['variant="primary"', 'size="md"', "isLoading"],
     preview: (
       <div className="flex flex-wrap items-center gap-3">
@@ -32,7 +32,7 @@ const COMPONENT_SHOWCASES = [
     name: "Select",
     story: "Default",
     description: "Form choices keep labels, descriptions, and validation feedback aligned in one primitive.",
-    href: "/docs/select",
+    href: "/components/select",
     props: ['label="Framework"', 'placeholder="Choose stack"', 'size="md"'],
     preview: (
       <Select
@@ -48,7 +48,7 @@ const COMPONENT_SHOWCASES = [
     name: "Checkbox",
     story: "States",
     description: "Selection controls cover checked, indeterminate, and descriptive states without extra wrappers.",
-    href: "/docs/checkbox",
+    href: "/components/checkbox",
     props: ['size="md"', "indeterminate", "description"],
     preview: (
       <div className="space-y-3">
@@ -69,7 +69,7 @@ const COMPONENT_SHOWCASES = [
     name: "Tabs",
     story: "Pills",
     description: "Navigation between overview, API, and examples mirrors the same content model shown in docs stories.",
-    href: "/docs/tabs",
+    href: "/components/tabs",
     props: ['variant="pills"', 'defaultValue="api"', "onChange"],
     preview: (
       <Tabs defaultValue="api" variant="pills">
@@ -206,7 +206,7 @@ export function ComponentShowcaseSection() {
           </div>
           <div className="grid gap-4 sm:grid-cols-3">
             <Link
-              href="/docs/introduction"
+              href="/components/introduction"
               className="group flex flex-col gap-3 rounded-2xl border border-primary/20 bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 dark:bg-slate-900 dark:hover:bg-slate-800"
             >
               <div className="flex items-center justify-between">

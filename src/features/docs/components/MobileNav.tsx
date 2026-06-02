@@ -21,7 +21,7 @@ export function MobileNav() {
   const { sidebarOpen, toggleSidebar } = useAppStore();
   const pathname = usePathname();
 
-  const isDocsActive = pathname.startsWith("/docs");
+  const isDocsActive = pathname.startsWith("/components");
   const cookbookFramework: Framework = pathname.startsWith("/vitejs/") ? "vitejs" : "nextjs";
 
   return (
@@ -79,7 +79,7 @@ export function MobileNav() {
             <ul className="flex flex-col gap-1.5">
               {[
                 { href: "/", label: "Home" },
-                { href: "/docs/introduction", label: "Docs" },
+                { href: "/components/introduction", label: "Components" },
                 { href: "/nextjs/cookbook", label: "Cookbook" },
                 { href: "/create", label: "Create" },
               ].map((link) => {

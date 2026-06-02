@@ -82,7 +82,7 @@ export default function DarkModePage() {
     <DocsPageLayout tocItems={TOC_ITEMS}>
       <div className="max-w-3xl">
         <nav className="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500">
-          <Link href="/docs/theming" className="cursor-pointer transition-colors hover:text-primary">
+          <Link href="/components/theming" className="cursor-pointer transition-colors hover:text-primary">
             Theming
           </Link>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
@@ -225,13 +225,13 @@ export default function DarkModePage() {
         </section>
 
         <div className="flex items-center justify-between border-t border-slate-200 pt-8 dark:border-[#1f2937]">
-          <Link href="/docs/theming" className="group flex flex-col gap-1 transition-colors">
+          <Link href="/components/theming" className="group flex flex-col gap-1 transition-colors">
             <span className="text-xs text-slate-400">Previous</span>
             <span className="text-sm font-medium text-slate-900 group-hover:text-primary dark:text-white">
               Theming
             </span>
           </Link>
-          <Link href="/docs/accordion" className="group flex flex-col items-end gap-1 transition-colors">
+          <Link href="/components/accordion" className="group flex flex-col items-end gap-1 transition-colors">
             <span className="text-xs text-slate-400">Next</span>
             <span className="text-sm font-medium text-slate-900 group-hover:text-primary dark:text-white">
               Accordion

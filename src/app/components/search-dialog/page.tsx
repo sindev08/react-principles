@@ -16,9 +16,9 @@ const TOC_ITEMS = [
 const STORYBOOK_HREF = "https://storybook.reactprinciples.dev/?path=/story/ui-searchdialog--default";
 
 const DEMO_ITEMS: SearchItem[] = [
-  { title: "Getting Started", href: "/docs/introduction", description: "Learn the basics of the platform", group: "Docs" },
-  { title: "Installation", href: "/docs/installation", description: "Set up your development environment", group: "Docs" },
-  { title: "Theming", href: "/docs/theming", description: "Customize colors and typography", group: "Docs" },
+  { title: "Getting Started", href: "/components/introduction", description: "Learn the basics of the platform", group: "Docs" },
+  { title: "Installation", href: "/components/installation", description: "Set up your development environment", group: "Docs" },
+  { title: "Theming", href: "/components/theming", description: "Customize colors and typography", group: "Docs" },
   { title: "Server State", href: "/cookbook/server-state", description: "Manage server data with React Query", group: "Cookbook" },
   { title: "Form Validation", href: "/cookbook/form-validation", description: "Validate forms with React Hook Form + Zod", group: "Cookbook" },
   { title: "Component Anatomy", href: "/cookbook/component-anatomy", description: "Build composable UI components", group: "Cookbook" },
