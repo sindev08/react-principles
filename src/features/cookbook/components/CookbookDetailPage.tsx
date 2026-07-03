@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { DocsPageLayout } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
-import { AISection } from "@/features/cookbook/components/AISection";
+import { UseWithAIMenu } from "@/features/cookbook/components/UseWithAIMenu";
 import { UserList } from "@/features/examples/components/UserList";
 import { UserForm } from "@/features/examples/components/UserForm";
 import { UserTable } from "@/features/examples/components/UserTable";
@@ -22,7 +22,6 @@ function buildTocItems(detail: RecipeDetail) {
   if (detail.pattern) items.push({ label: `${n++}. Pattern`, href: "#pattern" });
   if (detail.implementation) items.push({ label: `${n++}. Implementation`, href: "#implementation" });
   if (detail.demoKey) items.push({ label: `${n++}. Live Demo`, href: "#demo" });
-  items.push({ label: `${n++}. Use with AI`, href: "#ai" });
   return items;
 }
 
@@ -207,6 +206,7 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
             </span>
             {saved ? "Saved!" : "Save Pattern"}
           </button>
+          <UseWithAIMenu detail={detail} />
         </div>
       </div>
 
@@ -325,17 +325,6 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
           </div>
         </section>
       )}
-
-      {/* Use with AI */}
-      <section className="mb-16" id="ai">
-        <div className="flex items-center gap-3 mb-6">
-          <SectionBadge n={++sectionNum} />
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-            Use with AI
-          </h2>
-        </div>
-        <AISection detail={detail} />
-      </section>
     </div>
   );
 }
