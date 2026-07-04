@@ -7,11 +7,20 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://reactprinciples.dev";
 const SKILLS_REPO_URL = "https://github.com/sindev08/react-principles-skills";
 const SKILLS_INSTALL_CMD = "npx skills add sindev08/react-principles-skills";
+const MCP_ENDPOINT = `${SITE_URL}/api/mcp`;
+const MCP_INSTALL_CMD = `claude mcp add --transport http reactprinciples ${MCP_ENDPOINT}`;
+const MCP_JSON_CONFIG = `{
+  "mcpServers": {
+    "reactprinciples": {
+      "url": "${MCP_ENDPOINT}"
+    }
+  }
+}`;
 
 export const metadata: Metadata = {
   title: "AI Corpus — React Principles",
   description:
-    "Make your AI tools React Principles-aware. Drop-in context for Claude, Cursor, Copilot, and GPT — plus invocable skills for code review and scaffolding.",
+    "Make your AI tools React Principles-aware. Remote MCP server, drop-in context for Claude, Cursor, Copilot, and GPT — plus invocable skills for code review and scaffolding.",
   openGraph: {
     title: "AI Corpus — React Principles",
     description:
@@ -141,8 +150,15 @@ export default function AICorpusPage() {
           </p>
         </section>
 
-        {/* Two main offerings */}
-        <section className="mb-20 grid gap-6 md:grid-cols-2">
+        {/* Three main offerings */}
+        <section className="mb-20 grid gap-6 md:grid-cols-3">
+          <OfferingCard
+            icon="hub"
+            title="MCP Server"
+            subtitle="Live connection"
+            description="Add the remote MCP server once — your AI looks up recipes by itself in any conversation. Always current, token-efficient."
+            cta={{ label: "Connect below", href: "#mcp" }}
+          />
           <OfferingCard
             icon="terminal"
             title="Skills"
@@ -157,6 +173,46 @@ export default function AICorpusPage() {
             description="The cookbook as AI-readable markdown. Two versions: compact for quick reference, full for deep RAG context."
             cta={{ label: "See files below", href: "#llms-txt" }}
           />
+        </section>
+
+        {/* MCP */}
+        <section id="mcp" className="mb-20 scroll-mt-24">
+          <SectionHeader
+            eyebrow="MCP Server"
+            title="Live connection to the cookbook"
+            description="A remote Model Context Protocol server serving the cookbook. Connect once and your AI can list, search, and read recipes on demand — no copy-paste, always in sync with the published site."
+          />
+
+          <div className="mb-6 rounded-xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-900/50">
+            <p className="mb-3 text-sm font-medium text-slate-700 dark:text-slate-300">
+              Claude Code — one command:
+            </p>
+            <pre className="overflow-x-auto rounded-lg bg-slate-900 px-4 py-3 text-sm text-slate-100 dark:bg-black">
+              <code>{MCP_INSTALL_CMD}</code>
+            </pre>
+            <p className="mt-6 mb-3 text-sm font-medium text-slate-700 dark:text-slate-300">
+              Cursor, Claude Desktop, and other MCP clients — add to your MCP
+              config:
+            </p>
+            <pre className="overflow-x-auto rounded-lg bg-slate-900 px-4 py-3 text-sm text-slate-100 dark:bg-black">
+              <code>{MCP_JSON_CONFIG}</code>
+            </pre>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            <McpToolCard
+              name="list_recipes"
+              description="All published recipes with slugs, categories, and descriptions."
+            />
+            <McpToolCard
+              name="search_recipes"
+              description="Ranked keyword search across titles, rules, and principles."
+            />
+            <McpToolCard
+              name="get_recipe"
+              description="Full recipe as markdown — principle, rules, pattern, implementations."
+            />
+          </div>
         </section>
 
         {/* Skills */}
@@ -435,6 +491,19 @@ function LlmsCard({
           </span>
         </Link>
       </div>
+    </div>
+  );
+}
+
+function McpToolCard({ name, description }: { name: string; description: string }) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900/50">
+      <code className="mb-2 block font-mono text-sm font-semibold text-slate-900 dark:text-white">
+        {name}
+      </code>
+      <p className="text-sm leading-6 text-slate-600 dark:text-slate-400">
+        {description}
+      </p>
     </div>
   );
 }
