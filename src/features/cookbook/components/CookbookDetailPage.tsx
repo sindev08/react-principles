@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { DocsPageLayout } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
+import { UseWithAISection } from "@/features/cookbook/components/UseWithAISection";
 import { UserList } from "@/features/examples/components/UserList";
 import { UserForm } from "@/features/examples/components/UserForm";
 import { UserTable } from "@/features/examples/components/UserTable";
@@ -206,6 +207,7 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
             {saved ? "Saved!" : "Save Pattern"}
           </button>
         </div>
+        <UseWithAISection detail={detail} />
       </div>
 
       {/* Principle (optional) */}
@@ -387,7 +389,7 @@ function CookbookFooter() {
               <span className="material-symbols-outlined text-[16px]">menu_book</span>
             </div>
             <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-white">
-              React Patterns
+              React Principles
             </span>
           </div>
           <p className="text-sm text-slate-500">
@@ -421,7 +423,7 @@ function CookbookFooter() {
         </div>
       </div>
       <div className="pt-8 mt-12 text-xs text-center border-t border-slate-100 dark:border-[#1f2937] text-slate-400">
-        © 2026 React Patterns Cookbook. Built with ❤️ for the community.
+        © 2026 React Principles. Built with ❤️ for the community.
       </div>
     </footer>
   );
