@@ -7,7 +7,9 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://reactprinciples.dev";
 const SKILLS_REPO_URL = "https://github.com/sindev08/react-principles-skills";
 const SKILLS_INSTALL_CMD = "npx skills add sindev08/react-principles-skills";
-const MCP_ENDPOINT = `${SITE_URL}/api/mcp`;
+// MCP clients POST directly and may not follow the apex→www 307 redirect,
+// so advertise the canonical www host explicitly for the endpoint.
+const MCP_ENDPOINT = "https://www.reactprinciples.dev/api/mcp";
 const MCP_INSTALL_CMD = `claude mcp add --transport http reactprinciples ${MCP_ENDPOINT}`;
 const MCP_JSON_CONFIG = `{
   "mcpServers": {
