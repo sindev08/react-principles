@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { DocsPageLayout } from "@/features/docs/components";
 import { CodeBlock } from "@/features/cookbook/components/CodeBlock";
-import { UseWithAIMenu } from "@/features/cookbook/components/UseWithAIMenu";
+import { UseWithAISection } from "@/features/cookbook/components/UseWithAISection";
 import { UserList } from "@/features/examples/components/UserList";
 import { UserForm } from "@/features/examples/components/UserForm";
 import { UserTable } from "@/features/examples/components/UserTable";
@@ -206,8 +206,8 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
             </span>
             {saved ? "Saved!" : "Save Pattern"}
           </button>
-          <UseWithAIMenu detail={detail} />
         </div>
+        <UseWithAISection detail={detail} />
       </div>
 
       {/* Principle (optional) */}
