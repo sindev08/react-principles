@@ -1,6 +1,7 @@
 import { RECIPES, type Recipe } from "@/features/cookbook/data/cookbook-data";
 import { RECIPE_DETAILS } from "@/features/cookbook/data";
 import type { RecipeDetail, RuleItem } from "@/features/cookbook/data/types";
+import { formatRecipeSection } from "@/lib/recipe-md";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://reactprinciples.dev";
 
@@ -77,7 +78,7 @@ function buildLlmsTxt(opts: BuildOptions): string {
     for (const recipe of recipes) {
       const detail = RECIPE_DETAILS[recipe.slug];
       if (!detail) continue;
-      sections.push(formatRecipe(detail, opts.mode));
+      sections.push(formatRecipeSection(detail, opts.mode));
     }
   }
 
@@ -95,78 +96,6 @@ function groupByCategory(recipes: Recipe[]): Map<string, Recipe[]> {
     map.set(cat, existing);
   }
   return map;
-}
-
-function formatRecipe(recipe: RecipeDetail, mode: BuildOptions["mode"]): string {
-  const lines: string[] = [];
-
-  lines.push(`### ${recipe.title}\n`);
-  lines.push(`> ${recipe.description}\n`);
-
-  if (recipe.principle) {
-    lines.push(`**Principle:** ${recipe.principle.text}\n`);
-    if (recipe.principle.tip) {
-      lines.push(`**Tip:** ${recipe.principle.tip}\n`);
-    }
-  }
-
-  if (recipe.rules && recipe.rules.length > 0) {
-    const label = recipe.rulesLabel ?? "Rules";
-    lines.push(`**${label}:**`);
-    for (const rule of recipe.rules) {
-      lines.push(`- **${rule.title}** — ${rule.description}`);
-    }
-    lines.push("");
-  }
-
-  if (mode === "full") {
-    appendCodeSections(lines, recipe);
-  }
-
-  lines.push(`Read more: ${SITE_URL}/cookbook/${recipe.slug}\n`);
-
-  return lines.join("\n");
-}
-
-function appendCodeSections(lines: string[], recipe: RecipeDetail): void {
-  if (recipe.pattern) {
-    lines.push(`**Pattern** — \`${recipe.pattern.filename}\`\n`);
-    lines.push(fenceCode(recipe.pattern.code, languageFor(recipe.pattern.filename)));
-    lines.push("");
-  }
-
-  if (recipe.implementation?.nextjs) {
-    const impl = recipe.implementation.nextjs;
-    lines.push(`**Implementation — Next.js**\n`);
-    lines.push(`${impl.description}\n`);
-    lines.push(`File: \`${impl.filename}\`\n`);
-    lines.push(fenceCode(impl.code, languageFor(impl.filename)));
-    lines.push("");
-  }
-
-  if (recipe.implementation?.vite) {
-    const impl = recipe.implementation.vite;
-    lines.push(`**Implementation — Vite**\n`);
-    lines.push(`${impl.description}\n`);
-    lines.push(`File: \`${impl.filename}\`\n`);
-    lines.push(fenceCode(impl.code, languageFor(impl.filename)));
-    lines.push("");
-  }
-}
-
-function fenceCode(code: string, language: string): string {
-  return `\`\`\`${language}\n${code}\n\`\`\``;
-}
-
-function languageFor(filename: string): string {
-  if (filename.endsWith(".tsx")) return "tsx";
-  if (filename.endsWith(".ts")) return "ts";
-  if (filename.endsWith(".js")) return "js";
-  if (filename.endsWith(".jsx")) return "jsx";
-  if (filename.endsWith(".css")) return "css";
-  if (filename.endsWith(".json")) return "json";
-  if (filename.endsWith(".md")) return "markdown";
-  return "";
 }
 
 // Exported for testing
