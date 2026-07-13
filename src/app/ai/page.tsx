@@ -158,6 +158,14 @@ export default function AICorpusPage() {
         {/* Quick start — the one-command path */}
         <section className="mb-20">
           <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-6 sm:p-8">
+            <div className="mb-6 flex items-center gap-2">
+              <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-primary">
+                New
+              </span>
+              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                One-command setup
+              </span>
+            </div>
             <div className="grid gap-8 md:grid-cols-2">
               <div>
                 <p className="mb-2 text-xs font-semibold tracking-wider uppercase text-primary">
@@ -286,14 +294,17 @@ export default function AICorpusPage() {
               description="Full recipe as markdown — principle, rules, pattern, implementations."
             />
             <McpToolCard
+              isNew
               name="list_components"
               description="All UI Kit components with target dir, description, and dependencies."
             />
             <McpToolCard
+              isNew
               name="search_components"
               description="Ranked keyword search across component names and descriptions."
             />
             <McpToolCard
+              isNew
               name="get_component"
               description="Full component source (matches the CLI), install command, and deps."
             />
@@ -608,12 +619,27 @@ function LlmsCard({
   );
 }
 
-function McpToolCard({ name, description }: { name: string; description: string }) {
+function McpToolCard({
+  name,
+  description,
+  isNew = false,
+}: {
+  name: string;
+  description: string;
+  isNew?: boolean;
+}) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900/50">
-      <code className="mb-2 block font-mono text-sm font-semibold text-slate-900 dark:text-white">
-        {name}
-      </code>
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <code className="block font-mono text-sm font-semibold text-slate-900 dark:text-white">
+          {name}
+        </code>
+        {isNew && (
+          <span className="shrink-0 rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none tracking-wide text-primary">
+            New
+          </span>
+        )}
+      </div>
       <p className="text-sm leading-6 text-slate-600 dark:text-slate-400">
         {description}
       </p>

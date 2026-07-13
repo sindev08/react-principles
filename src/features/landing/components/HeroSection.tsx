@@ -22,6 +22,10 @@ const Grainient = dynamic(
   { ssr: false },
 );
 
+// Temporarily disabled — flip to true to restore the animated hero background.
+// Falls back to the section's `mesh-gradient` CSS while off.
+const SHOW_HERO_ANIMATION = false;
+
 type Tab = "hook" | "component";
 
 const TABS: Array<{ id: Tab; label: string; icon: string }> = [
@@ -140,59 +144,56 @@ export function HeroSection() {
 
   return (
     <section className="mesh-gradient relative overflow-hidden px-6 pb-20 pt-40">
-      {isDark ? (
-        <FloatingLines
-          linesGradient={["#4628F1", "#7c3aed", "#06b6d4"]}
-          enabledWaves={["middle", "bottom"]}
-          lineCount={[5, 10]}
-          lineDistance={[5, 3]}
-          animationSpeed={0.4}
-        />
-      ) : (
-        <div className="absolute inset-0">
-          <Grainient
-            color1="#c4b5fd"
-            color2="#4628F1"
-            color3="#e0e7ff"
-            timeSpeed={0.5}
-            grainAmount={0.05}
-            contrast={1.2}
-            saturation={0.8}
-            warpAmplitude={50.0}
-            warpFrequency={5.0}
-            warpSpeed={2.0}
-            rotationAmount={500.0}
+      {SHOW_HERO_ANIMATION &&
+        (isDark ? (
+          <FloatingLines
+            linesGradient={["#4628F1", "#7c3aed", "#06b6d4"]}
+            enabledWaves={["middle", "bottom"]}
+            lineCount={[5, 10]}
+            lineDistance={[5, 3]}
+            animationSpeed={0.4}
           />
-        </div>
-      )}
+        ) : (
+          <div className="absolute inset-0">
+            <Grainient
+              color1="#c4b5fd"
+              color2="#4628F1"
+              color3="#e0e7ff"
+              timeSpeed={0.5}
+              grainAmount={0.05}
+              contrast={1.2}
+              saturation={0.8}
+              warpAmplitude={50.0}
+              warpFrequency={5.0}
+              warpSpeed={2.0}
+              rotationAmount={500.0}
+            />
+          </div>
+        ))}
       <div className="relative z-10 mx-auto max-w-4xl text-center">
-        <Badge className="mb-6">
-          <span className="material-symbols-outlined text-sm">
-            auto_awesome
-          </span>
-          v1.0 is now live
-        </Badge>
+        <Link href="/ai" className="group inline-block">
+          <Badge className="mb-6 transition-colors group-hover:border-primary/40">
+            <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none tracking-wide text-primary">
+              New
+            </span>
+            Your AI is now React Principles–aware
+            <span className="material-symbols-outlined text-sm transition-transform group-hover:translate-x-0.5">
+              arrow_forward
+            </span>
+          </Badge>
+        </Link>
 
         <h1 className="mb-8 text-5xl font-black leading-[1.1] tracking-tight text-slate-900 md:text-7xl dark:text-white">
           <span className="text-primary">React Principles</span>
           <br />
-          The Living Cookbook for Modern React
+          Production patterns, wired into your AI.
         </h1>
 
-        <p className="mx-auto mb-8 max-w-2xl text-xl leading-relaxed text-slate-600 dark:text-slate-200">
-          A high-end developer reference implementation for scalable React
-          architectures. Isolated patterns, real-world examples, and
-          production-ready code.
+        <p className="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-slate-600 dark:text-slate-200">
+          The cookbook, UI Kit, and starters — now connected to your AI tools.
+          Learn the patterns yourself, or let your assistant look them up and
+          pull components on demand.
         </p>
-
-        <div className="mb-10 flex justify-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-300">
-            <span className="material-symbols-outlined text-base text-primary">
-              auto_awesome
-            </span>
-            Designed for humans and AI assistants
-          </span>
-        </div>
 
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
@@ -209,9 +210,14 @@ export function HeroSection() {
           </Link>
         </div>
 
-        <div className="mt-6 inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white/80 px-5 py-2.5 font-mono text-sm text-slate-500 backdrop-blur-sm dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-400">
-          <span className="text-primary">$</span>
-          npx react-principles init
+        <div className="mt-6 flex flex-col items-center gap-1.5">
+          <div className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white/80 px-5 py-2.5 font-mono text-sm text-slate-500 backdrop-blur-sm dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-400">
+            <span className="text-primary">$</span>
+            npx react-principles init
+          </div>
+          <span className="text-xs text-slate-500 dark:text-slate-400">
+            Sets up AGENTS.md + MCP + skills — one command.
+          </span>
         </div>
       </div>
 
