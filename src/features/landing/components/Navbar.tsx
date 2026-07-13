@@ -7,11 +7,19 @@ import Image from "next/image";
 import { cn } from "@/shared/utils/cn";
 
 const NAV_LINKS = [
-  { href: "/nextjs/cookbook", label: "Cookbook" },
-  { href: "/components/introduction", label: "Components" },
-  { href: "/create", label: "Create" },
-  { href: "/ai", label: "AI" },
+  { href: "/nextjs/cookbook", label: "Cookbook", badge: false },
+  { href: "/components/introduction", label: "Components", badge: false },
+  { href: "/create", label: "Create", badge: false },
+  { href: "/ai", label: "AI", badge: true },
 ] as const;
+
+function NewPill() {
+  return (
+    <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none tracking-wide text-primary">
+      New
+    </span>
+  );
+}
 
 function GithubIcon() {
   return (
@@ -54,9 +62,10 @@ export function Navbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors hover:text-primary"
+              className="flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors hover:text-primary"
             >
               {link.label}
+              {link.badge && <NewPill />}
             </Link>
           ))}
         </nav>
@@ -96,9 +105,10 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setIsOpen(false)}
-              className="py-3 text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors border-b hover:text-primary border-slate-100 dark:border-white/5 last:border-0"
+              className="flex items-center gap-1.5 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors border-b hover:text-primary border-slate-100 dark:border-white/5 last:border-0"
             >
               {link.label}
+              {link.badge && <NewPill />}
             </Link>
           ))}
         </nav>
