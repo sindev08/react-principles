@@ -127,6 +127,22 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
               copied={copied === "url"}
               onCopy={() => void copyToClipboard(shareUrl, "url")}
             />
+            <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
+              <span className="material-symbols-outlined text-[20px] text-primary">
+                auto_awesome
+              </span>
+              <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                Your starter is AI-ready: it ships with{" "}
+                <code className="rounded-sm bg-white px-1 py-0.5 font-mono text-slate-700 dark:bg-[#0d1117] dark:text-slate-300">
+                  AGENTS.md
+                </code>{" "}
+                principles and a preconfigured{" "}
+                <code className="rounded-sm bg-white px-1 py-0.5 font-mono text-slate-700 dark:bg-[#0d1117] dark:text-slate-300">
+                  .mcp.json
+                </code>{" "}
+                so your AI tools follow React Principles from the first commit.
+              </p>
+            </div>
             <div className="grid gap-2 sm:grid-cols-2">
               <Button
                 variant="outline"

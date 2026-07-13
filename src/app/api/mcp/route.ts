@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import { createMcpHandler } from "mcp-handler";
 // The MCP SDK validates tool inputs with zod v3 — use the v3 compat entry
 import { z } from "zod/v3";
@@ -10,9 +11,15 @@ import {
   getComponent,
   type ComponentSummary,
 } from "@/lib/ui-registry";
+import { trackEvent, type EventProps } from "@/lib/analytics";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://reactprinciples.dev";
+
+/** Record a tool call after the response, without blocking it. */
+function trackToolCall(tool: string, props?: EventProps) {
+  after(() => trackEvent("mcp.tool_call", { tool, ...props }));
+}
 
 function text(value: string) {
   return { content: [{ type: "text" as const, text: value }] };
@@ -49,10 +56,12 @@ const handler = createMcpHandler(
           "List all published React Principles cookbook recipes with slug, title, category, and description. Use get_recipe with a slug for full content.",
         inputSchema: {},
       },
-      async () =>
-        text(
+      async () => {
+        trackToolCall("list_recipes");
+        return text(
           `# React Principles — Recipes\n\n${formatSummaries(listPublishedRecipes())}\n\nWeb version: ${SITE_URL}/cookbook`,
-        ),
+        );
+      },
     );
 
     server.registerTool(
@@ -69,6 +78,7 @@ const handler = createMcpHandler(
       },
       async ({ slug }) => {
         const detail = getRecipeDetail(slug);
+        trackToolCall("get_recipe", { slug, found: detail !== null });
         if (!detail) {
           return text(
             `Recipe "${slug}" not found. Available recipes:\n\n${formatSummaries(listPublishedRecipes())}`,
@@ -97,6 +107,7 @@ const handler = createMcpHandler(
       },
       async ({ query, limit }) => {
         const results = searchRecipes(query, limit ?? 5);
+        trackToolCall("search_recipes", { results: results.length });
         if (results.length === 0) {
           return text(
             `No recipes matched "${query}". Try broader keywords or list_recipes.`,
@@ -116,10 +127,12 @@ const handler = createMcpHandler(
           "List all React Principles UI Kit components (Tailwind v4, accessible, copy-paste). Each entry has a name, target dir, description, and dependencies. Use get_component for the full source.",
         inputSchema: {},
       },
-      async () =>
-        text(
+      async () => {
+        trackToolCall("list_components");
+        return text(
           `# React Principles — UI Kit Components\n\n${formatComponents(listComponents())}\n\nInstall any with: npx react-principles add <name> — or use get_component for the source.`,
-        ),
+        );
+      },
     );
 
     server.registerTool(
@@ -141,6 +154,7 @@ const handler = createMcpHandler(
       },
       async ({ query, limit }) => {
         const results = searchComponents(query, limit ?? 8);
+        trackToolCall("search_components", { results: results.length });
         if (results.length === 0) {
           return text(
             `No components matched "${query}". Try list_components to see everything.`,
@@ -166,6 +180,7 @@ const handler = createMcpHandler(
       },
       async ({ name }) => {
         const component = getComponent(name);
+        trackToolCall("get_component", { name, found: component !== null });
         if (!component) {
           return text(
             `Component "${name}" not found. Available components:\n\n${formatComponents(listComponents())}`,
