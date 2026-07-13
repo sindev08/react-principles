@@ -35,7 +35,11 @@ export function Navbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background-light/80 dark:bg-background-dark/80 border-primary/10 dark:border-white/5 backdrop-blur-md">
       <div className="flex h-16 items-center justify-between px-6 mx-auto max-w-7xl md:grid md:grid-cols-3">
-        <div className="flex min-w-0 items-center gap-2">
+        <Link
+          href="/"
+          aria-label="React Principles home"
+          className="flex min-w-0 items-center gap-2 transition-opacity hover:opacity-80"
+        >
           <Image
             src="/logo-icon.svg"
             alt="React Principles logo"
@@ -55,7 +59,7 @@ export function Navbar() {
             {" "}
             <span className="font-black text-primary">Principles</span>
           </span>
-        </div>
+        </Link>
 
         <nav className="items-center justify-center hidden gap-8 md:flex">
           {NAV_LINKS.map((link) => (
