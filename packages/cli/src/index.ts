@@ -16,11 +16,17 @@ program
 
 program
   .command("init")
-  .description("Initialize components.json config and install the cn() utility")
+  .description("Initialize components.json, the cn() utility, and AI onboarding")
   .option("-t, --template <framework>", "Framework: next | vite | remix | other")
-  .action(async (opts: { template?: string }) => {
+  .option("--ai", "Set up AI onboarding (AGENTS.md + MCP) without prompting")
+  .option("--skip-ai", "Skip AI onboarding")
+  .action(async (opts: { template?: string; ai?: boolean; skipAi?: boolean }) => {
     try {
-      await init(process.cwd(), opts.template);
+      await init(process.cwd(), {
+        template: opts.template,
+        ai: opts.ai,
+        skipAi: opts.skipAi,
+      });
     } catch (err) {
       console.error(pc.red("\nError: " + (err instanceof Error ? err.message : String(err))));
       process.exit(1);
@@ -45,7 +51,8 @@ program
   .description("Scaffold a new React project from a preset")
   .option("--preset <encoded>", "Encoded preset string from reactprinciples.dev/create")
   .option("--dry-run", "Print dependencies without installing or writing files")
-  .action(async (appName: string | undefined, opts: { preset?: string; dryRun?: boolean }) => {
+  .option("--skip-ai", "Skip AI onboarding (AGENTS.md + .mcp.json)")
+  .action(async (appName: string | undefined, opts: { preset?: string; dryRun?: boolean; skipAi?: boolean }) => {
     try {
       await create(appName, opts);
     } catch (err) {
