@@ -181,8 +181,8 @@ export default function AICorpusPage() {
         <section id="mcp" className="mb-20 scroll-mt-24">
           <SectionHeader
             eyebrow="MCP Server"
-            title="Live connection to the cookbook"
-            description="A remote Model Context Protocol server serving the cookbook. Connect once and your AI can list, search, and read recipes on demand — no copy-paste, always in sync with the published site."
+            title="Live connection to the cookbook and UI Kit"
+            description="A remote Model Context Protocol server serving both the cookbook and the UI Kit. Connect once and your AI can look up recipes and pull component source on demand — no copy-paste, always in sync with the published site."
           />
 
           <div className="mb-6 rounded-xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-900/50">
@@ -213,6 +213,18 @@ export default function AICorpusPage() {
             <McpToolCard
               name="get_recipe"
               description="Full recipe as markdown — principle, rules, pattern, implementations."
+            />
+            <McpToolCard
+              name="list_components"
+              description="All UI Kit components with target dir, description, and dependencies."
+            />
+            <McpToolCard
+              name="search_components"
+              description="Ranked keyword search across component names and descriptions."
+            />
+            <McpToolCard
+              name="get_component"
+              description="Full component source (matches the CLI), install command, and deps."
             />
           </div>
         </section>
