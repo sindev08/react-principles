@@ -15,6 +15,21 @@ import {
 import { getEntry, getTemplate } from "../registry";
 import { installPackages } from "../utils/pm";
 import { setupGlobalsCss } from "../utils/css";
+import {
+  writeAgentsFile,
+  writeMcpConfig,
+  runSkillsInstall,
+  logSkillsHint,
+  MCP_ENDPOINT,
+} from "../utils/ai-onboarding";
+
+export interface InitOptions {
+  template?: string;
+  /** Run AI onboarding without prompting. */
+  ai?: boolean;
+  /** Skip AI onboarding entirely. */
+  skipAi?: boolean;
+}
 
 const FRAMEWORK_LABELS: Record<Config["framework"], string> = {
   next: "Next.js",
@@ -23,10 +38,14 @@ const FRAMEWORK_LABELS: Record<Config["framework"], string> = {
   other: "Other",
 };
 
-export async function init(cwd: string, frameworkFlag?: string): Promise<void> {
+export async function init(cwd: string, options: InitOptions = {}): Promise<void> {
+  const frameworkFlag = options.template;
   const existing = readConfig(cwd);
   if (existing) {
-    console.log(pc.yellow("components.json already exists. Remove it to re-run init."));
+    console.log(
+      pc.yellow("components.json already exists — skipping component setup."),
+    );
+    await setupAiOnboarding(cwd, options);
     return;
   }
 
@@ -141,4 +160,84 @@ export async function init(cwd: string, frameworkFlag?: string): Promise<void> {
     ` Framework: ${FRAMEWORK_LABELS[framework]} | RSC: ${rsc ? "yes" : "no"}\n` +
     `Run ${pc.cyan("npx react-principles add <component>")} to add components.\n`
   );
+
+  await setupAiOnboarding(cwd, options);
+}
+
+/**
+ * Wires the project into the React Principles AI ecosystem: an AGENTS.md
+ * principles block, a merged .mcp.json server entry, and an optional skills
+ * install. Idempotent — safe to re-run. Prompts in interactive mode; honors
+ * `--ai` (run without prompting) and `--skip-ai` (skip entirely).
+ */
+async function setupAiOnboarding(cwd: string, options: InitOptions): Promise<void> {
+  if (options.skipAi) return;
+
+  const interactive = Boolean(process.stdin.isTTY) && !options.ai;
+
+  if (interactive) {
+    const { proceed } = (await prompts(
+      {
+        type: "confirm",
+        name: "proceed",
+        message:
+          "Make your AI tools React Principles-aware? (AGENTS.md + MCP server)",
+        initial: true,
+      },
+      { onCancel: () => ({ proceed: false }) },
+    )) as { proceed?: boolean };
+    if (!proceed) return;
+  } else if (!options.ai) {
+    // Non-interactive without an explicit --ai flag: skip silently.
+    return;
+  }
+
+  console.log(pc.bold("\nSetting up AI integration...\n"));
+
+  const agents = await writeAgentsFile(cwd);
+  console.log(
+    pc.green("✓") +
+      ` ${agents === "created" ? "Created" : "Updated"} AGENTS.md (principles context)`,
+  );
+
+  const mcp = writeMcpConfig(cwd);
+  if (mcp === null) {
+    console.log(
+      pc.yellow("–") +
+        " Skipped .mcp.json (existing file isn't valid JSON — add manually: " +
+        MCP_ENDPOINT +
+        ")",
+    );
+  } else {
+    console.log(
+      pc.green("✓") +
+        ` ${mcp === "created" ? "Created" : "Updated"} .mcp.json (reactprinciples server)`,
+    );
+  }
+
+  await offerSkills(cwd, options);
+}
+
+async function offerSkills(cwd: string, options: InitOptions): Promise<void> {
+  if (!process.stdin.isTTY || options.ai) {
+    logSkillsHint();
+    return;
+  }
+
+  const { install } = (await prompts(
+    {
+      type: "confirm",
+      name: "install",
+      message: "Install the React Principles AI skills now?",
+      initial: false,
+    },
+    { onCancel: () => ({ install: false }) },
+  )) as { install?: boolean };
+
+  if (install) {
+    const ok = runSkillsInstall(cwd);
+    if (!ok) logSkillsHint();
+  } else {
+    logSkillsHint();
+  }
 }
