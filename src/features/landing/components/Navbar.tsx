@@ -33,7 +33,7 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background-light/80 dark:bg-background-dark/80 border-primary/10 dark:border-white/5 backdrop-blur-md">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background-light/95 dark:bg-background-dark/95 border-primary/10 dark:border-white/5 backdrop-blur-md">
       <div className="flex h-16 items-center justify-between px-6 mx-auto max-w-7xl md:grid md:grid-cols-3">
         <Link
           href="/"
