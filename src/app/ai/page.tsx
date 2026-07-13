@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar, Footer } from "@/features/landing/components";
+import { CopyButton } from "@/shared/components";
 import { cn } from "@/shared/utils/cn";
+import { McpInstallTabs } from "./McpInstallTabs";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://reactprinciples.dev";
@@ -9,17 +11,6 @@ const SKILLS_REPO_URL = "https://github.com/sindev08/react-principles-skills";
 const SKILLS_INSTALL_CMD = "npx skills add sindev08/react-principles-skills";
 const INIT_CMD = "npx react-principles init";
 const CREATE_CMD = "npx react-principles create my-app";
-// MCP clients POST directly and may not follow the apex→www 307 redirect,
-// so advertise the canonical www host explicitly for the endpoint.
-const MCP_ENDPOINT = "https://www.reactprinciples.dev/api/mcp";
-const MCP_INSTALL_CMD = `claude mcp add --transport http reactprinciples ${MCP_ENDPOINT}`;
-const MCP_JSON_CONFIG = `{
-  "mcpServers": {
-    "reactprinciples": {
-      "url": "${MCP_ENDPOINT}"
-    }
-  }
-}`;
 
 export const metadata: Metadata = {
   title: "AI Corpus — React Principles",
@@ -42,6 +33,44 @@ export const metadata: Metadata = {
     canonical: `${SITE_URL}/ai`,
   },
 };
+
+/**
+ * Dark command/code snippet with a copy affordance at the top-right.
+ * The single snippet presentation used across this page.
+ */
+function CommandSnippet({
+  code,
+  centered = false,
+  className,
+}: {
+  code: string;
+  centered?: boolean;
+  className?: string;
+}) {
+  const multiline = code.includes("\n");
+  return (
+    <div
+      className={cn(
+        "flex gap-2 overflow-hidden rounded-lg bg-slate-900 pl-4 pr-2 dark:bg-black",
+        multiline ? "items-start" : "items-center",
+        centered && "mx-auto w-fit max-w-full text-left",
+        className,
+      )}
+    >
+      <pre className="min-w-0 flex-1 overflow-x-auto py-3 text-sm text-slate-100">
+        <code>{code}</code>
+      </pre>
+      <CopyButton
+        text={code}
+        label="Copy"
+        className={cn(
+          "text-slate-500 hover:bg-white/5 hover:text-slate-200 dark:text-slate-500 dark:hover:text-slate-200",
+          multiline && "mt-1.5",
+        )}
+      />
+    </div>
+  );
+}
 
 interface Skill {
   name: string;
@@ -174,9 +203,7 @@ export default function AICorpusPage() {
                 <p className="mb-4 text-sm leading-6 text-slate-600 dark:text-slate-400">
                   Make it React Principles–aware in one step.
                 </p>
-                <pre className="overflow-x-auto rounded-lg bg-slate-900 px-4 py-3 text-sm text-slate-100 dark:bg-black">
-                  <code>{INIT_CMD}</code>
-                </pre>
+                <CommandSnippet code={INIT_CMD} />
               </div>
               <div>
                 <p className="mb-2 text-xs font-semibold tracking-wider uppercase text-primary">
@@ -185,9 +212,7 @@ export default function AICorpusPage() {
                 <p className="mb-4 text-sm leading-6 text-slate-600 dark:text-slate-400">
                   Scaffold a starter that ships wired-in from the first commit.
                 </p>
-                <pre className="overflow-x-auto rounded-lg bg-slate-900 px-4 py-3 text-sm text-slate-100 dark:bg-black">
-                  <code>{CREATE_CMD}</code>
-                </pre>
+                <CommandSnippet code={CREATE_CMD} />
               </div>
             </div>
 
@@ -264,21 +289,7 @@ export default function AICorpusPage() {
             description="A remote Model Context Protocol server serving both the cookbook and the UI Kit. Connect once and your AI can look up recipes and pull component source on demand — no copy-paste, always in sync with the published site."
           />
 
-          <div className="mb-6 rounded-xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-900/50">
-            <p className="mb-3 text-sm font-medium text-slate-700 dark:text-slate-300">
-              Claude Code — one command:
-            </p>
-            <pre className="overflow-x-auto rounded-lg bg-slate-900 px-4 py-3 text-sm text-slate-100 dark:bg-black">
-              <code>{MCP_INSTALL_CMD}</code>
-            </pre>
-            <p className="mt-6 mb-3 text-sm font-medium text-slate-700 dark:text-slate-300">
-              Cursor, Claude Desktop, and other MCP clients — add to your MCP
-              config:
-            </p>
-            <pre className="overflow-x-auto rounded-lg bg-slate-900 px-4 py-3 text-sm text-slate-100 dark:bg-black">
-              <code>{MCP_JSON_CONFIG}</code>
-            </pre>
-          </div>
+          <McpInstallTabs />
 
           <div className="grid gap-4 sm:grid-cols-3">
             <McpToolCard
@@ -324,9 +335,7 @@ export default function AICorpusPage() {
             <p className="mb-3 text-sm font-medium text-slate-700 dark:text-slate-300">
               Install all skills with one command:
             </p>
-            <pre className="overflow-x-auto rounded-lg bg-slate-900 px-4 py-3 text-sm text-slate-100 dark:bg-black">
-              <code>{SKILLS_INSTALL_CMD}</code>
-            </pre>
+            <CommandSnippet code={SKILLS_INSTALL_CMD} />
             <p className="mt-3 text-xs text-slate-500 dark:text-slate-500">
               Or manually copy any{" "}
               <code className="rounded bg-slate-200 px-1 py-0.5 font-mono dark:bg-slate-800">
@@ -424,9 +433,7 @@ export default function AICorpusPage() {
             One command. Works across Claude Code, Cursor, and any tool
             supporting Agent Skills.
           </p>
-          <pre className="mb-4 overflow-x-auto rounded-lg bg-slate-900 px-4 py-3 text-left text-xs text-slate-100 sm:px-5 sm:text-center sm:text-sm dark:bg-black">
-            <code>{SKILLS_INSTALL_CMD}</code>
-          </pre>
+          <CommandSnippet code={SKILLS_INSTALL_CMD} centered className="mb-4" />
           <div className="mt-6 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
             <Link
               href={SKILLS_REPO_URL}

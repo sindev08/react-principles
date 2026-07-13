@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { Button } from "@/ui/Button";
+import { CopyButton } from "@/shared/components";
 import { cn } from "@/shared/utils/cn";
 
 const CAPABILITY_CHIPS = [
@@ -71,9 +72,18 @@ export function AICorpusTeaserSection() {
 
               {/* Terminal body */}
               <div className="bg-slate-950 px-5 py-4 font-mono text-sm text-slate-100">
-                <div className="mb-3">
-                  <span className="text-primary">$</span>{" "}
-                  <span className="text-slate-100">npx react-principles init</span>
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <span>
+                    <span className="text-primary">$</span>{" "}
+                    <span className="text-slate-100">
+                      npx react-principles init
+                    </span>
+                  </span>
+                  <CopyButton
+                    text="npx react-principles init"
+                    label="Copy command"
+                    className="text-slate-500 hover:bg-white/5 hover:text-slate-200 dark:text-slate-500 dark:hover:text-slate-200"
+                  />
                 </div>
                 {SETUP_LINES.map((line) => (
                   <div key={line} className="text-slate-400">

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Badge } from "@/features/cookbook/components/Badge";
+import { CopyButton } from "@/shared/components";
 import { useAppStore } from "@/shared/stores/useAppStore";
 
 const FloatingLines = dynamic(
@@ -211,9 +212,15 @@ export function HeroSection() {
         </div>
 
         <div className="mt-6 flex flex-col items-center gap-1.5">
-          <div className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white/80 px-5 py-2.5 font-mono text-sm text-slate-500 backdrop-blur-sm dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-400">
+          <div className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white/80 py-2.5 pl-5 pr-3 font-mono text-sm text-slate-500 backdrop-blur-sm dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-400">
             <span className="text-primary">$</span>
             npx react-principles init
+            <CopyButton
+              text="npx react-principles init"
+              label="Copy command"
+              copiedLabel="Copied!"
+              showTooltip
+            />
           </div>
           <span className="text-xs text-slate-500 dark:text-slate-400">
             Sets up AGENTS.md + MCP + skills — one command.

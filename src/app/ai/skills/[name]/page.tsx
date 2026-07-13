@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Navbar, Footer } from "@/features/landing/components";
 import { cn } from "@/shared/utils/cn";
 import { getSkill, getSkillsBundle, type SkillCategory } from "@/lib/skills";
-import { CopyButton } from "./CopyButton";
+import { CopyButton } from "@/shared/components";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://reactprinciples.dev";
@@ -141,7 +141,10 @@ export default async function SkillDetailPage({ params }: PageProps) {
           <CopyButton
             text={skill.rawMarkdown}
             label="Copy SKILL.md"
+            copiedLabel="Copied"
             variant="labeled"
+            className="gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:text-white dark:hover:bg-slate-800"
+            copiedClassName="border-green-500 text-green-600 dark:border-green-500 dark:text-green-400"
           />
           <Link
             href={`${bundle.repoUrl}/blob/main/skills/${skill.name}/SKILL.md`}

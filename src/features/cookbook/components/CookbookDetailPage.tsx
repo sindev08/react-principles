@@ -8,6 +8,7 @@ import { UseWithAISection } from "@/features/cookbook/components/UseWithAISectio
 import { UserList } from "@/features/examples/components/UserList";
 import { UserForm } from "@/features/examples/components/UserForm";
 import { UserTable } from "@/features/examples/components/UserTable";
+import { useCopyToClipboard } from "@/shared/hooks";
 import { useAppStore } from "@/shared/stores/useAppStore";
 import { useFilterStore } from "@/shared/stores/useFilterStore";
 import { useSavedStore } from "@/features/cookbook/stores/useSavedStore";
@@ -131,7 +132,7 @@ function SectionBadge({ n }: { n: number }) {
 }
 
 function DetailContent({ detail, framework }: { detail: RecipeDetail; framework: Framework }) {
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopyToClipboard();
   const [mounted, setMounted] = useState(false);
   const { isSaved, toggleSaved } = useSavedStore();
   const saved = mounted && isSaved(detail.slug);
@@ -147,9 +148,7 @@ function DetailContent({ detail, framework }: { detail: RecipeDetail; framework:
 
   const handleCopyLink = () => {
     if (typeof window !== "undefined") {
-      void navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      void copy(window.location.href);
     }
   };
 
