@@ -430,7 +430,7 @@ export async function create(
   console.log(pc.gray(`  Components: ${preset.components.join(", ") || "none"}`));
   console.log(pc.gray(`  Packages  : ${resolved.deps.length} deps, ${resolved.devDeps.length} devDeps`));
   console.log(pc.gray(`  PM        : ${pm}`));
-  console.log(pc.gray(`  AI        : ${opts.skipAi ? "skipped" : "AGENTS.md + .mcp.json"}`));
+  console.log(pc.gray(`  AI        : ${opts.skipAi ? "skipped" : opts.dryRun ? "AGENTS.md + .mcp.json (dry-run)" : "AGENTS.md + .mcp.json"}`));
 
   if (opts.dryRun) {
     console.log(pc.yellow("\n[dry-run] Dependencies that would be installed:"));
