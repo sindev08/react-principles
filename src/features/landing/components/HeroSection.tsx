@@ -22,6 +22,10 @@ const Grainient = dynamic(
   { ssr: false },
 );
 
+// Temporarily disabled — flip to true to restore the animated hero background.
+// Falls back to the section's `mesh-gradient` CSS while off.
+const SHOW_HERO_ANIMATION = false;
+
 type Tab = "hook" | "component";
 
 const TABS: Array<{ id: Tab; label: string; icon: string }> = [
@@ -140,31 +144,32 @@ export function HeroSection() {
 
   return (
     <section className="mesh-gradient relative overflow-hidden px-6 pb-20 pt-40">
-      {isDark ? (
-        <FloatingLines
-          linesGradient={["#4628F1", "#7c3aed", "#06b6d4"]}
-          enabledWaves={["middle", "bottom"]}
-          lineCount={[5, 10]}
-          lineDistance={[5, 3]}
-          animationSpeed={0.4}
-        />
-      ) : (
-        <div className="absolute inset-0">
-          <Grainient
-            color1="#c4b5fd"
-            color2="#4628F1"
-            color3="#e0e7ff"
-            timeSpeed={0.5}
-            grainAmount={0.05}
-            contrast={1.2}
-            saturation={0.8}
-            warpAmplitude={50.0}
-            warpFrequency={5.0}
-            warpSpeed={2.0}
-            rotationAmount={500.0}
+      {SHOW_HERO_ANIMATION &&
+        (isDark ? (
+          <FloatingLines
+            linesGradient={["#4628F1", "#7c3aed", "#06b6d4"]}
+            enabledWaves={["middle", "bottom"]}
+            lineCount={[5, 10]}
+            lineDistance={[5, 3]}
+            animationSpeed={0.4}
           />
-        </div>
-      )}
+        ) : (
+          <div className="absolute inset-0">
+            <Grainient
+              color1="#c4b5fd"
+              color2="#4628F1"
+              color3="#e0e7ff"
+              timeSpeed={0.5}
+              grainAmount={0.05}
+              contrast={1.2}
+              saturation={0.8}
+              warpAmplitude={50.0}
+              warpFrequency={5.0}
+              warpSpeed={2.0}
+              rotationAmount={500.0}
+            />
+          </div>
+        ))}
       <div className="relative z-10 mx-auto max-w-4xl text-center">
         <Link href="/ai" className="group inline-block">
           <Badge className="mb-6 transition-colors group-hover:border-primary/40">
