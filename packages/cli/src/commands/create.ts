@@ -7,6 +7,7 @@ import { decodePreset, type CliPreset } from "../utils/preset";
 import { resolvePresetDependencies, installPresetDependencies } from "../utils/deps";
 import { detectPackageManager } from "../utils/pm";
 import { getEntry, getTemplate } from "../registry";
+import { writeAgentsFile, writeMcpConfig } from "../utils/ai-onboarding";
 
 // ── Style system CSS vars ─────────────────────────────────────────────────
 
@@ -338,9 +339,36 @@ function ok(msg: string) {
 
 // ── Main ──────────────────────────────────────────────────────────────────
 
+function buildReadme(appName: string, preset: CliPreset): string {
+  const pmRun = "npm run dev";
+  const components = preset.components.length
+    ? preset.components.join(", ")
+    : "none yet";
+  return `# ${appName}
+
+Generated with [React Principles](https://reactprinciples.dev) — a starter aligned with the cookbook's production patterns.
+
+## Getting started
+
+\`\`\`bash
+${pmRun}
+\`\`\`
+
+## React Principles ecosystem
+
+This project is wired into the React Principles AI ecosystem out of the box:
+
+- **\`AGENTS.md\`** — the cookbook principles, so any AI assistant follows the same patterns. Refresh anytime with \`npx react-principles init\`.
+- **\`.mcp.json\`** — the remote MCP server (\`reactprinciples\`). Connected AI tools can look up recipes and pull component source on demand.
+- **UI Kit** — add more components with \`npx react-principles add <name>\`. Included: ${components}.
+
+Learn more at [reactprinciples.dev/ai](https://reactprinciples.dev/ai).
+`;
+}
+
 export async function create(
   appNameArg: string | undefined,
-  opts: { preset?: string; dryRun?: boolean },
+  opts: { preset?: string; dryRun?: boolean; skipAi?: boolean },
 ): Promise<void> {
   console.log(pc.bold("\n✦ react-principles create\n"));
 
@@ -402,6 +430,7 @@ export async function create(
   console.log(pc.gray(`  Components: ${preset.components.join(", ") || "none"}`));
   console.log(pc.gray(`  Packages  : ${resolved.deps.length} deps, ${resolved.devDeps.length} devDeps`));
   console.log(pc.gray(`  PM        : ${pm}`));
+  console.log(pc.gray(`  AI        : ${opts.skipAi ? "skipped" : "AGENTS.md + .mcp.json"}`));
 
   if (opts.dryRun) {
     console.log(pc.yellow("\n[dry-run] Dependencies that would be installed:"));
@@ -497,7 +526,18 @@ export async function create(
   if (copied.length > 0) ok(`Copied: ${copied.join(", ")}`);
   if (skipped.length > 0) console.log(pc.yellow(`  ⚠ Not found in registry: ${skipped.join(", ")}`));
 
-  // 7. Install
+  // 7. AI onboarding — born in the ecosystem
+  if (!opts.skipAi) {
+    step("Wiring AI integration");
+    await writeAgentsFile(projectDir);
+    ok("AGENTS.md (principles context)");
+    const mcp = writeMcpConfig(projectDir);
+    if (mcp !== null) ok(".mcp.json (reactprinciples server)");
+    write(projectDir, "README.md", buildReadme(appName, preset));
+    ok("README.md");
+  }
+
+  // 8. Install
   step(`Installing dependencies with ${pm}`);
   try {
     const installCmd = pm === "yarn" ? "yarn" : `${pm} install`;
@@ -512,7 +552,7 @@ export async function create(
     console.log(pc.gray(`    cd ${appName} && ${pm} install`));
   }
 
-  // 8. Done
+  // 9. Done
   console.log(`\n${pc.bold(pc.green("✓ Done!"))} ${pc.gray(`Created ${appName}/`)}\n`);
   console.log(pc.gray(`  cd ${appName}`));
   console.log(pc.gray(`  ${pm} run dev\n`));
