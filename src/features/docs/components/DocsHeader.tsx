@@ -9,7 +9,7 @@ import { useSearchStore } from "@/shared/stores/useSearchStore";
 import { useSavedStore } from "@/features/cookbook/stores/useSavedStore";
 import { RECIPES } from "@/features/cookbook/data/cookbook-data";
 import { DOCS_NAV } from "./docs-nav";
-import Image from "next/image";
+import { BrandLogo } from "@/shared/components";
 
 function GithubIcon() {
   return (
@@ -77,27 +77,7 @@ export function DocsHeader() {
       <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-[#1f2937] bg-white/80 dark:bg-[#0b0e14]/80 backdrop-blur-md">
         <div className="relative mx-auto flex h-14 max-w-[1440px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-10">
           <div className="flex min-w-0 items-center gap-8">
-            <Link href="/" className="flex min-w-0 items-center gap-2">
-              <Image
-                src="/logo-icon.svg"
-                alt="React Principles logo"
-                width={32}
-                height={32}
-                className="block dark:hidden"
-              />
-              <Image
-                src="/logo-icon-dark.svg"
-                alt="React Principles logo"
-                width={32}
-                height={32}
-                className="hidden dark:block"
-              />
-              <h2 className="truncate text-base tracking-tight leading-tight">
-                <span className="font-medium text-slate-600 dark:text-slate-300">React</span>
-                {" "}
-                <span className="font-black text-primary">Principles</span>
-              </h2>
-            </Link>
+            <BrandLogo />
             <nav className="items-center hidden gap-6 md:flex">
               <Link href="/" className={navLinkClass(!isDocsActive && !isCookbookActive && !isCreateActive)}>
                 Home

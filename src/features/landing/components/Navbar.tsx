@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
-import Image from "next/image";
+import { BrandLogo } from "@/shared/components";
 import { cn } from "@/shared/utils/cn";
 
 const NAV_LINKS = [
@@ -35,31 +35,7 @@ export function Navbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background-light/95 dark:bg-background-dark/95 border-primary/10 dark:border-white/5 backdrop-blur-md">
       <div className="flex h-16 items-center justify-between px-6 mx-auto max-w-7xl md:grid md:grid-cols-3">
-        <Link
-          href="/"
-          aria-label="React Principles home"
-          className="flex min-w-0 items-center gap-2 transition-opacity hover:opacity-80"
-        >
-          <Image
-            src="/logo-icon.svg"
-            alt="React Principles logo"
-            width={32}
-            height={32}
-            className="block dark:hidden"
-          />
-          <Image
-            src="/logo-icon-dark.svg"
-            alt="React Principles logo"
-            width={32}
-            height={32}
-            className="hidden dark:block"
-          />
-          <span className="whitespace-nowrap text-lg tracking-tight">
-            <span className="font-medium text-slate-600 dark:text-slate-300">React</span>
-            {" "}
-            <span className="font-black text-primary">Principles</span>
-          </span>
-        </Link>
+        <BrandLogo />
 
         <nav className="items-center justify-center hidden gap-8 md:flex">
           {NAV_LINKS.map((link) => (
