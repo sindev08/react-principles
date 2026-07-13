@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Navbar, Footer } from "@/features/landing/components";
 import { CopyButton } from "@/shared/components";
 import { cn } from "@/shared/utils/cn";
+import { McpInstallTabs } from "./McpInstallTabs";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://reactprinciples.dev";
@@ -10,17 +11,6 @@ const SKILLS_REPO_URL = "https://github.com/sindev08/react-principles-skills";
 const SKILLS_INSTALL_CMD = "npx skills add sindev08/react-principles-skills";
 const INIT_CMD = "npx react-principles init";
 const CREATE_CMD = "npx react-principles create my-app";
-// MCP clients POST directly and may not follow the apex→www 307 redirect,
-// so advertise the canonical www host explicitly for the endpoint.
-const MCP_ENDPOINT = "https://www.reactprinciples.dev/api/mcp";
-const MCP_INSTALL_CMD = `claude mcp add --transport http reactprinciples ${MCP_ENDPOINT}`;
-const MCP_JSON_CONFIG = `{
-  "mcpServers": {
-    "reactprinciples": {
-      "url": "${MCP_ENDPOINT}"
-    }
-  }
-}`;
 
 export const metadata: Metadata = {
   title: "AI Corpus — React Principles",
@@ -299,17 +289,7 @@ export default function AICorpusPage() {
             description="A remote Model Context Protocol server serving both the cookbook and the UI Kit. Connect once and your AI can look up recipes and pull component source on demand — no copy-paste, always in sync with the published site."
           />
 
-          <div className="mb-6 rounded-xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-900/50">
-            <p className="mb-3 text-sm font-medium text-slate-700 dark:text-slate-300">
-              Claude Code — one command:
-            </p>
-            <CommandSnippet code={MCP_INSTALL_CMD} />
-            <p className="mt-6 mb-3 text-sm font-medium text-slate-700 dark:text-slate-300">
-              Cursor, Claude Desktop, and other MCP clients — add to your MCP
-              config:
-            </p>
-            <CommandSnippet code={MCP_JSON_CONFIG} />
-          </div>
+          <McpInstallTabs />
 
           <div className="grid gap-4 sm:grid-cols-3">
             <McpToolCard
