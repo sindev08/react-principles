@@ -68,49 +68,58 @@ export async function init(cwd: string, options: InitOptions = {}): Promise<void
     libDir: string;
   }
 
-  const answers = await prompts(
-    [
-      {
-        type: "select",
-        name: "framework",
-        message: "Which framework are you using?",
-        choices: [
-          { title: "Next.js", value: "next" },
-          { title: "Vite", value: "vite" },
-          { title: "Remix", value: "remix" },
-          { title: "Other", value: "other" },
+  const nonInteractive = !process.stdin.isTTY && options.ai;
+
+  const answers = nonInteractive
+    ? ({
+        framework: detectedFramework,
+        componentsDir: defaults.componentsDir,
+        hooksDir: defaults.hooksDir,
+        libDir: defaults.libDir,
+      } satisfies InitAnswers)
+    : ((await prompts(
+        [
+          {
+            type: "select",
+            name: "framework",
+            message: "Which framework are you using?",
+            choices: [
+              { title: "Next.js", value: "next" },
+              { title: "Vite", value: "vite" },
+              { title: "Remix", value: "remix" },
+              { title: "Other", value: "other" },
+            ],
+            initial: ["next", "vite", "remix", "other"].indexOf(detectedFramework),
+            hint: detectedFramework !== "other"
+              ? `detected: ${FRAMEWORK_LABELS[detectedFramework]}`
+              : undefined,
+          },
+          {
+            type: "text",
+            name: "componentsDir",
+            message: "Where should components be installed?",
+            initial: defaults.componentsDir,
+          },
+          {
+            type: "text",
+            name: "hooksDir",
+            message: "Where should hooks be installed?",
+            initial: defaults.hooksDir,
+          },
+          {
+            type: "text",
+            name: "libDir",
+            message: "Where should utilities be installed?",
+            initial: defaults.libDir,
+          },
         ],
-        initial: ["next", "vite", "remix", "other"].indexOf(detectedFramework),
-        hint: detectedFramework !== "other"
-          ? `detected: ${FRAMEWORK_LABELS[detectedFramework]}`
-          : undefined,
-      },
-      {
-        type: "text",
-        name: "componentsDir",
-        message: "Where should components be installed?",
-        initial: defaults.componentsDir,
-      },
-      {
-        type: "text",
-        name: "hooksDir",
-        message: "Where should hooks be installed?",
-        initial: defaults.hooksDir,
-      },
-      {
-        type: "text",
-        name: "libDir",
-        message: "Where should utilities be installed?",
-        initial: defaults.libDir,
-      },
-    ],
-    {
-      onCancel: () => {
-        console.log(pc.red("\nSetup cancelled."));
-        process.exit(0);
-      },
-    }
-  ) as InitAnswers;
+        {
+          onCancel: () => {
+            console.log(pc.red("\nSetup cancelled."));
+            process.exit(0);
+          },
+        },
+      )) as InitAnswers);
 
   const framework = answers.framework;
   const rsc = framework === "next";
@@ -188,7 +197,10 @@ async function setupAiOnboarding(cwd: string, options: InitOptions): Promise<voi
     )) as { proceed?: boolean };
     if (!proceed) return;
   } else if (!options.ai) {
-    // Non-interactive without an explicit --ai flag: skip silently.
+    // Non-interactive without an explicit --ai flag: skip silently but hint.
+    console.log(
+      pc.gray("Tip: run with --ai to set up AI tools (AGENTS.md + MCP server)"),
+    );
     return;
   }
 
