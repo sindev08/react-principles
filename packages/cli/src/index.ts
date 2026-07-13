@@ -51,7 +51,8 @@ program
   .description("Scaffold a new React project from a preset")
   .option("--preset <encoded>", "Encoded preset string from reactprinciples.dev/create")
   .option("--dry-run", "Print dependencies without installing or writing files")
-  .action(async (appName: string | undefined, opts: { preset?: string; dryRun?: boolean }) => {
+  .option("--skip-ai", "Skip AI onboarding (AGENTS.md + .mcp.json)")
+  .action(async (appName: string | undefined, opts: { preset?: string; dryRun?: boolean; skipAi?: boolean }) => {
     try {
       await create(appName, opts);
     } catch (err) {
