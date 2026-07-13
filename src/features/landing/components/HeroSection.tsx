@@ -166,33 +166,29 @@ export function HeroSection() {
         </div>
       )}
       <div className="relative z-10 mx-auto max-w-4xl text-center">
-        <Badge className="mb-6">
-          <span className="material-symbols-outlined text-sm">
-            auto_awesome
-          </span>
-          v1.0 is now live
-        </Badge>
+        <Link href="/ai" className="group inline-block">
+          <Badge className="mb-6 transition-colors group-hover:border-primary/40">
+            <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none tracking-wide text-primary">
+              New
+            </span>
+            Your AI is now React Principles–aware
+            <span className="material-symbols-outlined text-sm transition-transform group-hover:translate-x-0.5">
+              arrow_forward
+            </span>
+          </Badge>
+        </Link>
 
         <h1 className="mb-8 text-5xl font-black leading-[1.1] tracking-tight text-slate-900 md:text-7xl dark:text-white">
           <span className="text-primary">React Principles</span>
           <br />
-          The Living Cookbook for Modern React
+          Production patterns, wired into your AI.
         </h1>
 
-        <p className="mx-auto mb-8 max-w-2xl text-xl leading-relaxed text-slate-600 dark:text-slate-200">
-          A high-end developer reference implementation for scalable React
-          architectures. Isolated patterns, real-world examples, and
-          production-ready code.
+        <p className="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-slate-600 dark:text-slate-200">
+          The cookbook, UI Kit, and starters — now connected to your AI tools.
+          Learn the patterns yourself, or let your assistant look them up and
+          pull components on demand.
         </p>
-
-        <div className="mb-10 flex justify-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-300">
-            <span className="material-symbols-outlined text-base text-primary">
-              auto_awesome
-            </span>
-            Designed for humans and AI assistants
-          </span>
-        </div>
 
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
@@ -209,9 +205,14 @@ export function HeroSection() {
           </Link>
         </div>
 
-        <div className="mt-6 inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white/80 px-5 py-2.5 font-mono text-sm text-slate-500 backdrop-blur-sm dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-400">
-          <span className="text-primary">$</span>
-          npx react-principles init
+        <div className="mt-6 flex flex-col items-center gap-1.5">
+          <div className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white/80 px-5 py-2.5 font-mono text-sm text-slate-500 backdrop-blur-sm dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-400">
+            <span className="text-primary">$</span>
+            npx react-principles init
+          </div>
+          <span className="text-xs text-slate-500 dark:text-slate-400">
+            Sets up AGENTS.md + MCP + skills — one command.
+          </span>
         </div>
       </div>
 
