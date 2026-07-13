@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { CopyButton } from "@/shared/components";
 import type { RecipeDetail } from "@/features/cookbook/data/types";
 import { formatRecipeMarkdown } from "@/lib/recipe-md";
 
@@ -26,27 +26,12 @@ interface UseWithAISectionProps {
 }
 
 export function UseWithAISection({ detail }: UseWithAISectionProps) {
-  const [copiedMd, setCopiedMd] = useState(false);
-  const [copiedCmd, setCopiedCmd] = useState(false);
-
   const scaffoldSkill = RECIPE_SKILLS[detail.slug];
   const markdownHref = `/cookbook/${detail.slug}/llms.txt`;
 
   const aiPrompt = `Read ${SITE_URL}${markdownHref} and follow this React Principles recipe ("${detail.title}") when helping me with my React code.`;
   const chatgptHref = `https://chatgpt.com/?q=${encodeURIComponent(aiPrompt)}`;
   const claudeHref = `https://claude.ai/new?q=${encodeURIComponent(aiPrompt)}`;
-
-  const handleCopyMarkdown = () => {
-    void navigator.clipboard.writeText(formatRecipeMarkdown(detail));
-    setCopiedMd(true);
-    setTimeout(() => setCopiedMd(false), 2000);
-  };
-
-  const handleCopyCmd = () => {
-    void navigator.clipboard.writeText(SKILLS_INSTALL_CMD);
-    setCopiedCmd(true);
-    setTimeout(() => setCopiedCmd(false), 2000);
-  };
 
   return (
     <div className="mt-8 rounded-xl border border-primary/20 bg-primary/5 p-5">
@@ -71,15 +56,15 @@ export function UseWithAISection({ detail }: UseWithAISectionProps) {
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <button
-          onClick={handleCopyMarkdown}
-          className="flex items-center gap-2 rounded-lg bg-primary px-3.5 py-2 text-sm font-bold text-white transition-opacity hover:opacity-90"
-        >
-          <span className="material-symbols-outlined text-[18px]">
-            {copiedMd ? "check" : "smart_toy"}
-          </span>
-          {copiedMd ? "Copied!" : "Copy for AI"}
-        </button>
+        <CopyButton
+          text={formatRecipeMarkdown(detail)}
+          variant="labeled"
+          label="Copy for AI"
+          copiedLabel="Copied!"
+          icon="smart_toy"
+          iconSize={18}
+          className="gap-2 rounded-lg bg-primary px-3.5 py-2 text-sm font-bold text-white hover:opacity-90"
+        />
         <ActionLink href={claudeHref} label="Open in Claude" icon="open_in_new" />
         <ActionLink href={chatgptHref} label="Open in ChatGPT" icon="open_in_new" />
         <ActionLink href={markdownHref} label="View as Markdown" icon="description" />
@@ -90,15 +75,14 @@ export function UseWithAISection({ detail }: UseWithAISectionProps) {
         <code className="rounded-sm bg-white px-2 py-1 font-mono text-slate-700 dark:bg-[#0d1117] dark:text-slate-300">
           {SKILLS_INSTALL_CMD}
         </code>
-        <button
-          onClick={handleCopyCmd}
-          className="flex items-center gap-1 font-medium text-primary transition-colors hover:underline"
-        >
-          <span className="material-symbols-outlined text-[14px]">
-            {copiedCmd ? "check" : "content_copy"}
-          </span>
-          {copiedCmd ? "Copied!" : "Copy"}
-        </button>
+        <CopyButton
+          text={SKILLS_INSTALL_CMD}
+          variant="labeled"
+          label="Copy"
+          copiedLabel="Copied!"
+          iconSize={14}
+          className="gap-1 font-medium text-primary hover:underline"
+        />
         {scaffoldSkill && (
           <span>
             — then invoke{" "}

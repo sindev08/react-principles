@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
+import { CopyButton } from "@/shared/components";
 import { cn } from "@/shared/utils/cn";
 
 interface CodeBlockProps {
@@ -92,15 +93,8 @@ export function CodeBlock({
   children,
   className,
 }: CodeBlockProps) {
-  const [copied, setCopied] = useState(false);
   const rawCode = typeof children === "string" ? children : copyText;
   const tokens = useMemo(() => tokenizeCode(rawCode), [rawCode]);
-
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(copyText);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   return (
     <div
@@ -113,15 +107,15 @@ export function CodeBlock({
         {filename && (
           <span className="text-xs font-medium text-slate-400">{filename}</span>
         )}
-        <button
-          onClick={handleCopy}
-          className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-white ml-auto"
-        >
-          <span className="material-symbols-outlined text-[14px]">
-            {copied ? "check" : "content_copy"}
-          </span>
-          {copied ? "Copied!" : "Copy code"}
-        </button>
+        <CopyButton
+          text={copyText}
+          variant="labeled"
+          label="Copy code"
+          copiedLabel="Copied!"
+          iconSize={14}
+          className="ml-auto gap-1.5 text-xs text-slate-400 hover:text-white"
+          copiedClassName="text-green-400"
+        />
       </div>
       <div className="p-6 overflow-x-auto">
         <pre className="font-mono text-sm leading-relaxed">

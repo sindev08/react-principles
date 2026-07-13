@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/ui/Button";
 import { Dialog } from "@/ui/Dialog";
 import { Switch } from "@/ui/Switch";
+import { useCopyToClipboard } from "@/shared/hooks";
 import { cn } from "@/shared/utils/cn";
 import { encodePreset } from "../lib";
 import { useWizardStore } from "../stores/useWizardStore";
@@ -21,7 +22,7 @@ const FRAMEWORKS: Array<{ id: FrameworkOption; label: string; description: strin
 
 export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   const [step, setStep] = useState<1 | 2>(1);
-  const [copied, setCopied] = useState<"cli" | "url" | null>(null);
+  const { copy } = useCopyToClipboard();
 
   const wizardState = useWizardStore();
   const encodedPreset = encodePreset(wizardState.getPresetConfig());
@@ -31,19 +32,8 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   useEffect(() => {
     if (!open) {
       setStep(1);
-      setCopied(null);
     }
   }, [open]);
-
-  const copyToClipboard = async (value: string, type: "cli" | "url") => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(type);
-      setTimeout(() => setCopied(null), 2000);
-    } catch (error) {
-      console.error("Failed to copy:", error);
-    }
-  };
 
   const sharePreset = async () => {
     if (navigator.share) {
@@ -55,7 +45,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       return;
     }
 
-    await copyToClipboard(shareUrl, "url");
+    await copy(shareUrl);
   };
 
   return (
@@ -117,15 +107,11 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
               title="CLI Command"
               description="Run this command in your terminal."
               value={cliCommand}
-              copied={copied === "cli"}
-              onCopy={() => void copyToClipboard(cliCommand, "cli")}
             />
             <CommandBlock
               title="Share URL"
               description="Share this link to load the same visual preset."
               value={shareUrl}
-              copied={copied === "url"}
-              onCopy={() => void copyToClipboard(shareUrl, "url")}
             />
             <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
               <span className="material-symbols-outlined text-[20px] text-primary">
@@ -202,11 +188,10 @@ interface CommandBlockProps {
   title: string;
   description: string;
   value: string;
-  copied: boolean;
-  onCopy: () => void;
 }
 
-function CommandBlock({ title, description, value, copied, onCopy }: CommandBlockProps) {
+function CommandBlock({ title, description, value }: CommandBlockProps) {
+  const { copied, copy } = useCopyToClipboard();
   return (
     <section className="rounded-xl border border-slate-200 p-4 dark:border-[#1f2937]">
       <div className="mb-3 flex items-start justify-between gap-3">
@@ -214,7 +199,7 @@ function CommandBlock({ title, description, value, copied, onCopy }: CommandBloc
           <h3 className="text-sm font-bold text-slate-900 dark:text-white">{title}</h3>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{description}</p>
         </div>
-        <Button variant="outline" size="sm" onClick={onCopy} className="shrink-0 gap-1.5">
+        <Button variant="outline" size="sm" onClick={() => void copy(value)} className="shrink-0 gap-1.5">
           <span className="material-symbols-outlined text-[16px]">{copied ? "check" : "content_copy"}</span>
           {copied ? "Copied" : "Copy"}
         </Button>
