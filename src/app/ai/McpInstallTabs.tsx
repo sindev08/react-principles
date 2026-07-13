@@ -39,26 +39,36 @@ interface ClientTab {
 
 const CLIENTS: ClientTab[] = [
   {
-    id: "cursor",
-    label: "Cursor",
-    steps: [
-      {
-        text: "Add to .cursor/mcp.json (project) or ~/.cursor/mcp.json (global):",
-        code: MCP_SERVERS_JSON,
-      },
-    ],
-  },
-  {
     id: "claude-code",
     label: "Claude Code",
     steps: [{ text: "Run in your terminal:", code: CLAUDE_CODE_CMD }],
   },
   {
-    id: "windsurf",
-    label: "Windsurf",
+    id: "chatgpt",
+    label: "ChatGPT",
     steps: [
       {
-        text: "Add to ~/.codeium/windsurf/mcp_config.json:",
+        text: "In ChatGPT → Settings → Connectors (Developer Mode), add a custom connector with this URL:",
+        code: ENDPOINT,
+      },
+    ],
+  },
+  {
+    id: "gemini",
+    label: "Gemini",
+    steps: [
+      {
+        text: "Gemini CLI — add to ~/.gemini/settings.json:",
+        code: MCP_SERVERS_JSON,
+      },
+    ],
+  },
+  {
+    id: "cursor",
+    label: "Cursor",
+    steps: [
+      {
+        text: "Add to .cursor/mcp.json (project) or ~/.cursor/mcp.json (global):",
         code: MCP_SERVERS_JSON,
       },
     ],
@@ -117,7 +127,7 @@ export function McpInstallTabs() {
         MCP is an open protocol — this server works with any MCP client. Pick
         yours:
       </p>
-      <Tabs defaultValue="cursor">
+      <Tabs defaultValue="claude-code">
         <Tabs.List className="flex-wrap">
           {CLIENTS.map((client) => (
             <Tabs.Trigger key={client.id} value={client.id}>
