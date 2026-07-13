@@ -5,6 +5,7 @@ import { CLI_VERSION } from "@/shared/constants/versions";
 const RESOURCES = [
   { label: "Components", href: "/components/introduction" },
   { label: "Cookbook", href: "/nextjs/cookbook" },
+  { label: "Changelog", href: "/changelog" },
   { label: "GitHub", href: "https://github.com/sindev08/react-principles" },
 ];
 

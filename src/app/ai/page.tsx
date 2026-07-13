@@ -1,23 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Navbar, Footer } from "@/features/landing/components";
+import { CopyButton } from "@/shared/components";
 import { cn } from "@/shared/utils/cn";
+import { McpInstallTabs } from "./McpInstallTabs";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://reactprinciples.dev";
 const SKILLS_REPO_URL = "https://github.com/sindev08/react-principles-skills";
 const SKILLS_INSTALL_CMD = "npx skills add sindev08/react-principles-skills";
-// MCP clients POST directly and may not follow the apex→www 307 redirect,
-// so advertise the canonical www host explicitly for the endpoint.
-const MCP_ENDPOINT = "https://www.reactprinciples.dev/api/mcp";
-const MCP_INSTALL_CMD = `claude mcp add --transport http reactprinciples ${MCP_ENDPOINT}`;
-const MCP_JSON_CONFIG = `{
-  "mcpServers": {
-    "reactprinciples": {
-      "url": "${MCP_ENDPOINT}"
-    }
-  }
-}`;
+const INIT_CMD = "npx react-principles init";
+const CREATE_CMD = "npx react-principles create my-app";
 
 export const metadata: Metadata = {
   title: "AI Corpus — React Principles",
@@ -40,6 +33,44 @@ export const metadata: Metadata = {
     canonical: `${SITE_URL}/ai`,
   },
 };
+
+/**
+ * Dark command/code snippet with a copy affordance at the top-right.
+ * The single snippet presentation used across this page.
+ */
+function CommandSnippet({
+  code,
+  centered = false,
+  className,
+}: {
+  code: string;
+  centered?: boolean;
+  className?: string;
+}) {
+  const multiline = code.includes("\n");
+  return (
+    <div
+      className={cn(
+        "flex gap-2 overflow-hidden rounded-lg bg-slate-900 pl-4 pr-2 dark:bg-black",
+        multiline ? "items-start" : "items-center",
+        centered && "mx-auto w-fit max-w-full text-left",
+        className,
+      )}
+    >
+      <pre className="min-w-0 flex-1 overflow-x-auto py-3 text-sm text-slate-100">
+        <code>{code}</code>
+      </pre>
+      <CopyButton
+        text={code}
+        label="Copy"
+        className={cn(
+          "text-slate-500 hover:bg-white/5 hover:text-slate-200 dark:text-slate-500 dark:hover:text-slate-200",
+          multiline && "mt-1.5",
+        )}
+      />
+    </div>
+  );
+}
 
 interface Skill {
   name: string;
@@ -142,17 +173,90 @@ export default function AICorpusPage() {
             AI Corpus
           </div>
           <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white lg:text-6xl">
-            Make your AI tools{" "}
-            <span className="text-primary">React Principles–aware</span>
+            One command.{" "}
+            <span className="text-primary">Your AI already knows the rules.</span>
           </h1>
           <p className="mx-auto max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-400">
-            Drop-in context for Claude, Cursor, Copilot, and GPT. Plus
-            invocable skills that scaffold code and review against documented
-            patterns — installable in one command.
+            Run <code className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.9em] text-slate-800 dark:bg-slate-800 dark:text-slate-200">{INIT_CMD}</code> and
+            your project is wired into React Principles: your AI follows the
+            patterns, looks up recipes, and pulls components on its own. No
+            copy-paste, no keeping docs in sync.
           </p>
         </section>
 
-        {/* Three main offerings */}
+        {/* Quick start — the one-command path */}
+        <section className="mb-20">
+          <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-6 sm:p-8">
+            <div className="mb-6 flex items-center gap-2">
+              <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-primary">
+                New
+              </span>
+              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                One-command setup
+              </span>
+            </div>
+            <div className="grid gap-8 md:grid-cols-2">
+              <div>
+                <p className="mb-2 text-xs font-semibold tracking-wider uppercase text-primary">
+                  Existing project
+                </p>
+                <p className="mb-4 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                  Make it React Principles–aware in one step.
+                </p>
+                <CommandSnippet code={INIT_CMD} />
+              </div>
+              <div>
+                <p className="mb-2 text-xs font-semibold tracking-wider uppercase text-primary">
+                  New project
+                </p>
+                <p className="mb-4 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                  Scaffold a starter that ships wired-in from the first commit.
+                </p>
+                <CommandSnippet code={CREATE_CMD} />
+              </div>
+            </div>
+
+            <div className="mt-8 border-t border-primary/15 pt-6">
+              <p className="mb-4 text-sm font-medium text-slate-700 dark:text-slate-300">
+                Both wire up everything below — automatically:
+              </p>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <SetupItem
+                  icon="description"
+                  title="AGENTS.md"
+                  description="The principles, so any AI assistant follows them."
+                />
+                <SetupItem
+                  icon="hub"
+                  title=".mcp.json"
+                  description="The MCP server — live recipe and component lookup."
+                />
+                <SetupItem
+                  icon="terminal"
+                  title="Skills"
+                  description="Invocable review and scaffolding commands."
+                />
+              </div>
+              <p className="mt-5 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500">
+                <span className="material-symbols-outlined text-[16px] text-primary">
+                  autorenew
+                </span>
+                Always current — recipe updates reach your tools automatically,
+                no re-sync.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Offerings — what init wires up, or set up piece by piece */}
+        <section className="mb-10">
+          <SectionHeader
+            eyebrow="Under the hood"
+            title="Prefer to wire it up yourself?"
+            description="init and create configure all of this for you. Here's each piece — connect them manually, or go deeper on how they work."
+          />
+        </section>
+
         <section className="mb-20 grid gap-6 md:grid-cols-3">
           <OfferingCard
             icon="hub"
@@ -181,25 +285,11 @@ export default function AICorpusPage() {
         <section id="mcp" className="mb-20 scroll-mt-24">
           <SectionHeader
             eyebrow="MCP Server"
-            title="Live connection to the cookbook"
-            description="A remote Model Context Protocol server serving the cookbook. Connect once and your AI can list, search, and read recipes on demand — no copy-paste, always in sync with the published site."
+            title="Live connection to the cookbook and UI Kit"
+            description="A remote Model Context Protocol server serving both the cookbook and the UI Kit. Connect once and your AI can look up recipes and pull component source on demand — no copy-paste, always in sync with the published site."
           />
 
-          <div className="mb-6 rounded-xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-900/50">
-            <p className="mb-3 text-sm font-medium text-slate-700 dark:text-slate-300">
-              Claude Code — one command:
-            </p>
-            <pre className="overflow-x-auto rounded-lg bg-slate-900 px-4 py-3 text-sm text-slate-100 dark:bg-black">
-              <code>{MCP_INSTALL_CMD}</code>
-            </pre>
-            <p className="mt-6 mb-3 text-sm font-medium text-slate-700 dark:text-slate-300">
-              Cursor, Claude Desktop, and other MCP clients — add to your MCP
-              config:
-            </p>
-            <pre className="overflow-x-auto rounded-lg bg-slate-900 px-4 py-3 text-sm text-slate-100 dark:bg-black">
-              <code>{MCP_JSON_CONFIG}</code>
-            </pre>
-          </div>
+          <McpInstallTabs />
 
           <div className="grid gap-4 sm:grid-cols-3">
             <McpToolCard
@@ -213,6 +303,21 @@ export default function AICorpusPage() {
             <McpToolCard
               name="get_recipe"
               description="Full recipe as markdown — principle, rules, pattern, implementations."
+            />
+            <McpToolCard
+              isNew
+              name="list_components"
+              description="All UI Kit components with target dir, description, and dependencies."
+            />
+            <McpToolCard
+              isNew
+              name="search_components"
+              description="Ranked keyword search across component names and descriptions."
+            />
+            <McpToolCard
+              isNew
+              name="get_component"
+              description="Full component source (matches the CLI), install command, and deps."
             />
           </div>
         </section>
@@ -230,9 +335,7 @@ export default function AICorpusPage() {
             <p className="mb-3 text-sm font-medium text-slate-700 dark:text-slate-300">
               Install all skills with one command:
             </p>
-            <pre className="overflow-x-auto rounded-lg bg-slate-900 px-4 py-3 text-sm text-slate-100 dark:bg-black">
-              <code>{SKILLS_INSTALL_CMD}</code>
-            </pre>
+            <CommandSnippet code={SKILLS_INSTALL_CMD} />
             <p className="mt-3 text-xs text-slate-500 dark:text-slate-500">
               Or manually copy any{" "}
               <code className="rounded bg-slate-200 px-1 py-0.5 font-mono dark:bg-slate-800">
@@ -330,9 +433,7 @@ export default function AICorpusPage() {
             One command. Works across Claude Code, Cursor, and any tool
             supporting Agent Skills.
           </p>
-          <pre className="mb-4 overflow-x-auto rounded-lg bg-slate-900 px-4 py-3 text-left text-xs text-slate-100 sm:px-5 sm:text-center sm:text-sm dark:bg-black">
-            <code>{SKILLS_INSTALL_CMD}</code>
-          </pre>
+          <CommandSnippet code={SKILLS_INSTALL_CMD} centered className="mb-4" />
           <div className="mt-6 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
             <Link
               href={SKILLS_REPO_URL}
@@ -381,6 +482,34 @@ function SectionHeader({
       <p className="text-base leading-7 text-slate-600 dark:text-slate-400">
         {description}
       </p>
+    </div>
+  );
+}
+
+function SetupItem({
+  icon,
+  title,
+  description,
+}: {
+  icon: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900/50">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+        <span className="material-symbols-outlined text-[18px] text-primary">
+          {icon}
+        </span>
+      </span>
+      <div>
+        <p className="font-mono text-sm font-semibold text-slate-900 dark:text-white">
+          {title}
+        </p>
+        <p className="mt-0.5 text-xs leading-5 text-slate-500 dark:text-slate-400">
+          {description}
+        </p>
+      </div>
     </div>
   );
 }
@@ -497,12 +626,27 @@ function LlmsCard({
   );
 }
 
-function McpToolCard({ name, description }: { name: string; description: string }) {
+function McpToolCard({
+  name,
+  description,
+  isNew = false,
+}: {
+  name: string;
+  description: string;
+  isNew?: boolean;
+}) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900/50">
-      <code className="mb-2 block font-mono text-sm font-semibold text-slate-900 dark:text-white">
-        {name}
-      </code>
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <code className="block font-mono text-sm font-semibold text-slate-900 dark:text-white">
+          {name}
+        </code>
+        {isNew && (
+          <span className="shrink-0 rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none tracking-wide text-primary">
+            New
+          </span>
+        )}
+      </div>
       <p className="text-sm leading-6 text-slate-600 dark:text-slate-400">
         {description}
       </p>

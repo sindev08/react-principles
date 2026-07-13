@@ -3,15 +3,23 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ThemeToggle } from "./ThemeToggle";
-import Image from "next/image";
+import { BrandLogo } from "@/shared/components";
 import { cn } from "@/shared/utils/cn";
 
 const NAV_LINKS = [
-  { href: "/nextjs/cookbook", label: "Cookbook" },
-  { href: "/components/introduction", label: "Components" },
-  { href: "/create", label: "Create" },
-  { href: "/ai", label: "AI" },
+  { href: "/nextjs/cookbook", label: "Cookbook", badge: false },
+  { href: "/components/introduction", label: "Components", badge: false },
+  { href: "/create", label: "Create", badge: false },
+  { href: "/ai", label: "AI", badge: true },
 ] as const;
+
+function NewPill() {
+  return (
+    <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none tracking-wide text-primary">
+      New
+    </span>
+  );
+}
 
 function GithubIcon() {
   return (
@@ -25,38 +33,19 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background-light/80 dark:bg-background-dark/80 border-primary/10 dark:border-white/5 backdrop-blur-md">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background-light/95 dark:bg-background-dark/95 border-primary/10 dark:border-white/5 backdrop-blur-md">
       <div className="flex h-16 items-center justify-between px-6 mx-auto max-w-7xl md:grid md:grid-cols-3">
-        <div className="flex min-w-0 items-center gap-2">
-          <Image
-            src="/logo-icon.svg"
-            alt="React Principles logo"
-            width={32}
-            height={32}
-            className="block dark:hidden"
-          />
-          <Image
-            src="/logo-icon-dark.svg"
-            alt="React Principles logo"
-            width={32}
-            height={32}
-            className="hidden dark:block"
-          />
-          <span className="whitespace-nowrap text-lg tracking-tight">
-            <span className="font-medium text-slate-600 dark:text-slate-300">React</span>
-            {" "}
-            <span className="font-black text-primary">Principles</span>
-          </span>
-        </div>
+        <BrandLogo />
 
         <nav className="items-center justify-center hidden gap-8 md:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors hover:text-primary"
+              className="flex items-center gap-1.5 text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors hover:text-primary"
             >
               {link.label}
+              {link.badge && <NewPill />}
             </Link>
           ))}
         </nav>
@@ -96,9 +85,10 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               onClick={() => setIsOpen(false)}
-              className="py-3 text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors border-b hover:text-primary border-slate-100 dark:border-white/5 last:border-0"
+              className="flex items-center gap-1.5 py-3 text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors border-b hover:text-primary border-slate-100 dark:border-white/5 last:border-0"
             >
               {link.label}
+              {link.badge && <NewPill />}
             </Link>
           ))}
         </nav>
