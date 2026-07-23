@@ -17,34 +17,33 @@ export const dataTables: RecipeDetail = {
     { title: "Global vs column filters", description: "Use globalFilter for quick full-text search. Use column-level filters for advanced filtering UI with per-field controls." },
   ],
   pattern: {
-    filename: "components/UserTable.tsx",
+    filename: "features/examples/components/UserTable.tsx",
     code: `import { useMemo, useState } from 'react';
 import {
   useReactTable, getCoreRowModel, getSortedRowModel,
   getFilteredRowModel, getPaginationRowModel,
   flexRender, type ColumnDef, type SortingState,
 } from '@tanstack/react-table';
-import type { User } from '@/shared/types/user';
+import type { User } from '@/shared/types/common';
+import { useUsers } from '@/features/examples/hooks/useUsers';
 
 const columns: ColumnDef<User>[] = [
-  {
-    id: 'name',
-    header: 'Name',
-    // accessorFn combines two fields into one sortable, filterable column
-    accessorFn: (row) => \`\${row.firstName} \${row.lastName}\`,
-  },
+  { accessorKey: 'name',   header: 'Name' },
   { accessorKey: 'email',  header: 'Email' },
-  { accessorKey: 'age',    header: 'Age' },
-  { accessorKey: 'gender', header: 'Gender' },
+  { accessorKey: 'role',   header: 'Role' },
+  { accessorKey: 'status', header: 'Status' },
 ];
 
-export function UserTable({ data }: { data: User[] }) {
+// The table owns its data: it calls the query hook internally, so pages render
+// <UserTable /> with no props. Server state stays in React Query's cache.
+export function UserTable() {
+  const { data } = useUsers({ limit: 100 });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const cols = useMemo(() => columns, []);
 
   const table = useReactTable({
-    data, columns: cols,
+    data: data?.users ?? [], columns: cols,
     state: { sorting, globalFilter },
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
@@ -110,15 +109,17 @@ export function UserTable({ data }: { data: User[] }) {
         "In Next.js, prefetch user data in a Server Component and hydrate it via HydrationBoundary. The table renders immediately with cached data while staying reactive to updates.",
       filename: "app/users/page.tsx",
       code: `import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { getQueryClient } from '@/lib/query-client';
+import { getQueryClient } from '@/lib/get-query-client';
 import { queryKeys } from '@/lib/query-keys';
 import { usersService } from '@/lib/services/users';
-import { UserTable } from '@/features/users';
+import { UserTable } from '@/features/examples';
 
 export default async function UsersPage() {
   const queryClient = getQueryClient();
+  // Match the key UserTable's internal useUsers({ limit: 100 }) reads from,
+  // so the hydrated cache resolves on first render — no loading flash.
   await queryClient.prefetchQuery({
-    queryKey: queryKeys.users.all,
+    queryKey: queryKeys.users.list({ limit: 100 }),
     queryFn: () => usersService.getAll({ limit: 100 }),
   });
 
@@ -131,20 +132,16 @@ export default async function UsersPage() {
     },
     vite: {
       description:
-        "In Vite, fetch data via a React Query hook and pass it to the table. DummyJSON returns users under data.users. For datasets under 1,000 rows, all filtering and sorting can stay client-side.",
+        "In Vite, the page stays declarative — UserTable calls the useUsers hook internally, so it owns its own data. For datasets under 1,000 rows, all filtering, sorting, and pagination can stay client-side.",
       filename: "pages/UsersPage.tsx",
-      code: `import { useUsers, UserTable } from '@/features/users';
+      code: `import { UserTable } from '@/features/examples';
 
 export function UsersPage() {
-  const { data, isLoading } = useUsers({ limit: 100 });
-
-  if (isLoading) return <TableSkeleton />;
-
-  return <UserTable data={data?.users ?? []} />;
+  return <UserTable />;
 }`,
     },
   },
-  lastUpdated: "May 10, 2026",
+  lastUpdated: "Jul 23, 2026",
   contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
   demoKey: "table",
   starterLink: {
