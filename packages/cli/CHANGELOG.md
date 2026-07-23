@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://github.com/sindev08/react-principles/compare/react-principles@v1.0.1...react-principles@v1.1.0) (2026-07-23)
+
+
+### Features
+
+* **cli:** add AI onboarding to the init command ([b11dda0](https://github.com/sindev08/react-principles/commit/b11dda0cb64be7184f936124281fdd77aeda4aa6))
+* **cli:** generate ecosystem-ready starters in create ([cee98db](https://github.com/sindev08/react-principles/commit/cee98db3d9c1d79152f22d722baeb3684cc5074e))
+
+
+### Miscellaneous Chores
+
+* **cli:** move the component registry into registry-data.json ([a154f98](https://github.com/sindev08/react-principles/commit/a154f98))
+
 ## [1.0.1](https://github.com/sindev08/react-principles/compare/react-principles@v1.0.0...react-principles@v1.0.1) (2026-06-02)
 
 

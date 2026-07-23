@@ -1,192 +1,133 @@
 # Publishing Package
 
-Guide for building and publishing the `react-principles` package to npm.
-
----
-
-## Overview
-
-This repo serves two purposes:
-
-1. A Next.js reference app for examples and documentation
-2. A publishable npm package built from shared/exportable modules
-
-Publishing is **automated via Changesets + GitHub Actions** — no manual `npm publish` needed.
+Guide for versioning and publishing the `react-principles` CLI to npm.
 
 ---
 
 ## What Gets Published
 
-| Entry Point | Source |
+Only **one** package is published to npm: **`react-principles`** — the CLI component installer that lives in `packages/cli/`.
+
+- npm: https://www.npmjs.com/package/react-principles
+- Binary: `npx react-principles add <component>`, `npx react-principles init`, `npx react-principles create`
+
+The repository root (`package.json`) is **`private: true`** — the Next.js app, cookbook, and `src/ui/` are **not** published as a library. There is no `import { Button } from "react-principles"`; UI components are copy-paste, delivered by the CLI.
+
+---
+
+## Release Mechanism: release-please
+
+Versioning and releases are automated with **[release-please](https://github.com/googleapis/release-please)**, not Changesets.
+
+Key files:
+
+| File | Role |
 |---|---|
-| `react-principles` | `src/index.ts` |
-| `react-principles/hooks` | `src/shared/hooks/index.ts` |
-| `react-principles/utils` | `src/shared/utils/index.ts` |
-| `react-principles/types` | `src/shared/types/index.ts` |
-| `react-principles/stores` | `src/shared/stores/index.ts` |
-| `react-principles/components` | `src/shared/components/index.ts` |
-| `react-principles/lib` | `src/lib/exportable/index.ts` |
+| `.github/workflows/release.yml` | Runs `release-please-action` on every push to `main` |
+| `release-please-config.json` | Declares the `packages/cli` package (`package-name: react-principles`, `tag-separator: @`) |
+| `.release-please-manifest.json` | Tracks the current released version (`{ "packages/cli": "x.y.z" }`) |
+| `packages/cli/CHANGELOG.md` | Auto-maintained changelog |
+| `.github/workflows/publish.yml` | Publishes to npm when a GitHub Release is published |
 
-Only the built output inside `dist/` is included in the tarball. The Next.js app, `src/ui/`, and cookbook code are **not published**.
+### How a release flows
+
+```
+Conventional commit lands on main (feat(cli): / fix(cli): …)
+    ↓
+release.yml → release-please opens a "release PR"
+    (bumps packages/cli/package.json + manifest + CHANGELOG)
+    ↓
+Merge the release PR
+    ↓
+release-please creates a GitHub Release + tag (react-principles@x.y.z)
+    ↓
+publish.yml (on release: published) → pnpm --filter ./packages/cli publish
+```
+
+Version bump is derived from Conventional Commit types touching `packages/cli/`:
+
+- `feat(cli): …` → **minor**
+- `fix(cli): …` → **patch**
+- `feat(cli)!:` or `BREAKING CHANGE:` → **major**
+- `chore` / `refactor` / `docs` / `test` → **no bump**
 
 ---
 
-## Release Workflow
+## ⚠️ Gotcha: `release:` squash titles block release-please
 
-### How it works
+`development` → `main` promotions are squash-merged with a `release: …` title. **`release` is not a Conventional Commit type**, so release-please ignores those commits and never opens a release PR — even though `feat(cli):` work is present in the squashed content. This is why the CLI can sit at the same version while features accumulate.
 
-Every push to `main` triggers the release workflow (`.github/workflows/release.yml`):
+To actually cut a release, make sure one of these reaches `main`:
 
-1. CI runs: lint + typecheck + test
-2. Changesets bot checks for pending changesets
-3. **If changesets exist** → bot opens a "Version PR" that bumps version + updates CHANGELOG
-4. **Merge the Version PR** → bot automatically builds + publishes to npm
-
-```
-Make changes
-    ↓
-pnpm changeset   ← document what changed
-    ↓
-Open PR → merge to main
-    ↓
-GitHub Actions: Version PR opened automatically
-    ↓
-Merge Version PR
-    ↓
-GitHub Actions: build:pkg + npm publish (automatic)
-```
-
-**No manual `npm publish` needed.**
+1. A real Conventional Commit whose **type** is `feat(cli):` / `fix(cli):` (i.e. don't let the dev→main squash re-title it to `release:`), **or**
+2. A commit with a `Release-As: x.y.z` footer (forces release-please to that version), **or**
+3. A **manual bump** (see below) when the automated path is inconvenient.
 
 ---
 
-## Day-to-day: How to Release a Change
+## Manual Release (fallback)
 
-### Step 1 — Make your changes
+Use this when the squash flow has hidden the `feat(cli):` commits from release-please.
 
-Work on any branch as normal.
-
-### Step 2 — Add a changeset
-
-```bash
-pnpm changeset
-```
-
-Follow the prompts:
-- Select `react-principles`
-- Choose bump type: `patch` (bug fix), `minor` (new feature), `major` (breaking change)
-- Write a short description of what changed
-
-This creates a file in `.changeset/`. Commit it with your changes.
-
-### Step 3 — Open a PR and merge to main
-
-CI will run lint + typecheck + test automatically.
-
-### Step 4 — Merge the Version PR
-
-After your PR merges, the Changesets bot opens a PR titled **"chore: release package"** that:
-- Bumps the version in `package.json`
-- Updates `CHANGELOG.md`
-
-Merge that PR when ready to publish. The bot publishes to npm automatically.
+1. Bump the version in two places so they stay in sync:
+   - `packages/cli/package.json` → `"version": "x.y.z"`
+   - `.release-please-manifest.json` → `"packages/cli": "x.y.z"`
+2. Add an `x.y.z` section to `packages/cli/CHANGELOG.md`.
+3. Merge to `main`.
+4. Publish one of two ways:
+   - Trigger **`publish.yml`** via **workflow_dispatch** (publishes the version currently in `packages/cli/package.json`), or
+   - Create a GitHub Release tagged `react-principles@x.y.z` (fires `publish.yml` on `release: published`).
 
 ---
 
-## What Requires a Changeset?
+## Adding a UI Component to the CLI
 
-| Change | Needs changeset? |
-|--------|-----------------|
-| `src/shared/` (hooks, utils, types, stores, components) | Yes |
-| `src/lib/` (api client) | Yes |
-| `src/index.ts` | Yes |
-| `src/ui/` (UI components) | No — copy-paste only, not published via npm |
-| `packages/cli/` (CLI component installer) | Yes — it's a separate published package |
-| `src/app/` (Next.js pages, cookbook) | No |
-| `src/features/` (feature modules) | No |
-| `docs/` | No |
-| CI/tooling changes | No |
+The CLI's installable components are generated from the site's UI source.
 
-**Rule of thumb:** if it changes what consumers get from `import ... from "react-principles"` or the `react-principles-cli` binary, it needs a changeset.
-
----
-
-## CLI Package (`react-principles-cli`)
-
-The CLI lives in `packages/cli/` and is published as a separate package: `react-principles-cli`.
-
-### Adding a new UI component to the CLI
-
-1. Add the component source to `src/ui/ComponentName.tsx`
-2. Run `node scripts/sync-registry.mjs` to regenerate `packages/cli/src/registry/templates.ts`
-3. Add an entry to `packages/cli/src/registry/index.ts`
-4. Run `pnpm build:cli` to verify the build
-
-### Releasing the CLI
-
-Same Changesets workflow — just run `pnpm changeset` and select `react-principles-cli` when prompted.
-
-```bash
-pnpm changeset     # select react-principles-cli, choose bump, write description
-```
-
-Both packages can be released independently or together in the same changeset cycle.
+1. Add the component source at `src/ui/ComponentName.tsx`.
+2. Add its metadata entry to `src/lib/ui-registry.json` (name, dependencies, registry deps).
+3. Regenerate the CLI + site artifacts:
+   ```bash
+   node scripts/sync-registry.mjs
+   ```
+   This writes `packages/cli/src/registry/templates.ts` (component source),
+   `packages/cli/src/registry/registry-data.json` (metadata), and
+   `src/lib/ui-templates.generated.ts` (site source for the MCP server).
+4. Verify the build:
+   ```bash
+   pnpm build:cli   # runs sync-registry (prebuild) + tsup
+   ```
+5. Commit as `feat(cli): add <component> component` so release-please bumps a minor.
 
 ---
 
 ## One-time Setup (GitHub Repository)
 
-Before automated publishing works, set the `NPM_TOKEN` secret:
+Publishing needs two secrets configured in **Settings → Secrets and variables → Actions**:
 
-1. Generate a token at [npmjs.com](https://www.npmjs.com) → Access Tokens → Generate New Token → **Automation**
-2. Go to GitHub repo → Settings → Secrets and variables → Actions
-3. Add secret: `NPM_TOKEN` = the token from step 1
-
-GitHub Actions uses `GITHUB_TOKEN` automatically — no setup needed for that.
+- `NPM_TOKEN` — an npm **Automation** token (bypasses 2FA), used by `publish.yml`.
+- `RELEASE_TOKEN` — a token for `release-please-action` to open release PRs and create releases.
 
 ---
 
 ## Build Locally (for verification)
 
 ```bash
-pnpm build:pkg          # build the package
-pnpm pack --dry-run     # preview what gets published
+pnpm build:cli          # sync registry + tsup build
+cd packages/cli && npm pack --dry-run   # preview the tarball contents
 ```
 
-Verify `dist/` contains:
-- `*.js` (CJS)
-- `*.mjs` (ESM)
-- `*.d.ts` (types)
-
----
-
-## CHANGELOG
-
-Changesets automatically maintains `CHANGELOG.md` at the repo root. Every release PR updates it with the changeset descriptions.
+Confirm `dist/` contains the built CLI (`*.js`, `*.d.ts`) and the `files` field in `packages/cli/package.json` targets only what should ship.
 
 ---
 
 ## Troubleshooting
 
-### Version PR not appearing after merge
-
-Check that a `.changeset/*.md` file (not the README) was included in the merged commit. If the changeset file is missing, no Version PR will be opened.
+### Release PR never appears after merging to main
+The merged commits are `release:`-titled (or otherwise non-conventional), so release-please found nothing to release. Land a `feat(cli):` / `fix(cli):` commit or use a `Release-As:` footer — see the Gotcha above.
 
 ### npm publish fails in CI
+Verify `NPM_TOKEN` is set with **Automation** scope. `publish.yml` runs `pnpm --filter ./packages/cli publish` with `NODE_AUTH_TOKEN`.
 
-Verify `NPM_TOKEN` is set in GitHub secrets and has **Automation** scope (bypasses 2FA).
-
-### `pnpm build:pkg` fails locally
-
-```bash
-pnpm typecheck   # check for type errors first
-pnpm build:pkg   # then build
-```
-
-### Wrong files in the tarball
-
-```bash
-pnpm pack --dry-run
-```
-
-Confirm `files` in `package.json` only targets `dist`.
+### Registry out of sync after editing a component
+Re-run `node scripts/sync-registry.mjs` (or `pnpm build:cli`, which runs it via the `prebuild` hook). CI uses `--frozen-lockfile`, so keep `pnpm-lock.yaml` in sync too.
