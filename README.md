@@ -147,6 +147,8 @@ react-principles/
 | `/docs` | Component docs |
 | `/llms.txt` | AI-readable compact cookbook (principles + rules) |
 | `/llms-full.txt` | AI-readable full cookbook (with code examples) |
+| `/ai` | AI integration hub — MCP setup, skills, llms.txt |
+| `/api/mcp` | Remote MCP server (cookbook recipes + UI kit components) |
 
 ---
 
@@ -154,6 +156,11 @@ react-principles/
 
 React Principles is structured so AI assistants (Claude, Cursor, Copilot, GPT) can consume the cookbook directly:
 
+- **Remote MCP server** (`/api/mcp`) — connect Claude Code, Cursor, VS Code, ChatGPT, or Gemini straight to the cookbook and UI kit. Exposes tools to list, search, and fetch recipes and components. Add it to Claude Code with:
+  ```bash
+  claude mcp add --transport http reactprinciples https://www.reactprinciples.dev/api/mcp
+  ```
+  Setup for every client is at [reactprinciples.dev/ai](https://www.reactprinciples.dev/ai).
 - **`/llms.txt`** — compact markdown (principles + rules, no code). ~5K tokens. Drop into any AI context for quick principle-aware help.
 - **`/llms-full.txt`** — full markdown with pattern code and framework-specific (Next.js + Vite) implementations. ~17K tokens. Use as RAG context, fine-tuning corpus, or long-form briefing for AI tools.
 - **AI Skills** — invocable commands like `/reactprinciples-review` and `/reactprinciples-component`. Install via [skills.sh](https://www.skills.sh):
