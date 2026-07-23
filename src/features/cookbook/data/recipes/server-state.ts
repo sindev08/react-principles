@@ -17,7 +17,7 @@ export const serverState: RecipeDetail = {
     { title: "Handle all states", description: "Always render isLoading, isError, and empty states. Never assume data exists on first render." },
   ],
   pattern: {
-    filename: "hooks/queries/useUsers.ts",
+    filename: "features/examples/hooks/useUsers.ts",
     code: `import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/query-keys';
 import { usersService, type GetUsersParams } from '@/lib/services/users';
@@ -58,8 +58,8 @@ export default async function UsersPage() {
       description:
         "In Vite, QueryClientProvider wraps the app. Call the hook directly inside your component — React Query handles loading and error states automatically.",
       filename: "pages/UsersPage.tsx",
-      code: `import { useUsers } from '@/hooks/queries/useUsers';
-import { LoadingState } from '@/components/common/LoadingState';
+      code: `import { useUsers } from '@/features/examples/hooks/useUsers';
+import { LoadingState } from '@/shared/components/LoadingState';
 
 export function UsersPage() {
   const { data, isLoading, isError } = useUsers({ limit: 10, skip: 0 });
@@ -67,11 +67,17 @@ export function UsersPage() {
   if (isLoading) return <LoadingState rows={5} />;
   if (isError) return <p>Failed to load users.</p>;
 
-  return <UserList users={data.users} total={data.total} skip={data.skip} limit={data.limit} />;
+  return (
+    <ul>
+      {data.users.map((user) => (
+        <li key={user.id}>{user.name} — {user.email}</li>
+      ))}
+    </ul>
+  );
 }`,
     },
   },
-  lastUpdated: "Feb 26, 2026",
+  lastUpdated: "Jul 23, 2026",
   contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
   demoKey: "react-query",
 };
