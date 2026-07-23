@@ -24,18 +24,13 @@ import {
   getFilteredRowModel, getPaginationRowModel,
   flexRender, type ColumnDef, type SortingState,
 } from '@tanstack/react-table';
-import type { User } from '@/shared/types/user';
+import type { User } from '@/shared/types/common';
 
 const columns: ColumnDef<User>[] = [
-  {
-    id: 'name',
-    header: 'Name',
-    // accessorFn combines two fields into one sortable, filterable column
-    accessorFn: (row) => \`\${row.firstName} \${row.lastName}\`,
-  },
+  { accessorKey: 'name',   header: 'Name' },
   { accessorKey: 'email',  header: 'Email' },
-  { accessorKey: 'age',    header: 'Age' },
-  { accessorKey: 'gender', header: 'Gender' },
+  { accessorKey: 'role',   header: 'Role' },
+  { accessorKey: 'status', header: 'Status' },
 ];
 
 export function UserTable({ data }: { data: User[] }) {
@@ -110,10 +105,10 @@ export function UserTable({ data }: { data: User[] }) {
         "In Next.js, prefetch user data in a Server Component and hydrate it via HydrationBoundary. The table renders immediately with cached data while staying reactive to updates.",
       filename: "app/users/page.tsx",
       code: `import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
-import { getQueryClient } from '@/lib/query-client';
+import { getQueryClient } from '@/lib/get-query-client';
 import { queryKeys } from '@/lib/query-keys';
 import { usersService } from '@/lib/services/users';
-import { UserTable } from '@/features/users';
+import { UserTable } from '@/features/examples';
 
 export default async function UsersPage() {
   const queryClient = getQueryClient();
@@ -133,7 +128,7 @@ export default async function UsersPage() {
       description:
         "In Vite, fetch data via a React Query hook and pass it to the table. DummyJSON returns users under data.users. For datasets under 1,000 rows, all filtering and sorting can stay client-side.",
       filename: "pages/UsersPage.tsx",
-      code: `import { useUsers, UserTable } from '@/features/users';
+      code: `import { useUsers, UserTable } from '@/features/examples';
 
 export function UsersPage() {
   const { data, isLoading } = useUsers({ limit: 100 });
@@ -144,7 +139,7 @@ export function UsersPage() {
 }`,
     },
   },
-  lastUpdated: "May 10, 2026",
+  lastUpdated: "Jul 23, 2026",
   contributor: { name: "Singgih Budi Purnadi", role: "Frontend & Mobile Developer" },
   demoKey: "table",
   starterLink: {
