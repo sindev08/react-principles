@@ -67,7 +67,13 @@ export function UsersPage() {
   if (isLoading) return <LoadingState rows={5} />;
   if (isError) return <p>Failed to load users.</p>;
 
-  return <UserList users={data.users} total={data.total} skip={data.skip} limit={data.limit} />;
+  return (
+    <ul>
+      {data.users.map((user) => (
+        <li key={user.id}>{user.name} — {user.email}</li>
+      ))}
+    </ul>
+  );
 }`,
     },
   },
