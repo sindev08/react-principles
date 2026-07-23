@@ -7,5 +7,6 @@ build
 .DS_Store
 *.tsbuildinfo
 *.tgz
+ts_errors.txt
 
 .vercel
