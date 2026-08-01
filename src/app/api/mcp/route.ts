@@ -229,4 +229,37 @@ const handler = createMcpHandler(
   },
 );
 
-export { handler as GET, handler as POST };
+/**
+ * TEMPORARY — logs the identifying request headers MCP clients actually send,
+ * to decide what per-client / unique-visitor metrics are feasible.
+ * `mcp-handler` only populates clientInfo on the SSE path, so on Streamable
+ * HTTP these headers are the only source. Remove once the shape is known.
+ *
+ * ponytail: console-only, gated on MCP_DEBUG_HEADERS. Swap for a real
+ * trackEvent call once we know which headers are worth recording.
+ */
+function logHeaders(request: Request) {
+  if (process.env.MCP_DEBUG_HEADERS !== "1") return;
+  console.warn(
+    "[mcp headers]",
+    JSON.stringify({
+      ua: request.headers.get("user-agent"),
+      xff: request.headers.get("x-forwarded-for"),
+      realIp: request.headers.get("x-real-ip"),
+      origin: request.headers.get("origin"),
+      referer: request.headers.get("referer"),
+      mcpVersion: request.headers.get("mcp-protocol-version"),
+      mcpSession: request.headers.get("mcp-session-id"),
+    }),
+  );
+}
+
+export async function GET(request: Request) {
+  logHeaders(request);
+  return handler(request);
+}
+
+export async function POST(request: Request) {
+  logHeaders(request);
+  return handler(request);
+}
