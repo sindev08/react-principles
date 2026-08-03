@@ -64,8 +64,8 @@ async function ghFetch<T>(path: string): Promise<T> {
     Accept: "application/vnd.github+json",
     "X-GitHub-Api-Version": "2022-11-28",
   };
-  if (process.env.GITHUB_TOKEN) {
-    headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+  if (process.env.GITHUB_TOKEN_RP) {
+    headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN_RP}`;
   }
   const res = await fetch(`${GITHUB_API_BASE}${path}`, {
     headers,
