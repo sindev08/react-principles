@@ -74,7 +74,8 @@ Use this when the squash flow has hidden the `feat(cli):` commits from release-p
    - `.release-please-manifest.json` → `"packages/cli": "x.y.z"`
 2. Add an `x.y.z` section to `packages/cli/CHANGELOG.md`.
 3. Merge to `main`.
-4. Publish one of two ways:
+4. **Tag the release commit** so release-please stays in sync: `git tag react-principles@x.y.z <release commit>` then `git push origin react-principles@x.y.z`. Release-please derives the released version from git tags — if the tag is missing it assumes the last release was an older version and will re-propose that older version (e.g. re-release 1.0.0 while the package is at 1.1.0). This bit us: the 1.1.0 manual release shipped without a tag, so release-please kept proposing a 1.0.0 downgrade PR until the missing tag was added.
+5. Publish one of two ways:
    - Trigger **`publish.yml`** via **workflow_dispatch** (publishes the version currently in `packages/cli/package.json`), or
    - Create a GitHub Release tagged `react-principles@x.y.z` (fires `publish.yml` on `release: published`).
 
