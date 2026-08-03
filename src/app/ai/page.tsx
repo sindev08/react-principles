@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Navbar, Footer } from "@/features/landing/components";
 import { CopyButton } from "@/shared/components";
 import { cn } from "@/shared/utils/cn";
+import { McpFlowDiagram } from "./McpFlowDiagram";
 import { McpInstallTabs } from "./McpInstallTabs";
 
 const SITE_URL =
@@ -289,6 +290,7 @@ export default function AICorpusPage() {
             description="A remote Model Context Protocol server serving both the cookbook and the UI Kit. Connect once and your AI can look up recipes and pull component source on demand — no copy-paste, always in sync with the published site."
           />
 
+          <McpFlowDiagram />
           <McpInstallTabs />
 
           <div className="grid gap-4 sm:grid-cols-3">
