@@ -17,13 +17,13 @@ describe("trackEvent", () => {
   });
 
   it("no-ops when no API key is set", async () => {
-    vi.stubEnv("ANALYTICS_API_KEY", "");
+    vi.stubEnv("NEXT_PUBLIC_ANALYTICS_API_KEY", "");
     await trackEvent("mcp.tool_call", { tool: "get_recipe" });
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("posts a bearer-authorized event when the key is set", async () => {
-    vi.stubEnv("ANALYTICS_API_KEY", "secret-key");
+    vi.stubEnv("NEXT_PUBLIC_ANALYTICS_API_KEY", "secret-key");
     await trackEvent("mcp.tool_call", { tool: "get_recipe" });
 
     expect(fetchMock).toHaveBeenCalledOnce();
@@ -40,7 +40,7 @@ describe("trackEvent", () => {
   });
 
   it("omits props when none are given", async () => {
-    vi.stubEnv("ANALYTICS_API_KEY", "secret-key");
+    vi.stubEnv("NEXT_PUBLIC_ANALYTICS_API_KEY", "secret-key");
     await trackEvent("list_recipes");
 
     const init = fetchMock.mock.calls[0]?.[1];
@@ -49,7 +49,7 @@ describe("trackEvent", () => {
   });
 
   it("never throws when the network call fails", async () => {
-    vi.stubEnv("ANALYTICS_API_KEY", "secret-key");
+    vi.stubEnv("NEXT_PUBLIC_ANALYTICS_API_KEY", "secret-key");
     fetchMock.mockRejectedValueOnce(new Error("network down"));
     await expect(trackEvent("llms.fetch", { path: "/llms.txt" })).resolves.toBeUndefined();
   });
