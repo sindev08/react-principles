@@ -12,6 +12,7 @@ export interface Skill {
   description: string;
   category: SkillCategory;
   allowedTools: string[];
+  disableModelInvocation: boolean;
   rawMarkdown: string;
   bodyHtml: string;
 }
@@ -37,7 +38,12 @@ const CATEGORY_MAP: Record<string, SkillCategory> = {
 };
 
 interface FrontmatterResult {
-  data: { name?: string; description?: string; "allowed-tools"?: string };
+  data: {
+    name?: string;
+    description?: string;
+    "allowed-tools"?: string;
+    "disable-model-invocation"?: string;
+  };
   body: string;
 }
 
@@ -113,6 +119,8 @@ async function fetchSkill(folder: string): Promise<Skill | null> {
     description: parsed.data.description ?? "",
     category: CATEGORY_MAP[folder] ?? "internal",
     allowedTools,
+    disableModelInvocation:
+      parsed.data["disable-model-invocation"] === "true",
     rawMarkdown: raw,
     bodyHtml: await marked.parse(parsed.body),
   };
