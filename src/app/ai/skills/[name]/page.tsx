@@ -115,25 +115,32 @@ export default async function SkillDetailPage({ params }: PageProps) {
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">
             Install
           </h2>
-          <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/50">
-            <span className="select-none text-slate-400 dark:text-slate-500">$</span>
-            <code className="flex-1 overflow-x-auto whitespace-nowrap font-mono text-sm text-slate-800 dark:text-slate-200">
-              {bundle.installCommand}
-            </code>
-            <CopyButton text={bundle.installCommand} label="Copy install command" />
+          <div className="space-y-3">
+            <div>
+              <p className="mb-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+                Claude Code plugin (includes MCP server):
+              </p>
+              <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/50">
+                <span className="select-none text-slate-400 dark:text-slate-500">$</span>
+                <code className="flex-1 overflow-x-auto whitespace-nowrap font-mono text-sm text-slate-800 dark:text-slate-200">
+                  /plugin marketplace add sindev08/react-principles-skills
+                </code>
+                <CopyButton text="/plugin marketplace add sindev08/react-principles-skills" label="Copy" />
+              </div>
+            </div>
+            <div>
+              <p className="mb-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+                skills.sh (Cursor, Copilot, OpenCode, and others):
+              </p>
+              <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/50">
+                <span className="select-none text-slate-400 dark:text-slate-500">$</span>
+                <code className="flex-1 overflow-x-auto whitespace-nowrap font-mono text-sm text-slate-800 dark:text-slate-200">
+                  {bundle.installCommand}
+                </code>
+                <CopyButton text={bundle.installCommand} label="Copy" />
+              </div>
+            </div>
           </div>
-          <p className="mt-3 text-xs text-slate-500 dark:text-slate-500">
-            Installs all skills from{" "}
-            <Link
-              href={bundle.repoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:underline"
-            >
-              the repo
-            </Link>
-            . To copy only this skill manually, use the button below.
-          </p>
         </section>
 
         {/* Manual copy + GitHub link */}
