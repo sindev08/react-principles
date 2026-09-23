@@ -5,28 +5,28 @@ export const folderStructure: RecipeDetail = {
   title: "Folder Structure",
   breadcrumbCategory: "Foundations",
   description: "A feature-based folder structure so you always know where a file goes — and why it belongs there.",
-  lastUpdated: "Apr 13, 2026",
+  lastUpdated: "Sep 23, 2026",
   principle: {
-    text: "A good folder structure answers one question instantly: 'where does this file go?' Feature-based organization groups everything related to a feature together — its components, hooks, and data — so you spend time building, not searching. When a feature grows or gets deleted, everything moves together. This works best for apps with multiple distinct features and more than one developer — think e-commerce with products, cart, checkout, and auth all living side by side. For a small app with 2–3 pages, this structure is like organizing a studio apartment with a full filing cabinet system. Useful later, overkill now.",
-    tip: "One rule to decide where a file goes: if only one feature uses it, put it in that feature. If two or more features need it, move it to shared/. If it's infrastructure (API client, query config), put it in lib/.",
+    text: "A good folder structure answers one question instantly: 'where does this file go?' Default React templates group by file type (/components, /hooks, /utils), which works at 5 files but turns into a flat dump at 50+ files where utilities get re-written because no one can find the original. The core axiom: files that change together, belong together. Feature-based organization encapsulates domain logic into vertical slices so when a feature evolves or is sunset, you delete one folder with zero orphaned code.",
+    tip: "Apply the 3-Second Decision Filter: (1) Specific to one domain? → features/[domain]/. (2) Reusable across domains WITH logic or API contracts? → shared/. (3) Pure visual primitive with zero business rules? → ui/.",
   },
   rulesLabel: "Conventions",
   rules: [
     {
-      title: "Feature-based grouping",
-      description: "Everything related to a feature lives in src/features/[name]/ — its components, hooks, and stores together. The stores/ directory is only needed when the feature has shared UI state that multiple components within that feature need — like a multi-step form or a selected item. If all data comes from an API, skip the store.",
+      title: "The 4-pillar mental model",
+      description: "Organize code into four distinct layers: features/ for domain encapsulation, shared/ for cross-feature assembled code, ui/ for pure visual primitives, and lib/ for infrastructure. In Next.js, app/ is reserved strictly for file-based routing and layout shells — never business logic.",
     },
     {
-      title: "Co-location",
-      description: "Files live next to the code they describe — a component's types go in the same file, a feature's types go in that feature folder. A shared/ types folder is fine only for types used by two or more features. The decision is based on scope, not file type.",
+      title: "LEGO Bricks vs Assembled Pieces (ui/ vs shared/)",
+      description: "Never put business logic in ui/. The ui/ directory contains raw LEGO bricks (Button, Input, Modal, Badge) that only accept visual props (variant, size, disabled, children) and pass the portability test: you can copy-paste them into an e-commerce, crypto, or SaaS app without missing dependencies. The shared/ directory contains assembled pieces (DataTable with pagination, ErrorBoundary, CopyButton) that compose UI primitives with cross-cutting logic or data contracts.",
     },
     {
-      title: "No cross-feature imports",
-      description: "By convention, features avoid importing directly from each other. Code needed by multiple features moves to src/shared/. Cross-feature imports are acceptable when composing product surfaces — for example, a layout feature pulling in a ThemeToggle from another feature — but should not be the default.",
+      title: "Domain encapsulation & clean sunset",
+      description: "Everything belonging to a business domain lives inside src/features/[name]/ — its components, hooks, and local stores. External features must never reach into another feature's internal folders. When a feature is retired or sunset, you delete its single directory and leave zero orphaned files behind.",
     },
     {
       title: "Public API via index.ts",
-      description: "By convention, each feature exposes its public API through an index.ts barrel file. Other parts of the codebase import from the feature, not from its internals. This keeps refactoring contained — if a file moves inside the feature, nothing outside breaks. If you want to enforce this automatically, ESLint's no-restricted-imports rule can prevent direct internal imports.",
+      description: "Each feature exposes its public contract through an index.ts barrel. Other features and route pages import strictly from @/features/[name], never from internal paths. This isolates internal refactorings so moving a file inside a feature never breaks consumers.",
     },
   ],
   implementation: {
@@ -44,23 +44,24 @@ export const folderStructure: RecipeDetail = {
 │       └── [id]/
 │           └── page.tsx  # Dynamic route — add routes here, never business logic
 │
-├── features/             # Feature modules (vertical slices)
+├── features/             # Domain encapsulation (vertical slices)
 │   └── users/            # Each feature owns its own components, hooks, stores
 │       ├── components/   # UI specific to this feature
 │       ├── hooks/        # Data fetching and logic hooks
 │       ├── stores/       # Zustand stores scoped to this feature
 │       └── index.ts      # Barrel export — public API of the feature
 │
-├── shared/               # Cross-feature shared code
-│   ├── components/       # Reusable components (PageLayout, Navbar, Sidebar, etc.)
-│   ├── hooks/            # Reusable hooks (useDebounce, useLocalStorage, etc.)
-│   ├── stores/           # App-wide stores (theme, sidebar, etc.)
+├── shared/               # Assembled pieces (cross-feature reusables with logic)
+│   ├── components/       # Reusable components (ErrorBoundary, CopyButton, EmptyState)
+│   ├── hooks/            # Reusable hooks (useDebounce, useLocalStorage, useMediaQuery)
+│   ├── stores/           # App-wide stores (theme, sidebar, session)
 │   ├── types/            # Shared TypeScript types
 │   └── utils/            # Utility functions (cn, formatters, validators)
 │
-├── ui/                   # Design system primitives (Button, Card, Dialog, etc.)
+├── ui/                   # Raw LEGO bricks — pure visual primitives, ZERO business logic
+│                         # (Button, Card, Dialog, Input, Badge — 100% portable)
 │
-├── lib/                  # Infrastructure code
+├── lib/                  # Infrastructure & external SDK adapters
 │   ├── api-client.ts     # Fetch-based API client factory
 │   ├── api.ts            # Pre-configured API instance (DummyJSON)
 │   ├── endpoints.ts      # Centralized endpoint definitions
@@ -80,23 +81,24 @@ export const folderStructure: RecipeDetail = {
 │   └── layouts/
 │       └── RootLayout.tsx
 │
-├── features/             # Feature modules (vertical slices)
-│   └── users/
+├── features/             # Domain encapsulation (vertical slices)
+│   └── users/            # Each feature owns its own components, hooks, stores
 │       ├── components/   # UI specific to this feature
 │       ├── hooks/        # Data fetching and logic hooks
 │       ├── stores/       # Zustand stores scoped to this feature
 │       └── index.ts      # Barrel export — public API of the feature
 │
-├── shared/               # Cross-feature shared code
-│   ├── components/       # Reusable components (PageLayout, Navbar, Sidebar, etc.)
-│   ├── hooks/            # Reusable hooks (useDebounce, useLocalStorage, etc.)
-│   ├── stores/           # App-wide stores (theme, sidebar, etc.)
+├── shared/               # Assembled pieces (cross-feature reusables with logic)
+│   ├── components/       # Reusable components (ErrorBoundary, CopyButton, EmptyState)
+│   ├── hooks/            # Reusable hooks (useDebounce, useLocalStorage, useMediaQuery)
+│   ├── stores/           # App-wide stores (theme, sidebar, session)
 │   ├── types/            # Shared TypeScript types
 │   └── utils/            # Utility functions (cn, formatters, validators)
 │
-├── ui/                   # Design system primitives (Button, Card, Dialog, etc.)
+├── ui/                   # Raw LEGO bricks — pure visual primitives, ZERO business logic
+│                         # (Button, Card, Dialog, Input, Badge — 100% portable)
 │
-├── lib/                  # Infrastructure code
+├── lib/                  # Infrastructure & external SDK adapters
 │   ├── api-client.ts     # Fetch-based API client factory
 │   ├── api.ts            # Pre-configured API instance
 │   ├── endpoints.ts      # Centralized endpoint definitions
