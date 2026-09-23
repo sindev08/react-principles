@@ -3,17 +3,83 @@ name: CI
 on:
   pull_request:
     branches: [main, development]
+  push:
+    branches: [development]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
-  ci:
+  # =========================================================================
+  # 1. Security Gate: Secret scanning (Push & PR) + Supply-chain (PR only)
+  # =========================================================================
+  security:
+    name: Security Scan
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      - name: Secret Scanning (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Dependency Review (Supply Chain)
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@v4
+        continue-on-error: true
+        with:
+          fail-on-severity: high
+
+  # =========================================================================
+  # 2. Path Filtering: Detect whether code or docs changed (PR only)
+  # =========================================================================
+  changes:
+    name: Detect Changes
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Filter changed paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            code:
+              - 'src/**'
+              - 'packages/**'
+              - 'scripts/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'tsconfig*.json'
+              - 'next.config.*'
+              - 'postcss.config.*'
+
+  # =========================================================================
+  # 3. Fast Checks: Lint & Typecheck (PR only)
+  # =========================================================================
+  quality:
+    name: Lint & Typecheck
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: 11
 
       - uses: actions/setup-node@v4
         with:
@@ -29,8 +95,55 @@ jobs:
       - name: Type check
         run: pnpm typecheck
 
+  # =========================================================================
+  # 4. Unit Tests: Vitest (PR only)
+  # =========================================================================
+  test:
+    name: Unit Tests
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Test
         run: pnpm test
 
-      - name: Build
-        run: pnpm build
+  # =========================================================================
+  # 5. Build: Next.js App & CLI Build (PR only, conditional on code changes)
+  # =========================================================================
+  build:
+    name: Build (App & CLI)
+    needs: [changes, quality, test]
+    if: github.event_name == 'pull_request' && needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CLI & App
+        run: |
+          pnpm build:cli
+          pnpm build
