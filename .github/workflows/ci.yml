@@ -37,6 +37,7 @@ jobs:
         continue-on-error: true
         with:
           fail-on-severity: high
+          warn-on-openssf-scorecard-level: 2
 
   # =========================================================================
   # 2. Path Filtering: Detect whether code or docs changed (PR only)

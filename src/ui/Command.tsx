@@ -101,6 +101,7 @@ Command.Item = function CommandItem({ value, keywords, className, children, ...p
     <button
       type="button"
       role="option"
+      aria-selected={props["aria-selected"] ?? false}
       className={cn(
         "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-slate-700 transition-colors hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-[#0d1117]",
         className
