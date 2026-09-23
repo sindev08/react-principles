@@ -10,14 +10,13 @@ import {
 } from "@/lib/skills";
 import { McpFlowDiagram } from "./McpFlowDiagram";
 import { McpInstallTabs } from "./McpInstallTabs";
+import { PluginInstallGuide } from "./PluginInstallGuide";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://reactprinciples.dev";
 const SKILLS_REPO_URL = "https://github.com/sindev08/react-principles-skills";
-const SKILLS_INSTALL_CMD = "npx skills add sindev08/react-principles-skills";
 const PLUGIN_MARKETPLACE_CMD =
   "/plugin marketplace add sindev08/react-principles-skills";
-const PLUGIN_INSTALL_CMD = "/plugin install reactprinciples@react-principles";
 const INIT_CMD = "npx react-principles init";
 const CREATE_CMD = "npx react-principles create my-app";
 
@@ -286,32 +285,8 @@ export default async function AICorpusPage() {
             description="Install once, invoke when needed. Each skill encodes a workflow — from reviewing code to scaffolding components — following React Principles patterns exactly."
           />
 
-          {/* Install instructions */}
-          <div className="mb-10 rounded-xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-900/50">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div>
-                <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-primary">
-                  Claude Code plugin
-                </p>
-                <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
-                  Includes MCP server auto-registration
-                </p>
-                <CommandSnippet code={`${PLUGIN_MARKETPLACE_CMD}\n${PLUGIN_INSTALL_CMD}`} />
-              </div>
-              <div>
-                <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-primary">
-                  skills.sh
-                </p>
-                <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
-                  Cursor, Copilot, OpenCode, and 75+ tools
-                </p>
-                <CommandSnippet code={SKILLS_INSTALL_CMD} />
-              </div>
-            </div>
-            <p className="mt-4 text-xs text-slate-500 dark:text-slate-500">
-              Do not install both — it duplicates skills in the listing and degrades auto-trigger. Pick one.
-            </p>
-          </div>
+          {/* Plugin & Skills.sh installation guide */}
+          <PluginInstallGuide />
 
           {/* Skills grid */}
           <div className="grid gap-4 sm:grid-cols-2">
