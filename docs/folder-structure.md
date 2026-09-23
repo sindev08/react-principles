@@ -4,9 +4,15 @@
 
 Why does folder structure matter before learning any pattern? Because **structure is the first architectural decision** that determines how easily a project can be scaled, maintained, and understood by others.
 
-Many developers learn React from tutorials that put all files in a single `components/` folder — and that's fine for small projects. But once the project grows, without a clear structure, a single change can cascade everywhere and nobody knows "where should this file go".
+Default React project templates encourage grouping by file type (`/components`, `/hooks`, `/utils`, `/services`). At 5 files, that feels tidy. But at 50+ files, it turns into a flat dump — utilities like `formatDate.ts` get written twice simply because nobody can find the original after 4 months.
 
-The structure recommended here is based on **feature-based organization**: each feature is a self-contained module. Code that is truly reusable across features goes into `shared/`. Third-party configuration goes into `lib/`. The design system goes into `ui/`.
+The core axiom: **files that change together, belong together.**
+
+The architecture recommended here is built on the **4-Pillar Mental Model**:
+1. `features/[domain]/` → Self-contained business domains (vertical slices).
+2. `shared/` → Reusable assembled pieces WITH logic, app state, or API contracts.
+3. `ui/` → Raw LEGO bricks: pure visual primitives with ZERO business logic.
+4. `lib/` → Infrastructure, external SDK configurations, and HTTP client instances.
 
 One core principle: **every file must have one clear, unambiguous place to live.**
 
@@ -14,14 +20,25 @@ One core principle: **every file must have one clear, unambiguous place to live.
 
 ## Rules
 
-- New feature → create a new folder under `features/[feature-name]/`
-- No direct cross-feature imports — use `shared/` as the bridge
-- Hooks (API + UI logic) live inside the feature that uses them (`features/[name]/hooks/`)
-- Hooks used by 2+ features → move to `shared/hooks/`
-- Every feature must have an `index.ts` as its public API — only export what needs to be accessed externally
-- Zustand stores go in `shared/stores/` — not inside a feature
-- Third-party configuration (axios instance, query client) goes in `lib/` — not in `shared/`
-- Design system components go in `ui/` — not `shared/components/`
+- **The 3-Second Decision Filter:**
+  1. Specific to a single business domain? → `features/[domain]/`
+  2. Reused across multiple domains WITH logic or API contracts? → `shared/`
+  3. Pure visual styling without product context? → `ui/`
+- **LEGO Bricks vs Assembled Pieces (`ui/` vs `shared/`):**
+  - Never put business logic in `ui/`. `ui/` contains raw LEGO bricks (`Button`, `Input`, `Modal`, `Badge`) that only accept visual props (`variant`, `size`, `disabled`, `children`). They must pass the portability test: you can copy-paste them into an e-commerce, crypto, or SaaS app without a single missing dependency error.
+  - `shared/components/` contains assembled pieces (`DataTable` with pagination, `ErrorBoundary`, `CopyButton`) that compose UI primitives with cross-cutting logic or data contracts.
+- **Domain Encapsulation & Sunset:**
+  - Everything belonging to a feature lives in `features/[feature-name]/`.
+  - When a feature is retired or sunset, you delete its ONE folder with zero orphaned files left behind.
+- **No Direct Cross-Feature Imports:**
+  - By convention, features do not reach into each other's internal files. Code needed by 2+ features moves to `shared/`.
+- **Public API via `index.ts`:**
+  - Every feature exposes its public contract through an `index.ts` barrel. External consumers import strictly from `@/features/[name]`.
+- **Client State Scoping:**
+  - App-wide client stores (theme, sidebar, session) go in `shared/stores/`.
+  - Feature-scoped client stores (multi-step form, active selection) go in `features/[name]/stores/`.
+- **Infrastructure Isolation:**
+  - Third-party client configuration (fetch/axios instance, query client) goes in `lib/` — not in `shared/`.
 
 ---
 
@@ -137,26 +154,29 @@ src/
 
 ## What Goes Where
 
-| Code | Place it in |
-|------|----------|
-| Component used by only 1 feature | `features/[name]/components/` |
-| Component used by 2+ features | `shared/components/` |
-| Hook that calls an API (read/write) | `features/[name]/hooks/` |
-| Pure UI logic hook for 1 feature | `features/[name]/hooks/` |
-| Pure UI logic hook for 2+ features | `shared/hooks/` |
-| Raw API call functions | `features/[name]/services/` |
-| Axios instance, base config | `lib/api-client.ts` |
-| Zustand store | `shared/stores/` |
-| TypeScript types for 1 feature | `features/[name]/types/` |
-| TypeScript types shared across features | `shared/types/` |
-| shadcn/ui + custom design system | `ui/` |
-| Helper functions | `shared/utils/` |
+| Code | Place it in | Notes |
+|------|-------------|-------|
+| Component used by only 1 feature | `features/[name]/components/` | Scoped to domain |
+| Pure visual primitive (Button, Input, Modal) | `ui/` | Raw LEGO brick (0 business logic, 100% portable) |
+| Reusable component with logic (DataTable, ErrorBoundary) | `shared/components/` | Assembled piece with logic/state |
+| Hook that calls an API (read/write) | `features/[name]/hooks/` | Co-located query/mutation hook |
+| Pure UI logic hook for 1 feature | `features/[name]/hooks/` | Domain-specific UI state |
+| Pure UI logic hook for 2+ features | `shared/hooks/` | Generic (e.g. useDebounce, useMediaQuery) |
+| Raw API call functions | `features/[name]/services/` | Domain API calls |
+| HTTP client instance & global config | `lib/api-client.ts` | Infrastructure |
+| App-wide Zustand store (theme, sidebar) | `shared/stores/` | Global client state |
+| Feature-scoped Zustand store (multi-step form) | `features/[name]/stores/` | Scoped client state |
+| TypeScript types for 1 feature | `features/[name]/types/` | Domain types |
+| TypeScript types shared across features | `shared/types/` | Cross-cutting types |
+| Helper functions & formatters | `shared/utils/` | Pure utilities (cn, formatters) |
 
 ### The Most Important Rule
 
 ```
 Hook (API or UI)?            → features/[name]/hooks/ (co-located)
 Hook used by 2+ features?    → shared/hooks/
+Raw visual primitive?        → ui/ (zero logic, raw LEGO brick)
+Reusable with logic?         → shared/components/ (assembled piece)
 ```
 
 ---
@@ -165,11 +185,14 @@ Hook used by 2+ features?    → shared/hooks/
 
 ```
 ❌ Put all components in one components/ folder
-   → Not scalable, no boundaries between features
+   → Not scalable, flat-by-type trap, no boundaries between features
 
-❌ Import directly from another feature
+❌ Put business logic or domain hooks inside ui/
+   → Breaks portability, leaks domain concerns into raw LEGO bricks
+
+❌ Import directly from another feature's internal files
    import { UserCard } from '../user/components/UserCard'
-   → High coupling, hard to refactor
+   → High coupling, breaks encapsulation
 
 ✅ Export via index.ts, import from public API
    import { UserCard } from '@/features/user'
@@ -179,10 +202,10 @@ Hook used by 2+ features?    → shared/hooks/
 
 ✅ Server state → React Query | Client state → Zustand
 
-❌ Put axios instance inside a component or hook
+❌ Put API client instances inside a component or hook
    → Logic scattered, hard to maintain
 
-✅ Single axios instance in lib/api-client.ts
+✅ Centralized API client factory in lib/api-client.ts
 ```
 
 ---

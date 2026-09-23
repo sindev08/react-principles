@@ -3,6 +3,11 @@ import Link from "next/link";
 import { Navbar, Footer } from "@/features/landing/components";
 import { CopyButton } from "@/shared/components";
 import { cn } from "@/shared/utils/cn";
+import {
+  getSkillsBundle,
+  type Skill,
+  type SkillCategory,
+} from "@/lib/skills";
 import { McpFlowDiagram } from "./McpFlowDiagram";
 import { McpInstallTabs } from "./McpInstallTabs";
 
@@ -10,6 +15,9 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://reactprinciples.dev";
 const SKILLS_REPO_URL = "https://github.com/sindev08/react-principles-skills";
 const SKILLS_INSTALL_CMD = "npx skills add sindev08/react-principles-skills";
+const PLUGIN_MARKETPLACE_CMD =
+  "/plugin marketplace add sindev08/react-principles-skills";
+const PLUGIN_INSTALL_CMD = "/plugin install reactprinciples@react-principles";
 const INIT_CMD = "npx react-principles init";
 const CREATE_CMD = "npx react-principles create my-app";
 
@@ -73,83 +81,21 @@ function CommandSnippet({
   );
 }
 
-interface Skill {
+interface SkillCardProps {
   name: string;
   description: string;
-  category: "review" | "scaffolding" | "internal" | "umbrella";
+  category: SkillCategory;
+  disableModelInvocation: boolean;
 }
 
-const SKILLS: Skill[] = [
-  {
-    name: "reactprinciples",
-    description:
-      "Umbrella skill — routes intent to the right sub-skill (review, scaffold, audit).",
-    category: "umbrella",
-  },
-  {
-    name: "reactprinciples-review",
-    description:
-      "Review React/TypeScript code against 13 principle categories. Flags violations with reasoning and fixes.",
-    category: "review",
-  },
-  {
-    name: "reactprinciples-folder-structure",
-    description:
-      "Scaffold a feature-sliced folder layout (components, hooks, stores, data).",
-    category: "scaffolding",
-  },
-  {
-    name: "reactprinciples-component",
-    description:
-      "Scaffold a UI component — props extending HTMLAttributes, Record variants, cn() for class merging.",
-    category: "scaffolding",
-  },
-  {
-    name: "reactprinciples-hook",
-    description:
-      "Scaffold a custom hook with proper naming, stable return shape, and colocated test.",
-    category: "scaffolding",
-  },
-  {
-    name: "reactprinciples-store",
-    description:
-      "Scaffold a Zustand store with selectors, actions, reset, and 'use client' boundary.",
-    category: "scaffolding",
-  },
-  {
-    name: "reactprinciples-query",
-    description:
-      "Scaffold a React Query hook (list, detail, search, or mutation) with staleTime and enabled.",
-    category: "scaffolding",
-  },
-  {
-    name: "reactprinciples-form",
-    description:
-      "Scaffold a React Hook Form + Zod form. Shares schemas between create and edit via .omit/.pick.",
-    category: "scaffolding",
-  },
-  {
-    name: "reactprinciples-recipe",
-    description:
-      "Draft a new cookbook recipe in the standard structure. (Cookbook maintainer skill.)",
-    category: "internal",
-  },
-  {
-    name: "reactprinciples-audit-recipe",
-    description:
-      "Audit an existing recipe for accuracy against the codebase. (Cookbook maintainer skill.)",
-    category: "internal",
-  },
-];
-
-const CATEGORY_LABELS: Record<Skill["category"], string> = {
+const CATEGORY_LABELS: Record<SkillCategory, string> = {
   umbrella: "Master",
   review: "Review",
   scaffolding: "Scaffolding",
   internal: "Internal",
 };
 
-const CATEGORY_BADGE_CLASSES: Record<Skill["category"], string> = {
+const CATEGORY_BADGE_CLASSES: Record<SkillCategory, string> = {
   umbrella:
     "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary",
   review:
@@ -160,7 +106,15 @@ const CATEGORY_BADGE_CLASSES: Record<Skill["category"], string> = {
     "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
 };
 
-export default function AICorpusPage() {
+export default async function AICorpusPage() {
+  const bundle = await getSkillsBundle();
+  const skills: SkillCardProps[] = bundle.skills.map((s: Skill) => ({
+    name: s.name,
+    description: s.description,
+    category: s.category,
+    disableModelInvocation: s.disableModelInvocation,
+  }));
+
   return (
     <>
       <Navbar />
@@ -334,35 +288,34 @@ export default function AICorpusPage() {
 
           {/* Install instructions */}
           <div className="mb-10 rounded-xl border border-slate-200 bg-slate-50 p-6 dark:border-slate-800 dark:bg-slate-900/50">
-            <p className="mb-3 text-sm font-medium text-slate-700 dark:text-slate-300">
-              Install all skills with one command:
-            </p>
-            <CommandSnippet code={SKILLS_INSTALL_CMD} />
-            <p className="mt-3 text-xs text-slate-500 dark:text-slate-500">
-              Or manually copy any{" "}
-              <code className="rounded bg-slate-200 px-1 py-0.5 font-mono dark:bg-slate-800">
-                SKILL.md
-              </code>{" "}
-              from the{" "}
-              <Link
-                href={SKILLS_REPO_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                react-principles-skills repo
-              </Link>{" "}
-              into{" "}
-              <code className="rounded bg-slate-200 px-1 py-0.5 font-mono dark:bg-slate-800">
-                ~/.claude/skills/
-              </code>
-              .
+            <div className="grid gap-6 md:grid-cols-2">
+              <div>
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-primary">
+                  Claude Code plugin
+                </p>
+                <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
+                  Includes MCP server auto-registration
+                </p>
+                <CommandSnippet code={`${PLUGIN_MARKETPLACE_CMD}\n${PLUGIN_INSTALL_CMD}`} />
+              </div>
+              <div>
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-primary">
+                  skills.sh
+                </p>
+                <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
+                  Cursor, Copilot, OpenCode, and 75+ tools
+                </p>
+                <CommandSnippet code={SKILLS_INSTALL_CMD} />
+              </div>
+            </div>
+            <p className="mt-4 text-xs text-slate-500 dark:text-slate-500">
+              Do not install both — it duplicates skills in the listing and degrades auto-trigger. Pick one.
             </p>
           </div>
 
           {/* Skills grid */}
           <div className="grid gap-4 sm:grid-cols-2">
-            {SKILLS.map((skill) => (
+            {skills.map((skill) => (
               <SkillCard key={skill.name} skill={skill} />
             ))}
           </div>
@@ -435,7 +388,7 @@ export default function AICorpusPage() {
             One command. Works across Claude Code, Cursor, and any tool
             supporting Agent Skills.
           </p>
-          <CommandSnippet code={SKILLS_INSTALL_CMD} centered className="mb-4" />
+          <CommandSnippet code={PLUGIN_MARKETPLACE_CMD} centered className="mb-4" />
           <div className="mt-6 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
             <Link
               href={SKILLS_REPO_URL}
@@ -556,7 +509,7 @@ function OfferingCard({
   );
 }
 
-function SkillCard({ skill }: { skill: Skill }) {
+function SkillCard({ skill }: { skill: SkillCardProps }) {
   return (
     <Link
       href={`/ai/skills/${skill.name}`}
@@ -578,6 +531,11 @@ function SkillCard({ skill }: { skill: Skill }) {
       <p className="text-sm leading-6 text-slate-600 dark:text-slate-400">
         {skill.description}
       </p>
+      {skill.disableModelInvocation && (
+        <p className="mt-2 text-xs text-slate-400 dark:text-slate-500">
+          Manual invoke only — not auto-triggered
+        </p>
+      )}
     </Link>
   );
 }

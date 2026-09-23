@@ -10,3 +10,8 @@ build
 ts_errors.txt
 
 .vercel
+
+# skills install artifacts (npx skills add / plugin)
+.agents/
+.claude/skills/
+skills-lock.json
