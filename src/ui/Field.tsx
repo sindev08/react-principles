@@ -1,4 +1,10 @@
-import { cloneElement, forwardRef, type ReactNode, type HTMLAttributes } from "react";
+import {
+  cloneElement,
+  forwardRef,
+  isValidElement,
+  type ReactNode,
+  type HTMLAttributes,
+} from "react";
 import { Label } from "./Label";
 import { cn } from "@/shared/utils/cn";
 
@@ -35,11 +41,18 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function FieldRoot(
   const descriptionId = fieldId ? `${fieldId}-description` : undefined;
 
   // Clone child element and inject accessibility props
-  const child = cloneElement(children as React.ReactElement, {
+  const childProps: Record<string, unknown> = {
     id: fieldId,
     "aria-describedby": descriptionId,
     "aria-invalid": !!errorMessage,
-  } as Record<string, unknown>);
+  };
+  if (disabled !== undefined) {
+    childProps.disabled = disabled;
+  }
+
+  const child = isValidElement(children)
+    ? cloneElement(children as React.ReactElement<Record<string, unknown>>, childProps)
+    : children;
 
   return (
     <div
@@ -48,7 +61,7 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function FieldRoot(
       {...rest}
     >
       {label && (
-        <Label htmlFor={fieldId} required={required}>
+        <Label htmlFor={fieldId} required={required} disabled={disabled}>
           {label}
         </Label>
       )}

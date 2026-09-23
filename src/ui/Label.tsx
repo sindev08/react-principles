@@ -5,12 +5,13 @@ import { cn } from "@/shared/utils/cn";
 
 export interface LabelProps extends LabelHTMLAttributes<HTMLLabelElement> {
   required?: boolean;
+  disabled?: boolean;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export const Label = forwardRef<HTMLLabelElement, LabelProps>(function LabelRoot(
-  { required, className, children, ...rest },
+  { required, disabled, className, children, ...rest },
   ref
 ) {
   return (
@@ -18,6 +19,7 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(function LabelRoot
       ref={ref}
       className={cn(
         "font-medium text-slate-700 dark:text-slate-300 text-sm",
+        disabled && "opacity-50 cursor-not-allowed text-slate-400 dark:text-slate-500",
         className
       )}
       {...rest}
