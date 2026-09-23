@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   # =========================================================================
-  # 1. Security Gate: Secret scanning & supply-chain dependency review
+  # 1. Security Gate: Secret scanning (Push & PR) + Supply-chain (PR only)
   # =========================================================================
   security:
     name: Security Scan
@@ -38,10 +38,11 @@ jobs:
           fail-on-severity: high
 
   # =========================================================================
-  # 2. Path Filtering: Detect whether code or docs changed
+  # 2. Path Filtering: Detect whether code or docs changed (PR only)
   # =========================================================================
   changes:
     name: Detect Changes
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     outputs:
       code: ${{ steps.filter.outputs.code }}
@@ -66,10 +67,11 @@ jobs:
               - 'postcss.config.*'
 
   # =========================================================================
-  # 3. Fast Checks: Lint & Typecheck
+  # 3. Fast Checks: Lint & Typecheck (PR only)
   # =========================================================================
   quality:
     name: Lint & Typecheck
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -93,10 +95,11 @@ jobs:
         run: pnpm typecheck
 
   # =========================================================================
-  # 4. Unit Tests: Vitest
+  # 4. Unit Tests: Vitest (PR only)
   # =========================================================================
   test:
     name: Unit Tests
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -117,12 +120,12 @@ jobs:
         run: pnpm test
 
   # =========================================================================
-  # 5. Build: Next.js App & CLI Build
+  # 5. Build: Next.js App & CLI Build (PR only, conditional on code changes)
   # =========================================================================
   build:
     name: Build (App & CLI)
     needs: [changes, quality, test]
-    if: needs.changes.outputs.code == 'true' || github.event_name == 'push'
+    if: github.event_name == 'pull_request' && needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
