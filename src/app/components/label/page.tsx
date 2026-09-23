@@ -24,6 +24,9 @@ const CODE_SNIPPET = `import { Label } from "@/ui/Label";
 // Required
 <Label required>Password</Label>
 
+// Disabled
+<Label disabled>Disabled field</Label>
+
 // With input
 <div>
   <Label htmlFor="email">Email address</Label>
@@ -37,12 +40,13 @@ import { cn } from "@/lib/utils";
 
 export interface LabelProps extends LabelHTMLAttributes<HTMLLabelElement> {
   required?: boolean;
+  disabled?: boolean;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export const Label = forwardRef<HTMLLabelElement, LabelProps>(function LabelRoot(
-  { required, className, children, ...rest },
+  { required, disabled, className, children, ...rest },
   ref
 ) {
   return (
@@ -50,6 +54,7 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(function LabelRoot
       ref={ref}
       className={cn(
         "font-medium text-slate-700 dark:text-slate-300 text-sm",
+        disabled && "opacity-50 cursor-not-allowed text-slate-400 dark:text-slate-500",
         className
       )}
       {...rest}
@@ -62,6 +67,7 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(function LabelRoot
 
 const PROPS_ROWS = [
   { prop: "required", type: "boolean", default: "false", description: "Shows required indicator (asterisk)." },
+  { prop: "disabled", type: "boolean", default: "false", description: "Applies muted opacity and not-allowed cursor." },
   { prop: "htmlFor", type: "string", default: "—", description: "ID of the form element this label is bound to." },
 ];
 
@@ -138,8 +144,8 @@ export default function LabelDocPage() {
                 <Label htmlFor="bio">Bio</Label>
                 <Input id="bio" placeholder="Tell us about yourself" className="mt-1.5" />
               </div>
-              <div className="opacity-50">
-                <Label>Disabled field</Label>
+              <div>
+                <Label disabled>Disabled field</Label>
                 <Input disabled placeholder="Cannot edit" className="mt-1.5" />
               </div>
             </div>

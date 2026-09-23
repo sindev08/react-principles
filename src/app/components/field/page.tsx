@@ -43,7 +43,13 @@ import { Input } from "@/ui/Input";
   <Input placeholder="Choose a username" />
 </Field>`;
 
-const COPY_PASTE_SNIPPET = `import { cloneElement, forwardRef, type ReactNode, type HTMLAttributes } from "react";
+const COPY_PASTE_SNIPPET = `import {
+  cloneElement,
+  forwardRef,
+  isValidElement,
+  type ReactNode,
+  type HTMLAttributes,
+} from "react";
 import { Label } from "./Label";
 import { cn } from "@/lib/utils";
 
@@ -80,11 +86,18 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function FieldRoot(
   const descriptionId = fieldId ? \`\${fieldId}-description\` : undefined;
 
   // Clone child element and inject accessibility props
-  const child = cloneElement(children as React.ReactElement, {
+  const childProps: Record<string, unknown> = {
     id: fieldId,
     "aria-describedby": descriptionId,
     "aria-invalid": !!errorMessage,
-  } as Record<string, unknown>);
+  };
+  if (disabled !== undefined) {
+    childProps.disabled = disabled;
+  }
+
+  const child = isValidElement(children)
+    ? cloneElement(children as React.ReactElement<Record<string, unknown>>, childProps)
+    : children;
 
   return (
     <div
@@ -93,7 +106,7 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function FieldRoot(
       {...rest}
     >
       {label && (
-        <Label htmlFor={fieldId} required={required}>
+        <Label htmlFor={fieldId} required={required} disabled={disabled}>
           {label}
         </Label>
       )}
@@ -122,7 +135,7 @@ const PROPS_ROWS = [
   { prop: "helperText", type: "string", default: "—", description: "Descriptive helper text shown below input." },
   { prop: "errorMessage", type: "string", default: "—", description: "Error message — replaces helperText when present." },
   { prop: "required", type: "boolean", default: "false", description: "Shows required indicator on label." },
-  { prop: "disabled", type: "boolean", default: "false", description: "Applies muted opacity style." },
+  { prop: "disabled", type: "boolean", default: "false", description: "Passes disabled state to Label and child input element." },
   { prop: "id", type: "string", default: "auto-generated", description: "ID for label-input association." },
 ];
 

@@ -143,11 +143,18 @@ export const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(
     const s = SIZE_CLASSES[size];
     const inputId = id ?? (label ? label.toLowerCase().replace(/\\s+/g, "-") : undefined);
 
+    // Calculate padding based on slots
+    const getInputPadding = () => {
+      if (prefix && suffix) return "p-0";
+      if (prefix) return size === "sm" ? "pr-2" : size === "lg" ? "pr-3" : "pr-3";
+      if (suffix) return size === "sm" ? "pl-2" : size === "lg" ? "pl-3" : "pl-3";
+      return size === "sm" ? "px-3" : size === "lg" ? "px-4" : "px-3.5";
+    };
+
     const inputPadding = cn(
+      "bg-transparent outline-hidden border-0 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500",
       s.input,
-      "bg-transparent outline-hidden border-0 p-0 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500",
-      prefix && "pl-0",
-      suffix && "pr-0"
+      getInputPadding()
     );
 
     return (
@@ -175,7 +182,7 @@ export const InputGroup = forwardRef<HTMLInputElement, InputGroupProps>(
             </span>
           )}
 
-          <input ref={ref} id={inputId} disabled={disabled} className={inputPadding} {...rest} />
+          <input ref={ref} id={inputId} disabled={disabled} className={cn(inputPadding, "w-full")} {...rest} />
 
           {suffix && (
             <span className={cn("flex shrink-0 items-center text-slate-500 dark:text-slate-400", s.suffix)}>

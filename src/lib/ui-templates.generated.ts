@@ -4294,7 +4294,13 @@ DropdownMenu.Item = function DropdownMenuItem({ inset = false, onSelect, onClick
     />
   );
 }`,
-  "Field": `import { cloneElement, forwardRef, type ReactNode, type HTMLAttributes } from "react";
+  "Field": `import {
+  cloneElement,
+  forwardRef,
+  isValidElement,
+  type ReactNode,
+  type HTMLAttributes,
+} from "react";
 import { Label } from "./Label";
 import { cn } from "@/lib/utils";
 
@@ -4331,11 +4337,18 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function FieldRoot(
   const descriptionId = fieldId ? \`\${fieldId}-description\` : undefined;
 
   // Clone child element and inject accessibility props
-  const child = cloneElement(children as React.ReactElement, {
+  const childProps: Record<string, unknown> = {
     id: fieldId,
     "aria-describedby": descriptionId,
     "aria-invalid": !!errorMessage,
-  } as Record<string, unknown>);
+  };
+  if (disabled !== undefined) {
+    childProps.disabled = disabled;
+  }
+
+  const child = isValidElement(children)
+    ? cloneElement(children as React.ReactElement<Record<string, unknown>>, childProps)
+    : children;
 
   return (
     <div
@@ -4344,7 +4357,7 @@ export const Field = forwardRef<HTMLDivElement, FieldProps>(function FieldRoot(
       {...rest}
     >
       {label && (
-        <Label htmlFor={fieldId} required={required}>
+        <Label htmlFor={fieldId} required={required} disabled={disabled}>
           {label}
         </Label>
       )}
@@ -5441,12 +5454,13 @@ import { cn } from "@/lib/utils";
 
 export interface LabelProps extends LabelHTMLAttributes<HTMLLabelElement> {
   required?: boolean;
+  disabled?: boolean;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export const Label = forwardRef<HTMLLabelElement, LabelProps>(function LabelRoot(
-  { required, className, children, ...rest },
+  { required, disabled, className, children, ...rest },
   ref
 ) {
   return (
@@ -5454,6 +5468,7 @@ export const Label = forwardRef<HTMLLabelElement, LabelProps>(function LabelRoot
       ref={ref}
       className={cn(
         "font-medium text-slate-700 dark:text-slate-300 text-sm",
+        disabled && "opacity-50 cursor-not-allowed text-slate-400 dark:text-slate-500",
         className
       )}
       {...rest}

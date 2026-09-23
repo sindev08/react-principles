@@ -32,9 +32,7 @@ export const Required: Story = {
 export const Disabled: Story = {
   render: () => (
     <StorySurface className="w-[360px]">
-      <div className="opacity-50">
-        <Label>Muted field label</Label>
-      </div>
+      <Label disabled>Muted field label</Label>
     </StorySurface>
   ),
 };
@@ -52,8 +50,10 @@ export const WithInput: Story = {
         </Label>
         <Input id="password" type="password" placeholder="Enter password" className="mt-1.5" />
       </div>
-      <div className="opacity-50">
-        <Label htmlFor="disabled">Disabled field</Label>
+      <div>
+        <Label htmlFor="disabled" disabled>
+          Disabled field
+        </Label>
         <Input id="disabled" placeholder="Cannot edit" disabled className="mt-1.5" />
       </div>
       <div className="opacity-50">
