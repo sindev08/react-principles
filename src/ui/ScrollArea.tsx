@@ -116,7 +116,6 @@ export function ScrollArea({
       ref={scrollAreaRef}
       tabIndex={0}
       role="region"
-      aria-orientation={orientation === "both" ? "vertical" : orientation}
       className={cn(
         "scrollarea-scrollbar",
         ORIENTATION_CLASSES[orientation],

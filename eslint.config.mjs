@@ -95,4 +95,25 @@ export default defineConfig([
       "@typescript-eslint/prefer-optional-chain": "error",
     },
   },
+
+  // ── Scoped overrides ───────────────────────────────────────────────
+  // CLI and utility scripts legitimately write output via console
+  {
+    files: ["packages/cli/**/*.ts", "scripts/**/*.mjs"],
+    rules: {
+      "no-console": "off",
+    },
+  },
+
+  // UI Kit documentation and stories use native <img> for standalone code portability
+  {
+    files: [
+      "src/app/components/**/*.tsx",
+      "src/features/configurator/**/*.tsx",
+      "src/ui/**/*.stories.tsx",
+    ],
+    rules: {
+      "@next/next/no-img-element": "off",
+    },
+  },
 ]);
