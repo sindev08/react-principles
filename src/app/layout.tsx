@@ -160,7 +160,10 @@ export default function RootLayout({
           title="React Principles cookbook (compact, for AI tools)"
         />
       </head>
-      <body className="min-h-screen bg-(--background) text-(--foreground) antialiased">
+      <body
+        suppressHydrationWarning
+        className="min-h-screen bg-(--background) text-(--foreground) antialiased"
+      >
         {process.env.NODE_ENV === "production" &&
           process.env.NEXT_PUBLIC_ANALYTICS_API_KEY && (
             <Script

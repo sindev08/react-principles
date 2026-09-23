@@ -83,6 +83,11 @@ export default async function SkillDetailPage({ params }: PageProps) {
             >
               {CATEGORY_LABELS[skill.category]}
             </span>
+            {skill.disableModelInvocation && (
+              <span className="rounded-md bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                Manual invocation only
+              </span>
+            )}
             {bundle.version && (
               <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400">
                 {bundle.version}
@@ -95,6 +100,16 @@ export default async function SkillDetailPage({ params }: PageProps) {
           <p className="text-base leading-7 text-slate-600 dark:text-slate-400">
             {skill.description}
           </p>
+          {skill.whenToUse && (
+            <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm dark:border-slate-800 dark:bg-slate-900/50">
+              <span className="font-semibold text-slate-900 dark:text-slate-100">
+                When to use:{" "}
+              </span>
+              <span className="text-slate-600 dark:text-slate-400">
+                {skill.whenToUse}
+              </span>
+            </div>
+          )}
           {skill.allowedTools.length > 0 && (
             <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
               <span className="text-slate-500 dark:text-slate-500">Allowed tools:</span>
