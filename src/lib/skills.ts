@@ -10,6 +10,7 @@ export type SkillCategory = "umbrella" | "review" | "scaffolding" | "internal";
 export interface Skill {
   name: string;
   description: string;
+  whenToUse?: string;
   category: SkillCategory;
   allowedTools: string[];
   disableModelInvocation: boolean;
@@ -37,17 +38,19 @@ const CATEGORY_MAP: Record<string, SkillCategory> = {
   "reactprinciples-store": "scaffolding",
 };
 
-interface FrontmatterResult {
+export interface FrontmatterResult {
   data: {
     name?: string;
     description?: string;
+    "when_to_use"?: string;
+    "when-to-use"?: string;
     "allowed-tools"?: string;
     "disable-model-invocation"?: string;
   };
   body: string;
 }
 
-function parseFrontmatter(raw: string): FrontmatterResult | null {
+export function parseFrontmatter(raw: string): FrontmatterResult | null {
   const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
   if (!match?.[1] || match[2] === undefined) return null;
   const [, fm, body] = match;
@@ -114,9 +117,11 @@ async function fetchSkill(folder: string): Promise<Skill | null> {
     ?.split(",")
     .map((s) => s.trim())
     .filter(Boolean) ?? [];
+  const whenToUse = parsed.data.when_to_use ?? parsed.data["when-to-use"];
   return {
     name: parsed.data.name ?? folder,
     description: parsed.data.description ?? "",
+    whenToUse: whenToUse ? whenToUse.trim() : undefined,
     category: CATEGORY_MAP[folder] ?? "internal",
     allowedTools,
     disableModelInvocation:
@@ -128,12 +133,19 @@ async function fetchSkill(folder: string): Promise<Skill | null> {
 
 export async function getSkillsBundle(): Promise<SkillsBundle> {
   const folders = await fetchSkillFolders();
-  const [skills, version] = await Promise.all([
+  if (folders.length === 0) {
+    console.warn("[skills] No skill folders found from GitHub API.");
+  }
+  const [skillsRaw, version] = await Promise.all([
     Promise.all(folders.map(fetchSkill)),
     fetchLatestVersion(),
   ]);
+  const skills = skillsRaw.filter((s): s is Skill => s !== null);
+  if (folders.length > 0 && skills.length === 0) {
+    console.error("[skills] Failed to parse any skill from fetched folders.");
+  }
   return {
-    skills: skills.filter((s): s is Skill => s !== null),
+    skills,
     version,
     repoUrl: `https://github.com/${REPO_OWNER}/${REPO_NAME}`,
     installCommand: `npx skills add ${REPO_OWNER}/${REPO_NAME}`,
