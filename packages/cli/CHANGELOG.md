@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/sindev08/react-principles/compare/react-principles@v1.1.0...react-principles@v1.1.1) (2026-09-23)
+
+
+### Bug Fixes
+
+* **ui:** complete disabled spec and tests for label and field ([#251](https://github.com/sindev08/react-principles/issues/251)) ([45e388c](https://github.com/sindev08/react-principles/commit/45e388c06f09a55eb0ea907a14ed55c6988bc515))
+
 ## [1.1.0](https://github.com/sindev08/react-principles/compare/react-principles@v1.0.1...react-principles@v1.1.0) (2026-07-23)
 
 
