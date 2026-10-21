@@ -81,3 +81,4 @@ const count = Object.keys(templates).length;
 console.log(
   `✓ Synced ${count} templates → CLI + site, and mirrored ui-registry.json → CLI`,
 );
+
